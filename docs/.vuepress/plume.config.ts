@@ -22,6 +22,6 @@ export default defineThemeConfig({
   // 页脚
   footer: {
     message: '耶温笔记-YevinNotesBlog',
-    copyright: 'Copyright © 2024 | ICP备案号：<a target="_blank" href="https://beian.miit.gov.cn/">陕ICP备2024040821号-1</a>'
+    copyright: 'Copyright © 2025 | ICP备案号：<a target="_blank" href="https://beian.miit.gov.cn/">陕ICP备2024040821号-1</a>'
   },
 })
