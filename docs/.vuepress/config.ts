@@ -5,7 +5,7 @@ import { plumeTheme } from "vuepress-theme-plume";
 export default defineUserConfig({
   bundler: viteBundler(),
   // 网站信息
-  base: '/yevin-notes-blog/', // Github Pages
+  base: "/zhijian-notes-blog/", // Github Pages
   // base: "/",
   lang: "zh-CN",
   title: "耶温笔记",
@@ -45,10 +45,10 @@ export default defineUserConfig({
     },
     // 加密文章
     encrypt: {
-      rules:{
-        '/InterView/': 'yuwb.cn',
-      }
-    }
+      rules: {
+        "/InterView/": "yuwb.cn",
+      },
+    },
   }),
   // 头部内容
   head: [
@@ -69,14 +69,14 @@ export default defineUserConfig({
     [
       "script",
       {
-        src:"/tongji.js" // 添加百度统计插件
-      }
+        src: "/tongji.js", // 添加百度统计插件
+      },
     ],
     [
       "script",
       {
-        src:"https://tj.yuwb.cn/plugins/index.js?key=KH6ZM8I696EEMWQ0" // 添加统计插件
-      }
-    ]
+        src: "https://tj.yuwb.cn/plugins/index.js?key=KH6ZM8I696EEMWQ0", // 添加统计插件
+      },
+    ],
   ],
 });
