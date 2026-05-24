@@ -3,9 +3,8 @@ import { BookOpen, LayoutDashboard, Settings, type LucideIcon } from 'lucide-rea
 export const SITE_METADATA = {
     name: 'Zhijian',
     adminName: 'Zhijian Admin',
-    title: '知简 | Minimalist Chinese Blog Platform',
-    description:
-        '一个基于 Next.js 与 MySQL 的个人内容网站，当前聚焦博客写作与后台管理，后续可以继续扩展其他内容模块。',
+    title: 'Zhijian',
+    description: 'Zhijian：A simple personal website.',
 } as const;
 
 export const APP_ROUTES = {
