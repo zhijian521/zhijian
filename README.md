@@ -1,25 +1,28 @@
 # 知简个人网站
 
-一个基于 `Next.js + MySQL` 的个人网站项目，当前先聚焦博客场景，包含前台展示、后台登录、文章编辑和接口层。
+一个基于 `Next.js 15 + React 19 + MySQL` 的个人内容网站项目，当前先实现博客前台与后台管理，后续可以继续扩展备忘录、导航、作品等模块。
 
 ## 当前功能
 
-- 前台首页
+- 博客首页
 - 博客列表页
 - 文章详情页
 - 后台登录
-- 后台新增文章
-- 文章编辑与发布状态修改
-- MySQL 数据读取
-- 项目内置 SQL 初始化脚本
+- 后台文章列表
+- 新建文章
+- 编辑文章
+- MySQL 数据读取与回退示例数据
 
-## 推荐目录结构
+## 当前目录结构
 
 ```text
 src/
   app/
     admin/
-      admin-console.tsx
+      _components/
+      posts/
+      settings/
+      layout.tsx
       page.tsx
     api/
       admin/
@@ -35,26 +38,43 @@ src/
     globals.css
     layout.tsx
     page.tsx
+  components/
+    site/
+      public-chrome.tsx
+    ui/
   lib/
     auth.ts
     db.ts
     posts.ts
+    site.ts
+    utils.ts
+  middleware.ts
 sql/
   init.sql
 ```
 
-## 本地启动
+## 本地开发
 
 ```bash
 npm install
 npm run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000) 查看前台，打开 [http://localhost:3000/admin](http://localhost:3000/admin) 查看后台。
+- 前台地址：[http://localhost:3000](http://localhost:3000)
+- 后台地址：[http://localhost:3000/admin](http://localhost:3000/admin)
+
+## 可用脚本
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm run typecheck
+```
 
 ## 环境变量
 
-复制 `.env.example` 为 `.env.local`，至少配置以下变量：
+复制 `.env.example` 为 `.env.local`，至少配置下面这些变量：
 
 ```env
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -70,24 +90,10 @@ ADMIN_SESSION_SECRET=replace-with-a-long-random-string
 
 - [sql/init.sql](C:/code/zhijian/sql/init.sql)
 
-当表结构调整时，优先同步更新这份脚本，其他同事 clone 后只需要连接好自己的 MySQL，再执行这份 SQL 就能快速起步。
+在你的 MySQL 数据库中执行这份脚本即可快速建表并插入默认文章数据。后续如果表结构有调整，优先同步更新这份脚本，方便其他人 clone 后直接使用。
 
-## 默认文章表结构
+## 项目说明
 
-`posts` 表包含以下字段：
-
-- `id`
-- `slug`
-- `title`
-- `summary`
-- `content`
-- `status`
-- `published_at`
-- `created_at`
-- `updated_at`
-
-## 后续扩展建议
-
-- 继续新增备忘录模块时，可以复用现有登录态和管理页结构
-- 新增导航首页时，可以沿用 `app/ + api/ + lib/` 的同层组织方式
-- 如果后续内容模型明显变复杂，再考虑拆出更细的模块目录
+- 前台与后台视觉风格故意分离：前台偏内容表达，后台偏管理效率。
+- `src/lib/site.ts` 用来集中管理站点名称、路由与导航配置。
+- `src/lib/posts.ts` 负责文章查询、格式化与写入逻辑，是当前博客模块的核心数据层。

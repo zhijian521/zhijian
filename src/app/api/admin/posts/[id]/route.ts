@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { isAdminRequestAuthenticated } from '@/lib/auth';
+import type { PostStatus } from '@/lib/post-shared';
+import type { UpdatePostInput } from '@/lib/posts';
 import { updatePostById } from '@/lib/posts';
-import type { PostStatus, UpdatePostInput } from '@/lib/posts';
 
 interface RouteContext {
   params: Promise<{
@@ -10,6 +11,9 @@ interface RouteContext {
   }>;
 }
 
+/**
+ * 后台文章详情更新接口，只允许已登录管理员修改指定文章。
+ */
 export async function PATCH(request: NextRequest, context: RouteContext) {
   if (!isAdminRequestAuthenticated(request)) {
     return NextResponse.json(

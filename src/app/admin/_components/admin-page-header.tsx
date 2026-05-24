@@ -8,6 +8,9 @@ interface AdminPageHeaderProps {
   title: string;
 }
 
+/**
+ * 后台页面统一头部，集中收敛标题、副标题和右侧操作区域的版式。
+ */
 export default function AdminPageHeader({ action, description, eyebrow, tag, title }: AdminPageHeaderProps) {
   return (
     <div className='admin-panel px-6 py-6 md:px-8'>

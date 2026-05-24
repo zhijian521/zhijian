@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { Post, PostStatus } from '@/lib/posts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatPostDateTime, type Post, type PostStatus } from '@/lib/post-shared';
+import { API_ROUTES, APP_ROUTES } from '@/lib/site';
 
 interface PostManagementClientProps {
   initialPosts: Post[];
@@ -23,11 +24,12 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
   const [status, setStatus] = useState<'all' | PostStatus>('all');
   const [isPending, startTransition] = useTransition();
 
+  // 列表筛选保持在客户端完成，避免后台管理页做不必要的额外请求。
   const filteredPosts = useMemo(() => {
     return initialPosts.filter((post) => {
+      const normalizedKeyword = keyword.trim().toLowerCase();
       const matchesKeyword =
-        !keyword.trim() ||
-        [post.title, post.slug, post.summary].some((field) => field.toLowerCase().includes(keyword.trim().toLowerCase()));
+        !normalizedKeyword || [post.title, post.slug, post.summary].some((field) => field.toLowerCase().includes(normalizedKeyword));
       const matchesStatus = status === 'all' || post.status === status;
 
       return matchesKeyword && matchesStatus;
@@ -36,11 +38,11 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
 
   function handleLogout() {
     startTransition(async () => {
-      await fetch('/api/admin/logout', {
+      await fetch(API_ROUTES.adminLogout, {
         method: 'POST',
       });
 
-      window.location.href = '/admin';
+      window.location.href = APP_ROUTES.admin;
     });
   }
 
@@ -50,7 +52,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
         action={
           <div className='flex flex-wrap gap-2'>
             <Button asChild className='rounded-xl'>
-              <Link href='/admin/posts/new'>
+              <Link href={APP_ROUTES.adminPostCreate}>
                 <Plus className='h-4 w-4' />
                 新建文章
               </Link>
@@ -61,7 +63,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
             </Button>
           </div>
         }
-        description='集中查看全部文章，支持关键字搜索、状态筛选和快速进入编辑页。表格风格与后台整体 shadcn 管理台保持一致。'
+        description='集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。'
         eyebrow='Posts'
         tag={`${initialPosts.length} 篇文章`}
         title='文章管理'
@@ -123,7 +125,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
                     <TableCell className='text-sm text-slate-500'>{formatPostDateTime(post.updatedAt)}</TableCell>
                     <TableCell className='text-right'>
                       <Button asChild className='rounded-xl' size='sm' variant='outline'>
-                        <Link href={`/admin/posts/${post.id}`}>进入编辑</Link>
+                        <Link href={`${APP_ROUTES.adminPosts}/${post.id}`}>进入编辑</Link>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -135,25 +137,4 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
       </Card>
     </>
   );
-}
-
-function formatPostDateTime(value: string | null): string {
-  if (!value) {
-    return '未设置';
-  }
-
-  const normalized = value.replace(' ', 'T');
-  const date = new Date(normalized);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
 }

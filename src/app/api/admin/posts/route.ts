@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdminRequestAuthenticated } from '@/lib/auth';
 import { createPost, getAllPosts } from '@/lib/posts';
 
+/**
+ * 后台文章列表接口：
+ * - `GET` 返回全部文章
+ * - `POST` 创建新的草稿文章
+ */
 export async function GET(request: NextRequest) {
   if (!isAdminRequestAuthenticated(request)) {
     return NextResponse.json(
@@ -49,6 +54,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // 未输入标题时自动生成一个带时间戳的草稿标题，方便直接进入编辑页。
   const title =
     body.title?.trim() ||
     `新文章 ${new Intl.DateTimeFormat('zh-CN', {

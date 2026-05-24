@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 
-import { formatPostDateTime, getPostBySlug, getPublishedPosts, splitPostContent } from '@/lib/posts';
+import { formatPostDateTime, splitPostContent } from '@/lib/post-shared';
+import { getPostBySlug, getPublishedPosts } from '@/lib/posts';
 
 interface BlogDetailPageProps {
   params: Promise<{

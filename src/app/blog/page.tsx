@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { formatPostDate, getPublishedPosts } from '@/lib/posts';
+import { formatPostDate } from '@/lib/post-shared';
+import { getPublishedPosts } from '@/lib/posts';
 
 export default async function BlogListPage() {
   const posts = await getPublishedPosts();
@@ -112,7 +113,7 @@ export default async function BlogListPage() {
                 ['自然', '15'],
               ].map(([label, count]) => (
                 <li className='border-b border-[var(--accent)] last:border-0' key={label}>
-                  <Link className='group flex items-center justify-between py-3' href='#'>
+                  <Link className='group flex items-center justify-between py-3' href='/blog'>
                     <span className='text-base text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]'>{label}</span>
                     <span className='rounded-sm bg-[var(--muted)] px-2 py-1 text-xs text-[var(--muted-foreground)] transition-colors group-hover:bg-[var(--primary-container)] group-hover:text-[var(--primary)]'>
                       {count}

@@ -1,19 +1,7 @@
 import { getDb } from '@/lib/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-export type PostStatus = 'draft' | 'published';
-
-export interface Post {
-  id: number;
-  slug: string;
-  title: string;
-  summary: string;
-  content: string;
-  status: PostStatus;
-  publishedAt: string | null;
-  updatedAt: string | null;
-}
-
+import type { Post, PostStatus } from '@/lib/post-shared';
 export interface UpdatePostInput {
   slug: string;
   title: string;
@@ -47,7 +35,10 @@ interface PostRow extends RowDataPacket {
   updated_at: string | null;
 }
 
-// 当数据库未连接时，前台仍可依靠这组示例数据预览页面结构与样式。
+const EMPTY_SUMMARY_FALLBACK = '这篇文章还没有摘要，等你补上一段引导文字。';
+const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
+
+// 数据库未连接时，页面仍可使用这组示例数据预览结构与样式。
 const FALLBACK_POSTS: Post[] = [
   {
     id: 1,
@@ -121,7 +112,7 @@ export async function getPostById(id: number): Promise<Post | null> {
 
 /**
  * 更新指定文章。
- * 这里保留在 lib 层统一处理数据库字段映射，避免 API route 直接拼 SQL。
+ * 数据库字段映射统一放在 lib 层处理，避免 API route 直接拼接 SQL 细节。
  */
 export async function updatePostById(id: number, input: UpdatePostInput): Promise<Post | null> {
   const db = getDb();
@@ -155,7 +146,7 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
 
 /**
  * 创建草稿文章。
- * 新文章默认先落为 draft，降低后台误发布风险。
+ * 新文章默认先保存为 draft，降低后台误发布风险。
  */
 export async function createPost(input: CreatePostInput): Promise<Post | null> {
   const db = getDb();
@@ -180,67 +171,9 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
   }
 }
 
-export function splitPostContent(content: string): string[] {
-  return content
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-}
-
-// 前台阅读页使用更偏内容展示的日期格式。
-export function formatPostDate(value: string | null): string {
-  if (!value) {
-    return '未发布';
-  }
-
-  const normalized = value.replace(' ', 'T');
-  const date = new Date(normalized);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
-}
-
-// 后台与详情页使用包含时间的格式，方便区分最近更新节奏。
-export function formatPostDateTime(value: string | null): string {
-  if (!value) {
-    return '未设置';
-  }
-
-  const normalized = value.replace(' ', 'T');
-  const date = new Date(normalized);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-}
-
-// `datetime-local` 需要 `YYYY-MM-DDTHH:mm` 形式，这里统一转换。
-export function toDateTimeLocalValue(value: string | null): string {
-  if (!value) {
-    return '';
-  }
-
-  return value.replace(' ', 'T').slice(0, 16);
-}
-
 /**
  * 统一读取文章数据。
- * includeDrafts、slug、id 这些条件都在这一层组合，避免查询逻辑散落到多个 route 里。
+ * includeDrafts、slug、id 等条件都在这一层组合，避免查询逻辑散落到多个 route 中。
  */
 async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]> {
   const db = getDb();
@@ -292,8 +225,8 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
       id: row.id,
       slug: row.slug,
       title: row.title,
-      summary: row.summary?.trim() || '这篇文章还没有摘要，等你来补上一段引子。',
-      content: row.content?.trim() || '这篇文章还没有正文内容。',
+      summary: row.summary?.trim() || EMPTY_SUMMARY_FALLBACK,
+      content: row.content?.trim() || EMPTY_CONTENT_FALLBACK,
       status: row.status,
       publishedAt: row.published_at,
       updatedAt: row.updated_at,
@@ -304,7 +237,9 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
   }
 }
 
-// 发布时间为空时，根据状态决定是否自动补当前时间。
+/**
+ * 根据文章状态规范化发布时间。
+ */
 function normalizePublishedAt(value: string | null, status: PostStatus): string | null {
   if (!value && status === 'draft') {
     return null;
@@ -321,7 +256,9 @@ function normalizePublishedAt(value: string | null, status: PostStatus): string 
   return value.replace('T', ' ') + ':00';
 }
 
-// 将 JS Date 规范化成 MySQL DATETIME 字符串。
+/**
+ * 把 JS Date 格式化成 MySQL DATETIME 字符串。
+ */
 function formatSqlDate(date: Date): string {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, '0');

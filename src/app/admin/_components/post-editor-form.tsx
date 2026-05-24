@@ -10,6 +10,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { toDateTimeLocalValue } from '@/lib/post-shared';
+import { API_ROUTES, APP_ROUTES } from '@/lib/site';
 
 type PostStatus = 'draft' | 'published';
 
@@ -51,6 +53,7 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // 创建与更新共用一套表单，按 mode 决定请求目标与成功后的跳转行为。
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
@@ -58,7 +61,7 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
     startTransition(async () => {
       const response =
         mode === 'create'
-          ? await fetch('/api/admin/posts', {
+          ? await fetch(API_ROUTES.adminPosts, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -67,7 +70,7 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
                 title: form.title.trim() || undefined,
               }),
             })
-          : await fetch(`/api/admin/posts/${post?.id}`, {
+          : await fetch(`${API_ROUTES.adminPosts}/${post?.id}`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
@@ -87,7 +90,7 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
 
       if (mode === 'create') {
         const createdPost = payload.data as Post;
-        window.location.href = `/admin/posts/${createdPost.id}`;
+        window.location.href = `${APP_ROUTES.adminPosts}/${createdPost.id}`;
         return;
       }
 
@@ -100,17 +103,13 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
       <AdminPageHeader
         action={
           <Button asChild className='rounded-xl' variant='outline'>
-            <Link href='/admin/posts'>
+            <Link href={APP_ROUTES.adminPosts}>
               <ArrowLeft className='h-4 w-4' />
               返回文章管理
             </Link>
           </Button>
         }
-        description={
-          mode === 'create'
-            ? '先创建一篇草稿文章，再跳转到详情编辑页继续完善摘要、正文、发布时间和发布状态。'
-            : '编辑页采用完整后台表单结构，保存后会直接同步到当前 MySQL 数据库。'
-        }
+        description={mode === 'create' ? '先创建草稿，再进入详情页继续完善内容与发布配置。' : '在这里编辑文章正文、摘要、Slug 与发布状态。'}
         eyebrow={mode === 'create' ? 'New Post' : 'Post Editor'}
         tag={mode === 'create' ? '草稿创建' : post?.status === 'published' ? '已发布' : '草稿'}
         title={mode === 'create' ? '新建文章' : `编辑：${post?.title ?? '文章'}`}
@@ -235,7 +234,7 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
                 <div className='admin-panel-muted space-y-4'>
                   <p className='text-sm font-medium text-slate-950'>保存说明</p>
                   <p className='text-sm leading-7 text-slate-600'>
-                    {message || (mode === 'create' ? '创建成功后会自动进入对应文章编辑页。' : '修改后点击保存按钮，接口会直接更新数据库中的对应文章。')}
+                    {message || (mode === 'create' ? '创建成功后会自动进入对应文章编辑页。' : '点击保存后会直接更新数据库中的文章内容。')}
                   </p>
 
                   <Button className='w-full rounded-xl' disabled={isPending} type='submit'>
@@ -263,14 +262,6 @@ function createFormState(post?: Post): EditorFormState {
     summary: post.summary,
     content: post.content,
     status: post.status,
-    publishedAt: formatDateTimeLocal(post.publishedAt),
+    publishedAt: toDateTimeLocalValue(post.publishedAt),
   };
-}
-
-function formatDateTimeLocal(value: string | null): string {
-  if (!value) {
-    return '';
-  }
-
-  return value.replace(' ', 'T').slice(0, 16);
 }

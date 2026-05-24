@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { formatPostDate, getPublishedPosts } from '@/lib/posts';
+import { formatPostDate } from '@/lib/post-shared';
+import { getPublishedPosts } from '@/lib/posts';
 
 export default async function HomePage() {
   const posts = await getPublishedPosts();

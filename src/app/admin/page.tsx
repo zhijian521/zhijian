@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { ArrowUpRight, Download, Edit3, FileText, MessageSquare, Eye } from 'lucide-react';
+import { ArrowUpRight, Download, Edit3, Eye, FileText, MessageSquare } from 'lucide-react';
 
 import AdminLoginCard from '@/app/admin/_components/admin-login-card';
 import { Badge } from '@/components/ui/badge';
 import { isAdminAuthenticated } from '@/lib/auth';
 import { getAllPosts } from '@/lib/posts';
+import { APP_ROUTES } from '@/lib/site';
 
 export default async function AdminPage() {
   const authenticated = await isAdminAuthenticated();
@@ -27,7 +28,7 @@ export default async function AdminPage() {
       <header className='flex flex-col gap-4 md:flex-row md:items-end md:justify-between'>
         <div>
           <h1 className='font-serif text-[32px] font-semibold leading-[1.3] tracking-tight text-[var(--foreground)]'>概览</h1>
-          <p className='mt-1 text-base leading-[1.6] text-[var(--muted-foreground)]'>欢迎回来，这是您的数据摘要。</p>
+          <p className='mt-1 text-base leading-[1.6] text-[var(--muted-foreground)]'>欢迎回来，这里是当前站点内容与互动数据的概览。</p>
         </div>
 
         <button
@@ -69,7 +70,7 @@ export default async function AdminPage() {
       <section className='admin-stitch-card overflow-hidden'>
         <div className='flex items-center justify-between border-b border-[var(--border)] px-6 py-4'>
           <h2 className='font-serif text-2xl font-semibold text-[var(--foreground)]'>近期文章</h2>
-          <Link className='inline-flex items-center gap-1 text-sm font-medium text-[var(--primary)] transition hover:opacity-80' href='/admin/posts'>
+          <Link className='inline-flex items-center gap-1 text-sm font-medium text-[var(--primary)] transition hover:opacity-80' href={APP_ROUTES.adminPosts}>
             查看全部
             <ArrowUpRight className='h-4 w-4' />
           </Link>
@@ -107,7 +108,7 @@ export default async function AdminPage() {
                   <td className='px-6 py-4 text-right'>
                     <Link
                       className='inline-flex rounded-md p-1 text-[var(--muted-foreground)] transition hover:text-[var(--primary)]'
-                      href={`/admin/posts/${post.id}`}
+                      href={`${APP_ROUTES.adminPosts}/${post.id}`}
                     >
                       <Edit3 className='h-4 w-4' />
                     </Link>
@@ -158,12 +159,12 @@ function MetricCard({ accent, description, icon: Icon, title, trend, value }: Me
 }
 
 function resolveDashboardTitle(title: string, index: number): string {
-  const defaults = ['2024年秋季设计趋势展望', '字体排版在现代UI中的重要性', '如何优化暗黑模式的色彩对比', '响应式网格系统的最佳实践'];
+  const defaults = ['2024 年秋季设计趋势展望', '字体排版在现代 UI 中的重要性', '如何优化暗黑模式的色彩对比', '响应式网格系统的最佳实践'];
   return defaults[index] || title;
 }
 
 function resolveDashboardCategory(index: number): string {
-  const categories = ['设计理论', 'UI/UX', '前端开发', 'CSS架构'];
+  const categories = ['设计理论', 'UI/UX', '前端开发', 'CSS 架构'];
   return categories[index] || '内容策划';
 }
 

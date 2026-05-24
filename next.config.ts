@@ -1,19 +1,9 @@
 import type { NextConfig } from 'next';
 
-// 目前允许远程图片通配，后续如果确定来源域名可以再继续收紧。
-const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-      {
-        protocol: 'http',
-        hostname: '**',
-      },
-    ],
-  },
-};
+/**
+ * 当前项目暂未使用 `next/image` 的远程图片白名单能力，
+ * 保持配置最小化，后续有明确来源时再按域名补充即可。
+ */
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

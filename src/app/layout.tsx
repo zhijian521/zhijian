@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 
 import PublicChrome from '@/components/site/public-chrome';
+import { SITE_METADATA } from '@/lib/site';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '知简 | Minimalist Chinese Blog Platform',
-  description: '一个基于 Next.js 与 MySQL 的个人内容网站，前台采用新版 Stitch 中国风博客视觉，后台采用独立 shadcn 管理台。',
+  title: SITE_METADATA.title,
+  description: SITE_METADATA.description,
 };
 
 interface RootLayoutProps {
