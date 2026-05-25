@@ -1,0 +1,30 @@
+.sidebar {
+    width: 16rem;
+    min-height: 100vh;
+    border-right: 1px solid var(--border);
+    background: #f5f3f3;
+}
+
+.main {
+    margin-left: 16rem;
+    min-height: 100vh;
+    padding: 3rem;
+    background: #fbf9f9;
+}
+
+.navActive {
+    background: rgba(158, 0, 39, 0.08);
+    color: var(--primary);
+    border-right: 4px solid var(--primary);
+    border-radius: 0.75rem 0 0 0.75rem;
+}
+
+.navItem {
+    color: #5b4040;
+    border-radius: 0.75rem;
+}
+
+.navItem:hover {
+    background: rgba(228, 226, 226, 0.55);
+    color: #1b1c1c;
+}

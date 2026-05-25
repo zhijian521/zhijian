@@ -4,6 +4,7 @@ import { CircleHelp, KeyRound, Lock, User } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 
 import { APP_ROUTES, API_ROUTES, STORAGE_KEYS } from '@/lib/site';
+import styles from './admin-login-card.module.css';
 
 interface LoginFormState {
     password: string;
@@ -123,37 +124,37 @@ export default function AdminLoginCard() {
     }
 
     return (
-        <main className='admin-login-page'>
-            <div aria-hidden='true' className='admin-login-texture'>
-                <div className='admin-login-texture-glow' />
+        <main className={styles.page}>
+            <div aria-hidden='true' className={styles.texture}>
+                <div className={styles.textureGlow} />
             </div>
 
-            <section className='admin-login-shell'>
-                <header className='admin-login-brand'>
-                    <div className='admin-login-logo-wrap'>
+            <section className={styles.shell}>
+                <header className={styles.brand}>
+                    <div className={styles.logoWrap}>
                         <img
                             alt='Zhijian Logo'
-                            className='admin-login-logo'
+                            className={styles.logo}
                             decoding='async'
                             height='84'
                             src='/images/admin-login-logo.png'
                             width='84'
                         />
                     </div>
-                    <h1 className='admin-login-title'>Zhijian Admin</h1>
+                    <h1 className={styles.title}>Zhijian Admin</h1>
                 </header>
 
-                <section className='admin-login-card' aria-label='后台登录表单'>
-                    <form className='admin-login-form' onSubmit={handleLoginSubmit}>
-                        <div className='admin-login-fieldset'>
-                            <label className='admin-login-label' htmlFor='username'>
+                <section className={styles.card} aria-label='后台登录表单'>
+                    <form className={styles.form} onSubmit={handleLoginSubmit}>
+                        <div className={styles.fieldset}>
+                            <label className={styles.label} htmlFor='username'>
                                 用户名
                             </label>
-                            <div className='admin-login-input-wrap'>
-                                <User className='admin-login-input-icon' />
+                            <div className={styles.inputWrap}>
+                                <User className={styles.inputIcon} />
                                 <input
                                     autoComplete='username'
-                                    className='admin-login-input'
+                                    className={styles.input}
                                     id='username'
                                     onChange={(event) => {
                                         handleFieldChange('username', event.target.value);
@@ -166,15 +167,15 @@ export default function AdminLoginCard() {
                             </div>
                         </div>
 
-                        <div className='admin-login-fieldset'>
-                            <label className='admin-login-label' htmlFor='password'>
+                        <div className={styles.fieldset}>
+                            <label className={styles.label} htmlFor='password'>
                                 密码
                             </label>
-                            <div className='admin-login-input-wrap'>
-                                <Lock className='admin-login-input-icon' />
+                            <div className={styles.inputWrap}>
+                                <Lock className={styles.inputIcon} />
                                 <input
                                     autoComplete={loginForm.remember ? 'current-password' : 'off'}
-                                    className='admin-login-input'
+                                    className={styles.input}
                                     id='password'
                                     onChange={(event) => {
                                         handleFieldChange('password', event.target.value);
@@ -187,10 +188,10 @@ export default function AdminLoginCard() {
                             </div>
                         </div>
 
-                        <label className='admin-login-checkbox-row' htmlFor='remember'>
+                        <label className={styles.checkboxRow} htmlFor='remember'>
                             <input
                                 checked={loginForm.remember}
-                                className='admin-login-checkbox'
+                                className={styles.checkbox}
                                 id='remember'
                                 onChange={(event) => {
                                     handleFieldChange('remember', event.target.checked);
@@ -200,25 +201,25 @@ export default function AdminLoginCard() {
                             <span>记住密码</span>
                         </label>
 
-                        <button className='admin-login-submit' disabled={isPending} type='submit'>
+                        <button className={styles.submit} disabled={isPending} type='submit'>
                             {isPending ? '登录中...' : '登录'}
                         </button>
 
-                        <p aria-live='polite' className='admin-login-message'>
+                        <p aria-live='polite' className={styles.message}>
                             {message}
                         </p>
                     </form>
 
-                    <div className='admin-login-divider' aria-hidden='true'>
-                        <span className='admin-login-divider-line' />
-                        <span className='admin-login-divider-text'>或通过其他方式</span>
-                        <span className='admin-login-divider-line' />
+                    <div className={styles.divider} aria-hidden='true'>
+                        <span className={styles.dividerLine} />
+                        <span className={styles.dividerText}>或通过其他方式</span>
+                        <span className={styles.dividerLine} />
                     </div>
 
-                    <div className='admin-login-support-grid'>
+                    <div className={styles.supportGrid}>
                         {SUPPORT_ACTIONS.map(({ icon: Icon, label }) => (
-                            <button className='admin-login-support-button' key={label} type='button'>
-                                <Icon className='admin-login-support-icon' />
+                            <button className={styles.supportButton} key={label} type='button'>
+                                <Icon className={styles.supportIcon} />
                                 <span>{label}</span>
                             </button>
                         ))}
@@ -226,8 +227,8 @@ export default function AdminLoginCard() {
                 </section>
             </section>
 
-            <footer className='admin-login-footer'>
-                <span className='admin-login-copyright'>© 2024 Zhijian. All rights reserved.</span>
+            <footer className={styles.footer}>
+                <span className={styles.copyright}>© 2024 Zhijian. All rights reserved.</span>
             </footer>
         </main>
     );

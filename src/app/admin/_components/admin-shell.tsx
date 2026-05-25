@@ -6,6 +6,7 @@ import { useTransition } from 'react';
 
 import { ADMIN_NAV_ITEMS, API_ROUTES, APP_ROUTES, SITE_METADATA } from '@/lib/site';
 import { cn } from '@/lib/utils';
+import styles from './admin-shell.module.css';
 
 interface AdminShellProps {
     children: React.ReactNode;
@@ -28,7 +29,7 @@ export default function AdminShell({ children, currentPath }: AdminShellProps) {
 
     return (
         <main className='relative min-h-screen'>
-            <aside className='admin-stitch-sidebar fixed left-0 top-0 flex flex-col px-4 py-6'>
+            <aside className={cn(styles.sidebar, 'fixed left-0 top-0 flex flex-col px-4 py-6')}>
                 <div className='mb-6 flex items-center gap-3 px-2'>
                     <div className='h-10 w-10 overflow-hidden rounded-full border border-[var(--border)] bg-white shadow-sm'>
                         <div className='flex h-full w-full items-center justify-center text-[11px] font-semibold text-[var(--primary)]'>知简</div>
@@ -62,7 +63,7 @@ export default function AdminShell({ children, currentPath }: AdminShellProps) {
                             <Link
                                 className={cn(
                                     'flex cursor-pointer items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200',
-                                    isActive ? 'admin-stitch-nav-active' : 'admin-stitch-nav-item',
+                                    isActive ? styles.navActive : styles.navItem,
                                 )}
                                 href={item.href}
                                 key={item.label}
@@ -75,12 +76,15 @@ export default function AdminShell({ children, currentPath }: AdminShellProps) {
                 </nav>
 
                 <div className='mt-auto space-y-1 border-t border-[var(--border)] pt-3'>
-                    <button className='admin-stitch-nav-item flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left text-sm transition' type='button'>
+                    <button className={cn(styles.navItem, 'flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left text-sm transition')} type='button'>
                         <UserCircle2 className='h-4 w-4' />
                         <span>个人资料</span>
                     </button>
                     <button
-                        className='admin-stitch-nav-item flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left text-sm transition hover:text-[var(--destructive)] disabled:cursor-not-allowed disabled:opacity-60'
+                        className={cn(
+                            styles.navItem,
+                            'flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left text-sm transition hover:text-[var(--destructive)] disabled:cursor-not-allowed disabled:opacity-60',
+                        )}
                         disabled={isPending}
                         onClick={handleLogout}
                         type='button'
@@ -91,7 +95,7 @@ export default function AdminShell({ children, currentPath }: AdminShellProps) {
                 </div>
             </aside>
 
-            <section className='admin-stitch-main'>{children}</section>
+            <section className={styles.main}>{children}</section>
         </main>
     );
 }
