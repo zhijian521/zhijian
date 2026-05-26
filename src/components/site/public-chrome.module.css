@@ -24,8 +24,6 @@
     width: 100%;
     position: sticky;
     top: 0;
-    border-bottom: 1px solid var(--border);
-    background: rgba(251, 249, 249, 0.88);
     backdrop-filter: blur(16px);
     transition: background-color 0.2s;
 }
@@ -155,8 +153,6 @@
 
 /*== 页脚 ==*/
 .footer {
-    border-top: 1px solid var(--border);
-    background: var(--public-paper);
     padding: 1.5rem 0;
     text-align: center;
 }
