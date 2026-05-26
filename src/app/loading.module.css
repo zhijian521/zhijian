@@ -1,0 +1,47 @@
+.root {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: #fbf9f9;
+}
+
+.text {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    color: var(--primary);
+}
+
+.dots i {
+    display: inline-block;
+    font-style: normal;
+    font-size: 1.25rem;
+    color: var(--primary);
+    animation: fade 1.4s ease-in-out infinite;
+}
+
+.dots i:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dots i:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dots i:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes fade {
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 1;
+    }
+}
