@@ -17,15 +17,9 @@ export default async function HomePage() {
                 <Image alt='山水留白背景' className={styles.heroBackground} fill priority sizes='100vw' src='/images/home-hero-bg.png' />
                 <div className={styles.heroOverlay} />
                 <div className={styles.heroContent}>
-                    <div className={styles.heroAccent} />
-                    <h1 className={styles.heroTitle}>
-                        在字里行间，
-                        <br />
-                        寻找内心的宁静
-                    </h1>
-                    <p className={styles.heroCopy}>
-                        探索简约生活的美学，记录关于设计、文化与个人成长的点滴思考。以文字为舟，渡至宁静之岸。
-                    </p>
+                    <h1 className={styles.heroTitle}>Zhi Jian</h1>
+                    <p className={styles.heroSub}>前端开发 · 全栈 · 简约设计 · 造物</p>
+                    <p className={styles.heroCopy}>写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。</p>
                     <Link className={styles.heroButton} href='#about-me'>
                         开始探索
                         <ArrowDown className='h-4 w-4' />
@@ -48,21 +42,20 @@ export default async function HomePage() {
                         </div>
 
                         <div className={styles.profileBody}>
-                            <h3 className={styles.profileName}>Lin Zhi</h3>
-                            <p className={styles.profileMeta}>设计师 / 撰稿人 / 开源爱好者</p>
+                            <h3 className={styles.profileName}>Zhi Jian</h3>
+                            <p className={styles.profileMeta}>前端开发 · 全栈 · 简约设计 · 造物</p>
                             <p className={styles.profileCopy}>
-                                沉迷于网格与留白之间。致力于通过适度的设计语言和深度的文字思考，传递东方美学在现代数字生活中的应用价值。
-                                我相信好的设计不仅是视觉的享受，更是内心的修行。
+                                喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。这里没有宏大的叙事，只有一些零散的记录和简单的快乐。
                             </p>
                             <div className={styles.profileLinks}>
-                                <Link className={styles.inlineLink} href='mailto:hello@zhijian.site'>
+                                <a className={styles.inlineLink} href='mailto:yuwb0521@yeah.net'>
                                     <Mail className='h-4 w-4' />
                                     联系我
-                                </Link>
-                                <Link className={styles.inlineLink} href='/blog'>
+                                </a>
+                                <a className={styles.inlineLink} href='https://github.com/zhijian521' rel='noreferrer' target='_blank'>
                                     <ArrowRight className='h-4 w-4' />
-                                    个人主页
-                                </Link>
+                                    GitHub
+                                </a>
                             </div>
                         </div>
                     </div>

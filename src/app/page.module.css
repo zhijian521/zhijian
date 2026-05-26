@@ -34,28 +34,28 @@
     text-align: center;
 }
 
-.heroAccent {
-    width: 3rem;
-    height: 2px;
-    margin-bottom: 1.5rem;
-    background: #9e0027;
-}
-
 .heroTitle {
     margin: 0;
     font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
     font-size: clamp(2.75rem, 6vw, 4.75rem);
     line-height: 1.2;
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: 0.04em;
     color: #1b1c1c;
 }
 
+.heroSub {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    letter-spacing: 0.2em;
+    color: #9e0027;
+}
+
 .heroCopy {
-    max-width: 40rem;
-    margin: 2rem 0 0;
-    font-size: 1rem;
-    line-height: 2;
+    max-width: 36rem;
+    margin: 1.5rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.85;
     color: #5b4040;
 }
 
@@ -171,6 +171,7 @@
 .profileMeta {
     margin: 0.5rem 0 0;
     font-size: 0.875rem;
+    letter-spacing: 0.2em;
     line-height: 1.5;
     color: #9e0027;
 }
@@ -178,8 +179,8 @@
 .profileCopy {
     max-width: 48rem;
     margin: 1rem 0 0;
-    font-size: 1rem;
-    line-height: 2;
+    font-size: 0.875rem;
+    line-height: 1.85;
     color: #5b4040;
 }
 
