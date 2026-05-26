@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDown, ArrowRight, BookOpen, Code2, Mail, Star } from 'lucide-react';
+import { ArrowDown, ArrowRight, BookOpen, Code2, ExternalLink, Mail } from 'lucide-react';
 
 import { formatPostDate } from '@/lib/post-shared';
 import { getPublishedPosts } from '@/lib/posts';
@@ -109,41 +109,53 @@ export default async function HomePage() {
                     </div>
 
                     <div className={styles.projectsGrid}>
-                        <a className={styles.projectCard} href='https://github.com/' rel='noreferrer' target='_blank'>
+                        <div className={styles.projectCard}>
                             <div className={styles.projectHeader}>
                                 <div className={styles.projectTitleRow}>
                                     <Code2 className={styles.projectIcon} />
-                                    <h3 className={styles.projectTitle}>zhijian-ui</h3>
+                                    <h3 className={styles.projectTitle}>simple-blog</h3>
                                 </div>
-                                <span className={styles.projectStars}>
-                                    <Star className='h-3.5 w-3.5' />
-                                    1.2k
-                                </span>
                             </div>
-                            <p className={styles.projectCopy}>基于 Tailwind CSS 的轻量级、新中式风格 React UI 组件库。专注于留白与排版美学。</p>
+                            <p className={styles.projectCopy}>基于 Next.js 的极简个人博客，中国风设计，支持 Markdown 写作与后台管理。</p>
                             <div className={styles.projectTags}>
+                                <span className={styles.projectTag}>Next.js</span>
                                 <span className={styles.projectTag}>TypeScript</span>
-                                <span className={styles.projectTag}>React</span>
                             </div>
-                        </a>
+                            <div className={styles.projectActions}>
+                                <a className={styles.projectAction} href='https://www.yuwb.dev/' rel='noreferrer' target='_blank'>
+                                    <ExternalLink className='h-4 w-4' />
+                                    访问站点
+                                </a>
+                                <a className={styles.projectAction} href='https://github.com/zhijian521/simple-blog' rel='noreferrer' target='_blank'>
+                                    <svg className='h-4 w-4' fill='currentColor' viewBox='0 0 24 24'><path d='M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z'/></svg>
+                                    GitHub
+                                </a>
+                            </div>
+                        </div>
 
-                        <a className={styles.projectCard} href='https://github.com/' rel='noreferrer' target='_blank'>
+                        <div className={styles.projectCard}>
                             <div className={styles.projectHeader}>
                                 <div className={styles.projectTitleRow}>
                                     <BookOpen className={styles.projectIcon} />
-                                    <h3 className={styles.projectTitle}>minimal-blog-starter</h3>
+                                    <h3 className={styles.projectTitle}>cesium-example</h3>
                                 </div>
-                                <span className={styles.projectStars}>
-                                    <Star className='h-3.5 w-3.5' />
-                                    850
-                                </span>
                             </div>
-                            <p className={styles.projectCopy}>使用 Next.js 和 MDX 构建的极简主义博客启动器，内置 SEO 优化和深色模式。</p>
+                            <p className={styles.projectCopy}>Cesium 三维地球示例集，涵盖地图加载、模型渲染与空间数据可视化。</p>
                             <div className={styles.projectTags}>
-                                <span className={styles.projectTag}>Next.js</span>
-                                <span className={styles.projectTag}>MDX</span>
+                                <span className={styles.projectTag}>Cesium</span>
+                                <span className={styles.projectTag}>GIS</span>
                             </div>
-                        </a>
+                            <div className={styles.projectActions}>
+                                <a className={styles.projectAction} href='https://cesium.yuwb.dev/' rel='noreferrer' target='_blank'>
+                                    <ExternalLink className='h-4 w-4' />
+                                    访问站点
+                                </a>
+                                <a className={styles.projectAction} href='https://github.com/zhijian521/cesium-example' rel='noreferrer' target='_blank'>
+                                    <svg className='h-4 w-4' fill='currentColor' viewBox='0 0 24 24'><path d='M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z'/></svg>
+                                    GitHub
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>

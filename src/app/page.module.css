@@ -385,6 +385,32 @@
     color: #5b4040;
 }
 
+.projectActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.projectAction {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #e3bebd;
+    font-size: 0.75rem;
+    color: #5b4040;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.projectAction:hover {
+    color: #9e0027;
+    border-color: #9e0027;
+    background: #f5f3f3;
+}
+
 .projectCopy {
     margin: 0 0 1rem;
     font-size: 1rem;
