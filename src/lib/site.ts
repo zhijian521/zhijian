@@ -43,7 +43,7 @@ export interface AdminNavItem extends NavItem {
 export const PUBLIC_NAV_ITEMS: NavItem[] = [
     { href: APP_ROUTES.home, label: '首页', match: 'exact' },
     { href: APP_ROUTES.blog, label: '文章', match: 'prefix' },
-    { href: APP_ROUTES.admin, label: '后台', match: 'prefix' },
+    { href: '/archive', label: '归档', match: 'prefix' },
 ];
 
 /*== 后台菜单：和真实路由保持一一对应。 ==*/

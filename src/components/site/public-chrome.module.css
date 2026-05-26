@@ -1,0 +1,174 @@
+/*== 根容器 ==*/
+.root {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--foreground);
+}
+
+/*== 导航栏 — 首页透明 ==*/
+.headerHome {
+    z-index: 40;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: transparent;
+    transition: background-color 0.2s;
+}
+
+/*== 导航栏 — 内页吸附 ==*/
+.headerInner {
+    z-index: 40;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--border);
+    background: rgba(251, 249, 249, 0.88);
+    backdrop-filter: blur(16px);
+    transition: background-color 0.2s;
+}
+
+.headerContainer {
+    margin: 0 auto;
+    display: flex;
+    height: 4rem;
+    width: 100%;
+    max-width: 80rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.25rem;
+}
+
+@media (min-width: 768px) {
+    .headerContainer {
+        padding: 0 3rem;
+    }
+}
+
+/*== 左侧品牌 ==*/
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
+    color: var(--public-primary);
+    transition: opacity 0.2s;
+}
+
+.brand:hover {
+    opacity: 0.85;
+}
+
+.brandText {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .brandText {
+        display: inline;
+    }
+}
+
+/*== 右侧区域 ==*/
+.navArea {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/*== 桌面导航 ==*/
+.nav {
+    display: none;
+    align-items: center;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .nav {
+        display: flex;
+    }
+}
+
+.navLink {
+    position: relative;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition:
+        color 0.2s,
+        background-color 0.2s;
+}
+
+.navLinkActive {
+    color: var(--public-primary);
+}
+
+.navLinkInactive {
+    color: var(--public-ink-soft);
+}
+
+.navLinkInactive:hover {
+    color: var(--public-ink);
+    background: color-mix(in srgb, var(--public-secondary) 60%, transparent);
+}
+
+.navUnderline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--public-primary);
+}
+
+/*== 移动端菜单按钮 ==*/
+.mobileMenu {
+    display: flex;
+    height: 2.25rem;
+    width: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    color: var(--public-ink-soft);
+    transition:
+        color 0.2s,
+        background-color 0.2s;
+}
+
+.mobileMenu:hover {
+    background: color-mix(in srgb, var(--public-secondary) 70%, transparent);
+}
+
+@media (min-width: 768px) {
+    .mobileMenu {
+        display: none;
+    }
+}
+
+/*== 主内容区 ==*/
+.main {
+    flex: 1;
+}
+
+/*== 页脚 ==*/
+.footer {
+    border-top: 1px solid var(--border);
+    background: var(--public-paper);
+    padding: 1.5rem 0;
+    text-align: center;
+}
+
+.footerMotto {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--public-ink-soft);
+}
+
+.footerCopy {
+    font-size: 0.75rem;
+    color: var(--public-ink-soft);
+    opacity: 0.7;
+}
