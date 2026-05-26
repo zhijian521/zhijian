@@ -45,3 +45,10 @@
         opacity: 1;
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .dots i {
+        animation: none;
+        opacity: 1;
+    }
+}
