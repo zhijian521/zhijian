@@ -25,16 +25,7 @@ export const APP_ROUTES = {
     forbidden: '/forbidden',
 } as const;
 
-export const API_ROUTES = {
-    /*-- 公开认证 --*/
-    authLogin: '/api/auth/login',
-    authLogout: '/api/auth/logout',
-    authRegister: '/api/auth/register',
-    authMe: '/api/auth/me',
-    /*-- 后台 --*/
-    adminPosts: '/api/admin/posts',
-    adminUsers: '/api/admin/users',
-} as const;
+
 
 export const STORAGE_KEYS = {
     adminRememberedUsername: 'zhijian_admin_remembered_username',

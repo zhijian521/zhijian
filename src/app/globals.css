@@ -168,56 +168,85 @@ select {
     scrollbar-color: var(--border) transparent;
 }
 
+/*== 后台通用面板：扁平矩形，细边框，匹配博客风格。 ==*/
 .admin-panel {
-    @apply rounded-[28px] border shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur;
-    border-color: var(--admin-border);
-    background: var(--admin-panel);
+    border: 1px solid var(--primary);
+    background: #fbf9f9;
+    padding: 2rem;
 }
 
+/*== 后台次级面板。 ==*/
 .admin-panel-muted {
-    @apply rounded-[24px] border p-4;
-    border-color: var(--admin-border);
-    background: var(--admin-panel-muted);
+    border: 1px solid var(--border);
+    background: #f5f3f3;
+    padding: 1.25rem;
 }
 
+/*== 后台页面小标题装饰线。 ==*/
 .admin-kicker {
-    @apply text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500;
-}
-
-.admin-title {
-    font-family: var(--font-ui);
+    font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: -0.03em;
-    color: var(--admin-ink);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--primary);
+    opacity: 0.7;
 }
 
+/*== 后台页面主标题：衬线体，匹配博客。 ==*/
+.admin-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+}
+
+/*== 后台正文描述。 ==*/
 .admin-copy {
-    color: var(--admin-ink-soft);
+    color: var(--muted-foreground);
     line-height: 1.85;
+    font-size: 0.875rem;
 }
 
+/*== 后台输入框：匹配博客边框风格。 ==*/
 .admin-input {
-    @apply border-slate-200 bg-white shadow-none focus-visible:ring-slate-900/20;
-}
-
-.admin-table tbody tr:nth-child(even) {
-    background: rgba(248, 250, 252, 0.8);
-}
-
-.admin-stitch-card {
     border: 1px solid var(--border);
     background: #fbf9f9;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px rgba(27, 28, 28, 0.04);
+    box-shadow: none;
+    transition: border-color 0.2s;
 }
 
+.admin-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/*== 后台表格隔行。 ==*/
+.admin-table tbody tr:nth-child(even) {
+    background: rgba(245, 243, 243, 0.6);
+}
+
+/*== 后台卡片：匹配博客卡片风格。 ==*/
+.admin-stitch-card {
+    border: 1px solid var(--primary);
+    background: #fbf9f9;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-stitch-card:hover {
+    border-color: rgba(158, 0, 39, 0.5);
+    transform: translateY(-1px);
+}
+
+/*== 后台大数字。 ==*/
 .admin-stitch-number {
     font-family: var(--font-serif);
-    font-size: 3rem;
-    line-height: 1.2;
-    font-weight: 700;
+    font-size: 2.75rem;
+    line-height: 1.15;
+    font-weight: 600;
     letter-spacing: -0.02em;
-    color: #1b1c1c;
+    color: var(--foreground);
 }
 
 @media (prefers-reduced-motion: reduce) {

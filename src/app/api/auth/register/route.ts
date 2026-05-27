@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { createUser, getUserByUsername, hashPassword } from '@/lib/auth';
+import { createUser, getUserByUsername, hashPassword, validateUserFields } from '@/lib/auth';
 import { BizCode, fail, success } from '@/lib/api-response';
 
 /*==
@@ -20,17 +20,9 @@ export async function POST(request: Request) {
     const email = body.email?.trim() || '';
     const password = body.password?.trim() || '';
 
-    if (!username || username.length < 2 || username.length > 50) {
-        return NextResponse.json(fail(BizCode.BAD_REQUEST, '用户名需在 2-50 个字符之间。'), { status: 400 });
-    }
-    if (username.includes(':')) {
-        return NextResponse.json(fail(BizCode.BAD_REQUEST, '用户名不能包含特殊字符。'), { status: 400 });
-    }
-    if (!email || !email.includes('@') || email.length > 255) {
-        return NextResponse.json(fail(BizCode.BAD_REQUEST, '请输入有效的邮箱地址。'), { status: 400 });
-    }
-    if (!password || password.length < 6) {
-        return NextResponse.json(fail(BizCode.BAD_REQUEST, '密码至少需要 6 个字符。'), { status: 400 });
+    const fieldError = validateUserFields(username, email, password);
+    if (fieldError) {
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, fieldError), { status: 400 });
     }
 
     const existing = await getUserByUsername(username);

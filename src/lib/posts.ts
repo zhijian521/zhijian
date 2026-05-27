@@ -253,19 +253,10 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
 
 /*== 根据文章状态规范化发布时间。 ==*/
 function normalizePublishedAt(value: string | null, status: PostStatus): string | null {
-    if (!value && status === 'draft') {
-        return null;
-    }
-
-    if (!value && status === 'published') {
-        return formatSqlDate(new Date());
-    }
-
-    if (!value) {
-        return null;
-    }
-
-    return value.replace('T', ' ') + ':00';
+    if (!value && status === 'draft') return null;
+    if (!value && status === 'published') return formatSqlDate(new Date());
+    // 此时 value 必不为 null（status ∈ {draft, published} 已全覆盖）
+    return value!.replace('T', ' ') + ':00';
 }
 
 /*== 把 JS Date 格式化成 MySQL DATETIME 字符串。 ==*/

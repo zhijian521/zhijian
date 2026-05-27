@@ -89,6 +89,15 @@ export async function getUserById(id: number): Promise<User | null> {
     return list.length > 0 ? toUser(list[0]) : null;
 }
 
+/*== 用户字段校验，返回错误消息或 null。 ==*/
+export function validateUserFields(username: string, email: string, password: string, requireEmailAt = true): string | null {
+    if (!username || username.length < 2 || username.length > 50) return '用户名需在 2-50 个字符之间。';
+    if (username.includes(':')) return '用户名不能包含特殊字符。';
+    if (!email || (requireEmailAt && !email.includes('@')) || email.length > 255) return '请输入有效的邮箱地址。';
+    if (!password || password.length < 6) return '密码至少需要 6 个字符。';
+    return null;
+}
+
 /*== 创建用户，返回新用户（不含密码哈希）。 调用方负责先 hash 密码。 ==*/
 export async function createUser(params: {
     username: string;
@@ -302,27 +311,6 @@ export function requireAdminFromRequest(request: NextRequest): SessionPayload | 
     return session;
 }
 
-/*== API Route 版本：返回 session 或 null（任意角色即可）。 ==*/
-export function requireAuthFromRequest(request: NextRequest): SessionPayload | null {
-    return getSessionFromRequest(request);
-}
-
-/*============================================================================
-  兼容旧接口（逐步废弃，保留给过渡期调用方）
-============================================================================*/
-
-/*== 保留：后台管理员是否已登录（用于旧 admin 页面过渡）。 内部走新逻辑。 ==*/
-export async function isAdminAuthenticated(): Promise<boolean> {
-    const session = await getSessionFromCookies();
-    return session !== null && session.role === 'admin';
-}
-
-/*== 保留：API Route 版本。 ==*/
-export function isAdminRequestAuthenticated(request: NextRequest): boolean {
-    const session = getSessionFromRequest(request);
-    return session !== null && session.role === 'admin';
-}
-
 /*============================================================================
   签名辅助
 ============================================================================*/
@@ -345,21 +333,10 @@ function getSessionSecret(): string {
 ============================================================================*/
 
 /*== 常量时间字符串比较，防时序攻击。 ==*/
-export function safeEqual(left: string, right: string): boolean {
+function safeEqual(left: string, right: string): boolean {
     const leftBuffer = Buffer.from(left);
     const rightBuffer = Buffer.from(right);
-
-    if (leftBuffer.length !== rightBuffer.length) {
-        // 仍然做一次常量时间比较以避免长度泄露
-        // 用 maxLen 填充到相同长度比较
-        const maxLen = Math.max(leftBuffer.length, rightBuffer.length);
-        const leftPadded = Buffer.alloc(maxLen, 0);
-        const rightPadded = Buffer.alloc(maxLen, 0);
-        leftBuffer.copy(leftPadded);
-        rightBuffer.copy(rightPadded);
-        return cryptoTSR(leftPadded, rightPadded) && leftBuffer.length === rightBuffer.length;
-    }
-
+    if (leftBuffer.length !== rightBuffer.length) return false;
     return cryptoTSR(leftBuffer, rightBuffer);
 }
 

@@ -8,28 +8,27 @@ interface AdminPageHeaderProps {
     title: string;
 }
 
-/*== 后台页面统一头部，集中收敛标题、副标题和右侧操作区域的版式。 ==*/
+/*== 后台页面统一头部，匹配博客衬线标题风格。 ==*/
 export default function AdminPageHeader({ action, description, eyebrow, tag, title }: AdminPageHeaderProps) {
     return (
-        <div className='admin-panel px-6 py-6 md:px-8'>
-            <div className='flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
-                <div className='space-y-3'>
-                    <p className='admin-kicker'>{eyebrow}</p>
-                    <div className='space-y-3'>
-                        <h1 className='admin-title text-3xl md:text-4xl'>{title}</h1>
-                        <p className='admin-copy max-w-3xl text-sm md:text-base'>{description}</p>
-                    </div>
-                </div>
+        <header className='mb-8'>
+            {eyebrow ? <p className='admin-kicker mb-2'>{eyebrow}</p> : null}
+            <h1 className='admin-title'>{title}</h1>
+            <p className='admin-copy mt-1.5 max-w-2xl'>{description}</p>
 
-                <div className='flex flex-wrap items-center gap-3'>
+            {(tag || action) ? (
+                <div className='flex flex-wrap items-center gap-3 mt-4'>
                     {tag ? (
-                        <Badge className='rounded-full border-slate-200 bg-slate-100 px-3 py-1 text-sm text-slate-700' variant='secondary'>
+                        <Badge
+                            className='rounded-none border border-[var(--primary)] bg-[rgba(158,0,39,0.06)] px-3 py-1 text-xs font-medium text-[var(--primary)]'
+                            variant='secondary'
+                        >
                             {tag}
                         </Badge>
                     ) : null}
                     {action}
                 </div>
-            </div>
-        </div>
+            ) : null}
+        </header>
     );
 }

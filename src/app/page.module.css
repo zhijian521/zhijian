@@ -381,11 +381,6 @@
     color: var(--foreground);
 }
 
-.projectStars {
-    background: var(--accent);
-    color: var(--muted-foreground);
-}
-
 .projectActions {
     display: flex;
     gap: 0.5rem;
