@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 interface AdminPageHeaderProps {
     action?: React.ReactNode;
     description: string;
-    eyebrow: string;
+    eyebrow?: string;
     tag?: string;
     title: string;
 }

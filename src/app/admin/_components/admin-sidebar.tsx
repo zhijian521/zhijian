@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 import { LogOut, Plus, UserCircle2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { ADMIN_NAV_ITEMS, API_ROUTES, APP_ROUTES, SITE_METADATA } from '@/lib/site';
+import { ADMIN_NAV_ITEMS, APP_ROUTES, SITE_METADATA } from '@/lib/site';
+import { api } from '@/lib/http-client';
 import { cn, isNavItemActive } from '@/lib/utils';
 import styles from './admin-sidebar.module.css';
 
@@ -17,7 +18,7 @@ export default function AdminSidebar() {
 
     function handleLogout() {
         setIsLoggingOut(true);
-        fetch(API_ROUTES.adminLogout, { method: 'POST' }).finally(() => {
+        api.post('/auth/logout').finally(() => {
             window.location.href = APP_ROUTES.adminLogin;
         });
     }

@@ -3,7 +3,8 @@
 import { CircleHelp, KeyRound, Lock, User } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 
-import { APP_ROUTES, API_ROUTES, STORAGE_KEYS } from '@/lib/site';
+import { APP_ROUTES, STORAGE_KEYS } from '@/lib/site';
+import { api } from '@/lib/http-client';
 import styles from './admin-login-card.module.css';
 
 interface LoginFormState {
@@ -13,7 +14,6 @@ interface LoginFormState {
 }
 
 interface RememberedLoginPayload {
-    password: string;
     username: string;
 }
 
@@ -42,7 +42,7 @@ export default function AdminLoginCard() {
 
     useEffect(() => {
         try {
-            const savedValue = window.localStorage.getItem(STORAGE_KEYS.adminRememberedLogin);
+            const savedValue = window.localStorage.getItem(STORAGE_KEYS.adminRememberedUsername);
 
             if (!savedValue) {
                 return;
@@ -50,18 +50,18 @@ export default function AdminLoginCard() {
 
             const savedLogin = JSON.parse(savedValue) as RememberedLoginPayload;
 
-            if (!savedLogin.username || !savedLogin.password) {
-                window.localStorage.removeItem(STORAGE_KEYS.adminRememberedLogin);
+            if (!savedLogin.username) {
+                window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
                 return;
             }
 
-            setLoginForm({
-                password: savedLogin.password,
+            setLoginForm((prev) => ({
+                ...prev,
                 remember: true,
                 username: savedLogin.username,
-            });
+            }));
         } catch {
-            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedLogin);
+            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
         }
     }, []);
 
@@ -72,23 +72,21 @@ export default function AdminLoginCard() {
         }));
 
         if (key === 'remember' && value === false) {
-            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedLogin);
+            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
         }
     }
 
     function persistRememberedLogin() {
         if (loginForm.remember) {
             window.localStorage.setItem(
-                STORAGE_KEYS.adminRememberedLogin,
+                STORAGE_KEYS.adminRememberedUsername,
                 JSON.stringify({
-                    password: loginForm.password,
                     username: loginForm.username.trim(),
                 } satisfies RememberedLoginPayload),
             );
-            return;
+        } else {
+            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
         }
-
-        window.localStorage.removeItem(STORAGE_KEYS.adminRememberedLogin);
     }
 
     function handleLoginSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -96,30 +94,24 @@ export default function AdminLoginCard() {
         setMessage(null);
 
         startTransition(async () => {
-            try {
-                const response = await fetch(API_ROUTES.adminLogin, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        password: loginForm.password,
-                        username: loginForm.username.trim(),
-                    }),
-                });
+            const res = await api.post<{ user: { role: string } }>('/auth/login', {
+                password: loginForm.password,
+                username: loginForm.username.trim(),
+            });
 
-                const payload = await response.json();
-
-                if (!response.ok) {
-                    setMessage(payload.message || '登录失败，请检查账号和密码。');
-                    return;
-                }
-
-                persistRememberedLogin();
-                window.location.href = APP_ROUTES.admin;
-            } catch {
-                setMessage('登录请求失败，请稍后重试。');
+            if (res.code !== 0) {
+                setMessage(res.message || '登录失败，请检查账号和密码。');
+                return;
             }
+
+            // 非管理员无法进入后台
+            if (res.data?.user?.role !== 'admin') {
+                setMessage('该账号无后台管理权限。');
+                return;
+            }
+
+            persistRememberedLogin();
+            window.location.href = APP_ROUTES.admin;
         });
     }
 
@@ -198,7 +190,7 @@ export default function AdminLoginCard() {
                                 }}
                                 type='checkbox'
                             />
-                            <span>记住密码</span>
+                            <span>记住用户名</span>
                         </label>
 
                         <button className={styles.submit} disabled={isPending} type='submit'>

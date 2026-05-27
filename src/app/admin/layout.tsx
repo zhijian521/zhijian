@@ -1,8 +1,7 @@
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 
 import AdminShell from '@/app/admin/_components/admin-shell';
-import { isAdminAuthenticated } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { APP_ROUTES } from '@/lib/site';
 
 interface AdminLayoutProps {
@@ -19,11 +18,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         return children;
     }
 
-    const authenticated = await isAdminAuthenticated();
-
-    if (!authenticated) {
-        redirect(APP_ROUTES.adminLogin);
-    }
+    // requireAdmin：未登录 → /admin/login，非 admin → /forbidden
+    await requireAdmin();
 
     return <AdminShell>{children}</AdminShell>;
 }

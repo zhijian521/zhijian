@@ -11,7 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toDateTimeLocalValue } from '@/lib/post-shared';
-import { API_ROUTES, APP_ROUTES } from '@/lib/site';
+import { APP_ROUTES } from '@/lib/site';
+import { api } from '@/lib/http-client';
 
 type PostStatus = 'draft' | 'published';
 
@@ -62,43 +63,26 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
         setIsError(false);
 
         startTransition(async () => {
-            const response =
+            const res =
                 mode === 'create'
-                    ? await fetch(API_ROUTES.adminPosts, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                title: form.title.trim() || undefined,
-                            }),
-                        })
-                    : await fetch(`${API_ROUTES.adminPosts}/${post?.id}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                ...form,
-                                publishedAt: form.publishedAt || null,
-                            }),
+                    ? await api.post<Post>('/admin/posts', { title: form.title.trim() || undefined })
+                    : await api.patch<Post>(`/admin/posts/${post?.id}`, {
+                            ...form,
+                            publishedAt: form.publishedAt || null,
                         });
 
-            const payload = await response.json();
-
-            if (!response.ok) {
-                setMessage(payload.message || '保存失败，请稍后重试。');
+            if (res.code !== 0) {
+                setMessage(res.message || '保存失败，请稍后重试。');
                 setIsError(true);
                 return;
             }
 
             if (mode === 'create') {
-                const createdPost = payload.data as Post;
-                window.location.href = `${APP_ROUTES.adminPosts}/${createdPost.id}`;
+                window.location.href = `${APP_ROUTES.adminPosts}/${res.data!.id}`;
                 return;
             }
 
-            setMessage(payload.message || '保存成功。');
+            setMessage(res.message || '保存成功。');
         });
     }
 

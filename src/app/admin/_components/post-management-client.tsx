@@ -9,11 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatPostDateTime, type Post, type PostStatus } from '@/lib/post-shared';
-import { API_ROUTES, APP_ROUTES } from '@/lib/site';
+import { APP_ROUTES } from '@/lib/site';
+import { api } from '@/lib/http-client';
 
 interface PostManagementClientProps {
     initialPosts: Post[];
@@ -39,7 +40,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
 
     function handleLogout() {
         setIsLoggingOut(true);
-        fetch(API_ROUTES.adminLogout, { method: 'POST' }).finally(() => {
+        api.post('/auth/logout').finally(() => {
             window.location.href = APP_ROUTES.adminLogin;
         });
     }
@@ -89,7 +90,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
                         </Tabs>
                     </div>
 
-                    <ScrollArea className='max-h-[70vh]'>
+                    <div className='max-h-[70vh] overflow-auto'>
                         <Table className='admin-table'>
                             <TableHeader>
                                 <TableRow className='hover:bg-transparent'>
@@ -123,7 +124,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
                                 ))}
                             </TableBody>
                         </Table>
-                    </ScrollArea>
+                    </div>
                 </CardContent>
             </Card>
         </>

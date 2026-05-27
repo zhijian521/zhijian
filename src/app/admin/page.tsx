@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from 'next/link';
-import { ArrowUpRight, Download, Edit3, Eye, FileText, MessageSquare } from 'lucide-react';
+import { ArrowUpRight, Download, Edit3, Eye, FileText, Users } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { countUsersByRole } from '@/lib/auth';
 import { getAllPosts } from '@/lib/posts';
 import { APP_ROUTES } from '@/lib/site';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
     title: "Admin - Zhijian",
@@ -15,10 +18,10 @@ export default async function AdminPage() {
     const posts = await getAllPosts();
     const publishedPosts = posts.filter((post) => post.status === 'published');
     const recentPosts = posts.slice(0, 4);
+    const userCounts = await countUsersByRole();
 
-    const totalPosts = Math.max(posts.length, 342);
-    const totalViews = `${(publishedPosts.length * 11.3 + 45.2).toFixed(1)}k`;
-    const totalComments = Math.max(publishedPosts.length * 12, 89);
+    const totalPosts = posts.length;
+    const totalViews = `${posts.length}`;
 
     return (
         <div className='space-y-10'>
@@ -42,7 +45,7 @@ export default async function AdminPage() {
                 </button>
             </header>
 
-            <section className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+            <section className='grid grid-cols-1 gap-6 md:grid-cols-4'>
                 <MetricCard
                     accent='bg-[rgba(158,0,39,0.08)] text-[var(--primary)]'
                     description='较上月增长 12%'
@@ -53,19 +56,19 @@ export default async function AdminPage() {
                 />
                 <MetricCard
                     accent='bg-[var(--secondary)] text-[var(--foreground)]'
-                    description='较上月增长 8%'
+                    description={`其中 ${publishedPosts.length} 篇已发布`}
                     icon={Eye}
-                    title='总浏览量'
+                    title='文章统计'
                     trend='up'
                     value={totalViews}
                 />
                 <MetricCard
-                    accent='bg-[var(--accent)] text-[var(--foreground)]'
-                    description='与上月持平'
-                    icon={MessageSquare}
-                    title='新评论'
-                    trend='flat'
-                    value={`${totalComments}`}
+                    accent='bg-[rgba(59,130,246,0.08)] text-blue-600'
+                    description={`管理员 ${userCounts.admin} · 用户 ${userCounts.user}`}
+                    icon={Users}
+                    title='注册用户'
+                    trend='up'
+                    value={`${userCounts.admin + userCounts.user}`}
                 />
             </section>
 
@@ -99,10 +102,10 @@ export default async function AdminPage() {
                             </tr>
                         </thead>
                         <tbody className='divide-y divide-[var(--border)] text-sm text-[var(--foreground)]'>
-                            {recentPosts.map((post, index) => (
+                            {recentPosts.map((post) => (
                                 <tr className='transition-colors hover:bg-[rgba(228,226,226,0.3)]' key={post.id}>
-                                    <td className='px-6 py-4 font-medium'>{resolveDashboardTitle(post.title, index)}</td>
-                                    <td className='px-6 py-4 text-[var(--muted-foreground)]'>{resolveDashboardCategory(index)}</td>
+                                    <td className='px-6 py-4 font-medium'>{post.title}</td>
+                                    <td className='px-6 py-4 text-[var(--muted-foreground)]'>-</td>
                                     <td className='px-6 py-4'>
                                         <Badge
                                             className={
@@ -170,18 +173,6 @@ function MetricCard({ accent, description, icon: Icon, title, trend, value }: Me
             </div>
         </div>
     );
-}
-
-/*== 概览页近期文章标题回退策略，确保刚创建无数据的站点也有可展示内容。 ==*/
-function resolveDashboardTitle(title: string, index: number): string {
-    const defaults = ['2024 年秋季设计趋势展望', '字体排版在现代 UI 中的重要性', '如何优化暗黑模式的色彩对比', '响应式网格系统的最佳实践'];
-    return defaults[index] || title;
-}
-
-/*== 概览页近期文章分类回退策略。 ==*/
-function resolveDashboardCategory(index: number): string {
-    const categories = ['设计理论', 'UI/UX', '前端开发', 'CSS 架构'];
-    return categories[index] || '内容策划';
 }
 
 /*== 概览页日期格式化，仅保留年月日。 ==*/

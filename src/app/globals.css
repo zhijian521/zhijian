@@ -168,10 +168,6 @@ select {
     scrollbar-color: var(--border) transparent;
 }
 
-.admin-shell {
-    @apply mx-auto w-full max-w-[1520px] px-4 md:px-6;
-}
-
 .admin-panel {
     @apply rounded-[28px] border shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur;
     border-color: var(--admin-border);

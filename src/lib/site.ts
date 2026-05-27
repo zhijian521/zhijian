@@ -1,4 +1,4 @@
-import { BookOpen, LayoutDashboard, Settings, type LucideIcon } from 'lucide-react';
+import { BookOpen, LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react';
 
 export const SITE_METADATA = {
     name: 'Zhijian',
@@ -10,21 +10,34 @@ export const SITE_METADATA = {
 export const APP_ROUTES = {
     home: '/',
     blog: '/blog',
+    /*-- 公开认证 --*/
+    login: '/login',
+    register: '/register',
+    /*-- 后台 --*/
     admin: '/admin',
     adminLogin: '/admin/login',
     adminPosts: '/admin/posts',
     adminPostCreate: '/admin/posts/new',
+    adminUsers: '/admin/users',
+    adminUserCreate: '/admin/users/new',
     adminSettings: '/admin/settings',
+    /*-- 错误 --*/
+    forbidden: '/forbidden',
 } as const;
 
 export const API_ROUTES = {
-    adminLogin: '/api/admin/login',
-    adminLogout: '/api/admin/logout',
+    /*-- 公开认证 --*/
+    authLogin: '/api/auth/login',
+    authLogout: '/api/auth/logout',
+    authRegister: '/api/auth/register',
+    authMe: '/api/auth/me',
+    /*-- 后台 --*/
     adminPosts: '/api/admin/posts',
+    adminUsers: '/api/admin/users',
 } as const;
 
 export const STORAGE_KEYS = {
-    adminRememberedLogin: 'zhijian_admin_remembered_login',
+    adminRememberedUsername: 'zhijian_admin_remembered_username',
 } as const;
 
 /*== 导航项基础配置：match 控制高亮匹配策略。 ==*/
@@ -43,12 +56,12 @@ export interface AdminNavItem extends NavItem {
 export const PUBLIC_NAV_ITEMS: NavItem[] = [
     { href: APP_ROUTES.home, label: '首页', match: 'exact' },
     { href: APP_ROUTES.blog, label: '文章', match: 'prefix' },
-    { href: '/archive', label: '归档', match: 'prefix' },
 ];
 
 /*== 后台菜单：和真实路由保持一一对应。 ==*/
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     { href: APP_ROUTES.admin, icon: LayoutDashboard, label: '概览', match: 'exact' },
     { href: APP_ROUTES.adminPosts, icon: BookOpen, label: '文章', match: 'prefix' },
+    { href: APP_ROUTES.adminUsers, icon: Users, label: '用户', match: 'prefix' },
     { href: APP_ROUTES.adminSettings, icon: Settings, label: '设置', match: 'prefix' },
 ];
