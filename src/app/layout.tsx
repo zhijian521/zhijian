@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 
 import AppFrame from '@/components/site/app-frame';
 import { SITE_METADATA } from '@/lib/site';
@@ -21,7 +22,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang='zh-CN'>
             <body data-app='public'>
-                <AppFrame>{children}</AppFrame>
+                <AppFrame>
+                    <Suspense>{children}</Suspense>
+                </AppFrame>
             </body>
         </html>
     );

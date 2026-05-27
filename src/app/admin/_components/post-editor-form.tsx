@@ -106,12 +106,10 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
         <>
             <AdminPageHeader
                 action={
-                    <Button asChild className='rounded-xl' variant='outline'>
-                        <Link href={APP_ROUTES.adminPosts}>
-                            <ArrowLeft className='h-4 w-4' />
-                            返回文章管理
-                        </Link>
-                    </Button>
+                    <Link className='inline-flex items-center gap-2 rounded-xl border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-4 text-sm font-medium' href={APP_ROUTES.adminPosts}>
+                        <ArrowLeft className='h-4 w-4' />
+                        返回文章管理
+                    </Link>
                 }
                 description={mode === 'create' ? '先创建草稿，再进入详情页继续完善内容与发布配置。' : '在这里编辑文章正文、摘要、Slug 与发布状态。'}
                 eyebrow={mode === 'create' ? 'New Post' : 'Post Editor'}

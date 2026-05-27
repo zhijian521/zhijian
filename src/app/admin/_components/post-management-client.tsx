@@ -49,12 +49,10 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
             <AdminPageHeader
                 action={
                     <div className='flex flex-wrap gap-2'>
-                        <Button asChild className='rounded-xl'>
-                            <Link href={APP_ROUTES.adminPostCreate}>
-                                <Plus className='h-4 w-4' />
-                                新建文章
-                            </Link>
-                        </Button>
+                        <Link className='inline-flex items-center gap-2 rounded-xl bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-3 text-sm font-medium' href={APP_ROUTES.adminPostCreate}>
+                            <Plus className='h-4 w-4' />
+                            新建文章
+                        </Link>
                         <Button className='rounded-xl' disabled={isLoggingOut} onClick={handleLogout} type='button' variant='outline'>
                             <LogOut className='h-4 w-4' />
                             退出
@@ -119,9 +117,7 @@ export default function PostManagementClient({ initialPosts }: PostManagementCli
                                         <TableCell className='text-sm text-slate-500'>{formatPostDateTime(post.publishedAt)}</TableCell>
                                         <TableCell className='text-sm text-slate-500'>{formatPostDateTime(post.updatedAt)}</TableCell>
                                         <TableCell className='text-right'>
-                                            <Button asChild className='rounded-xl' size='sm' variant='outline'>
-                                                <Link href={`${APP_ROUTES.adminPosts}/${post.id}`}>进入编辑</Link>
-                                            </Button>
+                                            <Link className='inline-flex items-center justify-center rounded-xl border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm font-medium' href={`${APP_ROUTES.adminPosts}/${post.id}`}>进入编辑</Link>
                                         </TableCell>
                                     </TableRow>
                                 ))}
