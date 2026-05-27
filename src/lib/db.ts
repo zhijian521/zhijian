@@ -14,7 +14,7 @@ export function getDb() {
         pool = mysql.createPool({
             uri: process.env.DATABASE_URL,
             connectionLimit: 3,
-            connectTimeout: 5000,
+            connectTimeout: 2000,
             waitForConnections: true,
             queueLimit: 0,
         });

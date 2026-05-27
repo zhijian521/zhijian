@@ -75,38 +75,16 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-timeline: none;
 }
 
 body {
     min-width: 320px;
     margin: 0;
     color: var(--foreground);
-    background:
-        radial-gradient(circle at top left, rgba(200, 22, 29, 0.08), transparent 24%),
-        radial-gradient(circle at 82% 12%, rgba(0, 79, 136, 0.08), transparent 20%), linear-gradient(180deg, #fff8f7 0%, #fdf7ff 38%, #f7f1ea 100%);
+    background: var(--background);
     font-family: var(--font-sans);
     text-rendering: optimizeLegibility;
-}
-
-body::before {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background-image: linear-gradient(var(--public-grid) 1px, transparent 1px), linear-gradient(90deg, var(--public-grid) 1px, transparent 1px);
-    background-size: 32px 32px;
-    content: '';
-    pointer-events: none;
-}
-
-body::after {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.48), transparent 36%), radial-gradient(circle at center, rgba(255, 255, 255, 0.22), transparent 62%);
-    content: '';
-    mix-blend-mode: screen;
-    pointer-events: none;
 }
 
 body[data-app='admin'] {
@@ -149,13 +127,6 @@ body[data-app='admin-login'] {
     --input: #e3bebd;
     --ring: #9e0027;
     background: #fbf9f9;
-}
-
-body[data-app="admin"]::before,
-body[data-app="admin"]::after,
-body[data-app="admin-login"]::before,
-body[data-app="admin-login"]::after {
-    display: none;
 }
 
 a {

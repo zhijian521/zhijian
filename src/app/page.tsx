@@ -25,10 +25,10 @@ export default async function HomePage() {
                     <h1 className={styles.heroTitle}>Zhi Jian</h1>
                     <p className={styles.heroSub}>前端开发 · 全栈 · 简约设计 · 造物</p>
                     <p className={styles.heroCopy}>写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。</p>
-                    <Link className={styles.heroButton} href='#about-me'>
+                    <a className={styles.heroButton} href='#about-me'>
                         开始探索
                         <ArrowDown className='h-4 w-4' />
-                    </Link>
+                    </a>
                 </div>
             </section>
 
