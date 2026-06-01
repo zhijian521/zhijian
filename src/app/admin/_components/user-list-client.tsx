@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { APP_ROUTES } from '@/lib/site';
 import { api } from '@/lib/http-client';
 
@@ -30,6 +31,7 @@ export default function UserListClient() {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<{ id: number; username: string } | null>(null);
     const pageSize = 20;
 
     const fetchUsers = useCallback(async (opts?: { page?: number; search?: string }) => {
@@ -60,18 +62,23 @@ export default function UserListClient() {
         fetchUsers({ page: 1 });
     }
 
-    async function handleDelete(userId: number, username: string) {
-        if (!confirm(`确定要删除用户「${username}」吗？此操作不可撤销。`)) return;
+    function handleDeleteClick(userId: number, username: string) {
+        setDeleteTarget({ id: userId, username });
+    }
 
-        setDeleting(userId);
+    async function handleDeleteConfirm() {
+        if (!deleteTarget) return;
+
+        setDeleting(deleteTarget.id);
         try {
-            const res = await api.delete(`/admin/users/${userId}`);
+            const res = await api.delete(`/admin/users/${deleteTarget.id}`);
             if (res.code === 0) {
                 setData((prev) => ({
                     ...prev,
-                    users: prev.users.filter((u) => u.id !== userId),
+                    users: prev.users.filter((u) => u.id !== deleteTarget.id),
                     total: prev.total - 1,
                 }));
+                setDeleteTarget(null);
             } else {
                 alert(res.message || '删除失败。');
             }
@@ -92,7 +99,7 @@ export default function UserListClient() {
                     <div className="relative flex-1 sm:flex-none">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
                         <input
-                            className="w-full sm:w-56 pl-9 pr-4 py-2 border border-[var(--border)] bg-[#fbf9f9] text-sm focus:border-[var(--primary)] focus:outline-none transition-colors"
+                            className="w-full sm:w-56 h-10 pl-9 pr-4 py-2 border border-[var(--border)] bg-[#fbf9f9] text-sm focus:border-[var(--primary)] focus:outline-none transition-colors"
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="搜索用户名或邮箱..."
                             type="text"
@@ -100,14 +107,14 @@ export default function UserListClient() {
                         />
                     </div>
                     <button
-                        className="px-4 py-2 text-sm border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors"
+                        className="h-10 px-4 py-2 text-sm border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors cursor-pointer"
                         type="submit"
                     >
                         搜索
                     </button>
                 </form>
                 <Link
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--primary)] text-white text-sm hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center gap-1.5 h-10 px-4 py-2 bg-[var(--primary)] !text-white text-sm hover:opacity-90 transition-opacity cursor-pointer"
                     href={APP_ROUTES.adminUserCreate}
                 >
                     <Plus className="h-4 w-4" />
@@ -170,16 +177,16 @@ export default function UserListClient() {
                                     <td className="px-4 py-3 text-right">
                                         <div className="inline-flex items-center gap-0.5">
                                             <button
-                                                className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
+                                                className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--muted)] transition-colors cursor-pointer"
                                                 onClick={() => router.push(`/admin/users/${user.id}`)}
                                                 title="编辑"
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </button>
                                             <button
-                                                className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
+                                                className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[rgba(158,0,39,0.08)] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--muted-foreground)] transition-colors cursor-pointer"
                                                 disabled={deleting === user.id}
-                                                onClick={() => handleDelete(user.id, user.username)}
+                                                onClick={() => handleDeleteClick(user.id, user.username)}
                                                 title="删除"
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -193,6 +200,17 @@ export default function UserListClient() {
                 </table>
             </div>
 
+            {/*-- 删除确认弹窗 --*/}
+            <ConfirmDialog
+                open={!!deleteTarget}
+                title="确认删除"
+                message={`确定要删除用户「${deleteTarget?.username ?? ''}」吗？此操作不可撤销。`}
+                confirmLabel="删除"
+                onConfirm={handleDeleteConfirm}
+                onCancel={() => setDeleteTarget(null)}
+                loading={deleting !== null}
+            />
+
             {/* 分页 */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4 text-sm text-[var(--muted-foreground)]">
@@ -201,14 +219,14 @@ export default function UserListClient() {
                     </span>
                     <div className="flex items-center gap-1">
                         <button
-                            className="px-3 py-1.5 border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:text-[var(--muted-foreground)] transition-colors"
+                            className="px-3 py-1.5 border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:text-[var(--muted-foreground)] transition-colors cursor-pointer"
                             disabled={page <= 1}
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
                         >
                             上一页
                         </button>
                         <button
-                            className="px-3 py-1.5 border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:text-[var(--muted-foreground)] transition-colors"
+                            className="px-3 py-1.5 border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:text-[var(--muted-foreground)] transition-colors cursor-pointer"
                             disabled={page >= totalPages}
                             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                         >
