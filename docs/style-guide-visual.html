@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>知简 · 风格指南 Visual Reference</title>
+<style>
+/* ============================================
+   知简 — 统一风格 · 文人书斋
+   ============================================ */
+:root {
+  --primary: #9f000f;
+  --primary-foreground: #ffffff;
+  --foreground: #1d1b20;
+  --muted-foreground: #6f655c;
+  --background: #fbf9f9;
+  --muted: #f6efe7;
+  --secondary: #f3ece4;
+  --accent: #e6efe5;
+  --accent-foreground: #31483f;
+  --border: #e7ddd1;
+  --input: #d9cbbc;
+  --ring: #c8161d;
+  --destructive: #ba1a1a;
+  --card: rgba(255, 255, 255, 0.8);
+  --radius: 0;
+
+  --ink: #281715;
+  --ink-soft: #5c403c;
+  --paper: #f9f5f0;
+
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
+  --font-sans: system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --selection: rgba(182, 72, 43, 0.18);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::selection { background: var(--selection); }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   全局布局
+   ============================================ */
+.page {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.section {
+  margin-bottom: 5rem;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 2rem;
+  background: var(--primary);
+  border-radius: 0;
+}
+
+.dna-tag {
+  display: inline-block;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* ============================================
+   一、色彩体系
+   ============================================ */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.color-swatch {
+  border-radius: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+
+.color-swatch:hover {
+  border-color: rgba(159, 0, 15, 0.4);
+  transform: translateY(-2px);
+}
+
+.color-block { height: 56px; }
+
+.color-info { padding: 0.5rem 0.625rem; background: #fff; }
+
+.color-name {
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 2px;
+}
+
+.color-value {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: var(--foreground);
+}
+
+/* 色彩分组 */
+.color-group {
+  margin-bottom: 2rem;
+}
+
+.color-group-label {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+/* ============================================
+   二、排版
+   ============================================ */
+.typo-hero {
+  font-family: var(--font-serif);
+  font-size: clamp(2.75rem, 6vw, 4.75rem);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.typo-h2 {
+  font-family: var(--font-serif);
+  font-size: 1.875rem;
+  line-height: 1.3;
+  border-left: 4px solid var(--primary);
+  padding-left: 1.5rem;
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
+
+.typo-h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--foreground);
+  margin-bottom: 0.75rem;
+}
+
+.typo-body {
+  font-size: 1rem;
+  line-height: 2rem;
+  color: var(--foreground);
+}
+
+.typo-dropcap::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--primary);
+  margin-right: 0.5rem;
+  margin-top: 0.15rem;
+}
+
+.typo-blockquote {
+  margin: 2rem 0;
+  border-left: 2px solid var(--primary);
+  background: var(--muted);
+  padding: 1.5rem 2rem;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 2.25rem;
+  color: var(--muted-foreground);
+}
+
+.typo-kicker {
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.typo-list {
+  margin: 1.5rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+  list-style: none;
+}
+
+.typo-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  line-height: 2rem;
+}
+
+.typo-list li:last-child { margin-bottom: 0; }
+
+.typo-bullet {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.font-size-demo {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.font-size-label {
+  flex-shrink: 0;
+  width: 6rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ============================================
+   三、按钮系统
+   ============================================ */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0 1rem;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 1px 2px rgba(28, 23, 32, 0.06);
+}
+
+.btn-primary:hover { filter: brightness(1.1); }
+
+.btn-outline {
+  border: 1px solid var(--primary);
+  background: rgba(251, 249, 249, 0.72);
+  color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.btn-secondary:hover { background: var(--accent); }
+
+.btn-ghost {
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+}
+
+.btn-ghost:hover { background: var(--accent); }
+
+.btn-danger {
+  border: none;
+  background: var(--destructive);
+  color: var(--primary-foreground);
+}
+
+.btn-danger:hover { filter: brightness(1.1); }
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+   四、卡片系统
+   ============================================ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* 文章卡片 */
+.card-article {
+  border: 1px solid var(--primary);
+  border-radius: 0;
+  padding: 1.5rem;
+  background: var(--background);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.card-article:hover {
+  border-color: rgba(159, 0, 15, 0.4);
+  transform: translateY(-2px);
+}
+
+.card-kicker {
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.card-desc {
+  font-size: 0.9375rem;
+  line-height: 1.85;
+  color: var(--muted-foreground);
+}
+
+/* 指标卡片 */
+.card-stat {
+  border: 1px solid var(--primary);
+  border-radius: 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--background);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+
+.card-stat:hover {
+  border-color: rgba(159, 0, 15, 0.4);
+  transform: translateY(-2px);
+}
+
+.card-stat-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 0.5rem;
+}
+
+.card-stat-number {
+  font-family: var(--font-serif);
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--foreground);
+}
+
+/* 次级面板卡片 */
+.card-muted {
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1.5rem;
+  background: var(--background);
+}
+
+/* ============================================
+   五、输入框系统
+   ============================================ */
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .input-grid { grid-template-columns: 1fr; }
+}
+
+.field { display: flex; flex-direction: column; gap: 0.375rem; }
+
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.form-input {
+  height: 2.25rem;
+  border: 1px solid var(--input);
+  border-radius: 0;
+  background: transparent;
+  padding: 0 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.form-input::placeholder { color: var(--muted-foreground); }
+.form-input:focus { border-color: var(--primary); }
+
+.form-textarea {
+  min-height: 5rem;
+  border: 1px solid var(--input);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.85;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  transition: border-color 0.2s ease;
+  outline: none;
+  resize: vertical;
+}
+
+.form-textarea::placeholder { color: var(--muted-foreground); }
+.form-textarea:focus { border-color: var(--primary); }
+
+.form-input:disabled,
+.form-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   六、表格系统
+   ============================================ */
+.data-table {
+  width: 100%;
+  border: 1px solid var(--primary);
+  border-radius: 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table th {
+  background: var(--muted);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  color: var(--foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table tr:nth-child(even) td {
+  background: rgba(246, 239, 231, 0.6);
+}
+
+.data-table tr:hover td {
+  background: var(--accent);
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  border-radius: 0;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.badge-published {
+  border: 1px solid var(--primary);
+  background: rgba(159, 0, 15, 0.06);
+  color: var(--primary);
+}
+
+.badge-draft {
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+/* ============================================
+   七、导航系统
+   ============================================ */
+
+/* 顶部导航 */
+.top-nav {
+  border-bottom: 1px solid var(--border);
+  padding: 1.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--background);
+}
+
+.top-nav-logo {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.top-nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.top-nav-links a {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.top-nav-links a:hover {
+  color: var(--ink);
+  background: rgba(243, 236, 228, 0.6);
+}
+
+/* 侧边栏导航 */
+.sidebar-nav {
+  width: 16rem;
+  border-right: 1px solid var(--border);
+  background: var(--muted);
+  padding: 1.5rem 0;
+}
+
+.sidebar-logo {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--foreground);
+  padding: 0 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-item {
+  display: block;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  cursor: pointer;
+  border-right: 4px solid transparent;
+}
+
+.sidebar-item:hover {
+  background: rgba(243, 236, 228, 0.6);
+}
+
+.sidebar-item.active {
+  border-right-color: var(--primary);
+  background: rgba(159, 0, 15, 0.08);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ============================================
+   八、交互微动效
+   ============================================ */
+.motion-demo {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.motion-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.motion-label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.motion-box {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--primary);
+  background: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.motion-box.hover-up:hover { transform: translateY(-2px); }
+.motion-box.hover-border:hover { border-color: rgba(159, 0, 15, 0.4); }
+.motion-box.press:active { transform: scale(0.98); }
+
+/* ============================================
+   九、完整页面预览
+   ============================================ */
+.preview-frame {
+  border: 1px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* 公开博客页面 */
+.pub-page-preview {
+  background: var(--paper);
+  font-family: var(--font-sans);
+}
+
+.pub-hero {
+  padding: 4rem 2rem 3rem;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.pub-hero-kicker {
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.pub-hero-title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+.pub-hero-desc {
+  font-size: 1.0625rem;
+  line-height: 2rem;
+  color: var(--muted-foreground);
+  max-width: 80%;
+}
+
+.pub-article-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0 2rem 3rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .pub-article-grid { grid-template-columns: 1fr; }
+}
+
+.pub-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
+/* 后台管理页面 */
+.adm-page-preview {
+  background: var(--background);
+  font-family: var(--font-sans);
+  display: flex;
+  min-height: 400px;
+}
+
+.adm-sidebar {
+  width: 16rem;
+  border-right: 1px solid var(--border);
+  background: var(--muted);
+  padding: 1.5rem 0;
+  flex-shrink: 0;
+}
+
+.adm-sidebar-logo {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--foreground);
+  padding: 0 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.adm-main {
+  flex: 1;
+  padding: 2rem;
+}
+
+.adm-page-header { margin-bottom: 2rem; }
+
+.adm-page-kicker {
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.adm-page-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.adm-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.adm-table-wrap {
+  border: 1px solid var(--primary);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* ============================================
+   十、设计规则
+   ============================================ */
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.rule-card {
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1.25rem;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.rule-card:hover { border-color: rgba(159, 0, 15, 0.4); }
+
+.rule-do { border-left: 3px solid #4a8c5c; }
+.rule-dont { border-left: 3px solid var(--primary); }
+
+.rule-icon { font-size: 1.25rem; margin-bottom: 0.5rem; }
+.rule-title { font-weight: 600; font-size: 0.9375rem; margin-bottom: 0.25rem; }
+.rule-desc { font-size: 0.8125rem; color: var(--muted-foreground); line-height: 1.6; }
+
+/* ============================================
+   十一、统一标识
+   ============================================ */
+.unified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--primary);
+  background: rgba(159, 0, 15, 0.04);
+  padding: 0.375rem 1rem;
+  border-radius: 0;
+  font-size: 0.8125rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ============================================
+       页面标题
+       ============================================ -->
+  <div style="margin-bottom: 3rem;">
+    <div class="unified-badge">✦ 全站统一</div>
+    <h1 style="font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.2; color: var(--ink); letter-spacing: 0.04em; margin-top: 1rem;">
+      知简 · 风格指南
+    </h1>
+    <p style="font-size: 1.0625rem; line-height: 2rem; color: var(--muted-foreground); max-width: 42rem; margin-top: 1rem;">
+      全站统一视觉风格：朱砂主色、宣纸米白、衬线标题、零圆角、微动反馈。<br>
+      博客 · 后台 · 未来新增页面 — 一套风格，一个品牌。
+    </p>
+  </div>
+
+  <!-- ============================================
+       一、色彩体系
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">色彩体系</h2>
+
+    <!-- 主色 -->
+    <div class="color-group">
+      <div class="color-group-label">主色 · 朱砂印记</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #9f000f;"></div>
+          <div class="color-info"><div class="color-name">Primary</div><div class="color-value">#9f000f</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #c8161d;"></div>
+          <div class="color-info"><div class="color-name">Ring</div><div class="color-value">#c8161d</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #ba1a1a;"></div>
+          <div class="color-info"><div class="color-name">Destructive</div><div class="color-value">#ba1a1a</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 墨色 -->
+    <div class="color-group">
+      <div class="color-group-label">墨色 · 文字层次</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #1d1b20;"></div>
+          <div class="color-info"><div class="color-name">Foreground</div><div class="color-value">#1d1b20</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #6f655c;"></div>
+          <div class="color-info"><div class="color-name">Muted Text</div><div class="color-value">#6f655c</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #281715;"></div>
+          <div class="color-info"><div class="color-name">Ink</div><div class="color-value">#281715</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #5c403c;"></div>
+          <div class="color-info"><div class="color-name">Ink Soft</div><div class="color-value">#5c403c</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 纸色 -->
+    <div class="color-group">
+      <div class="color-group-label">纸色 · 背景层次</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #f9f5f0; border-bottom: 1px solid #e7ddd1;"></div>
+          <div class="color-info"><div class="color-name">Paper</div><div class="color-value">#f9f5f0</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #fbf9f9; border-bottom: 1px solid #e7ddd1;"></div>
+          <div class="color-info"><div class="color-name">Background</div><div class="color-value">#fbf9f9</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #f6efe7;"></div>
+          <div class="color-info"><div class="color-name">Muted</div><div class="color-value">#f6efe7</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #f3ece4;"></div>
+          <div class="color-info"><div class="color-name">Secondary</div><div class="color-value">#f3ece4</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 点缀色 -->
+    <div class="color-group">
+      <div class="color-group-label">点缀 · 青苔与驼色</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #e6efe5;"></div>
+          <div class="color-info"><div class="color-name">Accent</div><div class="color-value">#e6efe5</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #31483f;"></div>
+          <div class="color-info"><div class="color-name">Accent Fg</div><div class="color-value">#31483f</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #e7ddd1;"></div>
+          <div class="color-info"><div class="color-name">Border</div><div class="color-value">#e7ddd1</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #d9cbbc;"></div>
+          <div class="color-info"><div class="color-name">Input</div><div class="color-value">#d9cbbc</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       二、排版体系
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">排版体系</h2>
+
+    <!-- 字体 -->
+    <div style="margin-bottom: 3rem;">
+      <div class="dna-tag">Typefaces</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+        <div>
+          <div style="font-size: 0.6875rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.5rem;">标题 · Serif</div>
+          <div style="font-family: var(--font-serif); font-size: 2rem; color: var(--ink);">Noto Serif SC</div>
+          <div style="font-family: var(--font-serif); font-size: 0.9375rem; color: var(--muted-foreground); margin-top: 0.5rem;">宋体 · Songti SC · Georgia</div>
+        </div>
+        <div>
+          <div style="font-size: 0.6875rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.5rem;">正文 · Sans-serif</div>
+          <div style="font-family: var(--font-sans); font-size: 2rem; color: var(--ink);">PingFang SC</div>
+          <div style="font-family: var(--font-sans); font-size: 0.9375rem; color: var(--muted-foreground); margin-top: 0.5rem;">Microsoft YaHei · system-ui</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 字号阶梯 -->
+    <div style="margin-bottom: 3rem;">
+      <div class="dna-tag">Type Scale</div>
+
+      <div class="font-size-demo" style="margin-top: 1rem;">
+        <div class="font-size-label">Hero H1</div>
+        <div style="font-family: var(--font-serif); font-size: clamp(2.75rem, 6vw, 4.75rem); line-height: 1.2; letter-spacing: 0.04em; color: var(--ink);">观书散帙</div>
+      </div>
+
+      <div class="font-size-demo">
+        <div class="font-size-label">H2 左红线</div>
+        <div style="font-family: var(--font-serif); font-size: 1.875rem; line-height: 1.3; border-left: 4px solid var(--primary); padding-left: 1.5rem; color: var(--foreground);">文章二级标题</div>
+      </div>
+
+      <div class="font-size-demo">
+        <div class="font-size-label">H3</div>
+        <div style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--foreground);">三级标题无红线</div>
+      </div>
+
+      <div class="font-size-demo">
+        <div class="font-size-label">Body</div>
+        <div style="font-size: 1rem; line-height: 2rem; color: var(--foreground);">正文段落，行高 2rem，适合中文长文阅读</div>
+      </div>
+
+      <div class="font-size-demo">
+        <div class="font-size-label">Kicker</div>
+        <div class="typo-kicker">标签文字 · Letter-spacing 0.3em</div>
+      </div>
+
+      <div class="font-size-demo">
+        <div class="font-size-label">Stat 数字</div>
+        <div style="font-family: var(--font-serif); font-size: 2.75rem; line-height: 1; color: var(--foreground);">42</div>
+      </div>
+    </div>
+
+    <!-- 特殊排版 -->
+    <div>
+      <div class="dna-tag">Special Typography</div>
+
+      <div style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <div style="font-size: 0.6875rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.75rem;">Drop Cap 首字下沉</div>
+          <p class="typo-dropcap" style="font-size: 1rem; line-height: 2rem; color: var(--foreground);">
+            在每一个清晨的薄雾中，文字如溪水般流淌在宣纸之上。首字以朱砂色点缀，如同书斋中翻开的扉页。
+          </p>
+        </div>
+        <div>
+          <div style="font-size: 0.6875rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.75rem;">Blockquote 引用</div>
+          <blockquote class="typo-blockquote">
+            知止而后有定，定而后能静，静而后能安。
+          </blockquote>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <div style="font-size: 0.6875rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.75rem;">List 红点列表</div>
+        <ul class="typo-list">
+          <li><span class="typo-bullet">•</span><span>所有标题使用衬线字体，与正文形成对比</span></li>
+          <li><span class="typo-bullet">•</span><span>行高 2rem，留白充裕，适合中文阅读节奏</span></li>
+          <li><span class="typo-bullet">•</span><span>列表上下边框 + 红色圆点，签名性视觉元素</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       三、按钮系统
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">按钮系统</h2>
+
+    <div style="margin-bottom: 2rem;">
+      <div class="dna-tag">Variants</div>
+      <div class="btn-row" style="margin-top: 1rem;">
+        <button class="btn btn-primary">主按钮 Primary</button>
+        <button class="btn btn-outline">描边按钮 Outline</button>
+        <button class="btn btn-secondary">次级按钮 Secondary</button>
+        <button class="btn btn-ghost">幽灵按钮 Ghost</button>
+        <button class="btn btn-danger">危险按钮 Danger</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+      <div class="dna-tag">States</div>
+      <div class="btn-row" style="margin-top: 1rem;">
+        <button class="btn btn-primary">正常</button>
+        <button class="btn btn-outline">悬停我</button>
+        <button class="btn btn-primary" disabled>禁用</button>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+        全站按钮统一高度 2.25rem（与输入框等高），零圆角，0.2s ease 过渡，按压 scale(0.98)
+      </p>
+    </div>
+
+    <div>
+      <div class="dna-tag">With Input Alignment</div>
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem;">
+        <input class="form-input" type="text" placeholder="搜索文章..." style="width: 16rem;" />
+        <button class="btn btn-primary">搜索</button>
+        <button class="btn btn-outline">重置</button>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+        按钮与输入框高度一致 (2.25rem)，并排排列时视觉对齐
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       四、卡片系统
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">卡片系统</h2>
+
+    <div style="margin-bottom: 2rem;">
+      <div class="dna-tag">文章卡片</div>
+      <div class="card-grid" style="margin-top: 1rem;">
+        <div class="card-article">
+          <div class="card-kicker">2026.06.01</div>
+          <div class="card-title">阅读是一座随身携带的避难所</div>
+          <div class="card-desc">毛姆说，阅读的习惯就是为自己构建一座避难所...</div>
+        </div>
+        <div class="card-article">
+          <div class="card-kicker">2026.05.20</div>
+          <div class="card-title">论书法的留白艺术</div>
+          <div class="card-desc">书法之美，不在笔墨浓处，而在留白之间...</div>
+        </div>
+        <div class="card-article">
+          <div class="card-kicker">2026.05.01</div>
+          <div class="card-title">笔墨纸砚</div>
+          <div class="card-desc">文房四趣的日常修行...</div>
+        </div>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+        朱砂红线边框 → 悬停边框渐显 rgba(159,0,15,0.4) + 上浮 2px
+      </p>
+    </div>
+
+    <div>
+      <div class="dna-tag">指标卡片</div>
+      <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 1rem;">
+        <div class="card-stat">
+          <div class="card-stat-label">文章总数</div>
+          <div class="card-stat-number">42</div>
+        </div>
+        <div class="card-stat">
+          <div class="card-stat-label">本月发布</div>
+          <div class="card-stat-number">7</div>
+        </div>
+        <div class="card-stat">
+          <div class="card-stat-label">草稿</div>
+          <div class="card-stat-number">3</div>
+        </div>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+        同样红线边框，衬线大数字 2.75rem，悬停上浮 2px（与文章卡片统一）
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       五、输入框系统
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">输入框系统</h2>
+
+    <div class="input-grid">
+      <div class="field">
+        <label class="field-label">用户名</label>
+        <input class="form-input" type="text" placeholder="请输入用户名" />
+      </div>
+      <div class="field">
+        <label class="field-label">密码</label>
+        <input class="form-input" type="password" placeholder="请输入密码" />
+      </div>
+      <div class="field">
+        <label class="field-label">文章标题</label>
+        <input class="form-input" type="text" placeholder="请输入文章标题" />
+      </div>
+      <div class="field">
+        <label class="field-label">Slug</label>
+        <input class="form-input" type="text" placeholder="url-friendly-slug" />
+      </div>
+      <div class="field" style="grid-column: 1 / -1;">
+        <label class="field-label">文章正文</label>
+        <textarea class="form-textarea" placeholder="支持 Markdown 格式..." rows="4"></textarea>
+      </div>
+    </div>
+    <p style="margin-top: 1rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+      深驼色边框 #d9cbbc → focus 变朱砂红 #9f000f，全站统一
+    </p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       六、表格与标签
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">表格与标签</h2>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>标题</th>
+          <th>状态</th>
+          <th>发布时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>阅读是一座随身携带的避难所</td>
+          <td><span class="badge badge-published">已发布</span></td>
+          <td>2026-06-01</td>
+          <td><button class="btn btn-outline">编辑</button></td>
+        </tr>
+        <tr>
+          <td>论书法的留白艺术</td>
+          <td><span class="badge badge-published">已发布</span></td>
+          <td>2026-05-20</td>
+          <td><button class="btn btn-outline">编辑</button></td>
+        </tr>
+        <tr>
+          <td>设计系统的哲学</td>
+          <td><span class="badge badge-draft">草稿</span></td>
+          <td>—</td>
+          <td><button class="btn btn-outline">编辑</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 1rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+      红线整体边框 · 米黄表头 · 青苔绿行悬停 · 斑马纹米黄 · 零圆角 Badge
+    </p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       七、导航系统
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">导航系统</h2>
+
+    <div style="margin-bottom: 2rem;">
+      <div class="dna-tag">顶部导航</div>
+      <div style="margin-top: 1rem; border: 1px solid var(--border); border-radius: 0;">
+        <div class="top-nav">
+          <span class="top-nav-logo">知简</span>
+          <div class="top-nav-links">
+            <a>首页</a>
+            <a>博客</a>
+            <a>关于</a>
+            <a>登录</a>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+        横向导航，驼色底边线，悬停文字变深 + 淡米黄背景
+      </p>
+    </div>
+
+    <div>
+      <div class="dna-tag">侧边栏导航</div>
+      <div style="margin-top: 1rem; border: 1px solid var(--border); border-radius: 0; display: flex; overflow: hidden;">
+        <div class="sidebar-nav" style="width: auto; min-width: 12rem; padding: 1rem 0;">
+          <div class="sidebar-item active">📊 仪表盘</div>
+          <div class="sidebar-item">📝 文章管理</div>
+          <div class="sidebar-item">👥 用户管理</div>
+          <div class="sidebar-item">⚙️ 设置</div>
+        </div>
+        <div style="padding: 1.5rem; color: var(--muted-foreground); font-size: 0.875rem;">
+          主内容区
+        </div>
+      </div>
+      <p style="margin-top: 0.75rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+        米黄宣纸底色 · 活跃项右侧朱砂红线 + 红底微染 · 悬停淡米黄背景
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       八、交互微动效
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">交互微动效</h2>
+
+    <div class="motion-demo">
+      <div class="motion-item">
+        <div class="motion-box hover-up">↑</div>
+        <div class="motion-label">悬停上浮 2px<br><span style="color: var(--primary);">全站统一</span></div>
+      </div>
+      <div class="motion-item">
+        <div class="motion-box hover-border">☐</div>
+        <div class="motion-label">边框渐显<br>rgba(…0.4)</div>
+      </div>
+      <div class="motion-item">
+        <div class="motion-box press">⏎</div>
+        <div class="motion-label">按压回缩<br>scale(0.98)</div>
+      </div>
+    </div>
+
+    <p style="margin-top: 1.5rem; font-size: 0.8125rem; color: var(--muted-foreground);">
+      所有过渡统一 <code style="background: var(--muted); padding: 0.125rem 0.375rem; font-size: 0.75rem; border-radius: 0;">0.2s ease</code>，不快不慢，手感克制。
+    </p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       九、完整页面预览
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">完整页面预览</h2>
+
+    <div style="display: grid; gap: 2rem;">
+      <!-- 博客页面 -->
+      <div>
+        <div style="font-size: 0.6875rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--primary); margin-bottom: 1rem;">博客页面</div>
+        <div class="preview-frame">
+          <div class="pub-page-preview">
+            <div class="top-nav">
+              <div class="top-nav-logo">知简</div>
+              <div class="top-nav-links">
+                <a>首页</a>
+                <a>博客</a>
+                <a>关于</a>
+              </div>
+            </div>
+            <div class="pub-hero">
+              <div class="pub-hero-kicker">最新文章</div>
+              <div class="pub-hero-title">阅读是一座随身携带的避难所</div>
+              <div class="pub-hero-desc">毛姆说，阅读的习惯就是为自己构建一座避难所，让你得以逃离人世间几乎所有的悲哀。</div>
+              <div style="margin-top: 1.5rem;">
+                <button class="btn btn-outline">阅读全文 →</button>
+              </div>
+            </div>
+            <div class="pub-article-grid">
+              <div class="card-article">
+                <div class="card-kicker">2026.05.20</div>
+                <div class="card-title">论书法的留白</div>
+                <div class="card-desc">书法之美不在笔墨浓处</div>
+              </div>
+              <div class="card-article">
+                <div class="card-kicker">2026.05.15</div>
+                <div class="card-title">极简与留白</div>
+                <div class="card-desc">少即是多的东方哲学</div>
+              </div>
+              <div class="card-article">
+                <div class="card-kicker">2026.05.01</div>
+                <div class="card-title">笔墨纸砚</div>
+                <div class="card-desc">文房四趣的日常</div>
+              </div>
+            </div>
+            <div class="pub-footer">© 2026 知简 · 以简驭繁</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 后台页面 -->
+      <div>
+        <div style="font-size: 0.6875rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--primary); margin-bottom: 1rem;">管理后台</div>
+        <div class="preview-frame">
+          <div class="adm-page-preview">
+            <div class="adm-sidebar">
+              <div class="adm-sidebar-logo">知简 · 管理</div>
+              <div class="sidebar-item active">📊 仪表盘</div>
+              <div class="sidebar-item">📝 文章管理</div>
+              <div class="sidebar-item">👥 用户管理</div>
+              <div class="sidebar-item">⚙️ 设置</div>
+            </div>
+            <div class="adm-main">
+              <div class="adm-page-header">
+                <div class="adm-page-kicker">Dashboard</div>
+                <div class="adm-page-title">仪表盘</div>
+              </div>
+              <div class="adm-stats">
+                <div class="card-stat">
+                  <div class="card-stat-label">文章总数</div>
+                  <div class="card-stat-number">42</div>
+                </div>
+                <div class="card-stat">
+                  <div class="card-stat-label">已发布</div>
+                  <div class="card-stat-number">35</div>
+                </div>
+                <div class="card-stat">
+                  <div class="card-stat-label">草稿</div>
+                  <div class="card-stat-number">7</div>
+                </div>
+              </div>
+              <div class="adm-table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr><th>标题</th><th>状态</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>阅读的避难所</td><td><span class="badge badge-published">已发布</span></td></tr>
+                    <tr><td>书法的留白</td><td><span class="badge badge-draft">草稿</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top: 1.5rem; font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.85;">
+      ✦ 博客与后台使用相同的朱砂红、米黄宣纸、驼色边框、青苔绿、衬线标题 — 同一个书斋，同一个品牌。
+    </p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ============================================
+       十、设计规则
+       ============================================ -->
+  <section class="section">
+    <h2 class="section-title">设计规则</h2>
+
+    <div class="rules-grid">
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">零圆角</div>
+        <div class="rule-desc">全站 border-radius: 0，矩形是品牌语言</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">红线分割</div>
+        <div class="rule-desc">1px solid var(--primary) 是签名性元素</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">衬线标题</div>
+        <div class="rule-desc">所有标题/大数字使用 Noto Serif SC</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">微动反馈</div>
+        <div class="rule-desc">悬停上浮 2px，按压 scale(0.98)</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">0.2s 过渡</div>
+        <div class="rule-desc">所有交互统一 0.2s ease 节奏</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">1.85~2 行高</div>
+        <div class="rule-desc">中文正文留白充裕，适合长文阅读</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">按钮输入等高</div>
+        <div class="rule-desc">height: 2.25rem，并排视觉对齐</div>
+      </div>
+      <div class="rule-card rule-do">
+        <div class="rule-icon">✅</div>
+        <div class="rule-title">全站统一</div>
+        <div class="rule-desc">一套变量一套组件，不搞双轨风格</div>
+      </div>
+      <div class="rule-card rule-dont">
+        <div class="rule-icon">❌</div>
+        <div class="rule-title">不用圆角</div>
+        <div class="rule-desc">绝不用 border-radius > 0</div>
+      </div>
+      <div class="rule-card rule-dont">
+        <div class="rule-icon">❌</div>
+        <div class="rule-title">不用默认蓝</div>
+        <div class="rule-desc">选中色用赭色 rgba(182,72,43,0.18)</div>
+      </div>
+      <div class="rule-card rule-dont">
+        <div class="rule-icon">❌</div>
+        <div class="rule-title">不用纯白</div>
+        <div class="rule-desc">背景用 #fbf9f9 温白，不用 #fff</div>
+      </div>
+      <div class="rule-card rule-dont">
+        <div class="rule-icon">❌</div>
+        <div class="rule-title">不用双轨风格</div>
+        <div class="rule-desc">不按页面区域切换 CSS 变量</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
