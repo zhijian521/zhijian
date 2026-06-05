@@ -1,7 +1,16 @@
+/*== 页面容器 ==*/
 .page {
-    background: #fbf9f9;
+    background: var(--background);
 }
 
+/*== 通用图标尺寸（替代 Tailwind 的 h-4 w-4） ==*/
+.iconSmall {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+/*== 首屏 Hero ==*/
 .hero {
     position: relative;
     display: flex;
@@ -21,7 +30,7 @@
 .heroOverlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(251, 249, 249, 0.16) 0%, rgba(251, 249, 249, 0.08) 38%, rgba(251, 249, 249, 0.72) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--background) 16%, transparent) 0%, color-mix(in srgb, var(--background) 8%, transparent) 38%, color-mix(in srgb, var(--background) 72%, transparent) 100%);
 }
 
 .heroContent {
@@ -65,7 +74,7 @@
     gap: 0.5rem;
     margin-top: 2.25rem;
     border: 1px solid var(--primary);
-    background: rgba(251, 249, 249, 0.72);
+    background: color-mix(in srgb, var(--background) 72%, transparent);
     padding: 0.875rem 2rem;
     font-size: 0.875rem;
     line-height: 1.4;
@@ -79,21 +88,26 @@
 
 .heroButton:hover {
     background: var(--primary);
-    color: #ffffff;
+    color: var(--primary-foreground);
 }
 
 .heroButton:active {
     transform: scale(0.98);
 }
 
+/*== 内容区 ==*/
 .content {
     max-width: 80rem;
     margin: 0 auto;
     padding: 4rem 1.5rem 5rem;
 }
 
-.section + .section {
+.section {
     margin-top: 3rem;
+}
+
+.section:first-child {
+    margin-top: 0;
 }
 
 .sectionHeading {
@@ -131,11 +145,12 @@
     color: var(--primary);
 }
 
+/*== 个人信息卡片 ==*/
 .profileCard {
     display: flex;
     gap: 2rem;
     border: 1px solid var(--primary);
-    background: #f5f3f3;
+    background: var(--muted);
     padding: 1.5rem;
 }
 
@@ -205,6 +220,7 @@
     color: var(--primary);
 }
 
+/*== 文章卡片网格 ==*/
 .postsGrid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -217,7 +233,7 @@
     min-height: 100%;
     flex-direction: column;
     border: 1px solid var(--primary);
-    background: #fbf9f9;
+    background: var(--background);
     transition:
         border-color 0.2s ease,
         transform 0.2s ease;
@@ -225,7 +241,7 @@
 
 .postCard:hover,
 .textPostCard:hover {
-    border-color: rgba(158, 0, 39, 0.4);
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
     transform: translateY(-2px);
 }
 
@@ -249,7 +265,7 @@
 
 .postVisualArchitecture {
     background:
-        linear-gradient(90deg, transparent 48%, rgba(158, 0, 39, 0.95) 49%, rgba(158, 0, 39, 0.95) 51%, transparent 52%),
+        linear-gradient(90deg, transparent 48%, color-mix(in srgb, var(--primary) 95%, transparent) 49%, color-mix(in srgb, var(--primary) 95%, transparent) 51%, transparent 52%),
         linear-gradient(135deg, #23323a 0%, #0e1317 48%, #27363d 100%);
 }
 
@@ -285,14 +301,14 @@
 }
 
 .postMetaAccent {
-    background: rgba(158, 0, 39, 0.08);
+    background: color-mix(in srgb, var(--primary) 6%, transparent);
     color: var(--primary);
 }
 
 .postDate {
     font-size: 0.75rem;
     line-height: 1.4;
-    color: var(--public-ink-soft);
+    color: var(--muted-foreground);
 }
 
 .postTitle {
@@ -329,6 +345,7 @@
     padding-top: 1rem;
 }
 
+/*== 开源项目 ==*/
 .projectsGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -338,7 +355,7 @@
 .projectCard {
     display: block;
     border: 1px solid var(--primary);
-    background: #fbf9f9;
+    background: var(--background);
     padding: 1rem;
     transition:
         border-color 0.2s ease,
@@ -347,7 +364,7 @@
 }
 
 .projectCard:hover {
-    border-color: rgba(158, 0, 39, 0.4);
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
     box-shadow: 0 8px 18px rgba(27, 28, 28, 0.05);
     transform: translateY(-2px);
 }
@@ -381,6 +398,24 @@
     color: var(--foreground);
 }
 
+.projectCopy {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--muted-foreground);
+}
+
+.projectTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.projectTag {
+    background: var(--muted);
+    color: var(--muted-foreground);
+}
+
 .projectActions {
     display: flex;
     gap: 0.5rem;
@@ -407,24 +442,7 @@
     background: var(--muted);
 }
 
-.projectCopy {
-    margin: 0 0 1rem;
-    font-size: 1rem;
-    line-height: 1.8;
-    color: var(--muted-foreground);
-}
-
-.projectTags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.projectTag {
-    background: var(--muted);
-    color: var(--public-ink-soft);
-}
-
+/*== 响应式 ==*/
 @media (max-width: 1024px) {
     .postsGrid,
     .projectsGrid {

@@ -21,7 +21,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang='zh-CN'>
-            <body data-app='public'>
+            <body>
                 <AppFrame>
                     <Suspense>{children}</Suspense>
                 </AppFrame>

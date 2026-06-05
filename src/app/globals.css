@@ -1,3 +1,4 @@
+@import './theme.css';
 @import 'tailwindcss';
 
 @theme inline {
@@ -29,46 +30,6 @@
     --font-ui: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
 }
 
-:root {
-    --background: #fbf9f9;
-    --foreground: #1d1b20;
-    --card: rgba(255, 255, 255, 0.8);
-    --card-foreground: #1d1b20;
-    --popover: #ffffff;
-    --popover-foreground: #1d1b20;
-    --primary: #9f000f;
-    --primary-foreground: #ffffff;
-    --secondary: #f3ece4;
-    --secondary-foreground: #494551;
-    --muted: #f6efe7;
-    --muted-foreground: #6f655c;
-    --accent: #e6efe5;
-    --accent-foreground: #31483f;
-    --destructive: #ba1a1a;
-    --destructive-foreground: #ffffff;
-    --border: #e7ddd1;
-    --input: #d9cbbc;
-    --ring: #c8161d;
-    --radius: 0.75rem;
-    --public-paper: #f9f5f0;
-    --public-panel: rgba(255, 251, 247, 0.84);
-    --public-panel-strong: rgba(255, 255, 255, 0.92);
-    --public-ink: #281715;
-    --public-ink-soft: #5c403c;
-    --public-primary: #9f000f;
-    --public-secondary: #e7e2da;
-    --public-tertiary: #dbe7e1;
-    --public-grid: rgba(145, 111, 107, 0.08);
-    --admin-bg: #f8fafc;
-    --admin-panel: rgba(255, 255, 255, 0.94);
-    --admin-panel-muted: #f8fafc;
-    --admin-border: #e2e8f0;
-    --admin-ink: #0f172a;
-    --admin-ink-soft: #475569;
-    --admin-nav: #020617;
-    --admin-nav-soft: #111827;
-}
-
 * {
     box-sizing: border-box;
 }
@@ -87,48 +48,6 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-body[data-app='admin'] {
-    --background: #fbf9f9;
-    --foreground: #1b1c1c;
-    --card: #fbf9f9;
-    --card-foreground: #1b1c1c;
-    --popover: #ffffff;
-    --popover-foreground: #1b1c1c;
-    --primary: #9e0027;
-    --primary-foreground: #ffffff;
-    --secondary: #e2dfde;
-    --secondary-foreground: #5b4040;
-    --muted: #f5f3f3;
-    --muted-foreground: #5b4040;
-    --accent: #efeded;
-    --accent-foreground: #1b1c1c;
-    --border: #e3bebd;
-    --input: #e3bebd;
-    --ring: #9e0027;
-    background: #fbf9f9;
-}
-
-body[data-app='admin-login'] {
-    --background: #fbf9f9;
-    --foreground: #1b1c1c;
-    --card: #fbf9f9;
-    --card-foreground: #1b1c1c;
-    --popover: #ffffff;
-    --popover-foreground: #1b1c1c;
-    --primary: #9e0027;
-    --primary-foreground: #ffffff;
-    --secondary: #5f5e5e;
-    --secondary-foreground: #ffffff;
-    --muted: #efeded;
-    --muted-foreground: #636262;
-    --accent: #f5f3f3;
-    --accent-foreground: #1b1c1c;
-    --border: #e3bebd;
-    --input: #e3bebd;
-    --ring: #9e0027;
-    background: #fbf9f9;
-}
-
 a {
     color: inherit;
     text-decoration: none;
@@ -142,7 +61,7 @@ select {
 }
 
 ::selection {
-    background: rgba(182, 72, 43, 0.18);
+    background: var(--selection);
 }
 /*== 滚动条 ==*/
 ::-webkit-scrollbar {
@@ -171,14 +90,14 @@ select {
 /*== 后台通用面板：扁平矩形，细边框，匹配博客风格。 ==*/
 .admin-panel {
     border: 1px solid var(--primary);
-    background: #fbf9f9;
+    background: var(--background);
     padding: 2rem;
 }
 
 /*== 后台次级面板。 ==*/
 .admin-panel-muted {
     border: 1px solid var(--border);
-    background: #f5f3f3;
+    background: var(--muted);
     padding: 1.25rem;
 }
 
@@ -212,7 +131,7 @@ select {
 /*== 后台输入框：匹配博客边框风格。 ==*/
 .admin-input {
     border: 1px solid var(--border);
-    background: #fbf9f9;
+    background: var(--background);
     box-shadow: none;
     transition: border-color 0.2s;
 }
@@ -224,19 +143,19 @@ select {
 
 /*== 后台表格隔行。 ==*/
 .admin-table tbody tr:nth-child(even) {
-    background: rgba(245, 243, 243, 0.6);
+    background: color-mix(in srgb, var(--muted) 60%, transparent);
 }
 
 /*== 后台卡片：匹配博客卡片风格。 ==*/
 .admin-stitch-card {
     border: 1px solid var(--primary);
-    background: #fbf9f9;
+    background: var(--background);
     transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .admin-stitch-card:hover {
-    border-color: rgba(158, 0, 39, 0.5);
-    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+    transform: translateY(-2px);
 }
 
 /*== 后台大数字。 ==*/
@@ -254,4 +173,3 @@ select {
         scroll-behavior: auto;
     }
 }
-

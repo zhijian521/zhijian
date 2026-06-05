@@ -103,7 +103,7 @@
     width: 100%;
     border: 1px solid var(--border);
     border-radius: 0;
-    background: #ffffff;
+    background: var(--background);
     padding: 10px 14px 10px 36px;
     font-size: 14px;
     line-height: 1.5;
@@ -114,13 +114,13 @@
 }
 
 .input::placeholder {
-    color: #636262;
+    color: var(--muted-foreground);
 }
 
 .input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(158, 0, 39, 0.1);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
 .checkboxRow {
@@ -130,7 +130,7 @@
     padding: 4px 0;
     font-size: 12px;
     line-height: 1.4;
-    color: var(--public-ink-soft);
+    color: var(--muted-foreground);
     cursor: pointer;
 }
 
@@ -159,7 +159,7 @@
 }
 
 .submit:hover {
-    background: #c41e3a;
+    background: color-mix(in srgb, var(--primary) 85%, black);
 }
 
 .submit:active {
@@ -176,7 +176,7 @@
     margin: -2px 0 0;
     font-size: 12px;
     line-height: 1.5;
-    color: #ba1a1a;
+    color: var(--destructive);
 }
 
 .divider {
@@ -196,7 +196,7 @@
     padding: 0 12px;
     font-size: 12px;
     line-height: 1.4;
-    color: #636262;
+    color: var(--muted-foreground);
 }
 
 .supportGrid {
@@ -216,7 +216,7 @@
     padding: 6px 10px;
     font-size: 12px;
     line-height: 1.4;
-    color: var(--public-ink-soft);
+    color: var(--muted-foreground);
     transition: background-color 0.2s ease;
     cursor: pointer;
 }
@@ -241,7 +241,7 @@
 .copyright {
     font-size: 12px;
     line-height: 1.4;
-    color: #999;
+    color: var(--muted-foreground);
 }
 
 @media (min-width: 768px) {
