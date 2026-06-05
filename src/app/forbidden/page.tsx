@@ -24,7 +24,7 @@ export default function ForbiddenPage() {
                     </Link>
                     <Link
                         className="px-5 py-2.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
-                        href={APP_ROUTES.login}
+                        href={APP_ROUTES.adminLogin}
                     >
                         切换账号
                     </Link>

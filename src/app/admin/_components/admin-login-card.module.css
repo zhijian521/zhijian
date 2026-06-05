@@ -179,57 +179,6 @@
     color: var(--destructive);
 }
 
-.divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0 0 18px;
-}
-
-.dividerLine {
-    flex: 1;
-    border-top: 1px solid var(--border);
-}
-
-.dividerText {
-    background: var(--background);
-    padding: 0 12px;
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--muted-foreground);
-}
-
-.supportGrid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.supportButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    border: 1px solid var(--border);
-    border-radius: 0;
-    background: transparent;
-    padding: 6px 10px;
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--muted-foreground);
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-}
-
-.supportButton:hover {
-    background: var(--muted);
-}
-
-.supportIcon {
-    height: 16px;
-    width: 16px;
-}
-
 .footer {
     display: flex;
     flex-direction: column;

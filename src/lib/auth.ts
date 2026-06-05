@@ -290,7 +290,7 @@ export function getSessionFromRequest(request: NextRequest): SessionPayload | nu
 export async function requireAuth(redirectTo?: string): Promise<SessionPayload> {
     const session = await getSessionFromCookies();
     if (!session) {
-        redirect(redirectTo || APP_ROUTES.login);
+        redirect(redirectTo || APP_ROUTES.adminLogin);
     }
     return session;
 }

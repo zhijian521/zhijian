@@ -1,0 +1,26 @@
+/*== SubmitButton 提交按钮 — 朱砂红主按钮 ==*/
+.button {
+    width: 100%;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-weight: 500;
+    color: var(--primary-foreground);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+    background: color-mix(in srgb, var(--primary) 85%, black);
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

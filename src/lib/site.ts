@@ -10,9 +10,6 @@ export const SITE_METADATA = {
 export const APP_ROUTES = {
     home: '/',
     blog: '/blog',
-    /*-- 公开认证 --*/
-    login: '/login',
-    register: '/register',
     /*-- 后台 --*/
     admin: '/admin',
     adminLogin: '/admin/login',

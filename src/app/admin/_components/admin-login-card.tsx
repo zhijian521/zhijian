@@ -1,10 +1,11 @@
 'use client';
 
-import { CircleHelp, KeyRound, Lock, User } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 
 import { APP_ROUTES, STORAGE_KEYS } from '@/lib/site';
 import { api } from '@/lib/http-client';
+import { TextInput } from '@/components/ui/text-input';
+import { SubmitButton } from '@/components/ui/submit-button';
 import styles from './admin-login-card.module.css';
 
 interface LoginFormState {
@@ -23,16 +24,22 @@ const INITIAL_FORM: LoginFormState = {
     username: '',
 };
 
-const SUPPORT_ACTIONS = [
-    {
-        icon: KeyRound,
-        label: 'SSO 登录',
-    },
-    {
-        icon: CircleHelp,
-        label: '获取帮助',
-    },
-] as const;
+/*== 内联 SVG 图标 ==*/
+function UserIcon() {
+    return (
+        <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    );
+}
+
+function LockIcon() {
+    return (
+        <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm3 8H9V7a3 3 0 016 0v3z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    );
+}
 
 /*== 后台登录页主体：使用直角视觉，同时支持本地记住密码回填。 ==*/
 export default function AdminLoginCard() {
@@ -138,89 +145,53 @@ export default function AdminLoginCard() {
 
                 <section className={styles.card} aria-label='后台登录表单'>
                     <form className={styles.form} onSubmit={handleLoginSubmit}>
-                        <div className={styles.fieldset}>
-                            <label className={styles.label} htmlFor='username'>
-                                用户名
-                            </label>
-                            <div className={styles.inputWrap}>
-                                <User className={styles.inputIcon} />
-                                <input
-                                    autoComplete='username'
-                                    className={styles.input}
-                                    id='username'
-                                    onChange={(event) => {
-                                        handleFieldChange('username', event.target.value);
-                                    }}
-                                    placeholder='请输入您的用户名'
-                                    required
-                                    type='text'
-                                    value={loginForm.username}
-                                />
-                            </div>
-                        </div>
+                        <TextInput
+                            icon={<UserIcon />}
+                            id='username'
+                            label='用户名'
+                            onChange={(event) => handleFieldChange('username', event.target.value)}
+                            placeholder='请输入您的用户名'
+                            required
+                            autoComplete='username'
+                            value={loginForm.username}
+                        />
 
-                        <div className={styles.fieldset}>
-                            <label className={styles.label} htmlFor='password'>
-                                密码
-                            </label>
-                            <div className={styles.inputWrap}>
-                                <Lock className={styles.inputIcon} />
-                                <input
-                                    autoComplete={loginForm.remember ? 'current-password' : 'off'}
-                                    className={styles.input}
-                                    id='password'
-                                    onChange={(event) => {
-                                        handleFieldChange('password', event.target.value);
-                                    }}
-                                    placeholder='请输入您的密码'
-                                    required
-                                    type='password'
-                                    value={loginForm.password}
-                                />
-                            </div>
-                        </div>
+                        <TextInput
+                            icon={<LockIcon />}
+                            id='password'
+                            label='密码'
+                            onChange={(event) => handleFieldChange('password', event.target.value)}
+                            placeholder='请输入您的密码'
+                            required
+                            autoComplete={loginForm.remember ? 'current-password' : 'off'}
+                            type='password'
+                            value={loginForm.password}
+                        />
 
                         <label className={styles.checkboxRow} htmlFor='remember'>
                             <input
                                 checked={loginForm.remember}
                                 className={styles.checkbox}
                                 id='remember'
-                                onChange={(event) => {
-                                    handleFieldChange('remember', event.target.checked);
-                                }}
+                                onChange={(event) => handleFieldChange('remember', event.target.checked)}
                                 type='checkbox'
                             />
                             <span>记住用户名</span>
                         </label>
 
-                        <button className={styles.submit} disabled={isPending} type='submit'>
+                        <SubmitButton disabled={isPending}>
                             {isPending ? '登录中...' : '登录'}
-                        </button>
+                        </SubmitButton>
 
                         <p aria-live='polite' className={styles.message}>
                             {message}
                         </p>
                     </form>
-
-                    <div className={styles.divider} aria-hidden='true'>
-                        <span className={styles.dividerLine} />
-                        <span className={styles.dividerText}>或通过其他方式</span>
-                        <span className={styles.dividerLine} />
-                    </div>
-
-                    <div className={styles.supportGrid}>
-                        {SUPPORT_ACTIONS.map(({ icon: Icon, label }) => (
-                            <button className={styles.supportButton} key={label} type='button'>
-                                <Icon className={styles.supportIcon} />
-                                <span>{label}</span>
-                            </button>
-                        ))}
-                    </div>
                 </section>
             </section>
 
             <footer className={styles.footer}>
-                <span className={styles.copyright}>© 2024 Zhijian. All rights reserved.</span>
+                <span className={styles.copyright}>© 2026 Zhijian. All rights reserved.</span>
             </footer>
         </main>
     );
