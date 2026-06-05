@@ -1,0 +1,18 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+import styles from './markdown-article.module.css';
+
+export interface MarkdownArticleProps {
+    /** Markdown 文本内容 */
+    content: string;
+}
+
+/*== MarkdownArticle — 统一 MD 渲染组件，前台详情页与后台预览共用 ==*/
+export function MarkdownArticle({ content }: MarkdownArticleProps) {
+    return (
+        <div className={styles.body}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        </div>
+    );
+}

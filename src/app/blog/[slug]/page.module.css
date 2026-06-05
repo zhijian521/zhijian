@@ -1,0 +1,204 @@
+/*== 页面容器 ==*/
+.page {
+    width: 100%;
+    background: var(--background);
+}
+
+/*== 文章容器 ==*/
+.article {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 4rem 1rem 4rem;
+}
+
+/*== 文章头部 ==*/
+.header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .header {
+        text-align: left;
+    }
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+@media (min-width: 768px) {
+    .metaRow {
+        justify-content: flex-start;
+    }
+}
+
+.metaDot {
+    opacity: 0.5;
+}
+
+.title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.subtitle {
+    max-width: 40rem;
+    margin: 1.5rem auto 0;
+    font-size: 1rem;
+    line-height: 1.85;
+    color: var(--muted-foreground);
+}
+
+@media (min-width: 768px) {
+    .subtitle {
+        margin-left: 0;
+        width: 80%;
+    }
+}
+
+.authorRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+    .authorRow {
+        justify-content: flex-start;
+    }
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, #2a3138 0%, #7a838f 100%);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.authorName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.authorDate {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+/*== 封面视觉区 ==*/
+.cover {
+    position: relative;
+    height: 16rem;
+    margin-bottom: 4rem;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #22282e 0%, #111418 58%, #08090b 100%);
+}
+
+@media (min-width: 768px) {
+    .cover {
+        height: 31.25rem;
+    }
+}
+
+.coverCenter {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #6f757c 0%, #12161c 100%);
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.03);
+    transform: translate(-50%, -50%);
+    transition: transform 0.7s ease;
+}
+
+.cover:hover .coverCenter {
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+.coverLine {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6rem;
+    height: 0.25rem;
+    background: rgba(158, 0, 39, 0.9);
+    filter: blur(4px);
+    transform: translate(-50%, 2.5rem);
+}
+
+.coverRing {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transform: translate(-50%, -50%);
+}
+
+.coverRing2 {
+    composes: coverRing;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.coverRing3 {
+    composes: coverRing;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/*== 正文区样式已迁移至 markdown-article.module.css ==*/
+
+/*== 文章底部 ==*/
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+    .footer {
+        flex-direction: row;
+    }
+}
+
+.footerTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.footerActions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}

@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 
+import { Tag } from '@/components/ui/tag';
+
 import styles from '../page.module.css';
 
 /*== 文章数据（暂写死） ==*/
@@ -71,7 +73,7 @@ export default function BlogListClient() {
                                     <div className={styles.itemMeta}>
                                         <span className={styles.itemCategory}>{post.category}</span>
                                         {post.tags.map((tag) => (
-                                            <span className={styles.itemTag} key={tag}>{tag}</span>
+                                            <Tag variant="outlined" key={tag}>{tag}</Tag>
                                         ))}
                                         <span className={styles.itemDate}>{post.date}</span>
                                     </div>

@@ -222,15 +222,6 @@
     flex-shrink: 0;
 }
 
-.itemTag {
-    padding: 0.125rem 0.5rem;
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    border: 1px solid var(--border);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
 .itemDate {
     margin-left: auto;
     font-size: 0.8125rem;

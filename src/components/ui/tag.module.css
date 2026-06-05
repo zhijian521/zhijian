@@ -20,3 +20,9 @@
     background: color-mix(in srgb, var(--primary) 6%, transparent);
     color: var(--primary);
 }
+
+/* 边框：无底色，淡边框 */
+.outlined {
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+}
