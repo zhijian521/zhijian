@@ -1,0 +1,22 @@
+/*== Tag 标签 — 最小可复用单元 ==*/
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    border-radius: var(--radius);
+}
+
+/* 默认：米黄底 */
+.default {
+    background: var(--muted);
+    color: var(--muted-foreground);
+}
+
+/* 强调：朱砂淡底 */
+.accent {
+    background: color-mix(in srgb, var(--primary) 6%, transparent);
+    color: var(--primary);
+}
