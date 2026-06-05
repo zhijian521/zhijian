@@ -229,38 +229,3 @@
     white-space: nowrap;
     flex-shrink: 0;
 }
-
-/*== 分页 ==*/
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.625rem;
-    margin-top: 3rem;
-}
-
-.pageBtn {
-    min-width: 2.5rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    font-size: 0.875rem;
-    color: var(--muted-foreground);
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-}
-
-.pageBtn:hover:not(:disabled) {
-    border-color: var(--primary);
-    color: var(--primary);
-}
-
-.pageBtn:disabled {
-    opacity: 0.3;
-    cursor: default;
-}
-
-.pageActive {
-    border-color: var(--primary);
-    color: var(--primary);
-}

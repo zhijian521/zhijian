@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 
+import { Pagination } from '@/components/ui/pagination';
 import { Tag } from '@/components/ui/tag';
 
 import styles from '../page.module.css';
@@ -88,20 +89,7 @@ export default function BlogListClient() {
                     </div>
 
                     {totalPages > 1 ? (
-                        <div className={styles.pagination}>
-                            <button className={styles.pageBtn} disabled={page <= 1} onClick={() => setPage(page - 1)} type="button">上一页</button>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                                <button
-                                    className={`${styles.pageBtn} ${page === n ? styles.pageActive : ''}`}
-                                    key={n}
-                                    onClick={() => setPage(n)}
-                                    type="button"
-                                >
-                                    {n}
-                                </button>
-                            ))}
-                            <button className={styles.pageBtn} disabled={page >= totalPages} onClick={() => setPage(page + 1)} type="button">下一页</button>
-                        </div>
+                        <Pagination current={page} onPageChange={setPage} total={totalPages} />
                     ) : null}
                 </section>
 
