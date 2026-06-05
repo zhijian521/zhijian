@@ -4,6 +4,21 @@
 
 ---
 
+## 📌 迁移进度总览
+
+> **最后更新: 2026-06-05**
+
+| 阶段 | 状态 | 说明 |
+|------|------|------|
+| 全站主题统一 | ✅ 已完成 | `theme.css` 替代 `body[data-app]` 切换，`--radius: 0` |
+| 前台 CSS Modules 迁移 | ✅ 已完成 | 首页、博客列表、博客详情、公开壳层全部 CSS Modules |
+| 自建 UI 组件库 | 🔄 进行中 | 5 个新组件已完成（Tag/GhostButton/SubmitButton/TextInput/TextLink），8 个旧 shadcn 待替换 |
+| 自建图标库 | 🔄 进行中 | 8 个前台图标已提取（MenuIcon/ArrowRightIcon 等），后台仍用 lucide-react |
+| 后台 Tailwind 迁移 | ❌ 未开始 | 8 个后台页面仍用 Tailwind 内联类名 |
+| 清理收尾 | ❌ 未开始 | `twMerge`/`cva`/`components.json`/Tailwind 依赖未移除 |
+
+---
+
 ## 📌 迁移范围评估
 
 ### 当前使用统计
@@ -21,30 +36,50 @@
 
 ### shadcn/ui 组件使用分布
 
-| 组件 | 使用方 |
-|------|--------|
-| Badge | `admin/page.tsx`, `admin-page-header.tsx`, `post-management-client.tsx` |
-| Button | `post-editor-form.tsx` |
-| Card | `post-editor-form.tsx` |
-| Input | `post-editor-form.tsx`, `post-management-client.tsx` |
-| Label | `post-editor-form.tsx` |
-| Table | **未使用**（可删除） |
-| Tabs | `post-management-client.tsx` |
-| Textarea | `post-editor-form.tsx` |
+| 组件 | 使用方 | 迁移状态 |
+|------|--------|----------|
+| Badge | `admin/page.tsx`, `admin-page-header.tsx`, `post-management-client.tsx` | ❌ 待替换 |
+| Button | `post-editor-form.tsx` | ❌ 待替换 |
+| Card | `post-editor-form.tsx` | ❌ 待替换 |
+| Input | `post-editor-form.tsx`, `post-management-client.tsx` | ❌ 待替换 |
+| Label | `post-editor-form.tsx` | ❌ 待替换 |
+| Table | **未使用**（可删除） | 🗑️ 可删除 |
+| Tabs | `post-management-client.tsx` | ❌ 待替换 |
+| Textarea | `post-editor-form.tsx` | ❌ 待替换 |
 
 **关键发现：shadcn/ui 仅在后台管理中使用，公开页面完全不依赖。**
+
+### 已完成的自建组件（新增，不在原 shadcn 列表中）
+
+| 组件 | 文件 | 说明 |
+|------|------|------|
+| Tag | `tag.tsx` + `tag.module.css` | 标签组件（default/accent/outlined 变体） |
+| GhostButton | `ghost-button.tsx` + `ghost-button.module.css` | 幽灵边框按钮 |
+| SubmitButton | `submit-button.tsx` + `submit-button.module.css` | 提交按钮 |
+| TextInput | `text-input.tsx` + `text-input.module.css` | 带图标槽的文本输入 |
+| TextLink | `text-link.tsx` + `text-link.module.css` | 纯文字链接+箭头 |
+| 自建图标库 | `icons/` 目录 (8 个图标) | MenuIcon/ArrowRightIcon 等，前台专用 |
 
 ### 已有 CSS Modules（无需迁移）
 
 | 文件 | 行数 | 配对组件 |
 |------|------|----------|
-| `page.module.css` | 464 | 首页 |
-| `blog/page.module.css` | 276 | 博客列表 |
-| `public-chrome.module.css` | 166 | 公开站点壳 |
-| `admin-sidebar.module.css` | 140 | 后台侧边栏 |
-| `admin-login-card.module.css` | 257 | 登录卡片 |
-| `admin-shell.module.css` | 12 | 后台壳 |
-| `loading.module.css` | 55 | 加载动画 |
+| `page.module.css` | ~270 | 首页 |
+| `blog/page.module.css` | ~276 | 博客列表 |
+| `blog/[slug]/page.module.css` | — | 博客详情页 |
+| `public-chrome.module.css` | ~170 | 公开站点壳 |
+| `markdown-article.module.css` | — | Markdown 渲染组件 |
+| `post-card.module.css` | — | 博客文章卡片 |
+| `project-card.module.css` | — | 项目展示卡片 |
+| `admin-sidebar.module.css` | ~140 | 后台侧边栏 |
+| `admin-login-card.module.css` | ~257 | 登录卡片 |
+| `admin-shell.module.css` | ~12 | 后台壳 |
+| `loading.module.css` | ~55 | 加载动画 |
+| `tag.module.css` | — | Tag 标签组件 |
+| `ghost-button.module.css` | — | GhostButton 幽灵按钮 |
+| `submit-button.module.css` | — | SubmitButton 提交按钮 |
+| `text-input.module.css` | — | TextInput 文本输入 |
+| `text-link.module.css` | — | TextLink 纯文字链接 |
 
 这些 CSS Modules 全部使用纯 CSS + `var(--*)` 变量，**不依赖 Tailwind**，迁移后可原样保留。
 
@@ -58,45 +93,57 @@
 src/
 ├── components/
 │   ├── ui/                         # 自建组件库（替代 shadcn/ui）
-│   │   ├── button.tsx
-│   │   ├── button.module.css
-│   │   ├── input.tsx
-│   │   ├── input.module.css
-│   │   ├── label.tsx
-│   │   ├── label.module.css
-│   │   ├── badge.tsx
-│   │   ├── badge.module.css
-│   │   ├── card.tsx
-│   │   ├── card.module.css
-│   │   ├── tabs.tsx
-│   │   ├── tabs.module.css
-│   │   ├── textarea.tsx
-│   │   ├── textarea.module.css
-│   │   ├── dialog.tsx              # 新增：弹窗组件
-│   │   ├── dialog.module.css
-│   │   └── index.ts                # 统一导出
-│   └── site/                       # 公开站点组件（保持不变）
+│   │   ├── icons/                  # ✅ 已完成：自建 SVG 图标库
+│   │   │   ├── index.ts            # IconProps + 桶导出
+│   │   │   ├── menu-icon.tsx
+│   │   │   ├── arrow-right-icon.tsx
+│   │   │   ├── arrow-down-icon.tsx
+│   │   │   ├── mail-icon.tsx
+│   │   │   ├── external-link-icon.tsx
+│   │   │   ├── github-icon.tsx
+│   │   │   ├── code-icon.tsx
+│   │   │   └── book-icon.tsx
+│   │   ├── tag.tsx                 # ✅ 已完成
+│   │   ├── tag.module.css
+│   │   ├── ghost-button.tsx        # ✅ 已完成
+│   │   ├── ghost-button.module.css
+│   │   ├── submit-button.tsx       # ✅ 已完成
+│   │   ├── submit-button.module.css
+│   │   ├── text-input.tsx          # ✅ 已完成
+│   │   ├── text-input.module.css
+│   │   ├── text-link.tsx           # ✅ 已完成
+│   │   ├── text-link.module.css
+│   │   ├── confirm-dialog.tsx      # 🔄 待迁移（当前用 Tailwind 内联）
+│   │   ├── badge.tsx               # ❌ 待替换（旧 shadcn）
+│   │   ├── button.tsx              # ❌ 待替换（旧 shadcn）
+│   │   ├── card.tsx                # ❌ 待替换（旧 shadcn）
+│   │   ├── input.tsx               # ❌ 待替换（旧 shadcn）
+│   │   ├── label.tsx               # ❌ 待替换（旧 shadcn）
+│   │   ├── table.tsx               # 🗑️ 未使用，可删
+│   │   ├── tabs.tsx                # ❌ 待替换（旧 shadcn）
+│   │   └── textarea.tsx            # ❌ 待替换（旧 shadcn）
+│   └── site/                       # 公开站点组件（✅ 全部已完成 CSS Modules）
 ├── lib/
-│   ├── utils.ts                    # clsx 保留，移除 twMerge
+│   ├── utils.ts                    # 🔄 待简化（移除 twMerge）
 │   └── ...
 ```
 
 ### 样式体系
 
 ```
-globals.css（全局变量 + 重置 + 工具类）
+theme.css（全站统一变量源）
+    ↓ @import
+globals.css（重置 + 工具类 + Tailwind 入口 ← 迁移中）
     ↓ CSS 自定义属性
     ↓
 CSS Modules（每个组件/页面独立样式文件）
     ↓ var(--primary), var(--muted) 等
-    ↓
-body[data-app] 主题切换（保持现有机制）
 ```
 
 **核心理念**：
 - **全局**：仅放 CSS 变量、重置样式、不可拆分的工具类
 - **组件**：每个组件一个 `.module.css`，零全局污染
-- **主题**：通过 CSS 变量 + `body[data-app]` 切换，与 Tailwind 无关
+- **主题**：通过 `theme.css` 统一变量，已移除 `body[data-app]` 切换机制
 
 ---
 
@@ -133,7 +180,7 @@ npm install postcss-preset-env --save-dev   # CSS 现代特性降级（可选）
 
 ## 🔧 详细实现步骤
 
-### 第 1 步：改造工具函数
+### 第 1 步：改造工具函数 ❌ 未完成
 
 **修改 `src/lib/utils.ts`**
 
@@ -158,7 +205,17 @@ export function cn(...inputs: ClassValue[]) {
 
 ---
 
-### 第 2 步：改造 globals.css
+### 第 2 步：改造 globals.css 🔄 部分完成
+
+**已完成**：
+- `body[data-app='admin']` 和 `body[data-app='admin-login']` 主题覆盖块已删除
+- 全站变量已统一到 `src/app/theme.css`，`globals.css` 通过 `@import './theme.css'` 引入
+- `--radius` 已改为 `0`
+
+**未完成**：
+- `@import 'tailwindcss'` 仍存在
+- `@theme inline` 块仍存在
+- Tailwind Preflight 等效重置未手动补齐（当前仍由 Tailwind 提供）
 
 **移除 Tailwind 专属代码，保留纯 CSS 部分：**
 
@@ -217,7 +274,7 @@ button,
 
 ---
 
-### 第 3 步：改造 PostCSS 配置
+### 第 3 步：改造 PostCSS 配置 ❌ 未完成
 
 **修改 `postcss.config.mjs`**
 
@@ -242,7 +299,12 @@ export default config;
 
 ---
 
-### 第 4 步：自建 UI 组件库
+### 第 4 步：自建 UI 组件库 🔄 进行中
+
+> 以下 4.1~4.7 是原始方案中计划替换的 7 个 shadcn 组件。
+> 实际进展：5 个**全新**组件已创建（Tag、GhostButton、SubmitButton、TextInput、TextLink），
+> 但原始 7 个 shadcn 组件（Badge、Button、Card、Input、Label、Tabs、Textarea）**均未替换**。
+> 新组件采用了不同于方案中的命名和 API 设计，以下代码仅供参考，以实际文件为准。
 
 每个组件遵循统一模式：**组件文件 + CSS Module + Props 类型**。
 
@@ -782,7 +844,19 @@ export { Tabs, TabsList, TabsTrigger } from './tabs'
 
 ---
 
-### 第 5 步：迁移各页面 Tailwind 类名
+### 第 5 步：迁移各页面 Tailwind 类名 🔄 部分完成
+
+**已完成**：
+- 首页 (`page.tsx`) — 全部改为 CSS Modules，内联 SVG 已提取为图标组件
+- 博客列表页 (`blog/page.tsx` + `blog-list-client.tsx`) — 全部 CSS Modules
+- 博客详情页 (`blog/[slug]/page.tsx`) — 全部 CSS Modules，使用 MarkdownArticle 组件
+- 公开站点壳 (`public-chrome.tsx`) — CSS Modules + MenuIcon
+- TextLink (`text-link.tsx`) — CSS Modules + ArrowRightIcon
+
+**未完成**：
+- 所有后台 admin 页面（8 个文件）仍使用 Tailwind 内联类名
+- `forbidden/page.tsx` 仍使用 Tailwind
+- `confirm-dialog.tsx` 仍使用 Tailwind 内联
 
 #### Tailwind → CSS Module 转换对照表
 
@@ -1061,7 +1135,11 @@ import styles from './article.module.css'
 
 ---
 
-### 第 6 步：处理混合使用文件
+### 第 6 步：处理混合使用文件 ✅ 已完成
+
+前台页面中 Tailwind 和 CSS Modules 的混合使用已全部清理：
+- `src/app/page.tsx` — 已改为纯 CSS Modules，图标尺寸用 `.iconSmall` 类
+- `src/components/site/public-chrome.tsx` — 已改为 CSS Modules，菜单图标用 `.mobileMenuIcon` 类
 
 **2 个文件同时使用 CSS Modules + Tailwind**：
 
@@ -1103,7 +1181,7 @@ import styles from './article.module.css'
 
 ---
 
-### 第 7 步：清理收尾
+### 第 7 步：清理收尾 ❌ 未完成
 
 1. **删除 `src/components/ui/` 中所有旧的 shadcn 组件文件**（已被新的自建组件替代）
 2. **删除 `components.json`**（shadcn/ui 配置文件，不再需要）
@@ -1120,7 +1198,35 @@ import styles from './article.module.css'
 
 ## 📁 完整文件改动清单
 
-### 新建文件
+> **状态标注**：✅ 已完成 | 🔄 进行中 | ❌ 未开始 | 🗑️ 可删除
+
+### 已新建文件
+
+| 文件 | 说明 | 状态 |
+|------|------|------|
+| `src/app/theme.css` | 全站统一主题变量 | ✅ |
+| `src/components/ui/icons/index.ts` | IconProps + 桶导出 | ✅ |
+| `src/components/ui/icons/menu-icon.tsx` | 汉堡菜单图标 | ✅ |
+| `src/components/ui/icons/arrow-right-icon.tsx` | 右箭头图标 | ✅ |
+| `src/components/ui/icons/arrow-down-icon.tsx` | 下箭头图标 | ✅ |
+| `src/components/ui/icons/mail-icon.tsx` | 邮件信封图标 | ✅ |
+| `src/components/ui/icons/external-link-icon.tsx` | 外部链接图标 | ✅ |
+| `src/components/ui/icons/github-icon.tsx` | GitHub 标志图标 | ✅ |
+| `src/components/ui/icons/code-icon.tsx` | 代码尖括号图标 | ✅ |
+| `src/components/ui/icons/book-icon.tsx` | 打开的书图标 | ✅ |
+| `src/components/ui/tag.tsx` + `tag.module.css` | Tag 标签组件 | ✅ |
+| `src/components/ui/ghost-button.tsx` + `.module.css` | 幽灵边框按钮 | ✅ |
+| `src/components/ui/submit-button.tsx` + `.module.css` | 提交按钮 | ✅ |
+| `src/components/ui/text-input.tsx` + `.module.css` | 带图标槽文本输入 | ✅ |
+| `src/components/ui/text-link.tsx` + `.module.css` | 纯文字链接+箭头 | ✅ |
+| `src/components/ui/confirm-dialog.tsx` | 确认弹窗（Tailwind 内联） | ✅ 新建，但待迁移 |
+| `src/components/site/markdown-article.tsx` + `.module.css` | Markdown 渲染组件 | ✅ |
+| `src/components/site/post-card.tsx` + `.module.css` | 博客文章卡片 | ✅ |
+| `src/components/site/project-card.tsx` + `.module.css` | 项目展示卡片 | ✅ |
+| `src/lib/static-posts.ts` | 静态文章数据层 | ✅ |
+| `src/app/blog/[slug]/page.module.css` | 博客详情页样式 | ✅ |
+
+### 待新建文件（原方案中）
 
 | 文件 | 说明 |
 |------|------|
@@ -1188,46 +1294,55 @@ import styles from './article.module.css'
 
 ---
 
-## 🎯 实现顺序建议
+## 🎯 实现顺序建议（修订版）
+
+> 根据实际进展修订，已完成步骤标记 ✅
 
 ```
-第 1 步：工具层改造
-  ├─ 修改 utils.ts（cn 移除 twMerge）
-  ├─ 修改 postcss.config.mjs
-  └─ 修改 globals.css（删除 Tailwind 入口 + @theme，补 Preflight）
+第 0 步：全站主题统一 ✅ 已完成
+  ├─ 创建 theme.css 统一变量
+  ├─ 删除 body[data-app] 主题切换
+  └─ --radius 改为 0
 
-第 2 步：自建 UI 组件库
-  ├─ Button + CSS Module
-  ├─ Input + CSS Module
-  ├─ Label + CSS Module
-  ├─ Textarea + CSS Module
-  ├─ Badge + CSS Module
-  ├─ Card + CSS Module
-  ├─ Tabs + CSS Module
-  └─ index.ts 统一导出
+第 1 步：前台 CSS Modules 迁移 ✅ 已完成
+  ├─ 首页 page.tsx + page.module.css
+  ├─ 博客列表 blog-list-client.tsx
+  ├─ 博客详情 blog/[slug]/page.tsx
+  ├─ 公开壳层 public-chrome.tsx + .module.css
+  ├─ 提取原子组件 PostCard/ProjectCard/Tag/GhostButton/TextLink
+  ├─ 提取自建图标库 src/components/ui/icons/
+  └─ MarkdownArticle 组件
 
-第 3 步：迁移后台管理页面（8 个文件）
+第 2 步：替换 shadcn/ui 组件 ❌ 未开始
+  ├─ Badge → CSS Module 版本
+  ├─ Button → CSS Module 版本（已有 GhostButton/SubmitButton 参考）
+  ├─ Card → CSS Module 版本
+  ├─ Input → CSS Module 版本（已有 TextInput 参考）
+  ├─ Label → CSS Module 版本
+  ├─ Tabs → CSS Module 版本
+  ├─ Textarea → CSS Module 版本
+  └─ 删除 table.tsx（未使用）
+
+第 3 步：迁移后台管理页面 ❌ 未开始
+  ├─ confirm-dialog.tsx → CSS Module（当前 Tailwind 内联）
+  ├─ admin-sidebar.tsx → lucide-react → 自建图标
   ├─ post-editor-form.tsx + .module.css
   ├─ post-management-client.tsx + .module.css
   ├─ user-form.tsx + .module.css
   ├─ user-list-client.tsx + .module.css
-  ├─ admin-page-header.tsx（较小改动）
-  ├─ admin-sidebar.tsx（仅图标尺寸）
   ├─ admin/page.tsx + .module.css
   └─ settings/page.tsx + .module.css
 
-第 4 步：迁移公开页面（5 个文件）
-  ├─ blog/[slug]/page.tsx + article.module.css（最复杂）
-  ├─ login/login-form.tsx + .module.css
-  ├─ login/page.tsx
-  ├─ register/register-form.tsx + .module.css
-  ├─ register/page.tsx
+第 4 步：迁移剩余页面 ❌ 未开始
   ├─ forbidden/page.tsx + .module.css
-  └─ page.tsx（仅图标尺寸）
+  └─ （login/register 已删除，无需迁移）
 
-第 5 步：清理收尾
-  ├─ 删除 table.tsx、components.json
-  ├─ 卸载 Tailwind 相关依赖
+第 5 步：清理收尾 ❌ 未开始
+  ├─ 修改 utils.ts（cn 移除 twMerge，仅用 clsx）
+  ├─ 修改 globals.css（删除 @import 'tailwindcss' + @theme inline，补 Preflight）
+  ├─ 修改 postcss.config.mjs（移除 @tailwindcss/postcss）
+  ├─ 删除 components.json
+  ├─ 卸载 Tailwind/shadcn/cva/tailwind-merge/lucide-react
   └─ npm run build 验证
 ```
 
@@ -1257,4 +1372,4 @@ import styles from './article.module.css'
 
 ---
 
-*最后更新: 2026-06-04*
+*最后更新: 2026-06-05*

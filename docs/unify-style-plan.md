@@ -4,6 +4,21 @@
 
 ---
 
+## 📌 进度总览
+
+> **最后更新: 2026-06-05**
+
+| 步骤 | 内容 | 状态 |
+|------|------|------|
+| 第 1 步 | 简化 globals.css，删除 `body[data-app]` 覆盖 | ✅ 已完成 — 创建了 `theme.css` 替代 |
+| 第 2 步 | 删除 AppFrame 主题切换逻辑 | ✅ 已完成 — `app-frame.tsx` 不再设置 `dataset.app`，`layout.tsx` 不再有 `data-app` |
+| 第 3 步 | 修改后台侧边栏配色 | ✅ 自动完成 — 变量统一后 `var(--muted)` 自动变为 `#f6efe7` |
+| 第 4 步 | 修改后台 Tailwind 硬编码色值 | ❌ 未开始 — 后台页面仍用 Tailwind 内联 |
+| 第 5 步 | 统一 `--radius` 为 0 | ✅ 已完成 — `theme.css` 中 `--radius: 0` |
+| 第 6 步 | 重命名 `.admin-*` 工具类 | ❌ 未开始 — 仍为 `.admin-panel` 等名称 |
+
+---
+
 ## 📌 现状：两套风格并存的代价
 
 | 问题 | 说明 |
@@ -79,7 +94,10 @@
 
 ## 🔧 实现步骤
 
-### 第 1 步：简化 globals.css
+### 第 1 步：简化 globals.css ✅ 已完成
+
+> 实际实现比方案更彻底：创建了独立的 `src/app/theme.css`（133行）集中管理所有 CSS 变量，
+> `globals.css` 通过 `@import './theme.css'` 引入。`body[data-app]` 覆盖块已全部删除。
 
 **删除 `body[data-app='admin']` 和 `body[data-app='admin-login']` 整块覆盖**，让全站共享 `:root` 变量。
 
@@ -106,7 +124,9 @@ body[data-app='admin-login'] { ... } /* 约 20 行 */
 - `::selection`
 - `.admin-*` 工具类（后续可重命名为更通用的名字，但样式值不变）
 
-### 第 2 步：删除 AppFrame 的主题切换逻辑
+### 第 2 步：删除 AppFrame 的主题切换逻辑 ✅ 已完成
+
+> `app-frame.tsx` 已不再设置 `document.body.dataset.app`，`layout.tsx` 的 `<body>` 标签已移除 `data-app='public'` 属性。
 
 **修改 `src/components/site/app-frame.tsx`**
 
@@ -135,7 +155,10 @@ useEffect(() => {
 <body>
 ```
 
-### 第 3 步：修改后台侧边栏配色
+### 第 3 步：修改后台侧边栏配色 ✅ 自动完成
+
+> 删除 `body[data-app='admin']` 后，所有使用 `var(--muted)`、`var(--border)` 等变量的地方自动回退到 `:root` 值。
+> `admin-sidebar.module.css` 中使用 `var(--muted)` 的代码无需修改，自动变为 `#f6efe7` 米黄色。
 
 后台侧边栏原来是冷灰 (`#f5f3f3`)，统一后用温暖米黄 (`#f6efe7`)，边框从玫瑰灰改为驼色。
 
@@ -164,7 +187,9 @@ useEffect(() => {
 | `admin-login-card.module.css` | `color: #999` | `color: var(--muted-foreground)` |
 | `admin-login-card.module.css` | `background: #c41e3a` (hover) | `background: var(--primary); filter: brightness(1.1)` |
 
-### 第 4 步：修改后台 Tailwind 类名中的硬编码色值
+### 第 4 步：修改后台 Tailwind 类名中的硬编码色值 ❌ 未开始
+
+> 后台页面仍大量使用 Tailwind 内联类名，此步骤将在 Tailwind → CSS Module 迁移时一并处理。
 
 后台页面使用 Tailwind 类名时，直接写了 admin 模式下的颜色值，需要统一为公开风格：
 
@@ -180,7 +205,9 @@ useEffect(() => {
 
 **注意**：如果同时进行 Tailwind → CSS Module 迁移，这一步会被迁移覆盖，无需单独处理。
 
-### 第 5 步：统一 `--radius` 为 0
+### 第 5 步：统一 `--radius` 为 0 ✅ 已完成
+
+> `theme.css` 中 `--radius: 0` 已生效。所有使用 `border-radius: var(--radius)` 的地方自动变为 0。
 
 当前 `--radius: 0.75rem`，但项目实际设计语言是零圆角。统一为 0：
 
@@ -202,7 +229,9 @@ useEffect(() => {
 --radius-xl: calc(var(--radius) + 8px);
 ```
 
-### 第 6 步：重命名工具类（可选但推荐）
+### 第 6 步：重命名工具类（可选但推荐） ❌ 未开始
+
+> `.admin-*` 工具类仍保持原名，全局查找替换尚未执行。
 
 `.admin-*` 工具类改为更通用的名字，因为它们不再是"后台专属"：
 
@@ -224,7 +253,32 @@ useEffect(() => {
 
 ## 📁 文件改动清单
 
+> **状态标注**：✅ 已完成 | ❌ 未开始
+
 ### 必须修改
+
+| 文件 | 改动 | 状态 |
+|------|------|------|
+| `src/app/theme.css` | 🆕 新建：全站统一主题变量（替代 `:root` + `body[data-app]`） | ✅ |
+| `src/app/globals.css` | 删除 `body[data-app]` 覆盖块；引入 `theme.css` | ✅ |
+| `src/components/site/app-frame.tsx` | 删除 `body.dataset.app` 切换逻辑 | ✅ |
+| `src/app/layout.tsx` | 删除 `<body data-app='public'>`，改为 `<body>` | ✅ |
+
+### 需要检查硬编码色值
+
+| 文件 | 改动 | 状态 |
+|------|------|------|
+| `src/app/admin/_components/admin-sidebar.module.css` | 替换冷灰硬编码为暖色 | ✅ 自动完成（变量统一后） |
+| `src/app/admin/_components/admin-login-card.module.css` | 替换冷灰硬编码为暖色 | ❌ 待检查 |
+
+### 可选（重命名工具类）
+
+| 文件 | 改动 | 状态 |
+|------|------|------|
+| `src/app/globals.css` | `.admin-*` → `.panel` / `.kicker` 等通用名 | ❌ |
+| 所有引用 `.admin-*` 类名的组件文件 | 同步替换类名 | ❌ |
+
+### 无需修改
 
 | 文件 | 改动 |
 |------|------|
@@ -321,4 +375,4 @@ useEffect(() => {
 
 ---
 
-*最后更新: 2026-06-04*
+*最后更新: 2026-06-05*

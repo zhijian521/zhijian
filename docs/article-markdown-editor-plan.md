@@ -1,5 +1,26 @@
 # 后台文章 Markdown 编辑 + 图片上传 + 预览 实现方案
 
+## 📌 进度总览
+
+> **最后更新: 2026-06-05**
+
+| 步骤 | 内容 | 状态 |
+|------|------|------|
+| 第 1 步 | 共享 Markdown 渲染组件 | ✅ 已完成 — `src/components/site/markdown-article.tsx`（CSS Modules 版，非 Tailwind） |
+| 第 2 步 | 改造博客文章页 | ✅ 已完成 — `blog/[slug]/page.tsx` 使用 `<MarkdownArticle content={content} />` |
+| 第 3 步 | Markdown 编辑器组件 | ❌ 未开始 — MDXEditor 未安装 |
+| 第 4 步 | 图片上传 API | ❌ 未开始 |
+| 第 5 步 | 改造文章编辑表单 | ❌ 未开始 — 仍用旧 `<Textarea>` |
+| 第 6 步 | HTTP Client 适配 multipart | ❌ 未开始 |
+
+**关键差异**：实际实现与原方案有以下不同：
+- 组件命名为 `MarkdownArticle` 而非 `MarkdownBody`
+- 使用 CSS Modules 而非 Tailwind 内联类名
+- 博客详情页使用静态 MD 文件数据源 (`static-posts.ts`) 而非数据库
+- `rehype-highlight` 未安装
+
+---
+
 ## 📌 现状分析
 
 | 项目 | 当前状态 |
@@ -67,9 +88,12 @@ npm install @tailwindcss/typography
 
 ## 🔧 实现步骤
 
-### 第 1 步：共享 Markdown 渲染组件
+### 第 1 步：共享 Markdown 渲染组件 ✅ 已完成
 
-**新建 `src/components/markdown-body.tsx`**
+> 实际实现：`src/components/site/markdown-article.tsx` + `markdown-article.module.css`
+> 使用 CSS Modules 样式（非 Tailwind 内联），配合 `react-markdown` + `remark-gfm` 渲染。
+
+**原方案**（以下代码仅供参考，以实际文件为准）：
 
 这是整个方案的核心——后台预览和博客文章页共用这一个组件。
 
@@ -230,7 +254,9 @@ export function MarkdownBody({ content, className }: MarkdownBodyProps) {
 
 ---
 
-### 第 2 步：改造博客文章页，使用 MarkdownBody
+### 第 2 步：改造博客文章页，使用 MarkdownBody ✅ 已完成
+
+> 实际实现：`blog/[slug]/page.tsx` 使用 `<MarkdownArticle content={content} />`，配合 `static-posts.ts` 从 MD 文件加载内容。
 
 **修改 `src/app/blog/[slug]/page.tsx`**
 
@@ -258,7 +284,7 @@ import { MarkdownBody } from '@/components/markdown-body'
 
 ---
 
-### 第 3 步：Markdown 编辑器组件
+### 第 3 步：Markdown 编辑器组件 ❌ 未开始
 
 **新建 `src/app/admin/_components/markdown-editor.tsx`**
 
@@ -436,7 +462,7 @@ export function MarkdownEditor({
 
 ---
 
-### 第 4 步：图片上传 API
+### 第 4 步：图片上传 API ❌ 未开始
 
 **新建 `src/lib/upload.ts`（上传工具函数）**
 
@@ -542,7 +568,7 @@ export async function POST(request: NextRequest) {
 
 ---
 
-### 第 5 步：改造文章编辑表单
+### 第 5 步：改造文章编辑表单 ❌ 未开始
 
 **修改 `src/app/admin/_components/post-editor-form.tsx`**
 
@@ -612,7 +638,7 @@ const handleImageUpload = async (file: File): Promise<string> => {
 
 ---
 
-### 第 6 步：HTTP Client 适配 multipart
+### 第 6 步：HTTP Client 适配 multipart ❌ 未开始
 
 **修改 `src/lib/http-client.ts`**
 
@@ -639,18 +665,20 @@ const res = await api.post('/admin/upload', formData, {
 
 ## 📁 完整文件改动清单
 
-| 操作 | 文件路径 | 说明 |
-|---|---|---|
-| **新建** | `src/components/markdown-body.tsx` | 共享 Markdown 渲染组件（核心） |
-| **新建** | `src/app/admin/_components/markdown-editor.tsx` | MDXEditor 封装组件 |
-| **新建** | `src/app/api/admin/upload/route.ts` | 图片上传 API |
-| **新建** | `src/lib/upload.ts` | 上传工具函数（校验、保存、路径生成） |
-| **修改** | `src/app/admin/_components/post-editor-form.tsx` | 替换 Textarea → MarkdownEditor + 预览弹窗 |
-| **修改** | `src/app/blog/[slug]/page.tsx` | 替换硬编码内容 → MarkdownBody 动态渲染 |
-| **修改** | `src/app/globals.css` | 添加 MDXEditor 样式覆盖 |
-| **修改** | `src/lib/http-client.ts` | 适配 multipart/form-data 请求 |
-| **可选修改** | `next.config.ts` | 如需配置图片优化域名 |
-| **可选修改** | `src/lib/site.ts` | 如需添加上传相关路由常量 |
+> **状态标注**：✅ 已完成 | ❌ 未开始
+
+| 操作 | 文件路径 | 说明 | 状态 |
+|---|---|---|---|
+| **新建** | `src/components/site/markdown-article.tsx` | Markdown 渲染组件（CSS Modules 版） | ✅ |
+| **新建** | `src/components/site/markdown-article.module.css` | Markdown 渲染样式 | ✅ |
+| **新建** | `src/lib/static-posts.ts` | 静态文章数据层 | ✅ |
+| **修改** | `src/app/blog/[slug]/page.tsx` | 使用 MarkdownArticle 动态渲染 | ✅ |
+| **新建** | `src/app/admin/_components/markdown-editor.tsx` | MDXEditor 封装组件 | ❌ |
+| **新建** | `src/app/api/admin/upload/route.ts` | 图片上传 API | ❌ |
+| **新建** | `src/lib/upload.ts` | 上传工具函数 | ❌ |
+| **修改** | `src/app/admin/_components/post-editor-form.tsx` | 替换 Textarea → MarkdownEditor | ❌ |
+| **修改** | `src/app/globals.css` | 添加 MDXEditor 样式覆盖 | ❌ |
+| **修改** | `src/lib/http-client.ts` | 适配 multipart/form-data | ❌ |
 
 ---
 
