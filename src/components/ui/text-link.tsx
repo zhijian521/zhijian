@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { ArrowRightIcon } from '@/components/ui/icons';
+
 import styles from './text-link.module.css';
 
 export interface TextLinkProps extends React.ComponentProps<typeof Link> {
@@ -12,11 +14,7 @@ export function TextLink({ showArrow = true, children, className, ...props }: Te
     return (
         <Link className={`${styles.link} ${className || ''}`} {...props}>
             {children}
-            {showArrow ? (
-                <svg className={styles.icon} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path d="M5 12h14m0 0l-7-7m7 7l-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            ) : null}
+            {showArrow ? <ArrowRightIcon className={styles.icon} /> : null}
         </Link>
     );
 }
