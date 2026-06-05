@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu } from 'lucide-react';
 
 import { APP_ROUTES, PUBLIC_NAV_ITEMS, SITE_METADATA } from '@/lib/site';
 import { isNavItemActive } from '@/lib/utils';
@@ -50,7 +49,9 @@ export default function PublicChrome({ children }: PublicChromeProps) {
 
                         {/* 移动端菜单 */}
                         <button aria-label="打开导航菜单" className={styles.mobileMenu} type="button">
-                            <Menu size={18} />
+                            <svg fill="none" height={18} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width={18}>
+                                <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
                         </button>
                     </div>
                 </div>

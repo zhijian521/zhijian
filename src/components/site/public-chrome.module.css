@@ -53,7 +53,7 @@
     font-family: var(--font-serif);
     font-size: 1.25rem;
     letter-spacing: -0.025em;
-    color: var(--public-primary);
+    color: var(--primary);
     transition: opacity 0.2s;
 }
 
@@ -102,16 +102,16 @@
 }
 
 .navLinkActive {
-    color: var(--public-primary);
+    color: var(--primary);
 }
 
 .navLinkInactive {
-    color: var(--public-ink-soft);
+    color: var(--muted-foreground);
 }
 
 .navLinkInactive:hover {
-    color: var(--public-ink);
-    background: color-mix(in srgb, var(--public-secondary) 60%, transparent);
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--secondary) 60%, transparent);
 }
 
 .navUnderline {
@@ -120,7 +120,7 @@
     right: 0;
     bottom: 0;
     height: 2px;
-    background: var(--public-primary);
+    background: var(--primary);
 }
 
 /*== 移动端菜单按钮 ==*/
@@ -130,14 +130,14 @@
     width: 2.25rem;
     align-items: center;
     justify-content: center;
-    color: var(--public-ink-soft);
+    color: var(--muted-foreground);
     transition:
         color 0.2s,
         background-color 0.2s;
 }
 
 .mobileMenu:hover {
-    background: color-mix(in srgb, var(--public-secondary) 70%, transparent);
+    background: color-mix(in srgb, var(--secondary) 70%, transparent);
 }
 
 @media (min-width: 768px) {
@@ -160,6 +160,6 @@
 
 .footerCopy {
     font-size: 0.75rem;
-    color: var(--public-ink-soft);
+    color: var(--muted-foreground);
     opacity: 0.7;
 }
