@@ -5,6 +5,8 @@ import { ArrowRight, Edit3, FileText, Users } from 'lucide-react';
 import { MOCK_POSTS, MOCK_USERS } from '@/lib/mock-data';
 import { APP_ROUTES } from '@/lib/site';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'Admin - Zhijian',
 };
