@@ -1,18 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Save } from 'lucide-react';
 import { useState, useTransition } from 'react';
 
+import { ArrowLeftIcon, SaveIcon } from '@/components/ui/icons';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { toDateTimeLocalValue } from '@/lib/post-shared';
 import { APP_ROUTES } from '@/lib/site';
 import { api } from '@/lib/http-client';
+import styles from './post-editor-form.module.css';
 
 type PostStatus = 'draft' | 'published';
 
@@ -56,7 +52,6 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
     const [isError, setIsError] = useState(false);
     const [isPending, startTransition] = useTransition();
 
-    /*== 创建与更新共用一套表单，按 mode 决定请求目标与成功后的跳转行为。 ==*/
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setMessage(null);
@@ -90,8 +85,8 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
         <>
             <AdminPageHeader
                 action={
-                    <Link className='inline-flex items-center gap-2 rounded-xl border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 px-4 text-sm font-medium' href={APP_ROUTES.adminPosts}>
-                        <ArrowLeft className='h-4 w-4' />
+                    <Link className={styles.backLink} href={APP_ROUTES.adminPosts}>
+                        <ArrowLeftIcon className={styles.backIcon} />
                         返回文章管理
                     </Link>
                 }
@@ -101,143 +96,140 @@ export default function PostEditorForm({ mode, post }: PostEditorFormProps) {
                 title={mode === 'create' ? '新建文章' : `编辑：${post?.title ?? '文章'}`}
             />
 
-            <Card className='admin-panel border-slate-200 bg-white/92 shadow-sm'>
-                <CardContent className='p-6'>
-                    <form className='space-y-6' onSubmit={handleSubmit}>
-                        <div className='grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_320px]'>
-                            <div className='space-y-6'>
-                                <div className='space-y-2'>
-                                    <Label htmlFor='title'>文章标题</Label>
-                                    <Input
-                                        className='admin-input'
-                                        id='title'
-                                        onChange={(event) => {
-                                            setForm((current) => ({
-                                                ...current,
-                                                title: event.target.value,
-                                            }));
-                                        }}
-                                        placeholder='输入标题后即可创建草稿'
-                                        value={form.title}
-                                    />
-                                </div>
+            <div className={`${styles.panel} admin-panel`}>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <div className={styles.grid}>
+                        <div className={styles.main}>
+                            <div className={styles.field}>
+                                <label className={styles.label} htmlFor='title'>文章标题</label>
+                                <input
+                                    className={`${styles.input} admin-input`}
+                                    id='title'
+                                    onChange={(event) => {
+                                        setForm((current) => ({
+                                            ...current,
+                                            title: event.target.value,
+                                        }));
+                                    }}
+                                    placeholder='输入标题后即可创建草稿'
+                                    value={form.title}
+                                />
+                            </div>
+
+                            {mode === 'edit' ? (
+                                <>
+                                    <div className={styles.field}>
+                                        <label className={styles.label} htmlFor='summary'>文章摘要</label>
+                                        <textarea
+                                            className={`${styles.textarea} admin-input`}
+                                            id='summary'
+                                            onChange={(event) => {
+                                                setForm((current) => ({
+                                                    ...current,
+                                                    summary: event.target.value,
+                                                }));
+                                            }}
+                                            value={form.summary}
+                                        />
+                                    </div>
+
+                                    <div className={styles.field}>
+                                        <label className={styles.label} htmlFor='content'>正文内容</label>
+                                        <textarea
+                                            className={`${styles.textareaLarge} admin-input`}
+                                            id='content'
+                                            onChange={(event) => {
+                                                setForm((current) => ({
+                                                    ...current,
+                                                    content: event.target.value,
+                                                }));
+                                            }}
+                                            value={form.content}
+                                        />
+                                    </div>
+                                </>
+                            ) : null}
+                        </div>
+
+                        <div className={styles.sidebar}>
+                            <div className={`${styles.sideSection} admin-panel-muted`}>
+                                <p className={styles.sideTitle}>发布信息</p>
 
                                 {mode === 'edit' ? (
                                     <>
-                                        <div className='space-y-2'>
-                                            <Label htmlFor='summary'>文章摘要</Label>
-                                            <Textarea
-                                                className='admin-input min-h-28'
-                                                id='summary'
+                                        <div className={styles.field}>
+                                            <label className={styles.label} htmlFor='slug'>Slug</label>
+                                            <input
+                                                className={`${styles.input} admin-input`}
+                                                id='slug'
                                                 onChange={(event) => {
                                                     setForm((current) => ({
                                                         ...current,
-                                                        summary: event.target.value,
+                                                        slug: event.target.value,
                                                     }));
                                                 }}
-                                                value={form.summary}
+                                                value={form.slug}
                                             />
                                         </div>
 
-                                        <div className='space-y-2'>
-                                            <Label htmlFor='content'>正文内容</Label>
-                                            <Textarea
-                                                className='admin-input min-h-[480px]'
-                                                id='content'
+                                        <div className={styles.field}>
+                                            <label className={styles.label} htmlFor='status'>发布状态</label>
+                                            <select
+                                                className={`${styles.select} admin-input`}
+                                                id='status'
                                                 onChange={(event) => {
                                                     setForm((current) => ({
                                                         ...current,
-                                                        content: event.target.value,
+                                                        status: event.target.value as PostStatus,
                                                     }));
                                                 }}
-                                                value={form.content}
+                                                value={form.status}
+                                            >
+                                                <option value='draft'>草稿</option>
+                                                <option value='published'>已发布</option>
+                                            </select>
+                                        </div>
+
+                                        <div className={styles.field}>
+                                            <label className={styles.label} htmlFor='publishedAt'>发布时间</label>
+                                            <input
+                                                className={`${styles.input} admin-input`}
+                                                id='publishedAt'
+                                                onChange={(event) => {
+                                                    setForm((current) => ({
+                                                        ...current,
+                                                        publishedAt: event.target.value,
+                                                    }));
+                                                }}
+                                                type='datetime-local'
+                                                value={form.publishedAt}
                                             />
                                         </div>
                                     </>
-                                ) : null}
+                                ) : (
+                                    <p className={styles.hintText}>创建成功后将自动跳转到文章编辑页，在那里继续完善 Slug、摘要、正文和发布配置。</p>
+                                )}
                             </div>
 
-                            <div className='space-y-6'>
-                                <div className='admin-panel-muted space-y-4'>
-                                    <p className='text-sm font-medium text-slate-950'>发布信息</p>
+                            <div className={`${styles.sideSection} admin-panel-muted`}>
+                                <p className={styles.sideTitle}>保存说明</p>
+                                <p className={message ? (isError ? styles.messageError : styles.messageSuccess) : styles.hintText}>
+                                    {message || (mode === 'create' ? '创建成功后会自动进入对应文章编辑页。' : '点击保存后会直接更新数据库中的文章内容。')}
+                                </p>
 
-                                    {mode === 'edit' ? (
-                                        <>
-                                            <div className='space-y-2'>
-                                                <Label htmlFor='slug'>Slug</Label>
-                                                <Input
-                                                    className='admin-input'
-                                                    id='slug'
-                                                    onChange={(event) => {
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            slug: event.target.value,
-                                                        }));
-                                                    }}
-                                                    value={form.slug}
-                                                />
-                                            </div>
-
-                                            <div className='space-y-2'>
-                                                <Label htmlFor='status'>发布状态</Label>
-                                                <select
-                                                    className='admin-input flex h-10 w-full rounded-md px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20'
-                                                    id='status'
-                                                    onChange={(event) => {
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            status: event.target.value as PostStatus,
-                                                        }));
-                                                    }}
-                                                    value={form.status}
-                                                >
-                                                    <option value='draft'>草稿</option>
-                                                    <option value='published'>已发布</option>
-                                                </select>
-                                            </div>
-
-                                            <div className='space-y-2'>
-                                                <Label htmlFor='publishedAt'>发布时间</Label>
-                                                <Input
-                                                    className='admin-input'
-                                                    id='publishedAt'
-                                                    onChange={(event) => {
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            publishedAt: event.target.value,
-                                                        }));
-                                                    }}
-                                                    type='datetime-local'
-                                                    value={form.publishedAt}
-                                                />
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <p className='text-sm leading-7 text-slate-600'>创建成功后将自动跳转到文章编辑页，在那里继续完善 Slug、摘要、正文和发布配置。</p>
-                                    )}
-                                </div>
-
-                                <div className='admin-panel-muted space-y-4'>
-                                    <p className='text-sm font-medium text-slate-950'>保存说明</p>
-                                    <p className={`text-sm leading-7 ${message ? (isError ? 'text-red-600' : 'text-emerald-600') : 'text-slate-600'}`}>
-                                        {message || (mode === 'create' ? '创建成功后会自动进入对应文章编辑页。' : '点击保存后会直接更新数据库中的文章内容。')}
-                                    </p>
-
-                                    <Button className='w-full rounded-xl' disabled={isPending} type='submit'>
-                                        <Save className='h-4 w-4' />
-                                        {isPending ? '保存中...' : mode === 'create' ? '创建文章' : '保存修改'}
-                                    </Button>
-                                </div>
+                                <button className={styles.submitBtn} disabled={isPending} type='submit'>
+                                    <SaveIcon className={styles.submitIcon} />
+                                    {isPending ? '保存中...' : mode === 'create' ? '创建文章' : '保存修改'}
+                                </button>
                             </div>
                         </div>
-                    </form>
-                </CardContent>
-            </Card>
+                    </div>
+                </form>
+            </div>
         </>
     );
 }
 
-/*== 从已有文章数据初始化编辑表单，无数据时返回空表单。 ==*/
 function createFormState(post?: Post): EditorFormState {
     if (!post) {
         return EMPTY_FORM;

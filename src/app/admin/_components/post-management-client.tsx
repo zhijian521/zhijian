@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { useMemo, useState } from 'react';
 
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -46,7 +46,7 @@ export default function PostManagementClient() {
             <AdminPageHeader
                 action={
                     <Link className={styles.createLink} href={APP_ROUTES.adminPostCreate}>
-                        <Plus className='h-4 w-4' />
+                        <PlusIcon className={styles.iconSmall} />
                         新建文章
                     </Link>
                 }
@@ -59,7 +59,7 @@ export default function PostManagementClient() {
             {/* 搜索 + 筛选 */}
             <div className={styles.toolbar}>
                 <div className={styles.searchWrapper}>
-                    <Search className={styles.searchIcon} />
+                    <SearchIcon className={styles.searchIcon} />
                     <input
                         className={styles.searchInput}
                         onChange={(e) => setKeyword(e.target.value)}
@@ -121,7 +121,7 @@ export default function PostManagementClient() {
                                 <td className={styles.tdAction}>
                                     <Link className={styles.editLink} href={`${APP_ROUTES.adminPosts}/${post.id}`}>编辑</Link>
                                     <button className={styles.deleteBtn} onClick={() => setDeleteTarget({ id: post.id, title: post.title })} title='删除' type='button'>
-                                        <Trash2 className='h-4 w-4' />
+                                        <Trash2Icon className={styles.iconSmall} />
                                     </button>
                                 </td>
                             </tr>

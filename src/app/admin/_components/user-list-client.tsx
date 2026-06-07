@@ -1,13 +1,14 @@
 'use client';
 
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 
+import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { APP_ROUTES } from '@/lib/site';
 import { api } from '@/lib/http-client';
+import styles from './user-list-client.module.css';
 
 interface UserItem {
     id: number;
@@ -94,102 +95,88 @@ export default function UserListClient() {
     return (
         <div>
             {/* 顶部操作栏 */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
-                <form className="flex items-center gap-2 w-full sm:w-auto" onSubmit={handleSearchSubmit}>
-                    <div className="relative flex-1 sm:flex-none">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
+            <div className={styles.toolbar}>
+                <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
+                    <div className={styles.searchWrapper}>
+                        <SearchIcon className={styles.searchIcon} />
                         <input
-                            className="w-full sm:w-56 h-10 pl-9 pr-4 py-2 border border-[var(--border)] bg-[#fbf9f9] text-sm focus:border-[var(--primary)] focus:outline-none transition-colors"
+                            className={styles.searchInput}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="搜索用户名或邮箱..."
                             type="text"
                             value={search}
                         />
                     </div>
-                    <button
-                        className="h-10 px-4 py-2 text-sm border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors cursor-pointer"
-                        type="submit"
-                    >
+                    <button className={styles.searchBtn} type="submit">
                         搜索
                     </button>
                 </form>
-                <Link
-                    className="inline-flex items-center gap-1.5 h-10 px-4 py-2 bg-[var(--primary)] !text-white text-sm hover:opacity-90 transition-opacity cursor-pointer"
-                    href={APP_ROUTES.adminUserCreate}
-                >
-                    <Plus className="h-4 w-4" />
+                <Link className={styles.createLink} href={APP_ROUTES.adminUserCreate}>
+                    <PlusIcon className={styles.iconSmall} />
                     新建用户
                 </Link>
             </div>
 
             {/* 表格 */}
-            <div className="border border-[var(--primary)] overflow-x-auto">
-                <table className="w-full text-sm">
+            <div className={styles.tableWrapper}>
+                <table className={styles.table}>
                     <thead>
-                        <tr className="border-b border-[var(--primary)] bg-[#f5f3f3] text-xs uppercase tracking-[0.05em] text-[var(--muted-foreground)]">
-                            <th className="text-left px-4 py-3 font-medium">用户名</th>
-                            <th className="text-left px-4 py-3 font-medium hidden sm:table-cell">邮箱</th>
-                            <th className="text-left px-4 py-3 font-medium">角色</th>
-                            <th className="text-left px-4 py-3 font-medium hidden md:table-cell">状态</th>
-                            <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">创建时间</th>
-                            <th className="text-right px-4 py-3 font-medium w-16">操作</th>
+                        <tr className={styles.thead}>
+                            <th className={styles.th}>用户名</th>
+                            <th className={`${styles.th} ${styles.hideSm}`}>邮箱</th>
+                            <th className={styles.th}>角色</th>
+                            <th className={`${styles.th} ${styles.hideMd}`}>状态</th>
+                            <th className={`${styles.th} ${styles.hideLg}`}>创建时间</th>
+                            <th className={styles.thAction}>操作</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--border)]">
+                    <tbody>
                         {loading ? (
                             <tr>
-                                <td className="px-4 py-12 text-center text-[var(--muted-foreground)]" colSpan={6}>
+                                <td className={styles.emptyRow} colSpan={6}>
                                     加载中...
                                 </td>
                             </tr>
                         ) : data.users.length === 0 ? (
                             <tr>
-                                <td className="px-4 py-12 text-center text-[var(--muted-foreground)]" colSpan={6}>
+                                <td className={styles.emptyRow} colSpan={6}>
                                     暂无用户数据
                                 </td>
                             </tr>
                         ) : (
                             data.users.map((user) => (
-                                <tr className="hover:bg-[#f5f3f3] transition-colors" key={user.id}>
-                                    <td className="px-4 py-3 font-medium">{user.username}</td>
-                                    <td className="px-4 py-3 text-[var(--muted-foreground)] hidden sm:table-cell">{user.email}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-block px-2 py-0.5 text-xs font-medium border ${
-                                            user.role === 'admin'
-                                                ? 'border-[var(--primary)] text-[var(--primary)] bg-[rgba(158,0,39,0.06)]'
-                                                : 'border-[var(--border)] text-[var(--muted-foreground)] bg-[var(--muted)]'
-                                        }`}>
+                                <tr className={styles.row} key={user.id}>
+                                    <td className={styles.tdName}>{user.username}</td>
+                                    <td className={`${styles.td} ${styles.hideSm}`}>{user.email}</td>
+                                    <td className={styles.td}>
+                                        <span className={user.role === 'admin' ? styles.badgePrimary : styles.badgeMuted}>
                                             {user.role === 'admin' ? '管理员' : '用户'}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 hidden md:table-cell">
-                                        <span className={`inline-block px-2 py-0.5 text-xs font-medium border ${
-                                            user.status === 'active'
-                                                ? 'border-[var(--border)] text-[var(--muted-foreground)] bg-[#fbf9f9]'
-                                                : 'border-[var(--primary)] text-[var(--primary)] bg-[rgba(158,0,39,0.06)]'
-                                        }`}>
+                                    <td className={`${styles.td} ${styles.hideMd}`}>
+                                        <span className={user.status === 'active' ? styles.badgeMuted : styles.badgePrimary}>
                                             {user.status === 'active' ? '正常' : '已禁用'}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-[var(--muted-foreground)] hidden lg:table-cell">
+                                    <td className={`${styles.tdMuted} ${styles.hideLg}`}>
                                         {new Date(user.created_at).toLocaleDateString('zh-CN')}
                                     </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="inline-flex items-center gap-0.5">
+                                    <td className={styles.tdAction}>
+                                        <div className={styles.actionGroup}>
                                             <button
-                                                className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--muted)] transition-colors cursor-pointer"
+                                                className={styles.editBtn}
                                                 onClick={() => router.push(`/admin/users/${user.id}`)}
                                                 title="编辑"
                                             >
-                                                <Pencil className="h-4 w-4" />
+                                                <PencilIcon className={styles.iconSmall} />
                                             </button>
                                             <button
-                                                className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[rgba(158,0,39,0.08)] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--muted-foreground)] transition-colors cursor-pointer"
+                                                className={styles.deleteBtn}
                                                 disabled={deleting === user.id}
                                                 onClick={() => handleDeleteClick(user.id, user.username)}
                                                 title="删除"
                                             >
-                                                <Trash2 className="h-4 w-4" />
+                                                <Trash2Icon className={styles.iconSmall} />
                                             </button>
                                         </div>
                                     </td>
@@ -200,7 +187,6 @@ export default function UserListClient() {
                 </table>
             </div>
 
-            {/*-- 删除确认弹窗 --*/}
             <ConfirmDialog
                 open={!!deleteTarget}
                 title="确认删除"
@@ -213,20 +199,20 @@ export default function UserListClient() {
 
             {/* 分页 */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 text-sm text-[var(--muted-foreground)]">
+                <div className={styles.pagination}>
                     <span>
                         共 {data.total} 个用户，第 {page}/{totalPages} 页
                     </span>
-                    <div className="flex items-center gap-1">
+                    <div className={styles.pageButtons}>
                         <button
-                            className="px-3 py-1.5 border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:text-[var(--muted-foreground)] transition-colors cursor-pointer"
+                            className={styles.pageBtn}
                             disabled={page <= 1}
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
                         >
                             上一页
                         </button>
                         <button
-                            className="px-3 py-1.5 border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-30 disabled:hover:border-[var(--border)] disabled:hover:text-[var(--muted-foreground)] transition-colors cursor-pointer"
+                            className={styles.pageBtn}
                             disabled={page >= totalPages}
                             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                         >

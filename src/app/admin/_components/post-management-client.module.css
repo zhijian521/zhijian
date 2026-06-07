@@ -246,6 +246,11 @@
     color: #ffffff;
 }
 
+.iconSmall {
+    width: 1rem;
+    height: 1rem;
+}
+
 .hideMd {
     display: none;
 }

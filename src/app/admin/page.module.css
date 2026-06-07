@@ -1,0 +1,224 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.copy {
+    margin-top: 0.25rem;
+}
+
+/* 指标卡片 */
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .metrics {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.metricCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+    min-height: 140px;
+}
+
+.metricHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.metricLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin: 0;
+}
+
+.metricIconWrap {
+    padding: 0.5rem;
+    background: rgba(159, 0, 15, 0.08);
+    color: var(--primary);
+}
+
+.metricIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.metricDesc {
+    margin: 0.375rem 0 0;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    line-height: 1.625;
+}
+
+/* 近期文章 */
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.sectionTitle {
+    font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.viewAllLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--primary);
+    transition: opacity 0.15s;
+}
+
+.viewAllLink:hover {
+    opacity: 0.8;
+}
+
+.viewAllIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* 表格 */
+.tableWrapper {
+    overflow-x: auto;
+    border: 1px solid var(--primary);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.thead {
+    border-bottom: 1px solid var(--primary);
+    background: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.th {
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+}
+
+.thAction {
+    text-align: right;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    width: 4rem;
+}
+
+.row {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 0.15s;
+}
+
+.row:hover {
+    background: var(--muted);
+}
+
+.td {
+    padding: 0.875rem 1.25rem;
+}
+
+.tdTitle {
+    padding: 0.875rem 1.25rem;
+    font-weight: 500;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tdMuted {
+    padding: 0.875rem 1.25rem;
+    color: var(--muted-foreground);
+}
+
+.tdAction {
+    padding: 0.875rem 1.25rem;
+    text-align: right;
+}
+
+.badgePrimary {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--primary);
+    border-radius: 0;
+    background: rgba(159, 0, 15, 0.06);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+.badgeMuted {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: var(--muted);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+}
+
+.editLink {
+    display: inline-flex;
+    padding: 0.375rem;
+    color: var(--muted-foreground);
+    transition: color 0.15s;
+}
+
+.editLink:hover {
+    color: var(--primary);
+}
+
+.iconSmall {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* 响应式隐藏 */
+.hideSm {
+    display: none;
+}
+
+.hideMd {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .hideSm {
+        display: table-cell;
+    }
+}
+
+@media (min-width: 768px) {
+    .hideMd {
+        display: table-cell;
+    }
+}

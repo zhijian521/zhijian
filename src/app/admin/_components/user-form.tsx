@@ -1,12 +1,13 @@
 'use client';
 
-import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { ArrowLeftIcon, SaveIcon } from '@/components/ui/icons';
 import { APP_ROUTES } from '@/lib/site';
 import { api } from '@/lib/http-client';
+import styles from './user-form.module.css';
 
 interface UserFormData {
     username: string;
@@ -71,32 +72,23 @@ export default function UserForm({ mode, initial }: UserFormProps) {
         }
     }
 
-    const inputClass = 'w-full px-4 py-2.5 border border-[var(--border)] bg-[#fbf9f9] text-sm focus:border-[var(--primary)] focus:outline-none transition-colors';
-    const radioActive = 'border-[var(--primary)] bg-[rgba(158,0,39,0.04)] text-[var(--primary)]';
-    const radioInactive = 'border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)]';
-
     return (
         <div>
-            <Link
-                className="inline-flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] mb-6 transition-colors"
-                href={APP_ROUTES.adminUsers}
-            >
-                <ArrowLeft className="h-4 w-4" />
+            <Link className={styles.backLink} href={APP_ROUTES.adminUsers}>
+                <ArrowLeftIcon className={styles.backIcon} />
                 返回用户列表
             </Link>
 
-            <h2 className="font-serif text-xl font-semibold text-[var(--foreground)] mb-6">
+            <h2 className={styles.pageTitle}>
                 {mode === 'create' ? '新建用户' : `编辑用户：${initial?.username || ''}`}
             </h2>
 
-            <form className="max-w-lg space-y-5" onSubmit={handleSubmit}>
+            <form className={styles.form} onSubmit={handleSubmit}>
                 {/* 用户名 */}
-                <div>
-                    <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5" htmlFor="username">
-                        用户名
-                    </label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="username">用户名</label>
                     <input
-                        className={inputClass}
+                        className={styles.input}
                         id="username"
                         maxLength={50}
                         onChange={(e) => handleChange('username', e.target.value)}
@@ -108,12 +100,10 @@ export default function UserForm({ mode, initial }: UserFormProps) {
                 </div>
 
                 {/* 邮箱 */}
-                <div>
-                    <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5" htmlFor="email">
-                        邮箱
-                    </label>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="email">邮箱</label>
                     <input
-                        className={inputClass}
+                        className={styles.input}
                         id="email"
                         onChange={(e) => handleChange('email', e.target.value)}
                         placeholder="user@example.com"
@@ -124,12 +114,12 @@ export default function UserForm({ mode, initial }: UserFormProps) {
                 </div>
 
                 {/* 密码 */}
-                <div>
-                    <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5" htmlFor="password">
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="password">
                         {mode === 'create' ? '密码' : '新密码（留空则不修改）'}
                     </label>
                     <input
-                        className={inputClass}
+                        className={styles.input}
                         id="password"
                         minLength={6}
                         onChange={(e) => handleChange('password', e.target.value)}
@@ -141,19 +131,17 @@ export default function UserForm({ mode, initial }: UserFormProps) {
                 </div>
 
                 {/* 角色 */}
-                <div>
-                    <label className="block text-sm font-medium text-[var(--foreground)] mb-2">角色</label>
-                    <div className="flex gap-3">
+                <div className={styles.field}>
+                    <label className={styles.labelInline}>角色</label>
+                    <div className={styles.radioGroup}>
                         {(['admin', 'user'] as const).map((r) => (
                             <label
-                                className={`inline-flex items-center gap-2 px-4 py-2 border cursor-pointer text-sm transition-colors ${
-                                    form.role === r ? radioActive : radioInactive
-                                }`}
+                                className={form.role === r ? styles.radioActive : styles.radioInactive}
                                 key={r}
                             >
                                 <input
                                     checked={form.role === r}
-                                    className="sr-only"
+                                    className={styles.radioInput}
                                     name="role"
                                     onChange={() => handleChange('role', r)}
                                     type="radio"
@@ -167,19 +155,17 @@ export default function UserForm({ mode, initial }: UserFormProps) {
 
                 {/* 状态（仅编辑模式） */}
                 {mode === 'edit' && (
-                    <div>
-                        <label className="block text-sm font-medium text-[var(--foreground)] mb-2">状态</label>
-                        <div className="flex gap-3">
+                    <div className={styles.field}>
+                        <label className={styles.labelInline}>状态</label>
+                        <div className={styles.radioGroup}>
                             {(['active', 'disabled'] as const).map((s) => (
                                 <label
-                                    className={`inline-flex items-center gap-2 px-4 py-2 border cursor-pointer text-sm transition-colors ${
-                                        form.status === s ? radioActive : radioInactive
-                                    }`}
+                                    className={form.status === s ? styles.radioActive : styles.radioInactive}
                                     key={s}
                                 >
                                     <input
                                         checked={form.status === s}
-                                        className="sr-only"
+                                        className={styles.radioInput}
                                         name="status"
                                         onChange={() => handleChange('status', s)}
                                         type="radio"
@@ -193,25 +179,18 @@ export default function UserForm({ mode, initial }: UserFormProps) {
                 )}
 
                 {/* 提交 */}
-                <div className="flex items-center gap-3 pt-2">
-                    <button
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-white text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
-                        disabled={submitting}
-                        type="submit"
-                    >
-                        <Save className="h-4 w-4" />
+                <div className={styles.submitRow}>
+                    <button className={styles.submitBtn} disabled={submitting} type="submit">
+                        <SaveIcon className={styles.submitIcon} />
                         {submitting ? '保存中...' : mode === 'create' ? '创建用户' : '保存修改'}
                     </button>
-                    <Link
-                        className="px-5 py-2.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
-                        href={APP_ROUTES.adminUsers}
-                    >
+                    <Link className={styles.cancelLink} href={APP_ROUTES.adminUsers}>
                         取消
                     </Link>
                 </div>
 
                 {message && (
-                    <p className="text-sm text-[var(--primary)] border border-[var(--primary)] bg-[rgba(158,0,39,0.04)] px-4 py-2.5" role="alert">
+                    <p className={styles.message} role="alert">
                         {message}
                     </p>
                 )}
