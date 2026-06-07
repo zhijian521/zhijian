@@ -20,15 +20,23 @@ export default function AdminSidebar() {
     const [manualOpen, setManualOpen] = useState<Record<string, boolean>>({});
 
     function isGroupOpen(key: string, items: { href: string; match?: 'exact' | 'prefix' }[]): boolean {
-        // 当前路由匹配分组下任一子项时自动展开
-        const autoOpen = items.some((item) => isNavItemActive(pathname, item.href, item.match ?? 'prefix'));
-        if (autoOpen) return true;
-        // 否则用手动状态（默认收起）
-        return manualOpen[key] ?? false;
+        // 用户手动操作过时，以手动状态为准
+        if (key in manualOpen) return manualOpen[key];
+        // 未手动操作时，当前路由匹配分组下任一子项则自动展开，否则默认收起
+        return items.some((item) => isNavItemActive(pathname, item.href, item.match ?? 'prefix'));
     }
 
     function toggleGroup(key: string) {
-        setManualOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+        setManualOpen((prev) => {
+            const currentOpen = key in prev ? prev[key] : isGroupAutoOpen(key);
+            return { ...prev, [key]: !currentOpen };
+        });
+    }
+
+    function isGroupAutoOpen(key: string): boolean {
+        const group = ADMIN_NAV_GROUPS.find((g) => g.key === key);
+        if (!group) return false;
+        return group.items.some((item) => isNavItemActive(pathname, item.href, item.match ?? 'prefix'));
     }
 
     function handleLogout() {
@@ -95,7 +103,7 @@ export default function AdminSidebar() {
 
                             <div
                                 className={styles.subNav}
-                                style={{ maxHeight: open ? `${group.items.length * 40}px` : '0' }}
+                                style={{ maxHeight: open ? `${group.items.length * 50}px` : '0' }}
                             >
                                 {group.items.map((item) => {
                                     const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');

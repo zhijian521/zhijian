@@ -1,4 +1,4 @@
-import { BookOpen, FileText, FolderTree, LayoutDashboard, Plus, Settings, Tag, Users, Wrench, type LucideIcon } from 'lucide-react';
+import { BookOpen, FileText, FolderTree, LayoutDashboard, Settings, Tag, Users, Wrench, type LucideIcon } from 'lucide-react';
 
 export const SITE_METADATA = {
     name: 'Zhijian',
@@ -37,11 +37,6 @@ export interface NavItem {
     match: 'exact' | 'prefix';
 }
 
-/*== 后台导航项：在 NavItem 基础上增加图标。 ==*/
-export interface AdminNavItem extends NavItem {
-    icon: LucideIcon;
-}
-
 /*== 二级导航子项。 ==*/
 export interface NavSubItem {
     href: string;
@@ -64,14 +59,6 @@ export const PUBLIC_NAV_ITEMS: NavItem[] = [
     { href: APP_ROUTES.blog, label: '文章', match: 'prefix' },
 ];
 
-/*== 后台菜单：和真实路由保持一一对应。 ==*/
-export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
-    { href: APP_ROUTES.admin, icon: LayoutDashboard, label: '概览', match: 'exact' },
-    { href: APP_ROUTES.adminPosts, icon: BookOpen, label: '文章', match: 'prefix' },
-    { href: APP_ROUTES.adminUsers, icon: Users, label: '用户', match: 'prefix' },
-    { href: APP_ROUTES.adminSettings, icon: Settings, label: '设置', match: 'prefix' },
-];
-
 /*== 后台二级菜单：和真实路由保持一一对应。 ==*/
 export const ADMIN_NAV_GROUPS: NavGroup[] = [
     {
@@ -86,7 +73,6 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
         icon: BookOpen,
         items: [
             { href: APP_ROUTES.adminPosts, label: '文章列表', icon: FileText, match: 'prefix' },
-            { href: APP_ROUTES.adminPostCreate, label: '新增文章', icon: Plus, match: 'exact' },
             { href: APP_ROUTES.adminCategories, label: '分类管理', icon: FolderTree, match: 'prefix' },
             { href: APP_ROUTES.adminTags, label: '标签管理', icon: Tag, match: 'prefix' },
         ],
