@@ -30,7 +30,7 @@
 | 图标（前台） | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/` |
 | 图标（后台） | lucide-react | ^1.16.0 | 🔄 迁移中（仅后台仍使用） |
 | UI 组件（旧） | shadcn/ui (new-york style) | — | 🔄 迁移中（8 个组件待替换） |
-| UI 组件（新） | 自建 CSS Module 组件 | — | ✅ 5 个已完成 |
+| UI 组件（新） | 自建 CSS Module 组件 | — | ✅ 6 个已完成 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 
 **路径别名**: `@/*` → `./src/*`
@@ -45,15 +45,21 @@ src/
 │   ├── admin/                    # 后台管理 (/admin/*)
 │   │   ├── _components/          # 后台私有组件
 │   │   │   ├── admin-shell.tsx   # 后台布局壳（侧边栏+内容区）
-│   │   │   ├── admin-sidebar.tsx # 侧边栏导航（仍用 lucide-react）
-│   │   │   ├── confirm-dialog.tsx # 确认弹窗（仍用 Tailwind）
+│   │   │   ├── admin-sidebar.tsx # 侧边栏导航（数据驱动二级折叠菜单）
+│   │   │   ├── split-panel-layout.tsx # 左右两栏布局复用组件
 │   │   │   ├── post-editor-form.tsx    # 文章编辑表单
-│   │   │   ├── post-management-client.tsx # 文章列表（客户端）
+│   │   │   ├── post-management-client.tsx # 文章列表（客户端，静态数据+删除）
 │   │   │   ├── user-form.tsx     # 用户编辑表单
 │   │   │   └── user-list-client.tsx    # 用户列表（客户端）
 │   │   ├── layout.tsx            # 后台布局（鉴权+AdminShell）
 │   │   ├── login/                # 后台登录页
 │   │   ├── posts/                # 文章管理 CRUD
+│   │   ├── categories/           # 分类管理（静态数据）
+│   │   │   └── _components/
+│   │   │       └── category-management.tsx
+│   │   ├── tags/                 # 标签管理（静态数据）
+│   │   │   └── _components/
+│   │   │       └── tag-management.tsx
 │   │   ├── users/                # 用户管理 CRUD
 │   │   └── settings/             # 设置页
 │   ├── api/                      # API 路由
@@ -101,7 +107,8 @@ src/
 │       ├── submit-button.tsx + .module.css   # 🆕 CSS Module
 │       ├── text-input.tsx + .module.css      # 🆕 CSS Module
 │       ├── text-link.tsx + .module.css       # 🆕 CSS Module
-│       ├── confirm-dialog.tsx                # 🆕 Tailwind 内联（待迁移）
+│       ├── confirm-dialog.tsx                # 确认弹窗（Tailwind 内联，待迁移）
+│       ├── pagination.tsx + pagination.module.css  # 🆕 CSS Module
 │       ├── badge.tsx           # 🔄 旧 shadcn（待替换）
 │       ├── button.tsx          # 🔄 旧 shadcn（待替换）
 │       ├── card.tsx            # 🔄 旧 shadcn（待替换）
@@ -115,10 +122,11 @@ src/
 │   ├── auth.ts                   # 认证系统
 │   ├── db.ts                     # 数据库连接池
 │   ├── http-client.ts            # axios 封装
+│   ├── mock-data.ts              # 🆕 静态示例数据（后台页面使用）
 │   ├── post-shared.ts            # 文章共享类型/工具
 │   ├── posts.ts                  # 文章数据层（数据库）
 │   ├── static-posts.ts           # 🆕 静态文章数据层（MD 文件）
-│   ├── site.ts                   # 路由/导航配置
+│   ├── site.ts                   # 路由/导航配置（NavGroup 二级菜单）
 │   └── utils.ts                  # 工具函数 (cn + twMerge，待简化)
 └── middleware.ts                 # 中间件（注入路径头）
 
@@ -339,6 +347,8 @@ if (res.code === 0) {
 |------|----------|------|
 | 公开博客 | `/`, `/blog`, `/blog/[slug]` | `PublicChrome` (头部+底部) |
 | 管理后台 | `/admin/*` | `AdminShell` (侧边栏+内容区) |
+| 分类管理 | `/admin/categories` | `AdminShell` |
+| 标签管理 | `/admin/tags` | `AdminShell` |
 | 后台登录 | `/admin/login` | 无壳（独立页面） |
 | 403 页面 | `/forbidden` | 无壳 |
 
@@ -569,6 +579,7 @@ refactor(admin): 删除注册/公开登录页
 |------|------|
 | 统一主题变量 | `src/app/theme.css` |
 | 路由/导航配置 | `src/lib/site.ts` |
+| 静态示例数据 | `src/lib/mock-data.ts` |
 | 文章数据层（数据库） | `src/lib/posts.ts` |
 | 文章数据层（静态 MD） | `src/lib/static-posts.ts` |
 | 认证系统 | `src/lib/auth.ts` |
@@ -622,7 +633,7 @@ refactor(admin): 删除注册/公开登录页
 
 1. 在 `src/app/admin/` 下创建目录和 `page.tsx`
 2. 如需交互，创建对应的 `*-client.tsx` 组件
-3. 在 `src/lib/site.ts` 的 `ADMIN_NAV_ITEMS` 添加导航项
+3. 在 `src/lib/site.ts` 的 `ADMIN_NAV_GROUPS` 中添加导航项（NavGroup/NavSubItem 结构）
 4. 如需 API，在 `src/app/api/admin/` 创建路由
 
 ### 添加新的自建 UI 组件
@@ -648,4 +659,4 @@ refactor(admin): 删除注册/公开登录页
 
 ---
 
-*最后更新: 2026-06-05*
+*最后更新: 2026-06-07*
