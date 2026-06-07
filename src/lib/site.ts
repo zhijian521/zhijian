@@ -7,6 +7,7 @@ import {
     UsersIcon,
     SettingsIcon,
     WrenchIcon,
+    CodeIcon,
     type IconComponent,
 } from '@/components/ui/icons';
 
@@ -30,6 +31,7 @@ export const APP_ROUTES = {
     adminSettings: '/admin/settings',
     adminCategories: '/admin/categories',
     adminTags: '/admin/tags',
+    adminComponents: '/admin/components',
     /*-- 错误 --*/
     forbidden: '/forbidden',
 } as const;
@@ -93,6 +95,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
         icon: SettingsIcon,
         items: [
             { href: APP_ROUTES.adminUsers, label: '用户管理', icon: UsersIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminComponents, label: '组件列表', icon: CodeIcon, match: 'exact' },
             { href: APP_ROUTES.adminSettings, label: '系统设置', icon: WrenchIcon, match: 'exact' },
         ],
     },
