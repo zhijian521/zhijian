@@ -33,6 +33,8 @@ export { BookOpenIcon } from './book-open-icon';
 export { FolderTreeIcon } from './folder-tree-icon';
 export { SettingsIcon } from './settings-icon';
 export { TagIcon } from './tag-icon';
+export { UserIcon } from './user-icon';
+export { LockIcon } from './lock-icon';
 
 /** 图标组件的函数类型，用于 NavSubItem 等 */
 export type IconComponent = React.ComponentType<IconProps>;

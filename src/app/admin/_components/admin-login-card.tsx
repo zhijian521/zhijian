@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 
+import { UserIcon, LockIcon } from '@/components/ui/icons';
 import { APP_ROUTES, STORAGE_KEYS } from '@/lib/site';
 import { api } from '@/lib/http-client';
 import { TextInput } from '@/components/ui/text-input';
@@ -23,23 +24,6 @@ const INITIAL_FORM: LoginFormState = {
     remember: false,
     username: '',
 };
-
-/*== 内联 SVG 图标 ==*/
-function UserIcon() {
-    return (
-        <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    );
-}
-
-function LockIcon() {
-    return (
-        <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm3 8H9V7a3 3 0 016 0v3z" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    );
-}
 
 /*== 后台登录页主体：使用直角视觉，同时支持本地记住密码回填。 ==*/
 export default function AdminLoginCard() {
