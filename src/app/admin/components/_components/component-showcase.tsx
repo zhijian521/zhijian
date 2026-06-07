@@ -113,31 +113,59 @@ export default function ComponentShowcase() {
                 {/* SubmitButton */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>SubmitButton</h3>
-                    <p className={styles.componentDesc}>提交按钮，渲染为 type=&quot;submit&quot; 的 &lt;button&gt;。</p>
+                    <p className={styles.componentDesc}>提交按钮，渲染为 type=&quot;submit&quot; 的 &lt;button&gt;，支持 default / small 两种尺寸。</p>
                     <div className={styles.demoRow}>
-                        <SubmitButton>提交</SubmitButton>
-                        <SubmitButton disabled>禁用状态</SubmitButton>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <SubmitButton>提交</SubmitButton>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <SubmitButton size='small'>提交</SubmitButton>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>disabled</span>
+                            <SubmitButton disabled>禁用状态</SubmitButton>
+                        </div>
                     </div>
                 </div>
 
                 {/* TextInput */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>TextInput</h3>
-                    <p className={styles.componentDesc}>带图标槽和标签的文本输入框。</p>
+                    <p className={styles.componentDesc}>带图标槽和标签的文本输入框，支持 default / small 两种尺寸。</p>
                     <div className={styles.demoRow}>
-                        <TextInput
-                            icon={<SearchIcon className={styles.inputIcon} />}
-                            id='demo-search'
-                            label='搜索'
-                            onChange={(e) => setTextInput(e.target.value)}
-                            placeholder='输入关键词...'
-                            value={textInput}
-                        />
-                        <TextInput
-                            id='demo-plain'
-                            label='无图标输入'
-                            placeholder='普通输入框'
-                        />
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <TextInput
+                                icon={<SearchIcon className={styles.inputIcon} />}
+                                id='demo-search'
+                                label='搜索'
+                                onChange={(e) => setTextInput(e.target.value)}
+                                placeholder='输入关键词...'
+                                value={textInput}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <TextInput
+                                icon={<SearchIcon className={styles.inputIcon} />}
+                                id='demo-search-sm'
+                                label='搜索'
+                                onChange={(e) => setTextInput(e.target.value)}
+                                placeholder='输入关键词...'
+                                inputSize='small'
+                                value={textInput}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>无图标</span>
+                            <TextInput
+                                id='demo-plain'
+                                label='普通输入'
+                                placeholder='普通输入框'
+                            />
+                        </div>
                     </div>
                 </div>
 

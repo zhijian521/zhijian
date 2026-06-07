@@ -12,6 +12,10 @@
     color: var(--muted-foreground);
 }
 
+.labelSmall {
+    font-size: 0.8125rem;
+}
+
 .inputWrap {
     position: relative;
     display: flex;
@@ -39,9 +43,8 @@
     width: 100%;
     border: 1px solid var(--border);
     background: var(--background);
-    padding: 0.625rem 0.875rem;
     font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.4;
     color: var(--foreground);
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -57,6 +60,20 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
+/* 尺寸变体 */
+.default {
+    padding: 0.625rem 0.875rem;
+}
+
+.small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
 .hasIcon {
     padding-left: 2.25rem;
+}
+
+.hasIconSmall {
+    padding-left: 1.875rem;
 }

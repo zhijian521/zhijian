@@ -7,6 +7,7 @@
     font-size: 0.75rem;
     line-height: 1.4;
     border-radius: var(--radius);
+    border: 1px solid transparent;
 }
 
 /* 默认：米黄底 */
@@ -23,6 +24,6 @@
 
 /* 边框：无底色，淡边框 */
 .outlined {
-    border: 1px solid var(--border);
+    border-color: var(--border);
     color: var(--muted-foreground);
 }

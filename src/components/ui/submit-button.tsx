@@ -1,12 +1,15 @@
 import styles from './submit-button.module.css';
 
-export interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    /** 按钮尺寸：default 默认 / small 紧凑 */
+    size?: 'default' | 'small';
+}
 
 /*== SubmitButton 提交按钮 — 朱砂红主按钮，全站通用 ==*/
-export function SubmitButton({ className, children, ...props }: SubmitButtonProps) {
+export function SubmitButton({ size = 'default', className, children, ...props }: SubmitButtonProps) {
     return (
         <button
-            className={`${styles.button}${className ? ` ${className}` : ''}`}
+            className={`${styles.button} ${styles[size]}${className ? ` ${className}` : ''}`}
             type="submit"
             {...props}
         >
