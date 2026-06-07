@@ -3,18 +3,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Plus, UserCircle2 } from 'lucide-react';
+import { ChevronRight, LogOut, Plus, UserCircle2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { ADMIN_NAV_ITEMS, APP_ROUTES, SITE_METADATA } from '@/lib/site';
+import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/site';
 import { api } from '@/lib/http-client';
 import { cn, isNavItemActive } from '@/lib/utils';
 import styles from './admin-sidebar.module.css';
 
-/*== 后台侧边栏：承载品牌、快捷入口、导航与账户操作，并基于当前路由实时更新高亮状态。 ==*/
+/*== 后台侧边栏：数据驱动二级折叠菜单，自动展开当前路由所在分组。 ==*/
 export default function AdminSidebar() {
     const pathname = usePathname();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    /* 计算每个分组的展开状态：当前路由匹配分组下任一子项时自动展开，否则用手动状态 */
+    const [manualOpen, setManualOpen] = useState<Record<string, boolean>>({});
+
+    function isGroupOpen(key: string, items: { href: string; match?: 'exact' | 'prefix' }[]): boolean {
+        // 当前路由匹配分组下任一子项时自动展开
+        const autoOpen = items.some((item) => isNavItemActive(pathname, item.href, item.match ?? 'prefix'));
+        if (autoOpen) return true;
+        // 否则用手动状态（默认收起）
+        return manualOpen[key] ?? false;
+    }
+
+    function toggleGroup(key: string) {
+        setManualOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+    }
 
     function handleLogout() {
         setIsLoggingOut(true);
@@ -25,6 +40,7 @@ export default function AdminSidebar() {
 
     return (
         <aside className={styles.sidebar}>
+            {/* 品牌区 */}
             <div className={styles.brand}>
                 <Image alt='Zhijian Admin' className={styles.logo} height={52} priority src='/images/logo.png' width={52} />
                 <div className={styles.brandText}>
@@ -33,32 +49,78 @@ export default function AdminSidebar() {
                 </div>
             </div>
 
+            {/* 撰写文章快捷入口 */}
             <Link className={styles.createButton} href={APP_ROUTES.adminPostCreate}>
-                <Plus className='h-4 w-4' />
+                <Plus className={styles.navIcon} />
                 <span>撰写文章</span>
             </Link>
 
+            {/* 导航区 */}
             <nav aria-label='后台主导航' className={styles.nav}>
-                {ADMIN_NAV_ITEMS.map((item) => {
-                    const isActive = isNavItemActive(pathname, item.href, item.match);
-                    const Icon = item.icon;
+                {ADMIN_NAV_GROUPS.map((group) => {
+                    // 顶级单项（如概览）：无 label，直接渲染
+                    if (!group.label) {
+                        return group.items.map((item) => {
+                            const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
+                            const Icon = item.icon;
+                            return (
+                                <Link
+                                    className={cn(styles.navItem, isActive && styles.navActive)}
+                                    href={item.href}
+                                    key={item.href}
+                                >
+                                    <Icon className={styles.navIcon} />
+                                    <span>{item.label}</span>
+                                </Link>
+                            );
+                        });
+                    }
+
+                    // 可折叠分组
+                    const GroupIcon = group.icon;
+                    const open = isGroupOpen(group.key, group.items);
 
                     return (
-                        <Link
-                            className={cn(styles.navItem, isActive && styles.navActive)}
-                            href={item.href}
-                            key={item.label}
-                        >
-                            <Icon className='h-4 w-4' />
-                            <span>{item.label}</span>
-                        </Link>
+                        <div className={styles.navGroup} key={group.key}>
+                            <button
+                                className={styles.groupHeader}
+                                onClick={() => toggleGroup(group.key)}
+                                type='button'
+                                aria-expanded={open}
+                            >
+                                {GroupIcon && <GroupIcon className={styles.groupIcon} />}
+                                <span>{group.label}</span>
+                                <ChevronRight className={cn(styles.groupArrow, open && styles.groupArrowOpen)} />
+                            </button>
+
+                            <div
+                                className={styles.subNav}
+                                style={{ maxHeight: open ? `${group.items.length * 40}px` : '0' }}
+                            >
+                                {group.items.map((item) => {
+                                    const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
+                                    const Icon = item.icon;
+                                    return (
+                                        <Link
+                                            className={cn(styles.subNavItem, isActive && styles.subNavActive)}
+                                            href={item.href}
+                                            key={item.href}
+                                        >
+                                            <Icon className={styles.navIcon} />
+                                            <span>{item.label}</span>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     );
                 })}
             </nav>
 
+            {/* 底部区 */}
             <div className={styles.footer}>
                 <button className={cn(styles.footerButton, styles.navItem)} type='button'>
-                    <UserCircle2 className='h-4 w-4' />
+                    <UserCircle2 className={styles.navIcon} />
                     <span>个人资料</span>
                 </button>
                 <button
@@ -67,7 +129,7 @@ export default function AdminSidebar() {
                     onClick={handleLogout}
                     type='button'
                 >
-                    <LogOut className='h-4 w-4' />
+                    <LogOut className={styles.navIcon} />
                     <span>{isLoggingOut ? '退出中...' : '退出登录'}</span>
                 </button>
             </div>
