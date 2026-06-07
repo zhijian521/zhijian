@@ -1,4 +1,14 @@
-import { BookOpen, FileText, FolderTree, LayoutDashboard, Settings, Tag, Users, Wrench, type LucideIcon } from 'lucide-react';
+import {
+    LayoutDashboardIcon,
+    BookOpenIcon,
+    FileTextIcon,
+    FolderTreeIcon,
+    TagIcon,
+    UsersIcon,
+    SettingsIcon,
+    WrenchIcon,
+    type IconComponent,
+} from '@/components/ui/icons';
 
 export const SITE_METADATA = {
     name: 'Zhijian',
@@ -41,7 +51,7 @@ export interface NavItem {
 export interface NavSubItem {
     href: string;
     label: string;
-    icon: LucideIcon;
+    icon: IconComponent;
     match?: 'exact' | 'prefix';
 }
 
@@ -49,7 +59,7 @@ export interface NavSubItem {
 export interface NavGroup {
     key: string;
     label?: string;
-    icon?: LucideIcon;
+    icon?: IconComponent;
     items: NavSubItem[];
 }
 
@@ -64,26 +74,26 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
     {
         key: 'overview',
         items: [
-            { href: APP_ROUTES.admin, label: '概览', icon: LayoutDashboard, match: 'exact' },
+            { href: APP_ROUTES.admin, label: '概览', icon: LayoutDashboardIcon, match: 'exact' },
         ],
     },
     {
         key: 'content',
         label: '文章管理',
-        icon: BookOpen,
+        icon: BookOpenIcon,
         items: [
-            { href: APP_ROUTES.adminPosts, label: '文章列表', icon: FileText, match: 'prefix' },
-            { href: APP_ROUTES.adminCategories, label: '分类管理', icon: FolderTree, match: 'prefix' },
-            { href: APP_ROUTES.adminTags, label: '标签管理', icon: Tag, match: 'prefix' },
+            { href: APP_ROUTES.adminPosts, label: '文章列表', icon: FileTextIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminCategories, label: '分类管理', icon: FolderTreeIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminTags, label: '标签管理', icon: TagIcon, match: 'prefix' },
         ],
     },
     {
         key: 'system',
         label: '系统管理',
-        icon: Settings,
+        icon: SettingsIcon,
         items: [
-            { href: APP_ROUTES.adminUsers, label: '用户管理', icon: Users, match: 'prefix' },
-            { href: APP_ROUTES.adminSettings, label: '系统设置', icon: Wrench, match: 'exact' },
+            { href: APP_ROUTES.adminUsers, label: '用户管理', icon: UsersIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminSettings, label: '系统设置', icon: WrenchIcon, match: 'exact' },
         ],
     },
 ];

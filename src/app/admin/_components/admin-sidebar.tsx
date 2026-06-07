@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronRight, LogOut, Plus, UserCircle2 } from 'lucide-react';
+import { ChevronRightIcon, LogOutIcon, PlusIcon, UserCircle2Icon } from '@/components/ui/icons';
 import { useState } from 'react';
 
 import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/site';
@@ -59,7 +59,7 @@ export default function AdminSidebar() {
 
             {/* 撰写文章快捷入口 */}
             <Link className={styles.createButton} href={APP_ROUTES.adminPostCreate}>
-                <Plus className={styles.navIcon} />
+                <PlusIcon className={styles.navIcon} />
                 <span>撰写文章</span>
             </Link>
 
@@ -98,7 +98,7 @@ export default function AdminSidebar() {
                             >
                                 {GroupIcon && <GroupIcon className={styles.groupIcon} />}
                                 <span>{group.label}</span>
-                                <ChevronRight className={cn(styles.groupArrow, open && styles.groupArrowOpen)} />
+                                <ChevronRightIcon className={cn(styles.groupArrow, open && styles.groupArrowOpen)} />
                             </button>
 
                             <div
@@ -128,7 +128,7 @@ export default function AdminSidebar() {
             {/* 底部区 */}
             <div className={styles.footer}>
                 <button className={cn(styles.footerButton, styles.navItem)} type='button'>
-                    <UserCircle2 className={styles.navIcon} />
+                    <UserCircle2Icon className={styles.navIcon} />
                     <span>个人资料</span>
                 </button>
                 <button
@@ -137,7 +137,7 @@ export default function AdminSidebar() {
                     onClick={handleLogout}
                     type='button'
                 >
-                    <LogOut className={styles.navIcon} />
+                    <LogOutIcon className={styles.navIcon} />
                     <span>{isLoggingOut ? '退出中...' : '退出登录'}</span>
                 </button>
             </div>
