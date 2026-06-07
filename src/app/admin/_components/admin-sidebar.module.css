@@ -1,3 +1,5 @@
+/*== 后台侧边栏样式：数据驱动二级折叠菜单。 ==*/
+
 .sidebar {
     position: fixed;
     left: 0;
@@ -10,6 +12,8 @@
     background: var(--muted);
     padding: 24px 16px;
 }
+
+/*-- 品牌区 --*/
 
 .brand {
     display: flex;
@@ -45,6 +49,8 @@
     color: var(--muted-foreground);
 }
 
+/*-- 撰写文章按钮 --*/
+
 .createButton {
     display: flex;
     align-items: center;
@@ -73,12 +79,16 @@
     transform: scale(0.98);
 }
 
+/*-- 导航区 --*/
+
 .nav {
     display: flex;
     flex: 1;
     flex-direction: column;
     gap: 4px;
 }
+
+/*-- 顶级导航项（概览） --*/
 
 .navItem {
     display: flex;
@@ -103,15 +113,120 @@
 }
 
 .navItem:hover {
-    background: rgba(228, 226, 226, 0.55);
+    background: rgba(243, 236, 228, 0.6);
     color: var(--foreground);
 }
 
 .navActive {
     border-right-color: var(--primary);
-    background: rgba(158, 0, 39, 0.08);
+    background: rgba(159, 0, 15, 0.08);
     color: var(--primary);
 }
+
+/*-- 导航分组 --*/
+
+.navGroup {
+    margin-top: 1rem;
+}
+
+/*-- 分组标题（可折叠） --*/
+
+.groupHeader {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    text-align: left;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+    cursor: pointer;
+}
+
+.groupHeader:hover {
+    background: rgba(243, 236, 228, 0.6);
+    color: var(--foreground);
+}
+
+/*-- 展开指示器箭头 --*/
+
+.groupArrow {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.groupArrowOpen {
+    transform: rotate(90deg);
+}
+
+/*-- 子菜单容器（展开/收起动画） --*/
+
+.subNav {
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+}
+
+/*-- 子菜单项 --*/
+
+.subNavItem {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    border-right: 4px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    padding: 8px 16px 8px 2.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--muted-foreground);
+    text-align: left;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+    cursor: pointer;
+}
+
+.subNavItem:hover {
+    background: rgba(243, 236, 228, 0.6);
+    color: var(--foreground);
+}
+
+.subNavActive {
+    border-right-color: var(--primary);
+    background: rgba(159, 0, 15, 0.08);
+    color: var(--primary);
+}
+
+/*-- 图标尺寸 --*/
+
+.navIcon {
+    height: 1rem;
+    width: 1rem;
+    flex-shrink: 0;
+}
+
+.groupIcon {
+    height: 1rem;
+    width: 1rem;
+    flex-shrink: 0;
+}
+
+/*-- 底部区 --*/
 
 .footer {
     margin-top: auto;
