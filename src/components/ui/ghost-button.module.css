@@ -10,6 +10,7 @@
     font-size: 0.75rem;
     line-height: 1.4;
     color: var(--muted-foreground);
+    text-decoration: none;
     transition:
         color 0.2s ease,
         border-color 0.2s ease,
@@ -20,6 +21,18 @@
     color: var(--primary);
     border-color: var(--primary);
     background: var(--muted);
+}
+
+/* primary 变体：主色边框 + hover 反色 */
+.primary {
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.primary:hover {
+    background: var(--primary);
+    color: #ffffff;
 }
 
 .icon {

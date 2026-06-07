@@ -1,0 +1,89 @@
+/*== DataTable 通用数据表格 — 匹配博客表格风格 ==*/
+
+.tableWrapper {
+    border: 1px solid var(--primary);
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+}
+
+.thead {
+    border-bottom: 1px solid var(--primary);
+    background: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+}
+
+.th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+}
+
+.thRight {
+    text-align: right;
+}
+
+.row {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 0.15s;
+}
+
+.row:nth-child(even) {
+    background: rgba(246, 239, 231, 0.6);
+}
+
+.row:hover {
+    background: var(--accent);
+}
+
+.td {
+    padding: 0.75rem 1rem;
+}
+
+.tdRight {
+    text-align: right;
+}
+
+.emptyRow {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--muted-foreground);
+}
+
+/* 响应式隐藏 */
+.hideBelowSm {
+    display: none;
+}
+
+.hideBelowMd {
+    display: none;
+}
+
+.hideBelowLg {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .hideBelowSm {
+        display: table-cell;
+    }
+}
+
+@media (min-width: 768px) {
+    .hideBelowMd {
+        display: table-cell;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hideBelowLg {
+        display: table-cell;
+    }
+}

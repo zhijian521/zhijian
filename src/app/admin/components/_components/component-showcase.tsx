@@ -13,8 +13,10 @@ import {
     SettingsIcon, TagIcon,
 } from '@/components/ui/icons';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { Pagination } from '@/components/ui/pagination';
+import { PillSelect } from '@/components/ui/pill-select';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
@@ -58,15 +60,17 @@ const ICONS = [
 /*== 组件列表示例页 ==*/
 export default function ComponentShowcase() {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [customDialogOpen, setCustomDialogOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(3);
     const [textInput, setTextInput] = useState('');
+    const [pillValue, setPillValue] = useState('all');
 
     return (
         <>
             <AdminPageHeader
                 description='项目自建组件与图标的示例展示，便于开发时查阅。'
                 eyebrow='Components'
-                tag={`${ICONS.length} 个图标 · 7 个组件`}
+                tag={`${ICONS.length} 个图标 · 10 个组件`}
                 title='组件列表'
             />
 
@@ -101,12 +105,20 @@ export default function ComponentShowcase() {
                 {/* GhostButton */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>GhostButton</h3>
-                    <p className={styles.componentDesc}>幽灵边框按钮，渲染为 &lt;a&gt; 标签，可选左侧图标。</p>
+                    <p className={styles.componentDesc}>幽灵边框按钮，渲染为 &lt;a&gt; 标签，支持 default / primary 两种变体。</p>
                     <div className={styles.demoRow}>
-                        <GhostButton href='#' icon={<ArrowRightIcon className={styles.btnIcon} />}>
-                            查看详情
-                        </GhostButton>
-                        <GhostButton href='#'>无图标</GhostButton>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <GhostButton href='#' icon={<ArrowRightIcon className={styles.btnIcon} />}>
+                                查看详情
+                            </GhostButton>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>primary</span>
+                            <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} variant='primary'>
+                                新建
+                            </GhostButton>
+                        </div>
                     </div>
                 </div>
 
@@ -179,12 +191,41 @@ export default function ComponentShowcase() {
                     </div>
                 </div>
 
+                {/* PillSelect */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>PillSelect</h3>
+                    <p className={styles.componentDesc}>药丸单选，连排扁平选项，选中项底部主色指示条。</p>
+                    <div className={styles.demoRow}>
+                        <PillSelect
+                            name='demo-pill'
+                            onChange={setPillValue}
+                            options={[
+                                { value: 'all', label: '全部' },
+                                { value: 'published', label: '已发布' },
+                                { value: 'draft', label: '草稿' },
+                            ]}
+                            value={pillValue}
+                        />
+                    </div>
+                </div>
+
                 {/* Pagination */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>Pagination</h3>
                     <p className={styles.componentDesc}>分页控件，自动省略过多页码。</p>
                     <div className={styles.demoRow}>
                         <Pagination current={currentPage} onPageChange={setCurrentPage} total={8} />
+                    </div>
+                </div>
+
+                {/* Dialog */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>Dialog</h3>
+                    <p className={styles.componentDesc}>通用弹窗容器，遮罩 + 居中面板 + 关闭按钮。</p>
+                    <div className={styles.demoRow}>
+                        <button className={styles.triggerBtn} onClick={() => setCustomDialogOpen(true)} type='button'>
+                            打开弹窗
+                        </button>
                     </div>
                 </div>
 
@@ -207,6 +248,10 @@ export default function ComponentShowcase() {
                 open={dialogOpen}
                 title='示例弹窗'
             />
+
+            <Dialog onClose={() => setCustomDialogOpen(false)} open={customDialogOpen} title='示例弹窗'>
+                <p className={styles.componentDesc}>这是一个通用弹窗，可以放置任意内容。点击右上角关闭按钮或遮罩层关闭。</p>
+            </Dialog>
         </>
     );
 }

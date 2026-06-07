@@ -1,12 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
+import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
-import { APP_ROUTES } from '@/lib/site';
+import Dialog from '@/components/ui/dialog';
+import { GhostButton } from '@/components/ui/ghost-button';
+import { PillSelect } from '@/components/ui/pill-select';
+import { Tag } from '@/components/ui/tag';
+import { TextInput } from '@/components/ui/text-input';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { api } from '@/lib/http-client';
 import styles from './user-list-client.module.css';
 
@@ -24,9 +28,24 @@ interface UserListData {
     total: number;
 }
 
+interface UserFormData {
+    username: string;
+    email: string;
+    password: string;
+    role: 'admin' | 'user';
+    status: 'active' | 'disabled';
+}
+
+const EMPTY_FORM: UserFormData = {
+    username: '',
+    email: '',
+    password: '',
+    role: 'user',
+    status: 'active',
+};
+
 /*== 后台用户列表：匹配博客表格风格。 ==*/
 export default function UserListClient() {
-    const router = useRouter();
     const [data, setData] = useState<UserListData>({ users: [], total: 0 });
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
@@ -34,6 +53,14 @@ export default function UserListClient() {
     const [deleting, setDeleting] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; username: string } | null>(null);
     const pageSize = 20;
+
+    /* 弹窗表单状态 */
+    const [formOpen, setFormOpen] = useState(false);
+    const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
+    const [editingUser, setEditingUser] = useState<UserItem | null>(null);
+    const [form, setForm] = useState<UserFormData>(EMPTY_FORM);
+    const [submitting, setSubmitting] = useState(false);
+    const [formMessage, setFormMessage] = useState<string | null>(null);
 
     const fetchUsers = useCallback(async (opts?: { page?: number; search?: string }) => {
         const p = opts?.page ?? page;
@@ -90,102 +117,161 @@ export default function UserListClient() {
         }
     }
 
+    /* 弹窗表单操作 */
+    function openCreateForm() {
+        setFormMode('create');
+        setEditingUser(null);
+        setForm(EMPTY_FORM);
+        setFormMessage(null);
+        setFormOpen(true);
+    }
+
+    function openEditForm(user: UserItem) {
+        setFormMode('edit');
+        setEditingUser(user);
+        setForm({
+            username: user.username,
+            email: user.email,
+            password: '',
+            role: user.role,
+            status: user.status,
+        });
+        setFormMessage(null);
+        setFormOpen(true);
+    }
+
+    function handleFormChange<K extends keyof UserFormData>(key: K, value: UserFormData[K]) {
+        setForm((prev) => ({ ...prev, [key]: value }));
+        setFormMessage(null);
+    }
+
+    async function handleFormSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setSubmitting(true);
+        setFormMessage(null);
+
+        const body: Record<string, string> = {
+            username: form.username.trim(),
+            email: form.email.trim(),
+            role: form.role,
+            status: form.status,
+        };
+        if (form.password.trim()) body.password = form.password.trim();
+
+        try {
+            const res =
+                formMode === 'create'
+                    ? await api.post('/admin/users', body)
+                    : await api.put(`/admin/users/${editingUser!.id}`, body);
+
+            if (res.code !== 0) {
+                setFormMessage(res.message || '操作失败。');
+                return;
+            }
+
+            setFormOpen(false);
+            fetchUsers();
+        } catch {
+            setFormMessage('请求失败，请稍后重试。');
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
     const totalPages = Math.max(1, Math.ceil(data.total / pageSize));
+
+    const columns: DataColumn<UserItem>[] = [
+        {
+            header: '用户名',
+            render: (user) => <span className={styles.nameCell}>{user.username}</span>,
+        },
+        {
+            header: '邮箱',
+            hideBelow: 'sm',
+            render: (user) => <span className={styles.mutedCell}>{user.email}</span>,
+        },
+        {
+            header: '角色',
+            render: (user) => (
+                <Tag variant={user.role === 'admin' ? 'accent' : 'default'}>
+                    {user.role === 'admin' ? '管理员' : '用户'}
+                </Tag>
+            ),
+        },
+        {
+            header: '状态',
+            hideBelow: 'md',
+            render: (user) => (
+                <Tag variant={user.status === 'disabled' ? 'accent' : 'default'}>
+                    {user.status === 'active' ? '正常' : '已禁用'}
+                </Tag>
+            ),
+        },
+        {
+            header: '创建时间',
+            hideBelow: 'lg',
+            render: (user) => <span className={styles.mutedCell}>{new Date(user.created_at).toLocaleDateString('zh-CN')}</span>,
+        },
+        {
+            header: '操作',
+            align: 'right',
+            width: '6rem',
+            render: (user) => (
+                <div className={styles.actionGroup}>
+                    <button
+                        className={styles.actionBtn}
+                        onClick={() => openEditForm(user)}
+                        title="编辑"
+                    >
+                        <PencilIcon className={styles.actionIcon} />
+                    </button>
+                    <button
+                        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                        disabled={deleting === user.id}
+                        onClick={() => handleDeleteClick(user.id, user.username)}
+                        title="删除"
+                    >
+                        <Trash2Icon className={styles.actionIcon} />
+                    </button>
+                </div>
+            ),
+        },
+    ];
 
     return (
         <div>
             {/* 顶部操作栏 */}
             <div className={styles.toolbar}>
                 <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
-                    <div className={styles.searchWrapper}>
-                        <SearchIcon className={styles.searchIcon} />
-                        <input
-                            className={styles.searchInput}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="搜索用户名或邮箱..."
-                            type="text"
-                            value={search}
-                        />
-                    </div>
-                    <button className={styles.searchBtn} type="submit">
+                    <TextInput
+                        icon={<SearchIcon />}
+                        id='user-search'
+                        inputSize='small'
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="搜索用户名或邮箱..."
+                        value={search}
+                    />
+                    <GhostButton variant='primary' href='#' onClick={handleSearchSubmit as unknown as React.MouseEventHandler}>
                         搜索
-                    </button>
+                    </GhostButton>
                 </form>
-                <Link className={styles.createLink} href={APP_ROUTES.adminUserCreate}>
-                    <PlusIcon className={styles.iconSmall} />
+                <GhostButton
+                    href='#'
+                    icon={<PlusIcon className={styles.btnIcon} />}
+                    onClick={openCreateForm as unknown as React.MouseEventHandler}
+                    variant='primary'
+                >
                     新建用户
-                </Link>
+                </GhostButton>
             </div>
 
             {/* 表格 */}
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr className={styles.thead}>
-                            <th className={styles.th}>用户名</th>
-                            <th className={`${styles.th} ${styles.hideSm}`}>邮箱</th>
-                            <th className={styles.th}>角色</th>
-                            <th className={`${styles.th} ${styles.hideMd}`}>状态</th>
-                            <th className={`${styles.th} ${styles.hideLg}`}>创建时间</th>
-                            <th className={styles.thAction}>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td className={styles.emptyRow} colSpan={6}>
-                                    加载中...
-                                </td>
-                            </tr>
-                        ) : data.users.length === 0 ? (
-                            <tr>
-                                <td className={styles.emptyRow} colSpan={6}>
-                                    暂无用户数据
-                                </td>
-                            </tr>
-                        ) : (
-                            data.users.map((user) => (
-                                <tr className={styles.row} key={user.id}>
-                                    <td className={styles.tdName}>{user.username}</td>
-                                    <td className={`${styles.td} ${styles.hideSm}`}>{user.email}</td>
-                                    <td className={styles.td}>
-                                        <span className={user.role === 'admin' ? styles.badgePrimary : styles.badgeMuted}>
-                                            {user.role === 'admin' ? '管理员' : '用户'}
-                                        </span>
-                                    </td>
-                                    <td className={`${styles.td} ${styles.hideMd}`}>
-                                        <span className={user.status === 'active' ? styles.badgeMuted : styles.badgePrimary}>
-                                            {user.status === 'active' ? '正常' : '已禁用'}
-                                        </span>
-                                    </td>
-                                    <td className={`${styles.tdMuted} ${styles.hideLg}`}>
-                                        {new Date(user.created_at).toLocaleDateString('zh-CN')}
-                                    </td>
-                                    <td className={styles.tdAction}>
-                                        <div className={styles.actionGroup}>
-                                            <button
-                                                className={styles.editBtn}
-                                                onClick={() => router.push(`/admin/users/${user.id}`)}
-                                                title="编辑"
-                                            >
-                                                <PencilIcon className={styles.iconSmall} />
-                                            </button>
-                                            <button
-                                                className={styles.deleteBtn}
-                                                disabled={deleting === user.id}
-                                                onClick={() => handleDeleteClick(user.id, user.username)}
-                                                title="删除"
-                                            >
-                                                <Trash2Icon className={styles.iconSmall} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <DataTable
+                columns={columns}
+                emptyText={loading ? '加载中...' : '暂无用户数据'}
+                rowKey={(user) => user.id}
+                rows={data.users}
+            />
 
             <ConfirmDialog
                 open={!!deleteTarget}
@@ -196,6 +282,89 @@ export default function UserListClient() {
                 onCancel={() => setDeleteTarget(null)}
                 loading={deleting !== null}
             />
+
+            {/* 新增/编辑弹窗 */}
+            <Dialog
+                onClose={() => setFormOpen(false)}
+                open={formOpen}
+                title={formMode === 'create' ? '新建用户' : `编辑用户：${editingUser?.username || ''}`}
+            >
+                <form className={styles.form} onSubmit={handleFormSubmit}>
+                    <TextInput
+                        id='form-username'
+                        label='用户名'
+                        maxLength={50}
+                        onChange={(e) => handleFormChange('username', e.target.value)}
+                        placeholder='2-50 个字符'
+                        required
+                        value={form.username}
+                    />
+
+                    <TextInput
+                        id='form-email'
+                        label='邮箱'
+                        onChange={(e) => handleFormChange('email', e.target.value)}
+                        placeholder='user@example.com'
+                        required
+                        type='email'
+                        value={form.email}
+                    />
+
+                    <TextInput
+                        id='form-password'
+                        label={formMode === 'create' ? '密码' : '新密码（留空则不修改）'}
+                        minLength={6}
+                        onChange={(e) => handleFormChange('password', e.target.value)}
+                        placeholder={formMode === 'create' ? '至少 6 个字符' : '留空不修改密码'}
+                        required={formMode === 'create'}
+                        type='password'
+                        value={form.password}
+                    />
+
+                    {/* 角色 */}
+                    <div className={styles.field}>
+                        <span className={styles.fieldLabel}>角色</span>
+                        <PillSelect
+                            name='role'
+                            onChange={(v) => handleFormChange('role', v)}
+                            options={[
+                                { value: 'user', label: '普通用户' },
+                                { value: 'admin', label: '管理员' },
+                            ]}
+                            value={form.role}
+                        />
+                    </div>
+
+                    {/* 状态（仅编辑模式） */}
+                    {formMode === 'edit' && (
+                        <div className={styles.field}>
+                            <span className={styles.fieldLabel}>状态</span>
+                            <PillSelect
+                                name='status'
+                                onChange={(v) => handleFormChange('status', v)}
+                                options={[
+                                    { value: 'active', label: '正常' },
+                                    { value: 'disabled', label: '已禁用' },
+                                ]}
+                                value={form.status}
+                            />
+                        </div>
+                    )}
+
+                    <div className={styles.formActions}>
+                        <GhostButton href='#' onClick={() => setFormOpen(false) as unknown as React.MouseEventHandler}>
+                            取消
+                        </GhostButton>
+                        <SubmitButton size='small' disabled={submitting}>
+                            {submitting ? '保存中...' : formMode === 'create' ? '创建用户' : '保存修改'}
+                        </SubmitButton>
+                    </div>
+
+                    {formMessage && (
+                        <p className={styles.formMessage} role="alert">{formMessage}</p>
+                    )}
+                </form>
+            </Dialog>
 
             {/* 分页 */}
             {totalPages > 1 && (
