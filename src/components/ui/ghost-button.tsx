@@ -5,12 +5,14 @@ export interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorE
     icon?: React.ReactNode;
     /** 按钮变体：default 默认边框 / primary 主色边框+hover 反色 */
     variant?: 'default' | 'primary';
+    /** 按钮尺寸：small 紧凑 / medium 中等 / default 默认 */
+    size?: 'small' | 'medium' | 'default';
 }
 
 /*== GhostButton 幽灵按钮 — 边框按钮+图标，hover 变暖 ==*/
-export function GhostButton({ icon, variant = 'default', children, className, ...props }: GhostButtonProps) {
+export function GhostButton({ icon, variant = 'default', size = 'medium', children, className, ...props }: GhostButtonProps) {
     return (
-        <a className={`${styles.button} ${styles[variant]}${className ? ` ${className}` : ''}`} {...props}>
+        <a className={`${styles.button} ${styles[variant]} ${styles[size]}${className ? ` ${className}` : ''}`} {...props}>
             {icon ? <span className={styles.icon}>{icon}</span> : null}
             {children}
         </a>

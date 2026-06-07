@@ -10,11 +10,13 @@ interface PillSelectProps<T extends string> {
     onChange: (value: T) => void;
     /** 选项名称，用于 radio name 属性 */
     name: string;
+    /** 尺寸：small 紧凑 / medium 中等 / default 默认 */
+    size?: 'small' | 'medium' | 'default';
 }
 
-export function PillSelect<T extends string>({ options, value, onChange, name }: PillSelectProps<T>) {
+export function PillSelect<T extends string>({ options, value, onChange, name, size = 'medium' }: PillSelectProps<T>) {
     return (
-        <div className={styles.group}>
+        <div className={`${styles.group} ${styles[size]}`}>
             {options.map((opt) => (
                 <button
                     className={`${styles.pill}${value === opt.value ? ` ${styles.pillActive}` : ''}`}

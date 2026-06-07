@@ -16,6 +16,10 @@
     font-size: 0.8125rem;
 }
 
+.labelMedium {
+    font-size: 0.84375rem;
+}
+
 .inputWrap {
     position: relative;
     display: flex;
@@ -70,8 +74,17 @@
     font-size: 0.8125rem;
 }
 
+.medium {
+    padding: 0.5rem 0.8125rem;
+    font-size: 0.84375rem;
+}
+
 .hasIcon {
     padding-left: 2.25rem;
+}
+
+.hasIconMedium {
+    padding-left: 2rem;
 }
 
 .hasIconSmall {

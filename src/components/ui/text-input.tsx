@@ -5,23 +5,35 @@ export interface TextInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
     label?: string;
     /** 左侧图标，传入 SVG 元素 */
     icon?: React.ReactNode;
-    /** 输入框尺寸：default 默认 / small 紧凑 */
-    inputSize?: 'default' | 'small';
+    /** 输入框尺寸：small 紧凑 / medium 中等 / default 默认 */
+    inputSize?: 'small' | 'medium' | 'default';
 }
+
+const LABEL_CLASS: Record<string, string | undefined> = {
+    small: 'labelSmall',
+    medium: 'labelMedium',
+};
+
+const ICON_PADDING_CLASS: Record<string, string | undefined> = {
+    small: 'hasIconSmall',
+    medium: 'hasIconMedium',
+};
 
 /*== TextInput 文本输入框 — 后台通用，支持标签和图标 ==*/
 export function TextInput({ label, icon, inputSize = 'default', className, id, ...props }: TextInputProps) {
+    const labelClass = LABEL_CLASS[inputSize];
+    const iconPadClass = ICON_PADDING_CLASS[inputSize];
     return (
         <div className={styles.fieldset}>
             {label ? (
-                <label className={`${styles.label}${inputSize === 'small' ? ` ${styles.labelSmall}` : ''}`} htmlFor={id}>
+                <label className={`${styles.label}${labelClass ? ` ${styles[labelClass]}` : ''}`} htmlFor={id}>
                     {label}
                 </label>
             ) : null}
             <div className={styles.inputWrap}>
                 {icon ? <span className={styles.iconSlot}>{icon}</span> : null}
                 <input
-                    className={`${styles.input} ${styles[inputSize]}${icon ? ` ${styles.hasIcon}` : ''}${inputSize === 'small' && icon ? ` ${styles.hasIconSmall}` : ''}${className ? ` ${className}` : ''}`}
+                    className={`${styles.input} ${styles[inputSize]}${icon ? ` ${styles.hasIcon}` : ''}${iconPadClass && icon ? ` ${styles[iconPadClass]}` : ''}${className ? ` ${className}` : ''}`}
                     id={id}
                     {...props}
                 />

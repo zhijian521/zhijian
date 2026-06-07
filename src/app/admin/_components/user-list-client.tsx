@@ -246,12 +246,12 @@ export default function UserListClient() {
                     <TextInput
                         icon={<SearchIcon />}
                         id='user-search'
-                        inputSize='small'
+                        inputSize='medium'
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="搜索用户名或邮箱..."
                         value={search}
                     />
-                    <GhostButton variant='primary' href='#' onClick={handleSearchSubmit as unknown as React.MouseEventHandler}>
+                    <GhostButton size='medium' variant='primary' href='#' onClick={handleSearchSubmit as unknown as React.MouseEventHandler}>
                         搜索
                     </GhostButton>
                 </form>
@@ -259,6 +259,7 @@ export default function UserListClient() {
                     href='#'
                     icon={<PlusIcon className={styles.btnIcon} />}
                     onClick={openCreateForm as unknown as React.MouseEventHandler}
+                    size='medium'
                     variant='primary'
                 >
                     新建用户
@@ -355,7 +356,7 @@ export default function UserListClient() {
                         <GhostButton href='#' onClick={() => setFormOpen(false) as unknown as React.MouseEventHandler}>
                             取消
                         </GhostButton>
-                        <SubmitButton size='small' disabled={submitting}>
+                        <SubmitButton size='medium' disabled={submitting}>
                             {submitting ? '保存中...' : formMode === 'create' ? '创建用户' : '保存修改'}
                         </SubmitButton>
                     </div>

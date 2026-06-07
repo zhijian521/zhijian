@@ -94,30 +94,45 @@ export default function ComponentShowcase() {
                 {/* Tag */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>Tag</h3>
-                    <p className={styles.componentDesc}>标签组件，支持 default / accent / outlined 三种变体。</p>
+                    <p className={styles.componentDesc}>标签组件，支持 default / accent / outlined 三种变体，small / medium / default 三种尺寸。</p>
                     <div className={styles.demoRow}>
-                        <Tag variant='default'>默认标签</Tag>
-                        <Tag variant='accent'>强调标签</Tag>
-                        <Tag variant='outlined'>描边标签</Tag>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <Tag size='small' variant='default'>默认</Tag>
+                            <Tag size='small' variant='accent'>强调</Tag>
+                            <Tag size='small' variant='outlined'>描边</Tag>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>medium</span>
+                            <Tag size='medium' variant='default'>默认</Tag>
+                            <Tag size='medium' variant='accent'>强调</Tag>
+                            <Tag size='medium' variant='outlined'>描边</Tag>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <Tag size='default' variant='default'>默认</Tag>
+                            <Tag size='default' variant='accent'>强调</Tag>
+                            <Tag size='default' variant='outlined'>描边</Tag>
+                        </div>
                     </div>
                 </div>
 
                 {/* GhostButton */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>GhostButton</h3>
-                    <p className={styles.componentDesc}>幽灵边框按钮，渲染为 &lt;a&gt; 标签，支持 default / primary 两种变体。</p>
+                    <p className={styles.componentDesc}>幽灵边框按钮，渲染为 &lt;a&gt; 标签，支持 default / primary 两种变体，small / medium / default 三种尺寸。</p>
                     <div className={styles.demoRow}>
                         <div className={styles.demoCol}>
-                            <span className={styles.demoLabel}>default</span>
-                            <GhostButton href='#' icon={<ArrowRightIcon className={styles.btnIcon} />}>
-                                查看详情
-                            </GhostButton>
+                            <span className={styles.demoLabel}>small</span>
+                            <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='small' variant='primary'>新建</GhostButton>
                         </div>
                         <div className={styles.demoCol}>
-                            <span className={styles.demoLabel}>primary</span>
-                            <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} variant='primary'>
-                                新建
-                            </GhostButton>
+                            <span className={styles.demoLabel}>medium</span>
+                            <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='medium' variant='primary'>新建</GhostButton>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='default' variant='primary'>新建</GhostButton>
                         </div>
                     </div>
                 </div>
@@ -125,19 +140,19 @@ export default function ComponentShowcase() {
                 {/* SubmitButton */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>SubmitButton</h3>
-                    <p className={styles.componentDesc}>提交按钮，渲染为 type=&quot;submit&quot; 的 &lt;button&gt;，支持 default / small 两种尺寸。</p>
+                    <p className={styles.componentDesc}>提交按钮，渲染为 type=&quot;submit&quot; 的 &lt;button&gt;，支持 small / medium / default 三种尺寸。</p>
                     <div className={styles.demoRow}>
-                        <div className={styles.demoCol}>
-                            <span className={styles.demoLabel}>default</span>
-                            <SubmitButton>提交</SubmitButton>
-                        </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>small</span>
                             <SubmitButton size='small'>提交</SubmitButton>
                         </div>
                         <div className={styles.demoCol}>
-                            <span className={styles.demoLabel}>disabled</span>
-                            <SubmitButton disabled>禁用状态</SubmitButton>
+                            <span className={styles.demoLabel}>medium</span>
+                            <SubmitButton size='medium'>提交</SubmitButton>
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <SubmitButton>提交</SubmitButton>
                         </div>
                     </div>
                 </div>
@@ -145,8 +160,32 @@ export default function ComponentShowcase() {
                 {/* TextInput */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>TextInput</h3>
-                    <p className={styles.componentDesc}>带图标槽和标签的文本输入框，支持 default / small 两种尺寸。</p>
+                    <p className={styles.componentDesc}>带图标槽和标签的文本输入框，支持 small / medium / default 三种尺寸。</p>
                     <div className={styles.demoRow}>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <TextInput
+                                icon={<SearchIcon className={styles.inputIcon} />}
+                                id='demo-search-sm'
+                                inputSize='small'
+                                label='搜索'
+                                onChange={(e) => setTextInput(e.target.value)}
+                                placeholder='输入关键词...'
+                                value={textInput}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>medium</span>
+                            <TextInput
+                                icon={<SearchIcon className={styles.inputIcon} />}
+                                id='demo-search-md'
+                                inputSize='medium'
+                                label='搜索'
+                                onChange={(e) => setTextInput(e.target.value)}
+                                placeholder='输入关键词...'
+                                value={textInput}
+                            />
+                        </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>default</span>
                             <TextInput
@@ -156,26 +195,6 @@ export default function ComponentShowcase() {
                                 onChange={(e) => setTextInput(e.target.value)}
                                 placeholder='输入关键词...'
                                 value={textInput}
-                            />
-                        </div>
-                        <div className={styles.demoCol}>
-                            <span className={styles.demoLabel}>small</span>
-                            <TextInput
-                                icon={<SearchIcon className={styles.inputIcon} />}
-                                id='demo-search-sm'
-                                label='搜索'
-                                onChange={(e) => setTextInput(e.target.value)}
-                                placeholder='输入关键词...'
-                                inputSize='small'
-                                value={textInput}
-                            />
-                        </div>
-                        <div className={styles.demoCol}>
-                            <span className={styles.demoLabel}>无图标</span>
-                            <TextInput
-                                id='demo-plain'
-                                label='普通输入'
-                                placeholder='普通输入框'
                             />
                         </div>
                     </div>
@@ -194,18 +213,50 @@ export default function ComponentShowcase() {
                 {/* PillSelect */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>PillSelect</h3>
-                    <p className={styles.componentDesc}>药丸单选，连排扁平选项，选中项底部主色指示条。</p>
+                    <p className={styles.componentDesc}>药丸单选，连排扁平选项，选中项底部主色指示条，支持 small / medium / default 三种尺寸。</p>
                     <div className={styles.demoRow}>
-                        <PillSelect
-                            name='demo-pill'
-                            onChange={setPillValue}
-                            options={[
-                                { value: 'all', label: '全部' },
-                                { value: 'published', label: '已发布' },
-                                { value: 'draft', label: '草稿' },
-                            ]}
-                            value={pillValue}
-                        />
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <PillSelect
+                                name='demo-pill-sm'
+                                onChange={setPillValue}
+                                options={[
+                                    { value: 'all', label: '全部' },
+                                    { value: 'published', label: '已发布' },
+                                    { value: 'draft', label: '草稿' },
+                                ]}
+                                size='small'
+                                value={pillValue}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>medium</span>
+                            <PillSelect
+                                name='demo-pill-md'
+                                onChange={setPillValue}
+                                options={[
+                                    { value: 'all', label: '全部' },
+                                    { value: 'published', label: '已发布' },
+                                    { value: 'draft', label: '草稿' },
+                                ]}
+                                size='medium'
+                                value={pillValue}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <PillSelect
+                                name='demo-pill'
+                                onChange={setPillValue}
+                                options={[
+                                    { value: 'all', label: '全部' },
+                                    { value: 'published', label: '已发布' },
+                                    { value: 'draft', label: '草稿' },
+                                ]}
+                                size='default'
+                                value={pillValue}
+                            />
+                        </div>
                     </div>
                 </div>
 

@@ -3,26 +3,37 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.4;
     border-radius: var(--radius);
     border: 1px solid transparent;
-}
-
-/* 默认：米黄底 */
-.default {
     background: var(--muted);
     color: var(--muted-foreground);
 }
 
-/* 强调：朱砂淡底 */
+/* 尺寸变体 */
+.small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.medium {
+    padding: 0.5rem 0.8125rem;
+    font-size: 0.84375rem;
+}
+
+.defaultSize {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+}
+
+/* 颜色变体 */
 .accent {
     background: color-mix(in srgb, var(--primary) 6%, transparent);
     color: var(--primary);
 }
 
-/* 边框：无底色，淡边框 */
 .outlined {
     border-color: var(--border);
     color: var(--muted-foreground);
