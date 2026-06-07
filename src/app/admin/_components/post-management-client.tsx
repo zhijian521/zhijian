@@ -1,124 +1,143 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { formatPostDateTime, type Post, type PostStatus } from '@/lib/post-shared';
+import { MOCK_POSTS, type MockPost } from '@/lib/mock-data';
 import { APP_ROUTES } from '@/lib/site';
+import styles from './post-management-client.module.css';
 
-interface PostManagementClientProps {
-    initialPosts: Post[];
+function cn(...classes: (string | false | undefined | null)[]) {
+    return classes.filter(Boolean).join(' ');
 }
 
-/*== 后台文章管理：客户端搜索 + 状态筛选，退出登录由侧边栏统一提供。 ==*/
-export default function PostManagementClient({ initialPosts }: PostManagementClientProps) {
+/*== 后台文章管理：静态数据 + 搜索 + 状态筛选 + 删除操作。 ==*/
+export default function PostManagementClient() {
+    const [posts, setPosts] = useState<MockPost[]>([...MOCK_POSTS]);
     const [keyword, setKeyword] = useState('');
-    const [status, setStatus] = useState<'all' | PostStatus>('all');
+    const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
+    const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
 
     const filteredPosts = useMemo(() => {
-        return initialPosts.filter((post) => {
-            const normalizedKeyword = keyword.trim().toLowerCase();
-            const matchesKeyword =
-                !normalizedKeyword || [post.title, post.slug, post.summary].some((field) => field.toLowerCase().includes(normalizedKeyword));
+        return posts.filter((post) => {
+            const q = keyword.trim().toLowerCase();
+            const matchesKeyword = !q || [post.title, post.slug, post.summary].some((f) => f.toLowerCase().includes(q));
             const matchesStatus = status === 'all' || post.status === status;
             return matchesKeyword && matchesStatus;
         });
-    }, [initialPosts, keyword, status]);
+    }, [posts, keyword, status]);
+
+    function handleDeleteConfirm() {
+        if (!deleteTarget) return;
+        setPosts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+        setDeleteTarget(null);
+    }
+
+    function formatDate(value: string | null): string {
+        if (!value) return '-';
+        return value.split(' ')[0] || value;
+    }
 
     return (
         <>
             <AdminPageHeader
                 action={
-                    <Link
-                        className='inline-flex items-center gap-2 border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors h-9 px-3 text-sm font-medium'
-                        href={APP_ROUTES.adminPostCreate}
-                    >
+                    <Link className={styles.createLink} href={APP_ROUTES.adminPostCreate}>
                         <Plus className='h-4 w-4' />
                         新建文章
                     </Link>
                 }
                 description='集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。'
                 eyebrow='Posts'
-                tag={`${initialPosts.length} 篇文章`}
+                tag={`${posts.length} 篇文章`}
                 title='文章管理'
             />
 
             {/* 搜索 + 筛选 */}
-            <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-5'>
-                <div className='relative w-full lg:max-w-sm'>
-                    <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]' />
-                    <Input
-                        className='pl-9 border border-[var(--border)] bg-[#fbf9f9] focus:border-[var(--primary)] focus:outline-none'
-                        onChange={(event) => setKeyword(event.target.value)}
+            <div className={styles.toolbar}>
+                <div className={styles.searchWrapper}>
+                    <Search className={styles.searchIcon} />
+                    <input
+                        className={styles.searchInput}
+                        onChange={(e) => setKeyword(e.target.value)}
                         placeholder='搜索标题、Slug 或摘要'
+                        type='text'
                         value={keyword}
                     />
                 </div>
-
-                <Tabs defaultValue='all' onValueChange={(value) => setStatus(value as 'all' | PostStatus)} value={status}>
-                    <TabsList className='bg-[#f5f3f3] rounded-none'>
-                        <TabsTrigger value='all' className='rounded-none'>全部</TabsTrigger>
-                        <TabsTrigger value='published' className='rounded-none'>已发布</TabsTrigger>
-                        <TabsTrigger value='draft' className='rounded-none'>草稿</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+                <div className={styles.filterTabs}>
+                    {(['all', 'published', 'draft'] as const).map((s) => (
+                        <button
+                            className={cn(styles.filterTab, status === s && styles.filterTabActive)}
+                            key={s}
+                            onClick={() => setStatus(s)}
+                            type='button'
+                        >
+                            {s === 'all' ? '全部' : s === 'published' ? '已发布' : '草稿'}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* 表格 */}
-            <div className='border border-[var(--primary)] overflow-x-auto'>
-                <table className='w-full text-sm'>
+            <div className={styles.tableWrapper}>
+                <table className={styles.table}>
                     <thead>
-                        <tr className='border-b border-[var(--primary)] bg-[#f5f3f3] text-xs uppercase tracking-[0.05em] text-[var(--muted-foreground)]'>
-                            <th className='text-left px-4 py-3 font-medium'>文章</th>
-                            <th className='text-left px-4 py-3 font-medium'>状态</th>
-                            <th className='text-left px-4 py-3 font-medium hidden md:table-cell'>发布时间</th>
-                            <th className='text-left px-4 py-3 font-medium hidden lg:table-cell'>更新时间</th>
-                            <th className='text-right px-4 py-3 font-medium w-24'>操作</th>
+                        <tr className={styles.thead}>
+                            <th className={styles.th}>文章</th>
+                            <th className={styles.th}>状态</th>
+                            <th className={cn(styles.th, styles.hideMd)}>分类</th>
+                            <th className={cn(styles.th, styles.hideMd)}>标签</th>
+                            <th className={cn(styles.th, styles.hideLg)}>发布时间</th>
+                            <th className={cn(styles.th, styles.hideLg)}>更新时间</th>
+                            <th className={styles.thAction}>操作</th>
                         </tr>
                     </thead>
-                    <tbody className='divide-y divide-[var(--border)]'>
+                    <tbody className={styles.tbody}>
                         {filteredPosts.map((post) => (
-                            <tr className='hover:bg-[#f5f3f3] transition-colors' key={post.id}>
-                                <td className='px-4 py-3'>
-                                    <p className='font-medium'>{post.title}</p>
-                                    <p className='text-xs text-[var(--muted-foreground)] mt-0.5'>{post.slug}</p>
+                            <tr key={post.id}>
+                                <td className={styles.td}>
+                                    <p className={styles.postTitle}>{post.title}</p>
+                                    <p className={styles.postSlug}>{post.slug}</p>
                                 </td>
-                                <td className='px-4 py-3'>
-                                    <Badge
-                                        className={
-                                            post.status === 'published'
-                                                ? 'rounded-none border border-[var(--primary)] bg-[rgba(158,0,39,0.06)] px-2 py-0.5 text-[11px] font-medium text-[var(--primary)]'
-                                                : 'rounded-none border border-[var(--border)] bg-[var(--muted)] px-2 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)]'
-                                        }
-                                        variant='secondary'
-                                    >
+                                <td className={styles.td}>
+                                    <span className={cn(styles.badge, post.status === 'published' ? styles.badgePublished : styles.badgeDraft)}>
                                         {post.status === 'published' ? '已发布' : '草稿'}
-                                    </Badge>
+                                    </span>
                                 </td>
-                                <td className='px-4 py-3 text-[var(--muted-foreground)] hidden md:table-cell'>
-                                    {formatPostDateTime(post.publishedAt)}
+                                <td className={cn(styles.tdMuted, styles.hideMd)}>{post.category}</td>
+                                <td className={cn(styles.td, styles.hideMd)}>
+                                    <div className={styles.tagList}>
+                                        {post.tags.map((t) => (
+                                            <span className={styles.miniTag} key={t}>{t}</span>
+                                        ))}
+                                    </div>
                                 </td>
-                                <td className='px-4 py-3 text-[var(--muted-foreground)] hidden lg:table-cell'>
-                                    {formatPostDateTime(post.updatedAt)}
-                                </td>
-                                <td className='px-4 py-3 text-right'>
-                                    <Link
-                                        className='inline-flex items-center justify-center border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors h-8 px-3 text-xs font-medium'
-                                        href={`${APP_ROUTES.adminPosts}/${post.id}`}
-                                    >
-                                        编辑
-                                    </Link>
+                                <td className={cn(styles.tdMuted, styles.hideLg)}>{formatDate(post.publishedAt)}</td>
+                                <td className={cn(styles.tdMuted, styles.hideLg)}>{formatDate(post.updatedAt)}</td>
+                                <td className={styles.tdAction}>
+                                    <Link className={styles.editLink} href={`${APP_ROUTES.adminPosts}/${post.id}`}>编辑</Link>
+                                    <button className={styles.deleteBtn} onClick={() => setDeleteTarget({ id: post.id, title: post.title })} title='删除' type='button'>
+                                        <Trash2 className='h-4 w-4' />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+
+            <ConfirmDialog
+                confirmLabel='删除'
+                message={`确定要删除文章「${deleteTarget?.title ?? ''}」吗？此操作不可撤销。`}
+                onCancel={() => setDeleteTarget(null)}
+                onConfirm={handleDeleteConfirm}
+                open={!!deleteTarget}
+                title='确认删除'
+            />
         </>
     );
 }
