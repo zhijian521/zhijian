@@ -30,26 +30,25 @@
 }
 
 .brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
     margin-bottom: 28px;
-    text-align: center;
-}
-
-.logoWrap {
-    margin-bottom: 16px;
 }
 
 .logo {
-    margin: 0 auto;
-    height: 84px;
-    width: auto;
+    height: 56px;
+    width: 56px;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
 .title {
     margin: 0;
     font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
-    font-size: 22px;
-    line-height: 1.4;
+    font-size: 32px;
+    line-height: 1.2;
     font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--primary);

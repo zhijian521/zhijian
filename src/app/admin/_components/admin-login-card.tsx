@@ -130,16 +130,14 @@ export default function AdminLoginCard() {
 
             <section className={styles.shell}>
                 <header className={styles.brand}>
-                    <div className={styles.logoWrap}>
-                        <img
-                            alt='Zhijian Logo'
-                            className={styles.logo}
-                            decoding='async'
-                            height='84'
-                            src='/images/logo.png'
-                            width='84'
-                        />
-                    </div>
+                    <img
+                        alt='Zhijian Logo'
+                        className={styles.logo}
+                        decoding='async'
+                        height='56'
+                        src='/images/logo.png'
+                        width='56'
+                    />
                     <h1 className={styles.title}>Zhijian Admin</h1>
                 </header>
 
