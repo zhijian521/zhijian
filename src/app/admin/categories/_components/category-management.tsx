@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Trash2 } from 'lucide-react';
+import { PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { useState } from 'react';
 
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -103,10 +103,10 @@ export default function CategoryManagement() {
                                 <td className={styles.tdMuted}>{cat.sortOrder}</td>
                                 <td className={styles.tdAction}>
                                     <button className={styles.actionBtn} onClick={() => handleEditClick(cat)} title='编辑' type='button'>
-                                        <Pencil className='h-4 w-4' />
+                                        <PencilIcon className={styles.actionIcon} />
                                     </button>
                                     <button className={cn(styles.actionBtn, styles.actionBtnDanger)} onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })} title='删除' type='button'>
-                                        <Trash2 className='h-4 w-4' />
+                                        <Trash2Icon className={styles.actionIcon} />
                                     </button>
                                 </td>
                             </tr>

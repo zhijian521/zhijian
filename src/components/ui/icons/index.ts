@@ -12,3 +12,7 @@ export { ExternalLinkIcon } from './external-link-icon';
 export { GitHubIcon } from './github-icon';
 export { CodeIcon } from './code-icon';
 export { BookIcon } from './book-icon';
+export { PencilIcon } from './pencil-icon';
+export { Trash2Icon } from './trash2-icon';
+export { AlertTriangleIcon } from './alert-triangle-icon';
+export { XIcon } from './x-icon';

@@ -73,6 +73,11 @@
     color: var(--destructive);
 }
 
+.actionIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
 .formPanel {
     border: 1px solid var(--border);
     background: var(--background);

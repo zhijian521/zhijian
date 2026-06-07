@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Trash2 } from 'lucide-react';
+import { PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { useState } from 'react';
 
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -96,10 +96,10 @@ export default function TagManagement() {
                                 <td className={styles.tdMuted}>{tag.postCount}</td>
                                 <td className={styles.tdAction}>
                                     <button className={styles.actionBtn} onClick={() => handleEditClick(tag)} title='编辑' type='button'>
-                                        <Pencil className='h-4 w-4' />
+                                        <PencilIcon className={styles.actionIcon} />
                                     </button>
                                     <button className={cn(styles.actionBtn, styles.actionBtnDanger)} onClick={() => setDeleteTarget({ id: tag.id, name: tag.name })} title='删除' type='button'>
-                                        <Trash2 className='h-4 w-4' />
+                                        <Trash2Icon className={styles.actionIcon} />
                                     </button>
                                 </td>
                             </tr>
