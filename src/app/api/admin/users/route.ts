@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const result = await listUsers({ page, pageSize, search });
-        return NextResponse.json(success(result));
+        return NextResponse.json(success({ data: result.users, total: result.total }));
     } catch (err) {
         console.error('获取用户列表失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '获取用户列表失败。'), { status: 500 });

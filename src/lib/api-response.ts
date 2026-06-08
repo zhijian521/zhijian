@@ -25,9 +25,21 @@ export const BizCode = {
     USER_DISABLED: 40301,
     USER_EXISTS: 40901,
     USER_SELF_DELETE: 40001,
+    /*-- 分类 --*/
+    CATEGORY_NOT_FOUND: 40402,
+    CATEGORY_EXISTS: 40902,
+    /*-- 标签 --*/
+    TAG_NOT_FOUND: 40403,
+    TAG_EXISTS: 40903,
 } as const;
 
 export type BizCodeValue = (typeof BizCode)[keyof typeof BizCode];
+
+/*== 分页列表响应的 data 结构。 ==*/
+export interface ListData<T> {
+    data: T[];
+    total: number;
+}
 
 /*== 统一响应类型。 ==*/
 export interface ApiResponse<T = unknown> {

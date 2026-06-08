@@ -28,6 +28,7 @@ interface DataTableProps<T> {
 
 /*== DataTable 通用数据表格 — 匹配博客表格风格。 ==*/
 export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据' }: DataTableProps<T>) {
+    const safeRows = rows ?? [];
     return (
         <div className={styles.tableWrapper}>
             <table className={styles.table}>
@@ -45,14 +46,14 @@ export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据'
                     </tr>
                 </thead>
                 <tbody>
-                    {rows.length === 0 ? (
+                    {safeRows.length === 0 ? (
                         <tr>
                             <td className={styles.emptyRow} colSpan={columns.length}>
                                 {emptyText}
                             </td>
                         </tr>
                     ) : (
-                        rows.map((row, rowIndex) => (
+                        safeRows.map((row, rowIndex) => (
                             <tr className={styles.row} key={rowKey(row)}>
                                 {columns.map((col, colIndex) => (
                                     <td

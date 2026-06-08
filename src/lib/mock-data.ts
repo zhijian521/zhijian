@@ -1,38 +1,5 @@
 /*== 静态示例数据：后台管理页面使用，后续接入 API 时替换数据源即可。 ==*/
 
-/*-- 分类 --*/
-export interface MockCategory {
-    id: number;
-    name: string;
-    slug: string;
-    postCount: number;
-    sortOrder: number;
-}
-
-export const MOCK_CATEGORIES: MockCategory[] = [
-    { id: 1, name: '技术笔记', slug: 'tech', postCount: 5, sortOrder: 1 },
-    { id: 2, name: '生活随想', slug: 'life', postCount: 3, sortOrder: 2 },
-    { id: 3, name: '项目实战', slug: 'project', postCount: 2, sortOrder: 3 },
-    { id: 4, name: '读书笔记', slug: 'reading', postCount: 1, sortOrder: 4 },
-];
-
-/*-- 标签 --*/
-export interface MockTag {
-    id: number;
-    name: string;
-    slug: string;
-    postCount: number;
-}
-
-export const MOCK_TAGS: MockTag[] = [
-    { id: 1, name: 'React', slug: 'react', postCount: 4 },
-    { id: 2, name: 'Next.js', slug: 'nextjs', postCount: 3 },
-    { id: 3, name: 'CSS', slug: 'css', postCount: 2 },
-    { id: 4, name: 'TypeScript', slug: 'typescript', postCount: 5 },
-    { id: 5, name: '设计', slug: 'design', postCount: 1 },
-    { id: 6, name: 'Node.js', slug: 'nodejs', postCount: 2 },
-];
-
 /*-- 文章 --*/
 export interface MockPost {
     id: number;

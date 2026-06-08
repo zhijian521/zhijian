@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -11,29 +11,65 @@ import { Pagination } from '@/components/ui/pagination';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { MOCK_CATEGORIES, type MockCategory } from '@/lib/mock-data';
+import { api } from '@/lib/http-client';
+import type { ListData } from '@/lib/api-response';
 
 import styles from './category-management.module.css';
+import shared from '@/app/admin/_components/admin-shared.module.css';
 
-/*== 分类管理：左列表 + 右表单，静态数据。 ==*/
+interface CategoryItem {
+    id: number;
+    name: string;
+    slug: string;
+    sort_order: number;
+    created_at: string;
+    updated_at: string;
+}
+
+/*== 分类管理 ==*/
 export default function CategoryManagement() {
-    const [categories, setCategories] = useState<MockCategory[]>([...MOCK_CATEGORIES]);
+    const [data, setData] = useState<ListData<CategoryItem>>({ data: [], total: 0 });
+    const [loading, setLoading] = useState(true);
+    const [deleting, setDeleting] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
+
+    /* 弹窗表单状态 */
+    const [formOpen, setFormOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [formName, setFormName] = useState('');
     const [formSlug, setFormSlug] = useState('');
     const [formSortOrder, setFormSortOrder] = useState(1);
-    const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
-    const [formOpen, setFormOpen] = useState(false);
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
+    const [submitting, setSubmitting] = useState(false);
+    const [formMessage, setFormMessage] = useState<string | null>(null);
 
     const isEditing = editingId !== null;
 
-    function handleEditClick(cat: MockCategory) {
+    const fetchCategories = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await api.get<ListData<CategoryItem>>('/admin/categories');
+            if (res.code === 0 && res.data) {
+                setData(res.data);
+            }
+        } catch (err) {
+            console.error('获取分类列表失败：', err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories]);
+
+    function handleEditClick(cat: CategoryItem) {
         setEditingId(cat.id);
         setFormName(cat.name);
         setFormSlug(cat.slug);
-        setFormSortOrder(cat.sortOrder);
+        setFormSortOrder(cat.sort_order);
+        setFormMessage(null);
         setFormOpen(true);
     }
 
@@ -41,7 +77,8 @@ export default function CategoryManagement() {
         setEditingId(null);
         setFormName('');
         setFormSlug('');
-        setFormSortOrder(categories.length + 1);
+        setFormSortOrder(data.data.length + 1);
+        setFormMessage(null);
         setFormOpen(true);
     }
 
@@ -52,59 +89,82 @@ export default function CategoryManagement() {
         }
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!formName.trim()) return;
 
-        if (isEditing) {
-            setCategories((prev) =>
-                prev.map((c) => (c.id === editingId ? { ...c, name: formName.trim(), slug: formSlug, sortOrder: formSortOrder } : c)),
-            );
-        } else {
-            const newCat: MockCategory = {
-                id: Math.max(0, ...categories.map((c) => c.id)) + 1,
-                name: formName.trim(),
-                slug: formSlug,
-                postCount: 0,
-                sortOrder: formSortOrder,
-            };
-            setCategories((prev) => [...prev, newCat]);
-            setFormName('');
-            setFormSlug('');
-            setFormSortOrder(categories.length + 2);
-        }
-        setFormOpen(false);
-    }
+        setSubmitting(true);
+        setFormMessage(null);
 
-    function handleDeleteConfirm() {
-        if (!deleteTarget) return;
-        setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id));
-        if (editingId === deleteTarget.id) {
-            setEditingId(null);
+        try {
+            const body = { name: formName.trim(), slug: formSlug, sort_order: formSortOrder };
+            const res = isEditing
+                ? await api.put(`/admin/categories/${editingId}`, body)
+                : await api.post('/admin/categories', body);
+
+            if (res.code !== 0) {
+                setFormMessage(res.message || '操作失败。');
+                return;
+            }
+
             setFormOpen(false);
+            fetchCategories();
+        } catch {
+            setFormMessage('请求失败，请稍后重试。');
+        } finally {
+            setSubmitting(false);
         }
-        setDeleteTarget(null);
     }
 
-    const totalPages = Math.max(1, Math.ceil(categories.length / pageSize));
-    const pagedCategories = categories.slice((page - 1) * pageSize, page * pageSize);
+    async function handleDeleteConfirm() {
+        if (!deleteTarget) return;
 
-    const columns: DataColumn<MockCategory>[] = [
+        setDeleting(deleteTarget.id);
+        try {
+            const res = await api.delete(`/admin/categories/${deleteTarget.id}`);
+            if (res.code === 0) {
+                setData((prev) => ({
+                    data: prev.data.filter((c) => c.id !== deleteTarget.id),
+                    total: prev.total - 1,
+                }));
+                if (editingId === deleteTarget.id) {
+                    setEditingId(null);
+                    setFormOpen(false);
+                }
+                setDeleteTarget(null);
+            } else {
+                alert(res.message || '删除失败。');
+            }
+        } catch {
+            alert('删除请求失败。');
+        } finally {
+            setDeleting(null);
+        }
+    }
+
+    const totalPages = Math.max(1, Math.ceil(data.total / pageSize));
+    const pagedCategories = data.data.slice((page - 1) * pageSize, page * pageSize);
+
+    const columns: DataColumn<CategoryItem>[] = [
         { header: '分类名', render: (cat) => cat.name },
-        { header: 'Slug', render: (cat) => <span className={styles.mutedCell}>{cat.slug}</span>, hideBelow: 'sm' },
-        { header: '文章数', render: (cat) => <span className={styles.mutedCell}>{cat.postCount}</span>, hideBelow: 'md' },
-        { header: '排序', render: (cat) => <span className={styles.mutedCell}>{cat.sortOrder}</span>, hideBelow: 'lg' },
+        { header: 'Slug', render: (cat) => <span className={shared.mutedCell}>{cat.slug}</span>, hideBelow: 'sm' },
+        { header: '排序', render: (cat) => <span className={shared.mutedCell}>{cat.sort_order}</span>, hideBelow: 'lg' },
         {
             header: '操作',
             align: 'right',
             width: '6rem',
             render: (cat) => (
-                <div className={styles.actionGroup}>
-                    <button className={styles.actionBtn} onClick={() => handleEditClick(cat)} title="编辑">
-                        <PencilIcon className={styles.actionIcon} />
+                <div className={shared.actionGroup}>
+                    <button className={shared.actionBtn} onClick={() => handleEditClick(cat)} title="编辑">
+                        <PencilIcon className={shared.actionIcon} />
                     </button>
-                    <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })} title="删除">
-                        <Trash2Icon className={styles.actionIcon} />
+                    <button
+                        className={`${shared.actionBtn} ${shared.actionBtnDanger}`}
+                        disabled={deleting === cat.id}
+                        onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })}
+                        title="删除"
+                    >
+                        <Trash2Icon className={shared.actionIcon} />
                     </button>
                 </div>
             ),
@@ -116,14 +176,14 @@ export default function CategoryManagement() {
             <AdminPageHeader
                 description='管理文章分类，支持新增、编辑和删除。'
                 eyebrow='Categories'
-                tag={`${categories.length} 个分类`}
+                tag={`${data.total} 个分类`}
                 title='分类管理'
             />
 
             <div className={styles.toolbar}>
                 <GhostButton
                     asButton
-                    icon={<PencilIcon className={styles.btnIcon} />}
+                    icon={<PencilIcon className={shared.btnIcon} />}
                     onClick={openCreateForm}
                     size='medium'
                     variant='primary'
@@ -134,7 +194,7 @@ export default function CategoryManagement() {
 
             <DataTable
                 columns={columns}
-                emptyText='暂无分类'
+                emptyText={loading ? '加载中...' : '暂无分类'}
                 rowKey={(cat) => cat.id}
                 rows={pagedCategories}
             />
@@ -147,11 +207,12 @@ export default function CategoryManagement() {
                 onCancel={() => setDeleteTarget(null)}
                 onConfirm={handleDeleteConfirm}
                 open={!!deleteTarget}
+                loading={deleting !== null}
                 title='确认删除'
             />
 
             <Dialog onClose={() => setFormOpen(false)} open={formOpen} title={isEditing ? '编辑分类' : '新增分类'}>
-                <form className={styles.form} onSubmit={handleSubmit}>
+                <form className={shared.form} onSubmit={handleSubmit}>
                     <TextInput
                         id='cat-name'
                         label='分类名'
@@ -175,10 +236,15 @@ export default function CategoryManagement() {
                         type='number'
                         value={String(formSortOrder)}
                     />
-                    <div className={styles.formActions}>
+                    <div className={shared.formActions}>
                         <GhostButton asButton onClick={() => setFormOpen(false)}>取消</GhostButton>
-                        <SubmitButton size='medium'>{isEditing ? '保存修改' : '新增分类'}</SubmitButton>
+                        <SubmitButton size='medium' disabled={submitting}>
+                            {submitting ? '保存中...' : isEditing ? '保存修改' : '新增分类'}
+                        </SubmitButton>
                     </div>
+                    {formMessage && (
+                        <p className={shared.formMessage} role="alert">{formMessage}</p>
+                    )}
                 </form>
             </Dialog>
         </>

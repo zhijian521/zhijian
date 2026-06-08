@@ -13,7 +13,9 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { api } from '@/lib/http-client';
+import type { ListData } from '@/lib/api-response';
 import styles from './user-list-client.module.css';
+import shared from './admin-shared.module.css';
 
 interface UserItem {
     id: number;
@@ -22,11 +24,6 @@ interface UserItem {
     role: 'admin' | 'user';
     status: 'active' | 'disabled';
     created_at: string;
-}
-
-interface UserListData {
-    users: UserItem[];
-    total: number;
 }
 
 interface UserFormData {
@@ -47,7 +44,7 @@ const EMPTY_FORM: UserFormData = {
 
 /*== 后台用户列表：匹配博客表格风格。 ==*/
 export default function UserListClient() {
-    const [data, setData] = useState<UserListData>({ users: [], total: 0 });
+    const [data, setData] = useState<ListData<UserItem>>({ data: [], total: 0 });
     const [searchInput, setSearchInput] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
     const [page, setPage] = useState(1);
@@ -71,9 +68,9 @@ export default function UserListClient() {
         try {
             const params: Record<string, unknown> = { page: p, pageSize };
             if (s.trim()) params.search = s.trim();
-            const res = await api.get<UserListData>('/admin/users', params);
-            if (res.code === 0) {
-                setData(res.data!);
+            const res = await api.get<ListData<UserItem>>('/admin/users', params);
+            if (res.code === 0 && res.data) {
+                setData(res.data);
             }
         } catch (err) {
             console.error('获取用户列表失败：', err);
@@ -105,7 +102,7 @@ export default function UserListClient() {
             if (res.code === 0) {
                 setData((prev) => ({
                     ...prev,
-                    users: prev.users.filter((u) => u.id !== deleteTarget.id),
+                    data: prev.data.filter((u) => u.id !== deleteTarget.id),
                     total: prev.total - 1,
                 }));
                 setDeleteTarget(null);
@@ -190,7 +187,7 @@ export default function UserListClient() {
         {
             header: '邮箱',
             hideBelow: 'sm',
-            render: (user) => <span className={styles.mutedCell}>{user.email}</span>,
+            render: (user) => <span className={shared.mutedCell}>{user.email}</span>,
         },
         {
             header: '角色',
@@ -212,28 +209,28 @@ export default function UserListClient() {
         {
             header: '创建时间',
             hideBelow: 'lg',
-            render: (user) => <span className={styles.mutedCell}>{new Date(user.created_at).toLocaleDateString('zh-CN')}</span>,
+            render: (user) => <span className={shared.mutedCell}>{new Date(user.created_at).toLocaleDateString('zh-CN')}</span>,
         },
         {
             header: '操作',
             align: 'right',
             width: '6rem',
             render: (user) => (
-                <div className={styles.actionGroup}>
+                <div className={shared.actionGroup}>
                     <button
-                        className={styles.actionBtn}
+                        className={shared.actionBtn}
                         onClick={() => openEditForm(user)}
                         title="编辑"
                     >
-                        <PencilIcon className={styles.actionIcon} />
+                        <PencilIcon className={shared.actionIcon} />
                     </button>
                     <button
-                        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                        className={`${shared.actionBtn} ${shared.actionBtnDanger}`}
                         disabled={deleting === user.id}
                         onClick={() => handleDeleteClick(user.id, user.username)}
                         title="删除"
                     >
-                        <Trash2Icon className={styles.actionIcon} />
+                        <Trash2Icon className={shared.actionIcon} />
                     </button>
                 </div>
             ),
@@ -259,7 +256,7 @@ export default function UserListClient() {
                 </form>
                 <GhostButton
                     asButton
-                    icon={<PlusIcon className={styles.btnIcon} />}
+                    icon={<PlusIcon className={shared.btnIcon} />}
                     onClick={openCreateForm}
                     size='medium'
                     variant='primary'
@@ -273,7 +270,7 @@ export default function UserListClient() {
                 columns={columns}
                 emptyText={loading ? '加载中...' : '暂无用户数据'}
                 rowKey={(user) => user.id}
-                rows={data.users}
+                rows={data.data}
             />
 
             <ConfirmDialog
@@ -292,7 +289,7 @@ export default function UserListClient() {
                 open={formOpen}
                 title={formMode === 'create' ? '新建用户' : `编辑用户：${editingUser?.username || ''}`}
             >
-                <form className={styles.form} onSubmit={handleFormSubmit}>
+                <form className={shared.form} onSubmit={handleFormSubmit}>
                     <TextInput
                         id='form-username'
                         label='用户名'
@@ -354,7 +351,7 @@ export default function UserListClient() {
                         </div>
                     )}
 
-                    <div className={styles.formActions}>
+                    <div className={shared.formActions}>
                         <GhostButton asButton onClick={() => setFormOpen(false)}>
                             取消
                         </GhostButton>
@@ -364,7 +361,7 @@ export default function UserListClient() {
                     </div>
 
                     {formMessage && (
-                        <p className={styles.formMessage} role="alert">{formMessage}</p>
+                        <p className={shared.formMessage} role="alert">{formMessage}</p>
                     )}
                 </form>
             </Dialog>

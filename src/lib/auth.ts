@@ -67,7 +67,7 @@ export async function getUserByUsername(username: string): Promise<(User & { pas
     if (!db) return null;
 
     const [rows] = await db.execute(
-        'SELECT id, username, email, password_hash, role, status, created_at, updated_at FROM users WHERE username = ?',
+        'SELECT id, username, email, password_hash, role, status, created_at, updated_at FROM zhijian_users WHERE username = ?',
         [username],
     );
     const list = rows as any[];
@@ -82,7 +82,7 @@ export async function getUserById(id: number): Promise<User | null> {
     if (!db) return null;
 
     const [rows] = await db.execute(
-        'SELECT id, username, email, role, status, created_at, updated_at FROM users WHERE id = ?',
+        'SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users WHERE id = ?',
         [id],
     );
     const list = rows as any[];
@@ -109,7 +109,7 @@ export async function createUser(params: {
     if (!db) throw new Error('数据库未配置');
 
     const [result] = await db.execute(
-        'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
+        'INSERT INTO zhijian_users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
         [params.username, params.email, params.passwordHash, params.role || 'user'],
     );
     const insertResult = result as any;
@@ -142,7 +142,7 @@ export async function updateUser(
     if (sets.length === 0) return getUserById(id);
 
     values.push(id);
-    await db.execute(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`, values);
+    await db.execute(`UPDATE zhijian_users SET ${sets.join(', ')} WHERE id = ?`, values);
     return getUserById(id);
 }
 
@@ -151,7 +151,7 @@ export async function deleteUser(id: number): Promise<boolean> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute('DELETE FROM users WHERE id = ?', [id]);
+    const [result] = await db.execute('DELETE FROM zhijian_users WHERE id = ?', [id]);
     return (result as any).affectedRows > 0;
 }
 
@@ -178,13 +178,13 @@ export async function listUsers(params: {
     }
 
     const [countRows] = await db.execute(
-        `SELECT COUNT(*) AS total FROM users ${where}`,
+        `SELECT COUNT(*) AS total FROM zhijian_users ${where}`,
         values,
     );
     const total = (countRows as any[])[0].total as number;
 
     const [rows] = await db.execute(
-        `SELECT id, username, email, role, status, created_at, updated_at FROM users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+        `SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
         [...values, pageSize, offset],
     );
 
@@ -201,7 +201,7 @@ export async function countUsersByRole(): Promise<{ admin: number; user: number 
 
     try {
         const [rows] = await db.execute(
-            `SELECT role, COUNT(*) AS cnt FROM users WHERE status = 'active' GROUP BY role`,
+            `SELECT role, COUNT(*) AS cnt FROM zhijian_users WHERE status = 'active' GROUP BY role`,
         );
         const counts: Record<string, number> = {};
         for (const row of rows as any[]) {

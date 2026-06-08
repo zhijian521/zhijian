@@ -1,4 +1,4 @@
-/*== 用户列表样式：工具栏 + 操作按钮 + 弹窗表单 + 分页 ==*/
+/*== 用户列表样式：工具栏 + 表单字段 ==*/
 
 .toolbar {
     display: flex;
@@ -22,71 +22,8 @@
     gap: 0.5rem;
 }
 
-.btnIcon {
-    width: 1rem;
-    height: 1rem;
-}
-
-/* 单元格样式 */
-
 .nameCell {
     font-weight: 500;
-}
-
-.mutedCell {
-    color: var(--muted-foreground);
-}
-
-/* 操作按钮 */
-
-.actionGroup {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.actionBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25rem;
-    color: var(--primary);
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    transition: color 0.15s, background-color 0.15s;
-}
-
-.actionBtn:hover {
-    background: rgba(158, 0, 39, 0.08);
-}
-
-.actionBtnDanger:hover {
-    color: var(--destructive);
-    background: rgba(186, 26, 26, 0.08);
-}
-
-.actionBtn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.actionBtn:disabled:hover {
-    background: transparent;
-    color: var(--muted-foreground);
-}
-
-.actionIcon {
-    width: 1.125rem;
-    height: 1.125rem;
-}
-
-/* 弹窗表单 */
-
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
 }
 
 .field {
@@ -101,26 +38,4 @@
     font-weight: 500;
     color: var(--foreground);
     margin-bottom: 0.25rem;
-}
-
-.formActions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-}
-
-.formActions > * {
-    width: auto;
-}
-
-.formMessage {
-    font-size: 0.875rem;
-    color: var(--primary);
-    border: 1px solid var(--primary);
-    border-radius: 0;
-    background: rgba(158, 0, 39, 0.04);
-    padding: 0.5rem 0.75rem;
-    margin: 0;
 }

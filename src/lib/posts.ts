@@ -85,10 +85,10 @@ const FALLBACK_POSTS: Post[] = [
 
 /*== 获取已发布文章列表。 数据库无数据时回退到内置示例数据，保证页面始终可渲染。 ==*/
 export async function getPublishedPosts(): Promise<Post[]> {
-    const posts = await readPostsFromDatabase({ includeDrafts: false });
+    const zhijian_blog_posts = await readPostsFromDatabase({ includeDrafts: false });
 
-    if (posts.length > 0) {
-        return posts;
+    if (zhijian_blog_posts.length > 0) {
+        return zhijian_blog_posts;
     }
 
     return FALLBACK_POSTS.filter((post) => post.status === 'published');
@@ -96,10 +96,10 @@ export async function getPublishedPosts(): Promise<Post[]> {
 
 /*== 获取全部文章（含草稿），供后台管理列表使用。 数据库无数据时回退到完整示例数据。 ==*/
 export async function getAllPosts(): Promise<Post[]> {
-    const posts = await readPostsFromDatabase({ includeDrafts: true });
+    const zhijian_blog_posts = await readPostsFromDatabase({ includeDrafts: true });
 
-    if (posts.length > 0) {
-        return posts;
+    if (zhijian_blog_posts.length > 0) {
+        return zhijian_blog_posts;
     }
 
     return FALLBACK_POSTS;
@@ -107,10 +107,10 @@ export async function getAllPosts(): Promise<Post[]> {
 
 /*== 按 Slug 获取单篇已发布文章，用于前台详情页。 @param slug - 文章的唯一标识符 @returns 匹配的文章，未找到时返回 null ==*/
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-    const posts = await readPostsFromDatabase({ includeDrafts: false, slug });
+    const zhijian_blog_posts = await readPostsFromDatabase({ includeDrafts: false, slug });
 
-    if (posts.length > 0) {
-        return posts[0] ?? null;
+    if (zhijian_blog_posts.length > 0) {
+        return zhijian_blog_posts[0] ?? null;
     }
 
     return FALLBACK_POSTS.find((post) => post.slug === slug && post.status === 'published') ?? null;
@@ -118,10 +118,10 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
 /*== 按 ID 获取单篇文章（含草稿），供后台编辑页使用。 @param id - 文章主键 ID @returns 匹配的文章，未找到时返回 null ==*/
 export async function getPostById(id: number): Promise<Post | null> {
-    const posts = await readPostsFromDatabase({ includeDrafts: true, id });
+    const zhijian_blog_posts = await readPostsFromDatabase({ includeDrafts: true, id });
 
-    if (posts.length > 0) {
-        return posts[0] ?? null;
+    if (zhijian_blog_posts.length > 0) {
+        return zhijian_blog_posts[0] ?? null;
     }
 
     return FALLBACK_POSTS.find((post) => post.id === id) ?? null;
@@ -142,7 +142,7 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
     try {
         const [result] = await db.execute<ResultSetHeader>(
             `
-                UPDATE posts
+                UPDATE zhijian_blog_posts
                 SET slug = ?, title = ?, summary = ?, content = ?, status = ?, published_at = ?, updated_at = NOW()
                 WHERE id = ?
             `,
@@ -171,7 +171,7 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
     try {
         const [result] = await db.execute<ResultSetHeader>(
             `
-                INSERT INTO posts (slug, title, summary, content, status, published_at, created_at, updated_at)
+                INSERT INTO zhijian_blog_posts (slug, title, summary, content, status, published_at, created_at, updated_at)
                 VALUES (?, ?, ?, ?, 'draft', NULL, NOW(), NOW())
             `,
             [input.slug, input.title, input.summary, input.content],
@@ -226,7 +226,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                     status,
                     DATE_FORMAT(published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
                     DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
-                FROM posts
+                FROM zhijian_blog_posts
                 ${whereClause}
                 ORDER BY published_at IS NULL, published_at DESC, id DESC
             `,
@@ -244,7 +244,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
             updatedAt: row.updated_at,
         }));
     } catch (error) {
-        console.error('Failed to read posts.', { options, error });
+        console.error('Failed to read zhijian_blog_posts.', { options, error });
         return [];
     }
 }
