@@ -1,4 +1,4 @@
-/*== 后台管理页面通用样式：表格操作 + 弹窗表单 + 提示消息 ==*/
+/*== 后台管理页面通用样式 ==*/
 
 /* 单元格 */
 
@@ -12,42 +12,6 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-}
-
-.actionBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25rem;
-    color: var(--primary);
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    transition: color 0.15s, background-color 0.15s;
-}
-
-.actionBtn:hover {
-    background: rgba(158, 0, 39, 0.08);
-}
-
-.actionBtnDanger:hover {
-    color: var(--destructive);
-    background: rgba(186, 26, 26, 0.08);
-}
-
-.actionBtn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.actionBtn:disabled:hover {
-    background: transparent;
-    color: var(--muted-foreground);
-}
-
-.actionIcon {
-    width: 1.125rem;
-    height: 1.125rem;
 }
 
 .btnIcon {
@@ -80,7 +44,7 @@
     color: var(--primary);
     border: 1px solid var(--primary);
     border-radius: 0;
-    background: rgba(158, 0, 39, 0.04);
+    background: var(--primary-subtle-soft);
     padding: 0.5rem 0.75rem;
     margin: 0;
 }

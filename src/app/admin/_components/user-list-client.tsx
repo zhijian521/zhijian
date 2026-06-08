@@ -7,6 +7,7 @@ import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { IconButton } from '@/components/ui/icon-button';
 import { Pagination } from '@/components/ui/pagination';
 import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
@@ -220,21 +221,20 @@ export default function UserListClient() {
             width: '6rem',
             render: (user) => (
                 <div className={shared.actionGroup}>
-                    <button
-                        className={shared.actionBtn}
+                    <IconButton
+                        icon={<PencilIcon />}
                         onClick={() => openEditForm(user)}
+                        size="medium"
                         title="编辑"
-                    >
-                        <PencilIcon className={shared.actionIcon} />
-                    </button>
-                    <button
-                        className={`${shared.actionBtn} ${shared.actionBtnDanger}`}
-                        disabled={deleting === user.id}
+                    />
+                    <IconButton
+                        icon={<Trash2Icon />}
                         onClick={() => handleDeleteClick(user.id, user.username)}
+                        size="medium"
                         title="删除"
-                    >
-                        <Trash2Icon className={shared.actionIcon} />
-                    </button>
+                        variant="danger"
+                        disabled={deleting === user.id}
+                    />
                 </div>
             ),
         },

@@ -17,6 +17,7 @@ import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { DataTable } from '@/components/ui/data-table';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { IconButton } from '@/components/ui/icon-button';
 import { Pagination } from '@/components/ui/pagination';
 import { PillSelect } from '@/components/ui/pill-select';
 import { SubmitButton } from '@/components/ui/submit-button';
@@ -76,7 +77,7 @@ export default function ComponentShowcase() {
             <AdminPageHeader
                 description='项目自建组件与图标的示例展示，便于开发时查阅。'
                 eyebrow='Components'
-                tag={`${ICONS.length} 个图标 · 12 个组件`}
+                tag={`${ICONS.length} 个图标 · 13 个组件`}
                 title='组件列表'
             />
 
@@ -158,6 +159,32 @@ export default function ComponentShowcase() {
                             <span className={styles.demoLabel}>default</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='default' variant='primary'>新建</GhostButton>
                             <GhostButton href='#' size='default'>默认</GhostButton>
+                        </div>
+                    </div>
+                </div>
+
+                {/* IconButton */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>IconButton</h3>
+                    <p className={styles.componentDesc}>正方形图标按钮，纯图标无文字，支持 default / danger / muted 三种变体，small / medium / default 三种尺寸。</p>
+                    <div className={styles.demoRow}>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <IconButton icon={<PencilIcon />} size='small' />
+                            <IconButton icon={<Trash2Icon />} size='small' variant='danger' />
+                            <IconButton icon={<XIcon />} size='small' variant='muted' />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>medium</span>
+                            <IconButton icon={<PencilIcon />} size='medium' />
+                            <IconButton icon={<Trash2Icon />} size='medium' variant='danger' />
+                            <IconButton icon={<XIcon />} size='medium' variant='muted' />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <IconButton icon={<PencilIcon />} size='default' />
+                            <IconButton icon={<Trash2Icon />} size='default' variant='danger' />
+                            <IconButton icon={<XIcon />} size='default' variant='muted' />
                         </div>
                     </div>
                 </div>

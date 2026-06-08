@@ -20,14 +20,32 @@
     /* 朱砂红上的白字 — 主按钮、主色徽章内的文字 */
     --primary-foreground: #ffffff;
 
+    /* 朱砂淡底 — hover 背景、错误提示底色。主色 8% 透明度 */
+    --primary-subtle: color-mix(in srgb, var(--primary) 8%, transparent);
+
+    /* 朱砂微底 — 标签底色、formMessage 底色。主色 4% 透明度 */
+    --primary-subtle-soft: color-mix(in srgb, var(--primary) 4%, transparent);
+
+    /* 朱砂中底 — 页眉标签背景、标签 accent 底色。主色 6% 透明度 */
+    --primary-subtle-medium: color-mix(in srgb, var(--primary) 6%, transparent);
+
     /* 焦朱 — 输入框 focus 时的边框色 / outline 色_ring，比主色略亮一档，让焦点更醒目但不刺眼 */
     --ring: #c8161d;
+
+    /* 朱砂 focus ring 底色 — 输入框 focus 的 box-shadow。主色 10% 透明度 */
+    --ring-subtle: color-mix(in srgb, var(--primary) 10%, transparent);
 
     /* 危险红 — 删除按钮、错误提示、校验失败。比主色偏正红，与"朱砂"区分语义 */
     --destructive: #ba1a1a;
 
     /* 危险红上的白字 */
     --destructive-foreground: #ffffff;
+
+    /* 危险淡底 — danger 按钮 hover 背景。危险色 8% 透明度 */
+    --destructive-subtle: color-mix(in srgb, var(--destructive) 8%, transparent);
+
+    /* 危险微底 — toast error 底色。危险色 6% 透明度 */
+    --destructive-subtle-soft: color-mix(in srgb, var(--destructive) 6%, transparent);
 
 
     /* ─────────────────────────────────────────────────────────────────

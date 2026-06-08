@@ -1,12 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { useMemo, useState } from 'react';
 
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { IconButton } from '@/components/ui/icon-button';
 import { Pagination } from '@/components/ui/pagination';
 import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
@@ -102,17 +102,19 @@ export default function PostManagementClient() {
             width: '6rem',
             render: (post) => (
                 <div className={shared.actionGroup}>
-                    <Link className={shared.actionBtn} href={`${APP_ROUTES.adminPosts}/${post.id}`} title="编辑">
-                        <PencilIcon className={shared.actionIcon} />
-                    </Link>
-                    <button
-                        className={`${shared.actionBtn} ${shared.actionBtnDanger}`}
+                    <IconButton
+                        href={`${APP_ROUTES.adminPosts}/${post.id}`}
+                        icon={<PencilIcon />}
+                        size="medium"
+                        title="编辑"
+                    />
+                    <IconButton
+                        icon={<Trash2Icon />}
                         onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
+                        size="medium"
                         title="删除"
-                        type='button'
-                    >
-                        <Trash2Icon className={shared.actionIcon} />
-                    </button>
+                        variant="danger"
+                    />
                 </div>
             ),
         },

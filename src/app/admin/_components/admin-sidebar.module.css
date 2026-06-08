@@ -117,7 +117,7 @@
 
 .navActive {
     border-right-color: var(--primary);
-    background: rgba(159, 0, 15, 0.08);
+    background: var(--primary-subtle);
     color: var(--primary);
 }
 
@@ -208,7 +208,7 @@
 
 .subNavActive {
     border-right-color: var(--primary);
-    background: rgba(159, 0, 15, 0.08);
+    background: var(--primary-subtle);
     color: var(--primary);
 }
 

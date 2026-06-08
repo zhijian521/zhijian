@@ -1,7 +1,7 @@
 'use client';
 
 import { XIcon } from '@/components/ui/icons';
-import { GhostButton } from '@/components/ui/ghost-button';
+import { IconButton } from '@/components/ui/icon-button';
 
 import styles from './dialog.module.css';
 
@@ -24,9 +24,7 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
             <div className={styles.panel} style={maxWidth ? { maxWidth } : undefined}>
                 <div className={styles.header}>
                     <h3 className={styles.title}>{title}</h3>
-                    <GhostButton asButton onClick={onClose} size="small">
-                        <XIcon className={styles.closeIcon} />
-                    </GhostButton>
+                    <IconButton icon={<XIcon />} onClick={onClose} size="small" variant="muted" />
                 </div>
                 <div className={styles.body}>
                     {children}

@@ -75,7 +75,7 @@
 .input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(158, 0, 39, 0.1);
+    box-shadow: 0 0 0 2px var(--ring-subtle);
 }
 
 .textarea {
@@ -95,7 +95,7 @@
 .textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(158, 0, 39, 0.1);
+    box-shadow: 0 0 0 2px var(--ring-subtle);
 }
 
 .textareaLarge {
@@ -115,7 +115,7 @@
 .textareaLarge:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(158, 0, 39, 0.1);
+    box-shadow: 0 0 0 2px var(--ring-subtle);
 }
 
 .select {
@@ -134,7 +134,7 @@
 .select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(158, 0, 39, 0.1);
+    box-shadow: 0 0 0 2px var(--ring-subtle);
 }
 
 .hintText {

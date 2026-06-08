@@ -7,6 +7,7 @@ import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { IconButton } from '@/components/ui/icon-button';
 import { Pagination } from '@/components/ui/pagination';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
@@ -153,17 +154,20 @@ export default function TagManagement() {
             width: '6rem',
             render: (tag) => (
                 <div className={shared.actionGroup}>
-                    <button className={shared.actionBtn} onClick={() => handleEditClick(tag)} title="编辑">
-                        <PencilIcon className={shared.actionIcon} />
-                    </button>
-                    <button
-                        className={`${shared.actionBtn} ${shared.actionBtnDanger}`}
+                    <IconButton
+                        icon={<PencilIcon />}
+                        onClick={() => handleEditClick(tag)}
+                        size="medium"
+                        title="编辑"
+                    />
+                    <IconButton
                         disabled={deleting === tag.id}
+                        icon={<Trash2Icon />}
                         onClick={() => setDeleteTarget({ id: tag.id, name: tag.name })}
+                        size="medium"
                         title="删除"
-                    >
-                        <Trash2Icon className={shared.actionIcon} />
-                    </button>
+                        variant="danger"
+                    />
                 </div>
             ),
         },

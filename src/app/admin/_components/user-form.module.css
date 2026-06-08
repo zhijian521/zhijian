@@ -86,7 +86,7 @@
     padding: 0.5rem 1rem;
     border: 1px solid var(--primary);
     border-radius: 0;
-    background: rgba(158, 0, 39, 0.04);
+    background: var(--primary-subtle-soft);
     color: var(--primary);
     font-size: 0.875rem;
     cursor: pointer;
@@ -170,6 +170,6 @@
     color: var(--primary);
     border: 1px solid var(--primary);
     border-radius: 0;
-    background: rgba(158, 0, 39, 0.04);
+    background: var(--primary-subtle-soft);
     padding: 0.625rem 1rem;
 }
