@@ -6,7 +6,6 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: transparent;
-    font-size: 0.8125rem;
     line-height: 1.4;
     color: var(--muted-foreground);
     text-decoration: none;
@@ -16,10 +15,9 @@
         background-color 0.2s ease;
 }
 
-/* 尺寸变体 */
-.small {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.8125rem;
+.default {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
 }
 
 .medium {
@@ -27,9 +25,10 @@
     font-size: 0.84375rem;
 }
 
-.default {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+/* 尺寸变体 */
+.small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
 }
 
 .button:hover {

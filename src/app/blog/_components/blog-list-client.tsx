@@ -74,7 +74,7 @@ export default function BlogListClient() {
                                     <div className={styles.itemMeta}>
                                         <span className={styles.itemCategory}>{post.category}</span>
                                         {post.tags.map((tag) => (
-                                            <Tag variant="outlined" key={tag}>{tag}</Tag>
+                                            <Tag variant="outlined" size="mini" key={tag}>{tag}</Tag>
                                         ))}
                                         <span className={styles.itemDate}>{post.date}</span>
                                     </div>

@@ -42,7 +42,7 @@ export function PostCard({
 
             <div className={styles.body}>
                 <div className={styles.metaRow}>
-                    {tag ? <Tag variant={tagVariant}>{tag}</Tag> : null}
+                    {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
                     {date ? <span className={styles.date}>{date}</span> : null}
                 </div>
 

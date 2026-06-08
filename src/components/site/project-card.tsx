@@ -44,7 +44,7 @@ export function ProjectCard({
             {tags && tags.length > 0 ? (
                 <div className={styles.tags}>
                     {tags.map((tag) => (
-                        <Tag key={tag}>{tag}</Tag>
+                        <Tag key={tag} size="mini">{tag}</Tag>
                     ))}
                 </div>
             ) : null}
@@ -57,6 +57,7 @@ export function ProjectCard({
                             icon={action.icon}
                             key={action.label}
                             rel="noreferrer"
+                            size="small"
                             target="_blank"
                         >
                             {action.label}

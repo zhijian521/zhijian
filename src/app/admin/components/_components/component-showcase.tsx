@@ -94,8 +94,14 @@ export default function ComponentShowcase() {
                 {/* Tag */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>Tag</h3>
-                    <p className={styles.componentDesc}>标签组件，支持 default / accent / outlined 三种变体，small / medium / default 三种尺寸。</p>
+                    <p className={styles.componentDesc}>标签组件，支持 default / accent / outlined 三种变体，mini / small / medium / default 四种尺寸。</p>
                     <div className={styles.demoRow}>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>mini</span>
+                            <Tag size='mini' variant='default'>默认</Tag>
+                            <Tag size='mini' variant='accent'>强调</Tag>
+                            <Tag size='mini' variant='outlined'>描边</Tag>
+                        </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>small</span>
                             <Tag size='small' variant='default'>默认</Tag>
