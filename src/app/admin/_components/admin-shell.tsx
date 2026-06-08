@@ -1,4 +1,5 @@
 import AdminSidebar from '@/app/admin/_components/admin-sidebar';
+import { ToastContainer } from '@/components/ui/toast';
 import styles from './admin-shell.module.css';
 
 interface AdminShellProps {
@@ -11,6 +12,7 @@ export default function AdminShell({ children }: AdminShellProps) {
         <main className={styles.layout}>
             <AdminSidebar />
             <section className={styles.main}>{children}</section>
+            <ToastContainer />
         </main>
     );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 
-import { PencilIcon, Trash2Icon } from '@/components/ui/icons';
+import { PencilIcon, PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
@@ -10,6 +10,7 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { Pagination } from '@/components/ui/pagination';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
+import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
 import type { ListData } from '@/lib/api-response';
@@ -108,6 +109,7 @@ export default function CategoryManagement() {
             }
 
             setFormOpen(false);
+            toast.success(isEditing ? '修改成功' : '新增成功');
             fetchCategories();
         } catch {
             setFormMessage('请求失败，请稍后重试。');
@@ -132,11 +134,12 @@ export default function CategoryManagement() {
                     setFormOpen(false);
                 }
                 setDeleteTarget(null);
+                toast.success('删除成功');
             } else {
-                alert(res.message || '删除失败。');
+                toast.error(res.message || '删除失败。');
             }
         } catch {
-            alert('删除请求失败。');
+            toast.error('删除请求失败。');
         } finally {
             setDeleting(null);
         }
@@ -183,7 +186,7 @@ export default function CategoryManagement() {
             <div className={styles.toolbar}>
                 <GhostButton
                     asButton
-                    icon={<PencilIcon className={shared.btnIcon} />}
+                    icon={<PlusIcon className={shared.btnIcon} />}
                     onClick={openCreateForm}
                     size='medium'
                     variant='primary'

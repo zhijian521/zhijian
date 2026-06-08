@@ -11,6 +11,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
+import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { MOCK_POSTS, type MockPost } from '@/lib/mock-data';
 import { APP_ROUTES } from '@/lib/site';
@@ -39,6 +40,7 @@ export default function PostManagementClient() {
     function handleDeleteConfirm() {
         if (!deleteTarget) return;
         setPosts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+        toast.success('删除成功');
         setDeleteTarget(null);
     }
 

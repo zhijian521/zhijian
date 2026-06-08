@@ -10,7 +10,8 @@ import {
     SearchIcon, SaveIcon, FileTextIcon, UsersIcon,
     ShieldIcon, WrenchIcon, ChevronRightIcon, LogOutIcon,
     UserCircle2Icon, LayoutDashboardIcon, FolderTreeIcon,
-    SettingsIcon, TagIcon,
+    SettingsIcon, TagIcon, CheckIcon,
+    UserIcon, LockIcon,
 } from '@/components/ui/icons';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { DataTable } from '@/components/ui/data-table';
@@ -22,6 +23,7 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { TextLink } from '@/components/ui/text-link';
+import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import styles from './component-showcase.module.css';
 
@@ -56,6 +58,9 @@ const ICONS = [
     { name: 'WrenchIcon', Icon: WrenchIcon },
     { name: 'AlertTriangleIcon', Icon: AlertTriangleIcon },
     { name: 'LogOutIcon', Icon: LogOutIcon },
+    { name: 'CheckIcon', Icon: CheckIcon },
+    { name: 'UserIcon', Icon: UserIcon },
+    { name: 'LockIcon', Icon: LockIcon },
 ];
 
 /*== 组件列表示例页 ==*/
@@ -71,7 +76,7 @@ export default function ComponentShowcase() {
             <AdminPageHeader
                 description='项目自建组件与图标的示例展示，便于开发时查阅。'
                 eyebrow='Components'
-                tag={`${ICONS.length} 个图标 · 11 个组件`}
+                tag={`${ICONS.length} 个图标 · 12 个组件`}
                 title='组件列表'
             />
 
@@ -91,6 +96,16 @@ export default function ComponentShowcase() {
             {/* 组件展示区 */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>组件示例</h2>
+
+                {/* Toast */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>Toast</h3>
+                    <p className={styles.componentDesc}>全局提示，支持 success / error 两种类型，3 秒自动消失，可手动关闭。使用 toast.success() / toast.error() 调用。</p>
+                    <div className={styles.demoRow}>
+                        <GhostButton asButton onClick={() => toast.success('操作成功！')} size='medium' variant='primary'>成功提示</GhostButton>
+                        <GhostButton asButton onClick={() => toast.error('操作失败，请稍后重试。')} size='medium'>错误提示</GhostButton>
+                    </div>
+                </div>
 
                 {/* Tag */}
                 <div className={styles.componentBlock}>

@@ -12,6 +12,7 @@ import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/http-client';
 import type { ListData } from '@/lib/api-response';
 import styles from './user-list-client.module.css';
@@ -106,11 +107,12 @@ export default function UserListClient() {
                     total: prev.total - 1,
                 }));
                 setDeleteTarget(null);
+                toast.success('删除成功');
             } else {
-                alert(res.message || '删除失败。');
+                toast.error(res.message || '删除失败。');
             }
         } catch {
-            alert('删除请求失败。');
+            toast.error('删除请求失败。');
         } finally {
             setDeleting(null);
         }
@@ -169,6 +171,7 @@ export default function UserListClient() {
             }
 
             setFormOpen(false);
+            toast.success(formMode === 'create' ? '创建成功' : '修改成功');
             fetchUsers();
         } catch {
             setFormMessage('请求失败，请稍后重试。');

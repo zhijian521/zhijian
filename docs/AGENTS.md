@@ -26,8 +26,8 @@
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（30 个图标） |
-| UI 组件 | 自建 CSS Module 组件 | — | ✅ 10 个组件 |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（31 个图标） |
+| UI 组件 | 自建 CSS Module 组件 | — | ✅ 12 个组件 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 
 **路径别名**: `@/*` → `./src/*`
@@ -100,7 +100,9 @@ src/
 │       ├── submit-button.tsx + .module.css    # 提交按钮
 │       ├── tag.tsx + .module.css              # 标签（mini/small/medium/default）
 │       ├── text-input.tsx + .module.css       # 文本输入框
-│       └── text-link.tsx + .module.css        # 文字链接
+│       ├── text-link.tsx + .module.css        # 文字链接
+│       ├── toast.tsx + .module.css            # Toast 提示（success/error，3秒自动消失）
+│       └── use-toast.ts                       # Toast hook（单例 store + useSyncExternalStore）
 ├── lib/                          # 核心业务逻辑
 │   ├── api-response.ts           # API 响应格式 + BizCode + ListData<T>
 │   ├── auth.ts                   # 认证系统 + 用户数据层
@@ -400,7 +402,7 @@ export function Component({ variant = 'default', size = 'default', className, ..
 
 ### 图标系统
 
-全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（30 个图标）：
+全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（31 个图标）：
 
 ```typescript
 import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
@@ -420,6 +422,26 @@ import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
 | `.btnIcon` | 工具栏按钮内图标 |
 | `.form` / `.formActions` | 弹窗表单布局 |
 | `.formMessage` | 表单错误/成功提示 |
+
+### Toast 提示
+
+全站统一使用 `toast` 进行操作反馈，禁止使用 `alert()`：
+
+```typescript
+import { toast } from '@/components/ui/toast'
+
+// 成功提示
+toast.success('删除成功')
+
+// 错误提示
+toast.error('操作失败，请稍后重试。')
+```
+
+**特点**：
+- 单例 store + `useSyncExternalStore`，无需 Provider 包裹
+- `ToastContainer` 已挂载在 `AdminShell`，所有后台页面自动可用
+- 3 秒自动消失，支持手动关闭
+- 视觉：success 朱砂淡底 + error 危险淡底，零圆角
 
 ### 常用 CSS 变量
 
@@ -574,6 +596,7 @@ fix(api): handle null response from database
 | HTTP 客户端 | `src/lib/http-client.ts` |
 | 全局样式 | `src/app/globals.css` |
 | 自建图标库 | `src/components/ui/icons/` |
+| Toast 提示 | `src/components/ui/toast.tsx` + `use-toast.ts` |
 | 后台布局 | `src/app/admin/layout.tsx` |
 | 后台共享样式 | `src/app/admin/_components/admin-shared.module.css` |
 | 后台壳组件 | `src/app/admin/_components/admin-shell.tsx` |
@@ -611,6 +634,7 @@ fix(api): handle null response from database
 - 新增图标加入 `src/components/ui/icons/`，不要引入图标库
 - 表名使用 `zhijian_<模块>_<实体>` 前缀规范
 - 列表接口统一返回 `{ data: T[], total: number }` 格式
+- 操作反馈使用 `toast.success()` / `toast.error()`，禁止 `alert()`
 
 ---
 

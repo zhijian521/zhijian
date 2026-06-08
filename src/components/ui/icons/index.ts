@@ -35,6 +35,7 @@ export { SettingsIcon } from './settings-icon';
 export { TagIcon } from './tag-icon';
 export { UserIcon } from './user-icon';
 export { LockIcon } from './lock-icon';
+export { CheckIcon } from './check-icon';
 
 /** 图标组件的函数类型，用于 NavSubItem 等 */
 export type IconComponent = React.ComponentType<IconProps>;
