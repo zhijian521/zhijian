@@ -1,18 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
+import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { useMemo, useState } from 'react';
 
+import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import { GhostButton } from '@/components/ui/ghost-button';
+import { Pagination } from '@/components/ui/pagination';
+import { PillSelect } from '@/components/ui/pill-select';
+import { Tag } from '@/components/ui/tag';
+import { TextInput } from '@/components/ui/text-input';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { MOCK_POSTS, type MockPost } from '@/lib/mock-data';
 import { APP_ROUTES } from '@/lib/site';
-import styles from './post-management-client.module.css';
 
-function cn(...classes: (string | false | undefined | null)[]) {
-    return classes.filter(Boolean).join(' ');
-}
+import styles from './post-management-client.module.css';
+import shared from '@/app/admin/_components/admin-shared.module.css';
 
 /*== 后台文章管理：静态数据 + 搜索 + 状态筛选 + 删除操作。 ==*/
 export default function PostManagementClient() {
@@ -20,6 +24,8 @@ export default function PostManagementClient() {
     const [keyword, setKeyword] = useState('');
     const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
 
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
@@ -41,94 +47,125 @@ export default function PostManagementClient() {
         return value.split(' ')[0] || value;
     }
 
+    const totalPages = Math.max(1, Math.ceil(filteredPosts.length / pageSize));
+    const pagedPosts = filteredPosts.slice((page - 1) * pageSize, page * pageSize);
+
+    const columns: DataColumn<MockPost>[] = [
+        {
+            header: '文章',
+            render: (post) => (
+                <>
+                    <p className={styles.postTitle}>{post.title}</p>
+                    <p className={styles.postSlug}>{post.slug}</p>
+                </>
+            ),
+        },
+        {
+            header: '状态',
+            render: (post) => (
+                <Tag size="mini" variant={post.status === 'published' ? 'accent' : 'default'}>
+                    {post.status === 'published' ? '已发布' : '草稿'}
+                </Tag>
+            ),
+        },
+        {
+            header: '分类',
+            hideBelow: 'md',
+            render: (post) => <span className={shared.mutedCell}>{post.category}</span>,
+        },
+        {
+            header: '标签',
+            hideBelow: 'md',
+            render: (post) => (
+                <div className={styles.tagList}>
+                    {post.tags.map((t) => (
+                        <Tag key={t} size="mini">{t}</Tag>
+                    ))}
+                </div>
+            ),
+        },
+        {
+            header: '发布时间',
+            hideBelow: 'lg',
+            render: (post) => <span className={shared.mutedCell}>{formatDate(post.publishedAt)}</span>,
+        },
+        {
+            header: '更新时间',
+            hideBelow: 'lg',
+            render: (post) => <span className={shared.mutedCell}>{formatDate(post.updatedAt)}</span>,
+        },
+        {
+            header: '操作',
+            align: 'right',
+            width: '6rem',
+            render: (post) => (
+                <div className={shared.actionGroup}>
+                    <Link className={shared.actionBtn} href={`${APP_ROUTES.adminPosts}/${post.id}`} title="编辑">
+                        <PencilIcon className={shared.actionIcon} />
+                    </Link>
+                    <button
+                        className={`${shared.actionBtn} ${shared.actionBtnDanger}`}
+                        onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
+                        title="删除"
+                        type='button'
+                    >
+                        <Trash2Icon className={shared.actionIcon} />
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
         <>
             <AdminPageHeader
-                action={
-                    <Link className={styles.createLink} href={APP_ROUTES.adminPostCreate}>
-                        <PlusIcon className={styles.iconSmall} />
-                        新建文章
-                    </Link>
-                }
                 description='集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。'
                 eyebrow='Posts'
                 tag={`${posts.length} 篇文章`}
                 title='文章管理'
             />
 
-            {/* 搜索 + 筛选 */}
+            {/* 搜索 + 筛选 + 新建 */}
             <div className={styles.toolbar}>
-                <div className={styles.searchWrapper}>
-                    <SearchIcon className={styles.searchIcon} />
-                    <input
-                        className={styles.searchInput}
+                <div className={styles.searchRow}>
+                    <TextInput
+                        icon={<SearchIcon />}
+                        id='post-search'
+                        inputSize='medium'
                         onChange={(e) => setKeyword(e.target.value)}
                         placeholder='搜索标题、Slug 或摘要'
-                        type='text'
                         value={keyword}
                     />
+                    <PillSelect
+                        name='status'
+                        onChange={(v) => setStatus(v as 'all' | 'draft' | 'published')}
+                        options={[
+                            { value: 'all', label: '全部' },
+                            { value: 'published', label: '已发布' },
+                            { value: 'draft', label: '草稿' },
+                        ]}
+                        value={status}
+                    />
                 </div>
-                <div className={styles.filterTabs}>
-                    {(['all', 'published', 'draft'] as const).map((s) => (
-                        <button
-                            className={cn(styles.filterTab, status === s && styles.filterTabActive)}
-                            key={s}
-                            onClick={() => setStatus(s)}
-                            type='button'
-                        >
-                            {s === 'all' ? '全部' : s === 'published' ? '已发布' : '草稿'}
-                        </button>
-                    ))}
-                </div>
+                <GhostButton
+                    asButton
+                    icon={<PlusIcon className={shared.btnIcon} />}
+                    onClick={() => { /* TODO: navigate to create page */ }}
+                    size='medium'
+                    variant='primary'
+                >
+                    新建文章
+                </GhostButton>
             </div>
 
-            {/* 表格 */}
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr className={styles.thead}>
-                            <th className={styles.th}>文章</th>
-                            <th className={styles.th}>状态</th>
-                            <th className={cn(styles.th, styles.hideMd)}>分类</th>
-                            <th className={cn(styles.th, styles.hideMd)}>标签</th>
-                            <th className={cn(styles.th, styles.hideLg)}>发布时间</th>
-                            <th className={cn(styles.th, styles.hideLg)}>更新时间</th>
-                            <th className={styles.thAction}>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody className={styles.tbody}>
-                        {filteredPosts.map((post) => (
-                            <tr key={post.id}>
-                                <td className={styles.td}>
-                                    <p className={styles.postTitle}>{post.title}</p>
-                                    <p className={styles.postSlug}>{post.slug}</p>
-                                </td>
-                                <td className={styles.td}>
-                                    <span className={cn(styles.badge, post.status === 'published' ? styles.badgePublished : styles.badgeDraft)}>
-                                        {post.status === 'published' ? '已发布' : '草稿'}
-                                    </span>
-                                </td>
-                                <td className={cn(styles.tdMuted, styles.hideMd)}>{post.category}</td>
-                                <td className={cn(styles.td, styles.hideMd)}>
-                                    <div className={styles.tagList}>
-                                        {post.tags.map((t) => (
-                                            <span className={styles.miniTag} key={t}>{t}</span>
-                                        ))}
-                                    </div>
-                                </td>
-                                <td className={cn(styles.tdMuted, styles.hideLg)}>{formatDate(post.publishedAt)}</td>
-                                <td className={cn(styles.tdMuted, styles.hideLg)}>{formatDate(post.updatedAt)}</td>
-                                <td className={styles.tdAction}>
-                                    <Link className={styles.editLink} href={`${APP_ROUTES.adminPosts}/${post.id}`}>编辑</Link>
-                                    <button className={styles.deleteBtn} onClick={() => setDeleteTarget({ id: post.id, title: post.title })} title='删除' type='button'>
-                                        <Trash2Icon className={styles.iconSmall} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+            <DataTable
+                columns={columns}
+                emptyText='暂无文章'
+                rowKey={(post) => post.id}
+                rows={pagedPosts}
+            />
+
+            <Pagination current={page} onPageChange={setPage} total={totalPages} />
 
             <ConfirmDialog
                 confirmLabel='删除'
