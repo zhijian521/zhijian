@@ -9,7 +9,6 @@
     width: 16rem;
     flex-direction: column;
     border-right: 1px solid var(--border);
-    background: var(--muted);
     padding: 24px 16px;
 }
 
@@ -142,7 +141,7 @@
     font-size: 0.875rem;
     line-height: 1.4;
     font-weight: 500;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--muted-foreground);
     text-align: left;

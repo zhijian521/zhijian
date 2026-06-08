@@ -125,9 +125,10 @@
 | 元素 | 样式 |
 |------|------|
 | 整体 | `border: 1px solid var(--primary)`, `border-radius: 0` |
-| 表头 | `bg: var(--muted)`（米黄宣纸色） |
-| 斑马纹 | `rgba(246,239,231,0.6)` |
-| 行悬停 | `bg: var(--accent)`（青苔绿） |
+| 表头 | `bg: color-mix(var(--muted) 60%, var(--background))`（浅米黄） |
+| 单元格边框 | `border-right: 1px solid var(--border)`（最后一列无） |
+| 斑马纹 | 无（纯色背景） |
+| 行悬停 | 无背景（保持干净） |
 
 ### 面板
 
