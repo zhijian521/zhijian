@@ -7,6 +7,7 @@ import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { Pagination } from '@/components/ui/pagination';
 import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
@@ -369,29 +370,7 @@ export default function UserListClient() {
             </Dialog>
 
             {/* 分页 */}
-            {totalPages > 1 && (
-                <div className={styles.pagination}>
-                    <span>
-                        共 {data.total} 个用户，第 {page}/{totalPages} 页
-                    </span>
-                    <div className={styles.pageButtons}>
-                        <button
-                            className={styles.pageBtn}
-                            disabled={page <= 1}
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        >
-                            上一页
-                        </button>
-                        <button
-                            className={styles.pageBtn}
-                            disabled={page >= totalPages}
-                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        >
-                            下一页
-                        </button>
-                    </div>
-                </div>
-            )}
+            <Pagination current={page} onPageChange={setPage} total={totalPages} />
         </div>
     );
 }

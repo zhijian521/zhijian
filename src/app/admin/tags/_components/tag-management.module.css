@@ -1,177 +1,67 @@
-/*== 分类管理样式：表格 + 表单面板。 ==*/
+/*== 标签管理样式 ==*/
 
-.tableWrapper {
-    border: 1px solid var(--primary);
-    overflow-x: auto;
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 1.25rem;
 }
 
-.table {
-    width: 100%;
-    font-size: 0.875rem;
+.btnIcon {
+    width: 1rem;
+    height: 1rem;
 }
 
-.thead {
-    border-bottom: 1px solid var(--primary);
-    background: var(--muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+.mutedCell {
     color: var(--muted-foreground);
 }
 
-.th {
-    text-align: left;
-    padding: 0.75rem 1rem;
-    font-weight: 500;
-}
-
-.tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background-color 0.15s;
-}
-
-.tbody tr:nth-child(even) {
-    background: rgba(246, 239, 231, 0.6);
-}
-
-.tbody tr:hover {
-    background: var(--accent);
-}
-
-.td {
-    padding: 0.75rem 1rem;
-}
-
-.tdMuted {
-    padding: 0.75rem 1rem;
-    color: var(--muted-foreground);
-}
-
-.tdAction {
-    padding: 0.75rem 1rem;
-    text-align: right;
+.actionGroup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .actionBtn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.375rem;
-    color: var(--muted-foreground);
-    transition: color 0.15s, background-color 0.15s;
-    cursor: pointer;
+    padding: 0.25rem;
+    color: var(--primary);
     border: 0;
     background: transparent;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s;
 }
 
 .actionBtn:hover {
-    color: var(--primary);
-    background: var(--muted);
+    background: rgba(158, 0, 39, 0.08);
 }
 
 .actionBtnDanger:hover {
     color: var(--destructive);
+    background: rgba(186, 26, 26, 0.08);
 }
 
 .actionIcon {
-    width: 1rem;
-    height: 1rem;
+    width: 1.125rem;
+    height: 1.125rem;
 }
 
-.formPanel {
-    border: 1px solid var(--border);
-    background: var(--background);
-    padding: 1.5rem;
-}
-
-.fieldGroup {
+.form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-}
-
-.label {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--foreground);
-}
-
-.input {
-    height: 2.25rem;
-    width: 100%;
-    border: 1px solid var(--input);
-    border-radius: 0;
-    background: transparent;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    color: var(--foreground);
-    transition: border-color 0.15s;
-}
-
-.input:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-.input::placeholder {
-    color: var(--muted-foreground);
-}
-
-.submitBtn {
+.formActions {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 2.25rem;
-    border: 0;
-    border-radius: 0;
-    background: var(--primary);
-    padding: 0.5rem 0.875rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #ffffff;
-    transition: opacity 0.15s;
-    cursor: pointer;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
 }
 
-.submitBtn:hover {
-    opacity: 0.9;
-}
-
-.submitBtn:active {
-    transform: scale(0.98);
-}
-
-.cancelBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 2.25rem;
-    border: 1px solid var(--border);
-    border-radius: 0;
-    background: transparent;
-    padding: 0.5rem 0.875rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--muted-foreground);
-    transition: color 0.15s, border-color 0.15s;
-    cursor: pointer;
-}
-
-.cancelBtn:hover {
-    color: var(--foreground);
-    border-color: var(--foreground);
-}
-
-.emptyRow {
-    padding: 2rem 1rem;
-    text-align: center;
-    color: var(--muted-foreground);
+.formActions > * {
+    width: auto;
 }

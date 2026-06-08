@@ -39,10 +39,6 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
 
 /*== Pagination 分页 — 朱砂红当前页 + 描边翻页按钮 ==*/
 export function Pagination({ current, total, onPageChange, className, ...props }: PaginationProps) {
-    if (total <= 1) {
-        return null;
-    }
-
     const pages = buildPageNumbers(current, total);
 
     return (
