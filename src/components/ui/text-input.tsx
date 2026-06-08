@@ -9,14 +9,16 @@ export interface TextInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
     inputSize?: 'small' | 'medium' | 'default';
 }
 
-const LABEL_CLASS: Record<string, string | undefined> = {
+const LABEL_CLASS: Record<string, string> = {
     small: 'labelSmall',
     medium: 'labelMedium',
+    default: 'labelDefault',
 };
 
 const ICON_PADDING_CLASS: Record<string, string | undefined> = {
     small: 'hasIconSmall',
     medium: 'hasIconMedium',
+    default: 'hasIcon',
 };
 
 /*== TextInput 文本输入框 — 后台通用，支持标签和图标 ==*/
@@ -26,7 +28,7 @@ export function TextInput({ label, icon, inputSize = 'default', className, id, .
     return (
         <div className={styles.fieldset}>
             {label ? (
-                <label className={`${styles.label}${labelClass ? ` ${styles[labelClass]}` : ''}`} htmlFor={id}>
+                <label className={`${styles.label} ${styles[labelClass]}`} htmlFor={id}>
                     {label}
                 </label>
             ) : null}

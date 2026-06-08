@@ -13,6 +13,7 @@ import {
     SettingsIcon, TagIcon,
 } from '@/components/ui/icons';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import { DataTable } from '@/components/ui/data-table';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { Pagination } from '@/components/ui/pagination';
@@ -70,7 +71,7 @@ export default function ComponentShowcase() {
             <AdminPageHeader
                 description='项目自建组件与图标的示例展示，便于开发时查阅。'
                 eyebrow='Components'
-                tag={`${ICONS.length} 个图标 · 10 个组件`}
+                tag={`${ICONS.length} 个图标 · 11 个组件`}
                 title='组件列表'
             />
 
@@ -131,14 +132,17 @@ export default function ComponentShowcase() {
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>small</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='small' variant='primary'>新建</GhostButton>
+                            <GhostButton href='#' size='small'>默认</GhostButton>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>medium</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='medium' variant='primary'>新建</GhostButton>
+                            <GhostButton href='#' size='medium'>默认</GhostButton>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>default</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='default' variant='primary'>新建</GhostButton>
+                            <GhostButton href='#' size='default'>默认</GhostButton>
                         </div>
                     </div>
                 </div>
@@ -294,6 +298,27 @@ export default function ComponentShowcase() {
                         <button className={styles.triggerBtn} onClick={() => setDialogOpen(true)} type='button'>
                             打开确认弹窗
                         </button>
+                    </div>
+                </div>
+
+                {/* DataTable */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>DataTable</h3>
+                    <p className={styles.componentDesc}>通用数据表格，支持列定义、对齐、响应式隐藏和空状态。</p>
+                    <div className={styles.demoRow}>
+                        <DataTable
+                            columns={[
+                                { header: '名称', render: (row) => row.name },
+                                { header: '状态', render: (row) => row.status },
+                                { header: '更新时间', render: (row) => row.date, align: 'right', hideBelow: 'md' },
+                            ]}
+                            rows={[
+                                { id: 1, name: '组件库搭建', status: '已完成', date: '2026-06-07' },
+                                { id: 2, name: '标签系统', status: '进行中', date: '2026-06-08' },
+                                { id: 3, name: '文章编辑器', status: '待开始', date: '—' },
+                            ]}
+                            rowKey={(row) => row.id}
+                        />
                     </div>
                 </div>
             </section>

@@ -3,10 +3,12 @@
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: transparent;
-    line-height: 1.4;
     color: var(--muted-foreground);
     text-decoration: none;
     transition:
@@ -15,6 +17,7 @@
         background-color 0.2s ease;
 }
 
+/* 尺寸变体 */
 .default {
     padding: 0.625rem 0.875rem;
     font-size: 0.875rem;
@@ -25,7 +28,6 @@
     font-size: 0.84375rem;
 }
 
-/* 尺寸变体 */
 .small {
     padding: 0.375rem 0.75rem;
     font-size: 0.8125rem;

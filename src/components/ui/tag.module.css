@@ -3,8 +3,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
     line-height: 1.4;
     border-radius: var(--radius);
     border: 1px solid transparent;
@@ -13,14 +13,9 @@
 }
 
 /* 尺寸变体 */
-.mini {
-    padding: 0.275rem 0.7rem;
-    font-size: 0.75rem;
-}
-
-.small {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.8125rem;
+.defaultSize {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
 }
 
 .medium {
@@ -28,9 +23,14 @@
     font-size: 0.84375rem;
 }
 
-.defaultSize {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+.small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.mini {
+    padding: 0.275rem 0.7rem;
+    font-size: 0.75rem;
 }
 
 /* 颜色变体 */
