@@ -11,7 +11,7 @@
 - **技术栈**: Next.js 15 + React 19 + TypeScript + CSS Modules + MySQL
 - **架构**: 单体全栈应用，App Router 模式，前后端代码在同一仓库
 - **视觉风格**: 全站统一「文人书斋」风格（朱砂红 + 宣纸米白 + 衬线标题 + 零圆角）
-- **重构方向**: 正在逐步移除 shadcn/ui 和 Tailwind CSS，用 CSS Modules + 自建组件库替代
+- **样式方案**: 全站 CSS Modules + theme.css 变量，已移除 Tailwind CSS 和 shadcn/ui
 
 ---
 
@@ -22,15 +22,12 @@
 | 框架 | Next.js (App Router) | 15.3.x | ✅ 使用中 |
 | 运行时 | React | 19.1.0 | ✅ 使用中 |
 | 语言 | TypeScript (strict) | 5.8.3 | ✅ 使用中 |
-| 样式 | CSS Modules + theme.css | — | ✅ 主力方案 |
-| 样式 | Tailwind CSS v4 | ^4.3.0 | 🔄 迁移中（仅后台仍使用） |
+| 样式 | CSS Modules + theme.css | — | ✅ 唯一方案 |
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标（前台） | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/` |
-| 图标（后台） | lucide-react | ^1.16.0 | 🔄 迁移中（仅后台仍使用） |
-| UI 组件（旧） | shadcn/ui (new-york style) | — | 🔄 迁移中（8 个组件待替换） |
-| UI 组件（新） | 自建 CSS Module 组件 | — | ✅ 6 个已完成 |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（30 个图标） |
+| UI 组件 | 自建 CSS Module 组件 | — | ✅ 10 个组件 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 
 **路径别名**: `@/*` → `./src/*`
@@ -44,27 +41,31 @@ src/
 ├── app/                          # Next.js App Router
 │   ├── admin/                    # 后台管理 (/admin/*)
 │   │   ├── _components/          # 后台私有组件
-│   │   │   ├── admin-shell.tsx   # 后台布局壳（侧边栏+内容区）
-│   │   │   ├── admin-sidebar.tsx # 侧边栏导航（数据驱动二级折叠菜单）
-│   │   │   ├── split-panel-layout.tsx # 左右两栏布局复用组件
-│   │   │   ├── post-editor-form.tsx    # 文章编辑表单
-│   │   │   ├── post-management-client.tsx # 文章列表（客户端，静态数据+删除）
-│   │   │   ├── user-form.tsx     # 用户编辑表单
-│   │   │   └── user-list-client.tsx    # 用户列表（客户端）
+│   │   │   ├── admin-shared.module.css   # 后台共享样式（表格操作/弹窗表单/提示消息）
+│   │   │   ├── admin-shell.tsx           # 后台布局壳（侧边栏+内容区）
+│   │   │   ├── admin-sidebar.tsx         # 侧边栏导航（数据驱动二级折叠菜单）
+│   │   │   ├── admin-page-header.tsx     # 页面标题区（eyebrow+title+tag+description）
+│   │   │   ├── post-editor-form.tsx      # 文章编辑表单
+│   │   │   ├── post-management-client.tsx # 文章列表（客户端）
+│   │   │   ├── user-form.tsx             # 用户编辑表单
+│   │   │   └── user-list-client.tsx      # 用户列表（客户端）
 │   │   ├── layout.tsx            # 后台布局（鉴权+AdminShell）
 │   │   ├── login/                # 后台登录页
 │   │   ├── posts/                # 文章管理 CRUD
-│   │   ├── categories/           # 分类管理（静态数据）
+│   │   ├── categories/           # 分类管理（数据库驱动）
 │   │   │   └── _components/
 │   │   │       └── category-management.tsx
-│   │   ├── tags/                 # 标签管理（静态数据）
+│   │   ├── tags/                 # 标签管理（数据库驱动）
 │   │   │   └── _components/
 │   │   │       └── tag-management.tsx
 │   │   ├── users/                # 用户管理 CRUD
+│   │   ├── components/           # 组件列表示例页
 │   │   └── settings/             # 设置页
 │   ├── api/                      # API 路由
 │   │   ├── admin/                # 后台 API（需鉴权）
 │   │   │   ├── posts/            # 文章 CRUD
+│   │   │   ├── categories/       # 分类 CRUD
+│   │   │   ├── tags/             # 标签 CRUD
 │   │   │   └── users/            # 用户 CRUD
 │   │   ├── auth/                 # 认证 API
 │   │   │   ├── login/            # 登录
@@ -74,64 +75,49 @@ src/
 │   ├── blog/                     # 公开博客 (/blog/*)
 │   │   ├── [slug]/               # 文章详情页（CSS Modules）
 │   │   ├── _components/          # 博客私有组件
-│   │   │   └── blog-list-client.tsx # 博客列表（客户端，CSS Modules）
+│   │   │   └── blog-list-client.tsx # 博客列表（客户端）
 │   │   └── page.tsx              # 博客列表页
-│   ├── forbidden/                # 403 页面（仍用 Tailwind）
-│   ├── theme.css                 # 🆕 全站统一主题变量（替代 data-app 切换）
-│   ├── globals.css               # 全局样式 + Tailwind 入口（迁移中）
+│   ├── forbidden/                # 403 页面
+│   ├── theme.css                 # 全站统一主题变量
+│   ├── globals.css               # 全局样式 + 工具类
 │   └── layout.tsx                # 根布局
 ├── components/
 │   ├── site/                     # 公开站点共享组件（全部 CSS Modules）
 │   │   ├── app-frame.tsx         # 应用框架（路由分发）
 │   │   ├── public-chrome.tsx     # 公开站点壳（头部+底部）
-│   │   ├── public-chrome.module.css
-│   │   ├── markdown-article.tsx  # 🆕 Markdown 渲染组件
-│   │   ├── markdown-article.module.css
-│   │   ├── post-card.tsx         # 🆕 博客文章卡片
-│   │   ├── post-card.module.css
-│   │   ├── project-card.tsx      # 🆕 项目展示卡片
-│   │   └── project-card.module.css
-│   └── ui/                       # UI 组件库
-│       ├── icons/                # 🆕 自建 SVG 图标库
-│       │   ├── index.ts          # IconProps + 桶导出
-│       │   ├── menu-icon.tsx
-│       │   ├── arrow-right-icon.tsx
-│       │   ├── arrow-down-icon.tsx
-│       │   ├── mail-icon.tsx
-│       │   ├── external-link-icon.tsx
-│       │   ├── github-icon.tsx
-│       │   ├── code-icon.tsx
-│       │   └── book-icon.tsx
-│       ├── tag.tsx + tag.module.css          # 🆕 CSS Module
-│       ├── ghost-button.tsx + .module.css    # 🆕 CSS Module
-│       ├── submit-button.tsx + .module.css   # 🆕 CSS Module
-│       ├── text-input.tsx + .module.css      # 🆕 CSS Module
-│       ├── text-link.tsx + .module.css       # 🆕 CSS Module
-│       ├── confirm-dialog.tsx                # 确认弹窗（Tailwind 内联，待迁移）
-│       ├── pagination.tsx + pagination.module.css  # 🆕 CSS Module
-│       ├── badge.tsx           # 🔄 旧 shadcn（待替换）
-│       ├── button.tsx          # 🔄 旧 shadcn（待替换）
-│       ├── card.tsx            # 🔄 旧 shadcn（待替换）
-│       ├── input.tsx           # 🔄 旧 shadcn（待替换）
-│       ├── label.tsx           # 🔄 旧 shadcn（待替换）
-│       ├── table.tsx           # 🔄 旧 shadcn（未使用，可删）
-│       ├── tabs.tsx            # 🔄 旧 shadcn（待替换）
-│       └── textarea.tsx        # 🔄 旧 shadcn（待替换）
+│   │   ├── markdown-article.tsx  # Markdown 渲染组件
+│   │   ├── post-card.tsx         # 博客文章卡片
+│   │   └── project-card.tsx      # 项目展示卡片
+│   └── ui/                       # 自建 UI 组件库（全部 CSS Modules）
+│       ├── icons/                # 自建 SVG 图标库（30 个图标）
+│       │   └── index.ts          # IconProps + 桶导出
+│       ├── confirm-dialog.tsx + .module.css   # 确认弹窗
+│       ├── data-table.tsx + .module.css       # 数据表格
+│       ├── dialog.tsx + .module.css           # 弹窗
+│       ├── ghost-button.tsx + .module.css     # 幽灵按钮（a/button 双模式）
+│       ├── pagination.tsx + .module.css       # 分页
+│       ├── pill-select.tsx + .module.css      # 胶囊选择器
+│       ├── submit-button.tsx + .module.css    # 提交按钮
+│       ├── tag.tsx + .module.css              # 标签（mini/small/medium/default）
+│       ├── text-input.tsx + .module.css       # 文本输入框
+│       └── text-link.tsx + .module.css        # 文字链接
 ├── lib/                          # 核心业务逻辑
-│   ├── api-response.ts           # API 响应格式
-│   ├── auth.ts                   # 认证系统
+│   ├── api-response.ts           # API 响应格式 + BizCode + ListData<T>
+│   ├── auth.ts                   # 认证系统 + 用户数据层
+│   ├── categories.ts             # 分类数据层
 │   ├── db.ts                     # 数据库连接池
 │   ├── http-client.ts            # axios 封装
-│   ├── mock-data.ts              # 🆕 静态示例数据（后台页面使用）
+│   ├── mock-data.ts              # 静态示例数据（MockPost/MockUser）
 │   ├── post-shared.ts            # 文章共享类型/工具
 │   ├── posts.ts                  # 文章数据层（数据库）
-│   ├── static-posts.ts           # 🆕 静态文章数据层（MD 文件）
+│   ├── static-posts.ts           # 静态文章数据层（MD 文件）
+│   ├── tags.ts                   # 标签数据层
 │   ├── site.ts                   # 路由/导航配置（NavGroup 二级菜单）
-│   └── utils.ts                  # 工具函数 (cn + twMerge，待简化)
+│   └── utils.ts                  # 工具函数 (cn + isNavItemActive)
 └── middleware.ts                 # 中间件（注入路径头）
 
 sql/
-├── init.sql                      # 数据库初始化脚本
+├── init.sql                      # 数据库初始化脚本（zhijian_ 前缀表名）
 └── seed-admin.mjs                # 管理员种子数据
 ```
 
@@ -151,27 +137,8 @@ client-component.tsx (Client Component)
     ↓ 处理交互（搜索、筛选、表单）
 ```
 
-**示例**:
-```tsx
-// page.tsx (Server)
-import { PostManagementClient } from './_components/post-management-client'
-
-export default async function PostsPage() {
-  const posts = await getAllPosts()  // 服务端获取数据
-  return <PostManagementClient initialPosts={posts} />
-}
-
-// post-management-client.tsx (Client)
-'use client'
-
-export function PostManagementClient({ initialPosts }) {
-  const [posts, setPosts] = useState(initialPosts)
-  // ... 交互逻辑
-}
-```
-
 **命名约定**:
-- 客户端交互组件: `*-client.tsx` (如 `post-management-client.tsx`)
+- 客户端交互组件: `*-client.tsx` (如 `user-list-client.tsx`)
 - 表单组件: `*-form.tsx` (如 `post-editor-form.tsx`)
 - 布局壳组件: `*-shell.tsx` (如 `admin-shell.tsx`)
 
@@ -181,21 +148,21 @@ export function PostManagementClient({ initialPosts }) {
 
 ```typescript
 // 1. 鉴权（admin 路由）
-const session = await requireAdminFromRequest(request)
+const session = requireAdminFromRequest(request)
 if (!session) {
-  return NextResponse.json(fail(BizCode.UNAUTHORIZED, '未授权'), { status: 401 })
+  return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 })
 }
 
 // 2. 解析请求体
 const body = await request.json()
 
 // 3. 字段校验
-if (!body.title) {
-  return NextResponse.json(fail(BizCode.BAD_REQUEST, '标题不能为空'), { status: 400 })
+if (!body.name) {
+  return NextResponse.json(fail(BizCode.BAD_REQUEST, '分类名不能为空。'), { status: 400 })
 }
 
 // 4. 执行数据库操作
-const result = await createPost(body)
+const result = await createCategory(body)
 
 // 5. 返回标准响应
 return NextResponse.json(success(result, '创建成功'))
@@ -206,10 +173,9 @@ return NextResponse.json(success(result, '创建成功'))
 // [id]/route.ts
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params  // 注意：params 是 Promise
-  // ...
+  const { id } = await params  // 注意：params 是 Promise
 }
 ```
 
@@ -224,15 +190,12 @@ interface ApiResponse<T> {
 }
 ```
 
-**使用方式**:
+**列表响应结构**（统一格式）:
 ```typescript
-// 成功
-return NextResponse.json(success(data, '操作成功'))
-// { code: 0, data: {...}, message: "操作成功" }
-
-// 失败
-return NextResponse.json(fail(BizCode.NOT_FOUND, '文章不存在'), { status: 404 })
-// { code: 40400, data: null, message: "文章不存在" }
+interface ListData<T> {
+  data: T[]    // 列表数据数组
+  total: number // 总条数
+}
 ```
 
 **业务错误码** (`src/lib/api-response.ts`):
@@ -245,6 +208,12 @@ return NextResponse.json(fail(BizCode.NOT_FOUND, '文章不存在'), { status: 4
 | `NOT_FOUND` | 40400 | 资源不存在 |
 | `CONFLICT` | 40900 | 冲突（如重复） |
 | `INTERNAL` | 50000 | 服务器错误 |
+| `USER_NOT_FOUND` | 40401 | 用户不存在 |
+| `USER_EXISTS` | 40901 | 用户已存在 |
+| `CATEGORY_NOT_FOUND` | 40402 | 分类不存在 |
+| `CATEGORY_EXISTS` | 40902 | 分类已存在 |
+| `TAG_NOT_FOUND` | 40403 | 标签不存在 |
+| `TAG_EXISTS` | 40903 | 标签已存在 |
 
 ### 4. 认证系统
 
@@ -272,10 +241,10 @@ const admin = await requireAdmin()  // 失败自动重定向到 /admin/login 或
 import { requireAdminFromRequest, getSessionFromRequest } from '@/lib/auth'
 
 // 需要管理员（返回 null 表示未授权）
-const session = await requireAdminFromRequest(request)
+const session = requireAdminFromRequest(request)
 
 // 仅获取当前会话（不强制）
-const session = await getSessionFromRequest(request)
+const session = getSessionFromRequest(request)
 ```
 
 **用户角色**: `admin` | `user`
@@ -292,7 +261,7 @@ if (!db) {
   throw new Error('数据库未配置')  // 或返回空数据
 }
 
-const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM posts WHERE id = ?', [id])
+const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM zhijian_blog_posts WHERE id = ?', [id])
 ```
 
 **重要约定**:
@@ -300,6 +269,15 @@ const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM posts WHERE id =
 - 无 ORM，直接使用 `mysql2` 的 `execute()` / `query()`
 - 数据库未配置时，部分模块返回硬编码的 `FALLBACK_POSTS` 作为兜底数据
 - 连接池限制: `connectionLimit: 3`
+- **表名规范**: `zhijian_<模块>_<实体>`，如 `zhijian_blog_posts`、`zhijian_users`
+
+**数据库表**:
+| 表名 | 用途 |
+|------|------|
+| `zhijian_users` | 用户表（通用模块） |
+| `zhijian_blog_posts` | 文章表（博客模块） |
+| `zhijian_blog_categories` | 分类表（博客模块） |
+| `zhijian_blog_tags` | 标签表（博客模块） |
 
 **双数据源**（博客文章）:
 - `src/lib/posts.ts` — 数据库驱动的文章数据层
@@ -312,19 +290,19 @@ const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM posts WHERE id =
 import { api } from '@/lib/http-client'
 
 // GET
-const res = await api.get<Post[]>('/admin/posts')
+const res = await api.get<ListData<PostItem>>('/admin/posts')
 
 // POST
 const res = await api.post<{ id: number }>('/admin/posts', { title: '标题' })
 
-// PATCH
-const res = await api.patch<Post>('/admin/posts/123', { status: 'published' })
+// PUT
+const res = await api.put<Post>('/admin/posts/123', { title: '新标题' })
 
 // DELETE
 const res = await api.delete('/admin/users/456')
 
 // 统一处理响应
-if (res.code === 0) {
+if (res.code === 0 && res.data) {
   console.log(res.data)   // 成功数据
 } else {
   console.log(res.message) // 错误消息
@@ -364,7 +342,7 @@ RootLayout
 
 ### 主题系统
 
-**已统一**：全站使用 `src/app/theme.css` 定义 CSS 变量，不再通过 `body[data-app]` 切换主题。
+全站使用 `src/app/theme.css` 定义 CSS 变量：
 
 ```css
 /* theme.css — 全站唯一变量源 */
@@ -377,7 +355,6 @@ RootLayout
   --radius: 0;              /* 全站零圆角 */
   --font-serif: 'Noto Serif SC', ...;
   --font-sans: system-ui, 'PingFang SC', ...;
-  /* ... 更多变量见 theme.css */
 }
 ```
 
@@ -385,27 +362,24 @@ RootLayout
 
 ## 样式约定
 
-### 双轨样式系统（迁移中）
+### 统一 CSS Modules 方案
 
-| 场景 | 方式 | 状态 |
-|------|------|------|
-| 公开站点 | CSS Modules + theme.css 变量 | ✅ 已完成 |
-| 后台管理 | Tailwind 内联 + lucide-react | 🔄 待迁移 |
-| 全局 | CSS 变量 (theme.css) | ✅ 已统一 |
+全站已统一使用 CSS Modules + theme.css 变量，无 Tailwind、无 shadcn/ui、无 lucide-react。
 
 ### 新组件约定（CSS Modules）
 
-所有新建 UI 组件遵循统一模式：
+所有 UI 组件遵循统一模式：
 
 ```typescript
 // 组件文件：kebab-case.tsx
 import styles from './kebab-case.module.css'
 
 export interface ComponentProps extends React.HTMLAttributes<HTMLElement> {
-    variant?: 'default' | 'accent' | 'outlined'
+    variant?: 'default' | 'accent'
+    size?: 'default' | 'medium' | 'small' | 'mini'
 }
 
-export function Component({ variant = 'default', className, ...props }: ComponentProps) {
+export function Component({ variant = 'default', size = 'default', className, ...props }: ComponentProps) {
     return (
         <element
             className={`${styles.base} ${styles[variant]}${className ? ` ${className}` : ''}`}
@@ -417,29 +391,35 @@ export function Component({ variant = 'default', className, ...props }: Componen
 
 **关键规则**:
 - 文件命名：kebab-case，组件 + 配对 `.module.css`
-- 导出：仅 named export，不用 default export
+- 导出：仅 named export，不用 default export（布局壳/页面组件除外）
 - Props：继承原生 HTML 属性，`className` 模板字符串合并
 - 样式：所有值引用 `var(--*)` 变量，用 `color-mix()` 做透明度
+- CSS 变体排序：基础类写默认值，变体按 default → medium → small → mini 排序（后者覆盖前者）
 - 注释：中文分隔符 `/*== ... ==*/`
-- 图标：使用 `@/components/ui/icons` 自建库，不用 lucide-react
+- 图标：使用 `@/components/ui/icons` 自建库
 
 ### 图标系统
 
-**前台**：使用 `src/components/ui/icons/` 自建 SVG 图标库
+全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（30 个图标）：
 
 ```typescript
-import { ArrowRightIcon, MenuIcon } from '@/components/ui/icons'
+import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
 
 // 尺寸由消费方 CSS 控制，颜色用 currentColor 继承
-<ArrowRightIcon className={styles.icon} />
+<PencilIcon className={shared.actionIcon} />
 ```
 
-**后台**：仍使用 lucide-react（待迁移）
+### 后台共享样式
 
-```typescript
-import { ArrowLeft, Save } from 'lucide-react'
-<ArrowLeft className='h-4 w-4' />
-```
+`src/app/admin/_components/admin-shared.module.css` 提供三个管理页面共用的样式类：
+
+| 类名 | 用途 |
+|------|------|
+| `.mutedCell` | 次要文字颜色 |
+| `.actionGroup` / `.actionBtn` / `.actionBtnDanger` / `.actionIcon` | 表格操作按钮 |
+| `.btnIcon` | 工具栏按钮内图标 |
+| `.form` / `.formActions` | 弹窗表单布局 |
+| `.formMessage` | 表单错误/成功提示 |
 
 ### 常用 CSS 变量
 
@@ -457,42 +437,11 @@ import { ArrowLeft, Save } from 'lucide-react'
 
 > 完整变量列表见 `src/app/theme.css`
 
-### 后台通用样式类（待重命名）
-
-`globals.css` 提供的后台工具类（仍带 `admin-` 前缀，待统一重命名）：
-
-| 类名 | 用途 | 计划重命名 |
-|------|------|-----------|
-| `.admin-panel` | 后台面板容器 | `.panel` |
-| `.admin-panel-muted` | 次要面板 | `.panel-muted` |
-| `.admin-kicker` | 小标题/标签 | `.kicker` |
-| `.admin-title` | 大标题 | `.title` |
-| `.admin-copy` | 正文文本 | `.copy` |
-| `.admin-input` | 输入框统一样式 | `.input` |
-| `.admin-stitch-card` | 卡片样式 | `.stitch-card` |
-| `.admin-stitch-number` | 数字统计 | `.stitch-number` |
-
 ---
 
 ## 数据库 Schema
 
-### posts 表
-
-```sql
-id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
-slug         VARCHAR(120) NOT NULL UNIQUE      -- URL 别名
-title        VARCHAR(200) NOT NULL             -- 标题
-summary      VARCHAR(500) NOT NULL             -- 摘要
-content      MEDIUMTEXT NOT NULL               -- 正文（Markdown）
-status       ENUM('draft', 'published')        -- 状态
-published_at DATETIME NULL                     -- 发布时间
-created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
-updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-
-INDEX idx_posts_status_published_at (status, published_at)
-```
-
-### users 表
+### zhijian_users 表（通用模块）
 
 ```sql
 id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
@@ -504,8 +453,45 @@ status        ENUM('active', 'disabled') DEFAULT 'active'
 created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
 updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
-INDEX idx_users_role (role)
-INDEX idx_users_status (status)
+INDEX idx_zhijian_users_role (role)
+INDEX idx_zhijian_users_status (status)
+```
+
+### zhijian_blog_posts 表（博客模块）
+
+```sql
+id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+slug         VARCHAR(120) NOT NULL UNIQUE
+title        VARCHAR(200) NOT NULL
+summary      VARCHAR(500) NOT NULL
+content      MEDIUMTEXT NOT NULL
+status       ENUM('draft', 'published') DEFAULT 'draft'
+published_at DATETIME NULL
+created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+INDEX idx_zhijian_blog_posts_status_published_at (status, published_at)
+```
+
+### zhijian_blog_categories 表（博客模块）
+
+```sql
+id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+name        VARCHAR(100) NOT NULL
+slug        VARCHAR(120) NOT NULL UNIQUE
+sort_order  INT NOT NULL DEFAULT 0
+created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+```
+
+### zhijian_blog_tags 表（博客模块）
+
+```sql
+id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+name        VARCHAR(100) NOT NULL
+slug        VARCHAR(120) NOT NULL UNIQUE
+created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ```
 
 ---
@@ -561,14 +547,13 @@ fix: 中文描述
 refactor: 中文描述
 ```
 
-**常用 scope**: `admin`, `app`, `blog`, `home`, `chrome`, `icons`, `theme`
+**常用 scope**: `admin`, `app`, `blog`, `home`, `chrome`, `icons`, `theme`, `基础组件`
 
 **示例**:
 ```
-feat(blog): 封装 MarkdownArticle 组件
-refactor(icons): 提取内联 SVG 为独立图标组件库
-fix: 页面流畅优化
-refactor(admin): 删除注册/公开登录页
+feat(admin): 分类/标签接入真实数据库
+refactor(基础组件): 统一五组件三档尺寸体系
+fix(api): handle null response from database
 ```
 
 ---
@@ -579,16 +564,18 @@ refactor(admin): 删除注册/公开登录页
 |------|------|
 | 统一主题变量 | `src/app/theme.css` |
 | 路由/导航配置 | `src/lib/site.ts` |
-| 静态示例数据 | `src/lib/mock-data.ts` |
+| API 响应格式 + ListData | `src/lib/api-response.ts` |
+| 认证系统 + 用户数据层 | `src/lib/auth.ts` |
+| 分类数据层 | `src/lib/categories.ts` |
+| 标签数据层 | `src/lib/tags.ts` |
 | 文章数据层（数据库） | `src/lib/posts.ts` |
 | 文章数据层（静态 MD） | `src/lib/static-posts.ts` |
-| 认证系统 | `src/lib/auth.ts` |
 | 数据库连接 | `src/lib/db.ts` |
-| API 响应格式 | `src/lib/api-response.ts` |
 | HTTP 客户端 | `src/lib/http-client.ts` |
 | 全局样式 | `src/app/globals.css` |
 | 自建图标库 | `src/components/ui/icons/` |
 | 后台布局 | `src/app/admin/layout.tsx` |
+| 后台共享样式 | `src/app/admin/_components/admin-shared.module.css` |
 | 后台壳组件 | `src/app/admin/_components/admin-shell.tsx` |
 | 公开站点壳 | `src/components/site/public-chrome.tsx` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
@@ -615,15 +602,15 @@ refactor(admin): 删除注册/公开登录页
 ### 兼容性
 
 - Next.js 15 动态路由参数是 `Promise`，需 `await context.params`
-- Tailwind v4 使用 CSS 配置，无 `tailwind.config.ts`（但计划移除）
 - React 19 不再需要 `useEffect` 中的清理函数处理某些场景
 
-### 迁移中注意事项
+### 开发约定
 
-- 公开页面全部用 CSS Modules，不要新增 Tailwind 类名
-- 新建 UI 组件必须用 CSS Modules，不要用 shadcn/ui 模式
-- 新增图标加入 `src/components/ui/icons/`，不要用 lucide-react
-- 后台页面暂时仍可用 Tailwind，后续统一迁移
+- 全站使用 CSS Modules，不使用 Tailwind 类名
+- 新建 UI 组件必须用 CSS Modules，不要引入任何 UI 框架
+- 新增图标加入 `src/components/ui/icons/`，不要引入图标库
+- 表名使用 `zhijian_<模块>_<实体>` 前缀规范
+- 列表接口统一返回 `{ data: T[], total: number }` 格式
 
 ---
 
@@ -633,22 +620,24 @@ refactor(admin): 删除注册/公开登录页
 
 1. 在 `src/app/admin/` 下创建目录和 `page.tsx`
 2. 如需交互，创建对应的 `*-client.tsx` 组件
-3. 在 `src/lib/site.ts` 的 `ADMIN_NAV_GROUPS` 中添加导航项（NavGroup/NavSubItem 结构）
+3. 在 `src/lib/site.ts` 的 `ADMIN_NAV_GROUPS` 中添加导航项
 4. 如需 API，在 `src/app/api/admin/` 创建路由
+5. 数据层在 `src/lib/` 下创建，使用 `RowDataPacket[]` 类型
 
 ### 添加新的自建 UI 组件
 
 1. 在 `src/components/ui/` 下创建 `component-name.tsx` + `component-name.module.css`
 2. Props 继承原生 HTML 属性，导出 interface
 3. 使用 `var(--*)` 变量，不要硬编码颜色
-4. 参考现有 `tag.tsx` / `ghost-button.tsx` 的模式
+4. CSS 变体排序：default → medium → small → mini（后者覆盖前者）
+5. 参考 `tag.tsx` / `ghost-button.tsx` 的模式
 
 ### 添加新的图标
 
 1. 在 `src/components/ui/icons/` 下创建 `icon-name.tsx`
 2. 遵循 `IconProps` 接口，用 `currentColor` + `strokeWidth={2}`
 3. 在 `index.ts` 添加导出
-4. 参考 `arrow-right-icon.tsx` 的模式
+4. 参考 `pencil-icon.tsx` 的模式
 
 ### 添加新的公开页面
 
@@ -659,4 +648,4 @@ refactor(admin): 删除注册/公开登录页
 
 ---
 
-*最后更新: 2026-06-07*
+*最后更新: 2026-06-08*

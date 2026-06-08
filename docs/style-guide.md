@@ -111,12 +111,14 @@
 
 ## 组件模式
 
-### Badge 标签
+### Tag 标签
 
 | 类型 | 样式 |
 |------|------|
-| 已发布 | `border-radius: 0`, `border: 1px solid var(--primary)`, `bg: rgba(159,0,15,0.06)`, `color: var(--primary)` |
-| 草稿 | `border-radius: 0`, `border: 1px solid var(--border)`, `bg: var(--muted)`, `color: var(--muted-foreground)` |
+| 强调(accent) | `border-radius: 0`, `border: 1px solid var(--primary)`, `bg: rgba(159,0,15,0.06)`, `color: var(--primary)` |
+| 默认(default) | `border-radius: 0`, `border: 1px solid var(--border)`, `bg: var(--muted)`, `color: var(--muted-foreground)` |
+
+尺寸：mini / small / medium / default
 
 ### 表格
 
@@ -148,15 +150,15 @@
 
 | 类名 | 用途 |
 |------|------|
-| `.panel` | 红线面板（原 `.admin-panel`） |
-| `.panel-muted` | 驼色线面板（原 `.admin-panel-muted`） |
-| `.kicker` | 小标签（原 `.admin-kicker`） |
-| `.title` | 衬线大标题（原 `.admin-title`） |
-| `.copy` | 副文说明（原 `.admin-copy`） |
-| `.input` | 输入框样式（原 `.admin-input`） |
-| `.stitch-card` | 指标卡片（原 `.admin-stitch-card`） |
-| `.stitch-number` | 衬线大数字（原 `.admin-stitch-number`） |
-| `.data-table` | 数据表格（原 `.admin-table`） |
+| `.panel` | 红线面板 |
+| `.panel-muted` | 驼色线面板 |
+| `.kicker` | 小标签 |
+| `.title` | 衬线大标题 |
+| `.copy` | 副文说明 |
+| `.input` | 输入框样式 |
+| `.stitch-card` | 指标卡片 |
+| `.stitch-number` | 衬线大数字 |
+| `.data-table` | 数据表格 |
 
 ---
 
@@ -179,4 +181,4 @@
 
 ---
 
-*最后更新: 2026-06-07*
+*最后更新: 2026-06-08*
