@@ -1,6 +1,6 @@
 /*== SubmitButton 提交按钮 — 朱砂红主按钮 ==*/
 .button {
-    width: 100%;
+    /*width: 100%;*/
     padding: 0.625rem 0.875rem;
     font-size: 0.875rem;
     line-height: 1.4;
