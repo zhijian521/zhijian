@@ -25,13 +25,13 @@
 
 .success {
     border: 1px solid var(--primary);
-    background: var(--primary-subtle-medium);
+    background: var(--background);
     color: var(--primary);
 }
 
 .error {
     border: 1px solid var(--destructive);
-    background: var(--destructive-subtle-soft);
+    background: var(--background);
     color: var(--destructive);
 }
 
