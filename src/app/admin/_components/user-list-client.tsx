@@ -47,7 +47,8 @@ const EMPTY_FORM: UserFormData = {
 /*== 后台用户列表：匹配博客表格风格。 ==*/
 export default function UserListClient() {
     const [data, setData] = useState<UserListData>({ users: [], total: 0 });
-    const [search, setSearch] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState('');
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);
@@ -64,7 +65,7 @@ export default function UserListClient() {
 
     const fetchUsers = useCallback(async (opts?: { page?: number; search?: string }) => {
         const p = opts?.page ?? page;
-        const s = opts?.search ?? search;
+        const s = opts?.search ?? searchKeyword;
         setLoading(true);
         try {
             const params: Record<string, unknown> = { page: p, pageSize };
@@ -78,16 +79,16 @@ export default function UserListClient() {
         } finally {
             setLoading(false);
         }
-    }, [page, search]);
+    }, [page, searchKeyword]);
 
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
 
-    function handleSearchSubmit(e: React.FormEvent) {
-        e.preventDefault();
+    function handleSearchSubmit(e?: React.FormEvent) {
+        e?.preventDefault();
+        setSearchKeyword(searchInput);
         setPage(1);
-        fetchUsers({ page: 1 });
     }
 
     function handleDeleteClick(userId: number, username: string) {
@@ -193,7 +194,7 @@ export default function UserListClient() {
         {
             header: '角色',
             render: (user) => (
-                <Tag variant={user.role === 'admin' ? 'accent' : 'default'}>
+                <Tag size="mini" variant={user.role === 'admin' ? 'accent' : 'default'}>
                     {user.role === 'admin' ? '管理员' : '用户'}
                 </Tag>
             ),
@@ -202,7 +203,7 @@ export default function UserListClient() {
             header: '状态',
             hideBelow: 'md',
             render: (user) => (
-                <Tag variant={user.status === 'disabled' ? 'accent' : 'default'}>
+                <Tag size="mini" variant={user.status === 'disabled' ? 'accent' : 'default'}>
                     {user.status === 'active' ? '正常' : '已禁用'}
                 </Tag>
             ),
@@ -247,18 +248,18 @@ export default function UserListClient() {
                         icon={<SearchIcon />}
                         id='user-search'
                         inputSize='medium'
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         placeholder="搜索用户名或邮箱..."
-                        value={search}
+                        value={searchInput}
                     />
-                    <GhostButton size='medium' variant='primary' href='#' onClick={handleSearchSubmit as unknown as React.MouseEventHandler}>
+                    <GhostButton asButton size='medium' variant='primary' onClick={handleSearchSubmit}>
                         搜索
                     </GhostButton>
                 </form>
                 <GhostButton
-                    href='#'
+                    asButton
                     icon={<PlusIcon className={styles.btnIcon} />}
-                    onClick={openCreateForm as unknown as React.MouseEventHandler}
+                    onClick={openCreateForm}
                     size='medium'
                     variant='primary'
                 >
@@ -353,7 +354,7 @@ export default function UserListClient() {
                     )}
 
                     <div className={styles.formActions}>
-                        <GhostButton href='#' onClick={() => setFormOpen(false) as unknown as React.MouseEventHandler}>
+                        <GhostButton asButton onClick={() => setFormOpen(false)}>
                             取消
                         </GhostButton>
                         <SubmitButton size='medium' disabled={submitting}>

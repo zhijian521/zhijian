@@ -1,6 +1,8 @@
 'use client';
 
 import { XIcon } from '@/components/ui/icons';
+import { GhostButton } from '@/components/ui/ghost-button';
+
 import styles from './dialog.module.css';
 
 /*== Dialog 通用弹窗 — 遮罩 + 居中面板，直角边框匹配后台风格 ==*/
@@ -22,9 +24,9 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
             <div className={styles.panel} style={maxWidth ? { maxWidth } : undefined}>
                 <div className={styles.header}>
                     <h3 className={styles.title}>{title}</h3>
-                    <button className={styles.closeBtn} onClick={onClose} type="button">
+                    <GhostButton asButton onClick={onClose} size="small">
                         <XIcon className={styles.closeIcon} />
-                    </button>
+                    </GhostButton>
                 </div>
                 <div className={styles.body}>
                     {children}
