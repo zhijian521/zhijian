@@ -8,6 +8,7 @@ import {
     SettingsIcon,
     WrenchIcon,
     CodeIcon,
+    ActivityIcon,
     type IconComponent,
 } from '@/components/ui/icons';
 
@@ -32,6 +33,8 @@ export const APP_ROUTES = {
     adminCategories: '/admin/categories',
     adminTags: '/admin/tags',
     adminComponents: '/admin/components',
+    adminAnalytics: '/admin/analytics',
+    adminAnalyticsSites: '/admin/analytics/sites',
     /*-- 错误 --*/
     forbidden: '/forbidden',
 } as const;
@@ -97,6 +100,15 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
             { href: APP_ROUTES.adminUsers, label: '用户管理', icon: UsersIcon, match: 'prefix' },
             { href: APP_ROUTES.adminComponents, label: '组件列表', icon: CodeIcon, match: 'exact' },
             { href: APP_ROUTES.adminSettings, label: '系统设置', icon: WrenchIcon, match: 'exact' },
+        ],
+    },
+    {
+        key: 'analytics',
+        label: '网站统计',
+        icon: ActivityIcon,
+        items: [
+            { href: APP_ROUTES.adminAnalytics, label: '数据概览', icon: ActivityIcon, match: 'exact' },
+            { href: APP_ROUTES.adminAnalyticsSites, label: '站点管理', icon: FolderTreeIcon, match: 'prefix' },
         ],
     },
 ];

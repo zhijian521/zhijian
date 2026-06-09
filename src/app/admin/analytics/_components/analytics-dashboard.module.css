@@ -1,0 +1,400 @@
+/*== 观澜 — 站点监控仪表盘样式 ==*/
+
+/*-- 控制栏 --*/
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.siteSelect {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.select {
+    height: 2.25rem;
+    min-width: 180px;
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+    background: var(--background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f655c' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+    padding: 0 2rem 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.15s;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--ring-subtle);
+}
+
+/*-- 概览卡片 --*/
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 1.25rem;
+}
+
+.cardLabel {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cardValue {
+    margin: 0 0 0.25rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+/*-- 变化指示器 --*/
+
+.change {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.changeUp {
+    color: var(--primary);
+}
+
+.changeDown {
+    color: var(--muted-foreground);
+}
+
+.changeNeutral {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+
+.changeIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+/*-- 区块 --*/
+
+.section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+/*-- 图表容器 --*/
+
+.chartContainer {
+    width: 100%;
+}
+
+.chartEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+/*-- 图例 --*/
+
+.legend {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+.legendItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+
+.legendLine {
+    display: inline-block;
+    width: 1rem;
+    height: 2px;
+    background: var(--primary);
+}
+
+.legendLineDashed {
+    background: none;
+    border-top: 2px dashed var(--muted-foreground);
+    height: 0;
+}
+
+/*-- 自定义 Tooltip --*/
+
+.tooltip {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+    padding: 0.5rem 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tooltipLabel {
+    margin: 0 0 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+}
+
+.tooltipValue {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/*-- 双列布局 --*/
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .twoCol {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*-- 热门页面排行 --*/
+
+.rankList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rankItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rankIndex {
+    width: 1.5rem;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-align: center;
+}
+
+.rankContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.rankLabel {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rankBarWrap {
+    height: 4px;
+    margin-top: 4px;
+    border-radius: 2px;
+    background: var(--muted);
+    overflow: hidden;
+}
+
+.rankBar {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.rankValue {
+    flex-shrink: 0;
+    min-width: 3rem;
+    text-align: right;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+}
+
+/*-- 来源排行 --*/
+
+.sourceList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.sourceItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sourceName {
+    width: 6rem;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sourceBarWrap {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--muted);
+    overflow: hidden;
+}
+
+.sourceBar {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--primary-subtle-medium);
+    transition: width 0.3s ease;
+}
+
+.sourcePercent {
+    flex-shrink: 0;
+    min-width: 3rem;
+    text-align: right;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+}
+
+/*-- 设备分布 --*/
+
+.deviceList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.deviceItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.deviceInfo {
+    width: 8rem;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deviceName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.deviceCount {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+.deviceBarWrap {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--muted);
+    overflow: hidden;
+}
+
+.deviceBar {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.devicePercent {
+    flex-shrink: 0;
+    min-width: 3rem;
+    text-align: right;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+}
+
+/*-- 空状态 / 加载 --*/
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}

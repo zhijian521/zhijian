@@ -6,7 +6,7 @@
 
 ## 项目概述
 
-**知简** —— 个人博客网站，包含公开博客和管理后台两部分。
+**知简** —— 个人博客网站 + 站点监控平台（观澜），包含公开博客、管理后台和网站分析三部分。
 
 - **技术栈**: Next.js 15 + React 19 + TypeScript + CSS Modules + MySQL
 - **架构**: 单体全栈应用，App Router 模式，前后端代码在同一仓库
@@ -26,8 +26,9 @@
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（32 个图标） |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（37 个图标） |
 | UI 组件 | 自建 CSS Module 组件 | — | ✅ 13 个组件 |
+| 图表 | Recharts | ^2.x | ✅ 观澜仪表盘 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 
 **路径别名**: `@/*` → `./src/*`
@@ -60,17 +61,31 @@ src/
 │   │   │       └── tag-management.tsx
 │   │   ├── users/                # 用户管理 CRUD
 │   │   ├── components/           # 组件列表示例页
+│   │   ├── analytics/            # 观澜 — 站点监控
+│   │   │   ├── _components/
+│   │   │   │   ├── analytics-dashboard.tsx    # 仪表盘主组件
+│   │   │   │   └── analytics-dashboard.module.css
+│   │   │   ├── sites/
+│   │   │   │   ├── _components/
+│   │   │   │   │   ├── site-management.tsx    # 站点管理
+│   │   │   │   │   └── site-management.module.css
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx          # 仪表盘页面
 │   │   └── settings/             # 设置页
 │   ├── api/                      # API 路由
 │   │   ├── admin/                # 后台 API（需鉴权）
 │   │   │   ├── posts/            # 文章 CRUD
 │   │   │   ├── categories/       # 分类 CRUD
 │   │   │   ├── tags/             # 标签 CRUD
-│   │   │   └── users/            # 用户 CRUD
+│   │   │   ├── users/            # 用户 CRUD
+│   │   │   └── analytics/        # 站点监控 API
+│   │   │       ├── overview/     # 仪表盘数据
+│   │   │       └── sites/        # 站点 CRUD
 │   │   ├── auth/                 # 认证 API
 │   │   │   ├── login/            # 登录
 │   │   │   ├── logout/           # 登出
 │   │   │   └── me/               # 当前用户
+│   │   ├── collect/              # 数据收集（无鉴权，供 script.js 上报）
 │   │   └── posts/                # 公开文章列表
 │   ├── blog/                     # 公开博客 (/blog/*)
 │   │   ├── [slug]/               # 文章详情页（CSS Modules）
@@ -89,7 +104,7 @@ src/
 │   │   ├── post-card.tsx         # 博客文章卡片
 │   │   └── project-card.tsx      # 项目展示卡片
 │   └── ui/                       # 自建 UI 组件库（全部 CSS Modules）
-│       ├── icons/                # 自建 SVG 图标库（32 个图标）
+│       ├── icons/                # 自建 SVG 图标库（37 个图标）
 │       │   └── index.ts          # IconProps + 桶导出
 │       ├── confirm-dialog.tsx + .module.css   # 确认弹窗
 │       ├── data-table.tsx + .module.css       # 数据表格
@@ -116,6 +131,8 @@ src/
 │   ├── static-posts.ts           # 静态文章数据层（MD 文件）
 │   ├── tags.ts                   # 标签数据层
 │   ├── site.ts                   # 路由/导航配置（NavGroup 二级菜单）
+│   ├── analytics.ts              # 站点监控分析数据层（聚合+查询）
+│   ├── track-sites.ts            # 站点数据层（CRUD）
 │   └── utils.ts                  # 工具函数 (cn + isNavItemActive)
 └── middleware.ts                 # 中间件（注入路径头）
 
@@ -281,6 +298,9 @@ const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM zhijian_blog_pos
 | `zhijian_blog_posts` | 文章表（博客模块） |
 | `zhijian_blog_categories` | 分类表（博客模块） |
 | `zhijian_blog_tags` | 标签表（博客模块） |
+| `zhijian_track_sites` | 站点注册表（监控模块） |
+| `zhijian_track_events` | 原始事件表（监控模块，写入密集） |
+| `zhijian_track_daily` | 日聚合统计表（监控模块，查询加速） |
 
 **双数据源**（博客文章）:
 - `src/lib/posts.ts` — 数据库驱动的文章数据层
@@ -598,6 +618,11 @@ fix(api): handle null response from database
 | 全局样式 | `src/app/globals.css` |
 | 自建图标库 | `src/components/ui/icons/` |
 | Toast 提示 | `src/components/ui/toast.tsx` + `use-toast.ts` |
+| 站点监控嵌入脚本 | `public/script.js` |
+| 站点监控数据层 | `src/lib/analytics.ts` + `track-sites.ts` |
+| 数据收集 API | `src/app/api/collect/route.ts` |
+| 仪表盘页面 | `src/app/admin/analytics/page.tsx` |
+| 站点管理页面 | `src/app/admin/analytics/sites/page.tsx` |
 | 后台布局 | `src/app/admin/layout.tsx` |
 | 后台共享样式 | `src/app/admin/_components/admin-shared.module.css` |
 | 后台壳组件 | `src/app/admin/_components/admin-shell.tsx` |
@@ -616,6 +641,7 @@ fix(api): handle null response from database
 - 密码使用 bcrypt (12 rounds)，不存储明文
 - Session Token 使用 HMAC-SHA256 签名，防篡改
 - SQL 查询必须参数化，禁止字符串拼接
+- `/api/collect` 是唯一无鉴权 API，有令牌桶限流（10次/秒/siteId），验证 siteId 存在且启用
 
 ### 性能
 
@@ -673,4 +699,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-08*
+*最后更新: 2026-06-09*

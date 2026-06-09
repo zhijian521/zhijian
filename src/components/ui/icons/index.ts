@@ -36,6 +36,12 @@ export { TagIcon } from './tag-icon';
 export { UserIcon } from './user-icon';
 export { LockIcon } from './lock-icon';
 export { CheckIcon } from './check-icon';
+export { CopyIcon } from './copy-icon';
+export { ActivityIcon } from './activity-icon';
+export { TrendingUpIcon } from './trending-up-icon';
+export { TrendingDownIcon } from './trending-down-icon';
+export { PauseIcon } from './pause-icon';
+export { PlayIcon } from './play-icon';
 
 /** 图标组件的函数类型，用于 NavSubItem 等 */
 export type IconComponent = React.ComponentType<IconProps>;
