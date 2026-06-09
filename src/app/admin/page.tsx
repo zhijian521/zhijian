@@ -43,7 +43,6 @@ export default function AdminPage() {
         },
         {
             header: '操作',
-            align: 'right',
             width: '4rem',
             render: (post) => (
                 <IconButton

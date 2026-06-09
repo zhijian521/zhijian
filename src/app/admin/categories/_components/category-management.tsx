@@ -102,7 +102,6 @@ export default function CategoryManagement() {
         { header: '排序', render: (cat) => <span className={shared.mutedCell}>{cat.sort_order}</span>, hideBelow: 'lg' },
         {
             header: '操作',
-            align: 'right',
             width: '6rem',
             render: (cat) => (
                 <div className={shared.actionGroup}>

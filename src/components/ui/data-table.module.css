@@ -31,8 +31,9 @@
     border-right: none;
 }
 
-.thRight {
-    text-align: right;
+/* 固定宽度列 — 防止被 table-layout: auto 撑大 */
+.fixedWidth {
+    white-space: nowrap;
 }
 
 .row {
@@ -46,10 +47,6 @@
 
 .td:last-child {
     border-right: none;
-}
-
-.tdRight {
-    text-align: right;
 }
 
 .emptyRow {

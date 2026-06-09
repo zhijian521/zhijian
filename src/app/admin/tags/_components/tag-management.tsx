@@ -97,7 +97,6 @@ export default function TagManagement() {
         { header: 'Slug', render: (tag) => <span className={shared.mutedCell}>{tag.slug}</span>, hideBelow: 'sm' },
         {
             header: '操作',
-            align: 'right',
             width: '6rem',
             render: (tag) => (
                 <div className={shared.actionGroup}>

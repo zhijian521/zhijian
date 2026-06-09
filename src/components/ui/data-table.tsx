@@ -6,12 +6,12 @@ export interface DataColumn<T> {
     header: string;
     /** 数据字段访问器或自定义渲染 */
     render: (row: T, index: number) => React.ReactNode;
-    /** 对齐方式 */
-    align?: 'left' | 'right';
     /** 响应式隐藏断点 */
     hideBelow?: 'sm' | 'md' | 'lg';
     /** 列宽 */
     width?: string;
+    /** 列对齐方式，默认 left */
+    align?: 'left' | 'center' | 'right';
 }
 
 /*== DataTable 属性 ==*/
@@ -36,9 +36,16 @@ export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据'
                     <tr className={styles.thead}>
                         {columns.map((col, i) => (
                             <th
-                                className={`${styles.th}${col.align === 'right' ? ` ${styles.thRight}` : ''}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}`}
+                                className={`${styles.th}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}${col.width ? ` ${styles.fixedWidth}` : ''}`}
                                 key={i}
-                                style={col.width ? { width: col.width } : undefined}
+                                style={
+                                    col.width || (col.align && col.align !== 'left')
+                                        ? {
+                                              ...(col.width ? { width: col.width, minWidth: col.width, maxWidth: col.width } : {}),
+                                              ...(col.align && col.align !== 'left' ? { textAlign: col.align } : {}),
+                                          }
+                                        : undefined
+                                }
                             >
                                 {col.header}
                             </th>
@@ -57,8 +64,9 @@ export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据'
                             <tr className={styles.row} key={rowKey(row)}>
                                 {columns.map((col, colIndex) => (
                                     <td
-                                        className={`${styles.td}${col.align === 'right' ? ` ${styles.tdRight}` : ''}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}`}
+                                        className={`${styles.td}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}${col.width ? ` ${styles.fixedWidth}` : ''}`}
                                         key={colIndex}
+                                        style={col.align && col.align !== 'left' ? { textAlign: col.align } : undefined}
                                     >
                                         {col.render(row, rowIndex)}
                                     </td>

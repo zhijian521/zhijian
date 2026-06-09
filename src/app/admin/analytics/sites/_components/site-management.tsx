@@ -195,7 +195,6 @@ export default function SiteManagement() {
         },
         {
             header: '操作',
-            align: 'right',
             width: '9rem',
             render: (site) => (
                 <div className={shared.actionGroup}>

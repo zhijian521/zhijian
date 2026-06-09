@@ -217,7 +217,6 @@ export default function UserListClient() {
         },
         {
             header: '操作',
-            align: 'right',
             width: '6rem',
             render: (user) => (
                 <div className={shared.actionGroup}>
