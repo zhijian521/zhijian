@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ArrowRightIcon, Edit3Icon, FileTextIcon, UsersIcon } from '@/components/ui/icons';
-import { MOCK_POSTS, MOCK_USERS } from '@/lib/mock-data';
+import { DataTable, type DataColumn } from '@/components/ui/data-table';
+import { IconButton } from '@/components/ui/icon-button';
+import { Tag } from '@/components/ui/tag';
+import { MOCK_POSTS, MOCK_USERS, type MockPost } from '@/lib/mock-data';
 import { APP_ROUTES } from '@/lib/site';
 import styles from './page.module.css';
 
@@ -18,6 +21,39 @@ export default function AdminPage() {
     const totalUsers = MOCK_USERS.length;
     const adminCount = MOCK_USERS.filter((u) => u.role === 'admin').length;
     const userCount = MOCK_USERS.filter((u) => u.role === 'user').length;
+
+    const columns: DataColumn<MockPost>[] = [
+        {
+            header: '标题',
+            render: (post) => <span className={styles.tdTitle}>{post.title}</span>,
+        },
+        {
+            header: '状态',
+            hideBelow: 'sm',
+            render: (post) => (
+                <Tag size="mini" variant={post.status === 'published' ? 'primary' : 'default'}>
+                    {post.status === 'published' ? '已发布' : '草稿'}
+                </Tag>
+            ),
+        },
+        {
+            header: '日期',
+            hideBelow: 'md',
+            render: (post) => <span className={styles.tdMuted}>{post.publishedAt ?? '-'}</span>,
+        },
+        {
+            header: '操作',
+            align: 'right',
+            width: '4rem',
+            render: (post) => (
+                <IconButton
+                    href={`${APP_ROUTES.adminPosts}/${post.id}`}
+                    icon={<Edit3Icon />}
+                    title="编辑"
+                />
+            ),
+        },
+    ];
 
     return (
         <div className={styles.page}>
@@ -59,40 +95,12 @@ export default function AdminPage() {
                     </Link>
                 </div>
 
-                <div className={styles.tableWrapper}>
-                    <table className={styles.table}>
-                        <thead>
-                            <tr className={styles.thead}>
-                                <th className={styles.th}>标题</th>
-                                <th className={`${styles.th} ${styles.hideSm}`}>状态</th>
-                                <th className={`${styles.th} ${styles.hideMd}`}>日期</th>
-                                <th className={styles.thAction}>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recentPosts.map((post) => (
-                                <tr className={styles.row} key={post.id}>
-                                    <td className={styles.tdTitle}>
-                                        {post.title}
-                                    </td>
-                                    <td className={`${styles.td} ${styles.hideSm}`}>
-                                        <span className={post.status === 'published' ? styles.badgePrimary : styles.badgeMuted}>
-                                            {post.status === 'published' ? '已发布' : '草稿'}
-                                        </span>
-                                    </td>
-                                    <td className={`${styles.tdMuted} ${styles.hideMd}`}>
-                                        {post.publishedAt ?? '-'}
-                                    </td>
-                                    <td className={styles.tdAction}>
-                                        <Link className={styles.editLink} href={`${APP_ROUTES.adminPosts}/${post.id}`}>
-                                            <Edit3Icon className={styles.iconSmall} />
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <DataTable
+                    columns={columns}
+                    emptyText='暂无文章'
+                    rowKey={(post) => post.id}
+                    rows={recentPosts}
+                />
             </section>
         </div>
     );
