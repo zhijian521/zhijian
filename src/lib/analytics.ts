@@ -289,3 +289,89 @@ export async function getDevices(siteId: string, range: DateRange): Promise<Devi
         percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
     }));
 }
+
+/*== 访问记录 ==*/
+export interface VisitRecord {
+    id: number;
+    path: string;
+    referrer: string;
+    device: string;
+    visitorId: string;
+    duration: number | null;
+    createdAt: string;
+}
+
+export async function getVisits(
+    siteId: string,
+    range: DateRange,
+    page: number,
+    pageSize: number,
+): Promise<{ data: VisitRecord[]; total: number }> {
+    const db = getDb();
+    if (!db) return { data: [], total: 0 };
+
+    const days = getDaysAgo(range);
+    const startDate = formatDate(new Date(Date.now() - days * 86400000));
+    const offset = (page - 1) * pageSize;
+
+    /* 总数 */
+    const [countRows] = await db.execute<RowDataPacket[]>(`
+        SELECT COUNT(*) AS total
+        FROM zhijian_track_events
+        WHERE site_id = ? AND type = 'pageview' AND DATE(created_at) >= ?
+    `, [siteId, startDate]);
+    const total = (countRows[0] as any)?.total || 0;
+
+    /* 分页数据 */
+    const [rows] = await db.execute<RowDataPacket[]>(`
+        SELECT
+            id,
+            path,
+            referrer,
+            screen,
+            visitor_id,
+            duration,
+            created_at
+        FROM zhijian_track_events
+        WHERE site_id = ? AND type = 'pageview' AND DATE(created_at) >= ?
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+    `, [siteId, startDate, pageSize, offset]);
+
+    const data: VisitRecord[] = (rows as any[]).map((r) => {
+        /* 从 screen 字段推导设备类型，格式如 "1920x1080" */
+        let device = 'Desktop';
+        if (r.screen && typeof r.screen === 'string' && r.screen.includes('x')) {
+            const w = parseInt(r.screen.split('x')[0], 10);
+            if (!isNaN(w)) {
+                if (w <= 768) device = 'Mobile';
+                else if (w <= 1024) device = 'Tablet';
+            }
+        }
+
+        /* 来源：空则显示「直接访问」，否则提取域名 */
+        let referrer = '直接访问';
+        if (r.referrer && typeof r.referrer === 'string' && r.referrer.trim()) {
+            try {
+                const url = new URL(r.referrer);
+                referrer = url.hostname;
+            } catch {
+                referrer = r.referrer.split('/')[0] || '直接访问';
+            }
+        }
+
+        return {
+            id: r.id,
+            path: r.path || '/',
+            referrer,
+            device,
+            visitorId: (r.visitor_id || '').slice(0, 8),
+            duration: r.duration != null && r.duration > 0 ? r.duration : null,
+            createdAt: r.created_at instanceof Date
+                ? r.created_at.toISOString()
+                : String(r.created_at),
+        };
+    });
+
+    return { data, total };
+}

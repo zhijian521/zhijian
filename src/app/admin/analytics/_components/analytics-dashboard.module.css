@@ -398,3 +398,24 @@
     font-size: 0.9rem;
     color: var(--muted-foreground);
 }
+
+/*-- Tab 栏 --*/
+
+.tabBar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+/*-- 访问记录表格 --*/
+
+.visitPath {
+    font-size: 0.8rem;
+    color: var(--foreground);
+    word-break: break-all;
+}
+
+.visitMuted {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}

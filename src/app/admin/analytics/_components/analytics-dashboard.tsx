@@ -11,6 +11,9 @@ import { TrendingUpIcon, TrendingDownIcon, CopyIcon } from '@/components/ui/icon
 import { GhostButton } from '@/components/ui/ghost-button';
 import { PillSelect } from '@/components/ui/pill-select';
 import { toast } from '@/components/ui/toast';
+import { DataTable, type DataColumn } from '@/components/ui/data-table';
+import { Tag } from '@/components/ui/tag';
+import { Pagination } from '@/components/ui/pagination';
 import { getEmbedScript } from '@/lib/utils';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
@@ -57,6 +60,16 @@ interface AnalyticsData {
     pages: PageRankItem[];
     sources: SourceItem[];
     devices: DeviceItem[];
+}
+
+interface VisitRecord {
+    id: number;
+    path: string;
+    referrer: string;
+    device: string;
+    visitorId: string;
+    duration: number | null;
+    createdAt: string;
 }
 
 interface SiteOption {
@@ -133,6 +146,11 @@ export default function AnalyticsDashboard() {
     const [range, setRange] = useState<DateRange>('7d');
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [tab, setTab] = useState<'overview' | 'visits'>('overview');
+    const [visits, setVisits] = useState<{ data: VisitRecord[]; total: number }>({ data: [], total: 0 });
+    const [visitsPage, setVisitsPage] = useState(1);
+    const [visitsLoading, setVisitsLoading] = useState(false);
+    const visitsPageSize = 20;
 
     /* 获取站点列表 */
     const fetchSites = useCallback(async () => {
@@ -183,6 +201,88 @@ export default function AnalyticsDashboard() {
         }
     }
 
+    const fetchVisits = useCallback(async () => {
+        if (!siteId) return;
+        setVisitsLoading(true);
+        try {
+            const res = await api.get<{ data: VisitRecord[]; total: number }>('/admin/analytics/visits', {
+                siteId,
+                range,
+                page: visitsPage,
+                pageSize: visitsPageSize,
+            });
+            if (res.code === 0 && res.data) {
+                setVisits(res.data);
+            }
+        } catch (err) {
+            console.error('获取访问记录失败：', err);
+        } finally {
+            setVisitsLoading(false);
+        }
+    }, [siteId, range, visitsPage]);
+
+    useEffect(() => {
+        if (tab === 'visits') fetchVisits();
+    }, [tab, fetchVisits]);
+
+    function formatVisitTime(isoStr: string): string {
+        try {
+            const d = new Date(isoStr);
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mi = String(d.getMinutes()).padStart(2, '0');
+            return `${mm}-${dd} ${hh}:${mi}`;
+        } catch {
+            return isoStr;
+        }
+    }
+
+    const deviceTagVariant = (device: string): 'primary' | 'default' | 'outlined' => {
+        if (device === 'Mobile') return 'primary';
+        if (device === 'Tablet') return 'outlined';
+        return 'default';
+    };
+
+    const visitColumns: DataColumn<VisitRecord>[] = [
+        {
+            header: '页面',
+            render: (v) => <span className={styles.visitPath}>{v.path}</span>,
+        },
+        {
+            header: '来源',
+            hideBelow: 'sm',
+            render: (v) => <span className={styles.visitMuted}>{v.referrer}</span>,
+        },
+        {
+            header: '设备',
+            hideBelow: 'md',
+            render: (v) => (
+                <Tag size="mini" variant={deviceTagVariant(v.device)}>
+                    {v.device}
+                </Tag>
+            ),
+        },
+        {
+            header: '访客',
+            hideBelow: 'lg',
+            render: (v) => <span className={styles.visitMuted}>{v.visitorId}</span>,
+        },
+        {
+            header: '停留时长',
+            hideBelow: 'lg',
+            render: (v) => (
+                <span className={styles.visitMuted}>
+                    {v.duration != null ? `${v.duration}s` : '-'}
+                </span>
+            ),
+        },
+        {
+            header: '访问时间',
+            render: (v) => <span className={styles.visitMuted}>{formatVisitTime(v.createdAt)}</span>,
+        },
+    ];
+
     const overview = data?.overview;
     const trend = data?.trend || [];
     const pages = data?.pages || [];
@@ -231,171 +331,212 @@ export default function AnalyticsDashboard() {
                 />
             </div>
 
-            {loading && !data ? (
-                <div className={styles.loading}>加载中...</div>
-            ) : !siteId ? (
-                <div className={styles.empty}>
-                    <p>请先在「站点管理」中创建站点，获取接入代码嵌入目标网站。</p>
-                    <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">
-                        前往站点管理
-                    </GhostButton>
-                </div>
-            ) : (
-                <>
-                    {/* 概览卡片 */}
-                    <div className={styles.cards}>
-                        <div className={styles.card}>
-                            <p className={styles.cardLabel}>浏览量 (PV)</p>
-                            <p className={styles.cardValue}>{formatNum(overview?.pv || 0)}</p>
-                            <ChangeIndicator value={overview?.pvChange || 0} />
-                        </div>
-                        <div className={styles.card}>
-                            <p className={styles.cardLabel}>访客数 (UV)</p>
-                            <p className={styles.cardValue}>{formatNum(overview?.uv || 0)}</p>
-                            <ChangeIndicator value={overview?.uvChange || 0} />
-                        </div>
-                        <div className={styles.card}>
-                            <p className={styles.cardLabel}>跳出率</p>
-                            <p className={styles.cardValue}>{overview?.bounceRate || 0}%</p>
-                        </div>
-                        <div className={styles.card}>
-                            <p className={styles.cardLabel}>平均停留</p>
-                            <p className={styles.cardValue}>{formatDuration(overview?.avgDuration || 0)}</p>
-                        </div>
-                    </div>
+            {/* Tab 切换 */}
+            <div className={styles.tabBar}>
+                <PillSelect
+                    name="analytics-tab"
+                    onChange={(v) => { setTab(v as 'overview' | 'visits'); setVisitsPage(1); }}
+                    options={[
+                        { value: 'overview', label: '统计概览' },
+                        { value: 'visits', label: '访问记录' },
+                    ]}
+                    value={tab}
+                />
+            </div>
 
-                    {/* PV/UV 趋势图 */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>流量趋势</h3>
-                        <div className={styles.chartContainer}>
-                            {trend.length > 0 ? (
-                                <ResponsiveContainer width="100%" height={280}>
-                                    <AreaChart data={trend} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.mutedSubtle} />
-                                        <XAxis
-                                            dataKey="date"
-                                            tickFormatter={formatDateShort}
-                                            tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
-                                            axisLine={{ stroke: CHART_COLORS.border }}
-                                            tickLine={false}
-                                        />
-                                        <YAxis
-                                            tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tickFormatter={formatNum}
-                                        />
-                                        <Tooltip content={<ChartTooltip />} />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="pv"
-                                            name="pv"
-                                            stroke={CHART_COLORS.primary}
-                                            fill={CHART_COLORS.primarySubtle}
-                                            strokeWidth={2}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="uv"
-                                            name="uv"
-                                            stroke={CHART_COLORS.muted}
-                                            fill="none"
-                                            strokeWidth={1.5}
-                                            strokeDasharray="4 2"
-                                        />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            ) : (
-                                <div className={styles.chartEmpty}>暂无趋势数据</div>
-                            )}
-                        </div>
-                        <div className={styles.legend}>
-                            <span className={styles.legendItem}>
-                                <span className={styles.legendLine} style={{ background: CHART_COLORS.primary }} /> 浏览量
-                            </span>
-                            <span className={styles.legendItem}>
-                                <span className={`${styles.legendLine} ${styles.legendLineDashed}`} style={{ background: CHART_COLORS.muted }} /> 访客数
-                            </span>
-                        </div>
+            {tab === 'overview' && (
+                loading && !data ? (
+                    <div className={styles.loading}>加载中...</div>
+                ) : !siteId ? (
+                    <div className={styles.empty}>
+                        <p>请先在「站点管理」中创建站点，获取接入代码嵌入目标网站。</p>
+                        <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">
+                            前往站点管理
+                        </GhostButton>
                     </div>
+                ) : (
+                    <>
+                        {/* 概览卡片 */}
+                        <div className={styles.cards}>
+                            <div className={styles.card}>
+                                <p className={styles.cardLabel}>浏览量 (PV)</p>
+                                <p className={styles.cardValue}>{formatNum(overview?.pv || 0)}</p>
+                                <ChangeIndicator value={overview?.pvChange || 0} />
+                            </div>
+                            <div className={styles.card}>
+                                <p className={styles.cardLabel}>访客数 (UV)</p>
+                                <p className={styles.cardValue}>{formatNum(overview?.uv || 0)}</p>
+                                <ChangeIndicator value={overview?.uvChange || 0} />
+                            </div>
+                            <div className={styles.card}>
+                                <p className={styles.cardLabel}>跳出率</p>
+                                <p className={styles.cardValue}>{overview?.bounceRate || 0}%</p>
+                            </div>
+                            <div className={styles.card}>
+                                <p className={styles.cardLabel}>平均停留</p>
+                                <p className={styles.cardValue}>{formatDuration(overview?.avgDuration || 0)}</p>
+                            </div>
+                        </div>
 
-                    {/* 双列：热门页面 + 来源排行 */}
-                    <div className={styles.twoCol}>
-                        {/* 热门页面 */}
+                        {/* PV/UV 趋势图 */}
                         <div className={styles.section}>
-                            <h3 className={styles.sectionTitle}>热门页面 TOP 10</h3>
-                            {pages.length > 0 ? (
-                                <div className={styles.rankList}>
-                                    {pages.map((page, i) => (
-                                        <div key={page.path} className={styles.rankItem}>
-                                            <span className={styles.rankIndex}>{i + 1}</span>
-                                            <div className={styles.rankContent}>
-                                                <span className={styles.rankLabel}>{page.path}</span>
-                                                <div className={styles.rankBarWrap}>
+                            <h3 className={styles.sectionTitle}>流量趋势</h3>
+                            <div className={styles.chartContainer}>
+                                {trend.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={280}>
+                                        <AreaChart data={trend} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.mutedSubtle} />
+                                            <XAxis
+                                                dataKey="date"
+                                                tickFormatter={formatDateShort}
+                                                tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
+                                                axisLine={{ stroke: CHART_COLORS.border }}
+                                                tickLine={false}
+                                            />
+                                            <YAxis
+                                                tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tickFormatter={formatNum}
+                                            />
+                                            <Tooltip content={<ChartTooltip />} />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="pv"
+                                                name="pv"
+                                                stroke={CHART_COLORS.primary}
+                                                fill={CHART_COLORS.primarySubtle}
+                                                strokeWidth={2}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="uv"
+                                                name="uv"
+                                                stroke={CHART_COLORS.muted}
+                                                fill="none"
+                                                strokeWidth={1.5}
+                                                strokeDasharray="4 2"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无趋势数据</div>
+                                )}
+                            </div>
+                            <div className={styles.legend}>
+                                <span className={styles.legendItem}>
+                                    <span className={styles.legendLine} style={{ background: CHART_COLORS.primary }} /> 浏览量
+                                </span>
+                                <span className={styles.legendItem}>
+                                    <span className={`${styles.legendLine} ${styles.legendLineDashed}`} style={{ background: CHART_COLORS.muted }} /> 访客数
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* 双列：热门页面 + 来源排行 */}
+                        <div className={styles.twoCol}>
+                            {/* 热门页面 */}
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>热门页面 TOP 10</h3>
+                                {pages.length > 0 ? (
+                                    <div className={styles.rankList}>
+                                        {pages.map((page, i) => (
+                                            <div key={page.path} className={styles.rankItem}>
+                                                <span className={styles.rankIndex}>{i + 1}</span>
+                                                <div className={styles.rankContent}>
+                                                    <span className={styles.rankLabel}>{page.path}</span>
+                                                    <div className={styles.rankBarWrap}>
+                                                        <div
+                                                            className={styles.rankBar}
+                                                            style={{ width: `${(page.pv / maxPagePv) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <span className={styles.rankValue}>{formatNum(page.pv)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无页面数据</div>
+                                )}
+                            </div>
+
+                            {/* 来源排行 */}
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>来源排行</h3>
+                                {sources.length > 0 ? (
+                                    <div className={styles.sourceList}>
+                                        {sources.map((src) => (
+                                            <div key={src.source} className={styles.sourceItem}>
+                                                <span className={styles.sourceName}>{src.source}</span>
+                                                <div className={styles.sourceBarWrap}>
                                                     <div
-                                                        className={styles.rankBar}
-                                                        style={{ width: `${(page.pv / maxPagePv) * 100}%` }}
+                                                        className={styles.sourceBar}
+                                                        style={{ width: `${src.percent}%` }}
                                                     />
                                                 </div>
+                                                <span className={styles.sourcePercent}>{src.percent}%</span>
                                             </div>
-                                            <span className={styles.rankValue}>{formatNum(page.pv)}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className={styles.chartEmpty}>暂无页面数据</div>
-                            )}
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无来源数据</div>
+                                )}
+                            </div>
                         </div>
 
-                        {/* 来源排行 */}
+                        {/* 设备分布 */}
                         <div className={styles.section}>
-                            <h3 className={styles.sectionTitle}>来源排行</h3>
-                            {sources.length > 0 ? (
-                                <div className={styles.sourceList}>
-                                    {sources.map((src) => (
-                                        <div key={src.source} className={styles.sourceItem}>
-                                            <span className={styles.sourceName}>{src.source}</span>
-                                            <div className={styles.sourceBarWrap}>
+                            <h3 className={styles.sectionTitle}>设备分布</h3>
+                            {devices.length > 0 ? (
+                                <div className={styles.deviceList}>
+                                    {devices.map((dev) => (
+                                        <div key={dev.device} className={styles.deviceItem}>
+                                            <div className={styles.deviceInfo}>
+                                                <span className={styles.deviceName}>{dev.device}</span>
+                                                <span className={styles.deviceCount}>{formatNum(dev.count)} 次</span>
+                                            </div>
+                                            <div className={styles.deviceBarWrap}>
                                                 <div
-                                                    className={styles.sourceBar}
-                                                    style={{ width: `${src.percent}%` }}
+                                                    className={styles.deviceBar}
+                                                    style={{ width: `${dev.percent}%` }}
                                                 />
                                             </div>
-                                            <span className={styles.sourcePercent}>{src.percent}%</span>
+                                            <span className={styles.devicePercent}>{dev.percent}%</span>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className={styles.chartEmpty}>暂无来源数据</div>
+                                <div className={styles.chartEmpty}>暂无设备数据</div>
                             )}
                         </div>
-                    </div>
-
-                    {/* 设备分布 */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>设备分布</h3>
-                        {devices.length > 0 ? (
-                            <div className={styles.deviceList}>
-                                {devices.map((dev) => (
-                                    <div key={dev.device} className={styles.deviceItem}>
-                                        <div className={styles.deviceInfo}>
-                                            <span className={styles.deviceName}>{dev.device}</span>
-                                            <span className={styles.deviceCount}>{formatNum(dev.count)} 次</span>
-                                        </div>
-                                        <div className={styles.deviceBarWrap}>
-                                            <div
-                                                className={styles.deviceBar}
-                                                style={{ width: `${dev.percent}%` }}
-                                            />
-                                        </div>
-                                        <span className={styles.devicePercent}>{dev.percent}%</span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className={styles.chartEmpty}>暂无设备数据</div>
-                        )}
-                    </div>
+                    </>
+                )
+            )}
+            {tab === 'visits' && (
+                <>
+                    {!siteId ? (
+                        <div className={styles.empty}>
+                            <p>请先在「站点管理」中创建站点，获取接入代码嵌入目标网站。</p>
+                            <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">
+                                前往站点管理
+                            </GhostButton>
+                        </div>
+                    ) : (
+                        <>
+                            <DataTable
+                                columns={visitColumns}
+                                emptyText={visitsLoading ? '加载中...' : '暂无访问记录'}
+                                rowKey={(v) => v.id}
+                                rows={visits.data}
+                            />
+                            <Pagination
+                                current={visitsPage}
+                                onPageChange={setVisitsPage}
+                                total={Math.max(1, Math.ceil(visits.total / visitsPageSize))}
+                            />
+                        </>
+                    )}
                 </>
             )}
         </>
