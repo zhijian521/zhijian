@@ -300,7 +300,7 @@ export default function AnalyticsDashboard() {
                 title='网站统计'
             />
 
-            {/* 站点选择 + 时间范围 */}
+            {/* 站点选择 + 时间范围 + Tab */}
             <div className={styles.controls}>
                 <div className={styles.siteSelect}>
                     <select
@@ -319,29 +319,27 @@ export default function AnalyticsDashboard() {
                         </GhostButton>
                     )}
                 </div>
-                <PillSelect
-                    name="range"
-                    onChange={(v) => setRange(v as DateRange)}
-                    options={[
-                        { value: '7d', label: '7 天' },
-                        { value: '30d', label: '30 天' },
-                        { value: '90d', label: '90 天' },
-                    ]}
-                    value={range}
-                />
-            </div>
-
-            {/* Tab 切换 */}
-            <div className={styles.tabBar}>
-                <PillSelect
-                    name="analytics-tab"
-                    onChange={(v) => { setTab(v as 'overview' | 'visits'); setVisitsPage(1); }}
-                    options={[
-                        { value: 'overview', label: '统计概览' },
-                        { value: 'visits', label: '访问记录' },
-                    ]}
-                    value={tab}
-                />
+                <div className={styles.rightControls}>
+                    <PillSelect
+                        name="range"
+                        onChange={(v) => setRange(v as DateRange)}
+                        options={[
+                            { value: '7d', label: '7 天' },
+                            { value: '30d', label: '30 天' },
+                            { value: '90d', label: '90 天' },
+                        ]}
+                        value={range}
+                    />
+                    <PillSelect
+                        name="analytics-tab"
+                        onChange={(v) => { setTab(v as 'overview' | 'visits'); setVisitsPage(1); }}
+                        options={[
+                            { value: 'overview', label: '统计概览' },
+                            { value: 'visits', label: '访问记录' },
+                        ]}
+                        value={tab}
+                    />
+                </div>
             </div>
 
             {tab === 'overview' && (

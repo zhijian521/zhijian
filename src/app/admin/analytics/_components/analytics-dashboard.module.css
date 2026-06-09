@@ -17,6 +17,13 @@
     gap: 0.5rem;
 }
 
+.rightControls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
 .select {
     height: 2.25rem;
     min-width: 180px;
@@ -397,14 +404,6 @@
     padding: 3rem;
     font-size: 0.9rem;
     color: var(--muted-foreground);
-}
-
-/*-- Tab 栏 --*/
-
-.tabBar {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
 }
 
 /*-- 访问记录表格 --*/
