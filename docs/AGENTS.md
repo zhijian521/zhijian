@@ -26,8 +26,8 @@
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（31 个图标） |
-| UI 组件 | 自建 CSS Module 组件 | — | ✅ 12 个组件 |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（32 个图标） |
+| UI 组件 | 自建 CSS Module 组件 | — | ✅ 13 个组件 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 
 **路径别名**: `@/*` → `./src/*`
@@ -89,12 +89,13 @@ src/
 │   │   ├── post-card.tsx         # 博客文章卡片
 │   │   └── project-card.tsx      # 项目展示卡片
 │   └── ui/                       # 自建 UI 组件库（全部 CSS Modules）
-│       ├── icons/                # 自建 SVG 图标库（30 个图标）
+│       ├── icons/                # 自建 SVG 图标库（32 个图标）
 │       │   └── index.ts          # IconProps + 桶导出
 │       ├── confirm-dialog.tsx + .module.css   # 确认弹窗
 │       ├── data-table.tsx + .module.css       # 数据表格
 │       ├── dialog.tsx + .module.css           # 弹窗
 │       ├── ghost-button.tsx + .module.css     # 幽灵按钮（a/button 双模式）
+│       ├── icon-button.tsx + .module.css      # 图标按钮（正方形，default/danger/muted）
 │       ├── pagination.tsx + .module.css       # 分页
 │       ├── pill-select.tsx + .module.css      # 胶囊选择器
 │       ├── submit-button.tsx + .module.css    # 提交按钮
@@ -402,7 +403,7 @@ export function Component({ variant = 'default', size = 'default', className, ..
 
 ### 图标系统
 
-全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（31 个图标）：
+全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（32 个图标）：
 
 ```typescript
 import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
@@ -418,7 +419,7 @@ import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
 | 类名 | 用途 |
 |------|------|
 | `.mutedCell` | 次要文字颜色 |
-| `.actionGroup` / `.actionBtn` / `.actionBtnDanger` / `.actionIcon` | 表格操作按钮 |
+| `.actionGroup` | 表格操作按钮组布局 |
 | `.btnIcon` | 工具栏按钮内图标 |
 | `.form` / `.formActions` | 弹窗表单布局 |
 | `.formMessage` | 表单错误/成功提示 |

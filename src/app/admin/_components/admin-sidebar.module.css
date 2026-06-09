@@ -57,7 +57,7 @@
     gap: 8px;
     margin: 0 8px 24px;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--radius);
     background: var(--primary);
     padding: 10px 14px;
     font-size: 14px;
@@ -71,7 +71,7 @@
 }
 
 .createButton:hover {
-    background: #c41e3a;
+    background: var(--primary-hover);
 }
 
 .createButton:active {
@@ -95,7 +95,7 @@
     gap: 12px;
     border: 0;
     border-right: 4px solid transparent;
-    border-radius: 0;
+    border-radius: var(--radius);
     background: transparent;
     padding: 12px 16px;
     font-size: 14px;
@@ -111,7 +111,7 @@
 }
 
 .navItem:hover {
-    background: rgba(243, 236, 228, 0.6);
+    background: color-mix(in srgb, var(--secondary) 60%, transparent);
     color: var(--foreground);
 }
 
@@ -135,7 +135,7 @@
     align-items: center;
     gap: 10px;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--radius);
     background: transparent;
     padding: 10px 16px;
     font-size: 0.875rem;
@@ -152,7 +152,7 @@
 }
 
 .groupHeader:hover {
-    background: rgba(243, 236, 228, 0.6);
+    background: color-mix(in srgb, var(--secondary) 60%, transparent);
     color: var(--foreground);
 }
 
@@ -186,7 +186,7 @@
     gap: 10px;
     border: 0;
     border-right: 4px solid transparent;
-    border-radius: 0;
+    border-radius: var(--radius);
     background: transparent;
     padding: 10px 16px 10px 2.5rem;
     font-size: 0.875rem;
@@ -202,7 +202,7 @@
 }
 
 .subNavItem:hover {
-    background: rgba(243, 236, 228, 0.6);
+    background: color-mix(in srgb, var(--secondary) 60%, transparent);
     color: var(--foreground);
 }
 

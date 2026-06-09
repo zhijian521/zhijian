@@ -22,7 +22,7 @@
 .tag {
     display: inline-block;
     border: 1px solid var(--primary);
-    border-radius: 0;
+    border-radius: var(--radius);
     background: var(--primary-subtle-medium);
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;

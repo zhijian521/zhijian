@@ -3,7 +3,7 @@
 }
 
 .sectionTitle {
-    font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+    font-family: var(--font-serif);
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--foreground);
@@ -111,7 +111,7 @@
 .triggerBtn {
     padding: 0.5rem 1rem;
     border: 1px solid var(--primary);
-    border-radius: 0;
+    border-radius: var(--radius);
     background: transparent;
     color: var(--primary);
     font-size: 0.875rem;

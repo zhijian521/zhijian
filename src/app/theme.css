@@ -20,6 +20,9 @@
     /* 朱砂红上的白字 — 主按钮、主色徽章内的文字 */
     --primary-foreground: #ffffff;
 
+    /* 朱砂 hover — 主按钮按压态、侧边栏活跃项 hover。比主色略亮 */
+    --primary-hover: #c41e3a;
+
     /* 朱砂淡底 — hover 背景、错误提示底色。主色 8% 透明度 */
     --primary-subtle: color-mix(in srgb, var(--primary) 8%, transparent);
 

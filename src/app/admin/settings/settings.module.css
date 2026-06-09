@@ -12,7 +12,7 @@
 
 .card {
     border: 1px solid var(--primary);
-    background: #fbf9f9;
+    background: var(--background);
     padding: 1.5rem;
 }
 
@@ -20,7 +20,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+    font-family: var(--font-serif);
     font-size: 1.125rem;
     font-weight: 600;
     color: var(--foreground);
@@ -49,16 +49,16 @@
 .code {
     padding: 0.125rem 0.375rem;
     border: 1px solid var(--border);
-    border-radius: 0;
-    background: #f5f3f3;
+    border-radius: var(--radius);
+    background: var(--muted);
     font-size: 0.75rem;
 }
 
 .codeInline {
     padding: 0.25rem;
     border: 1px solid var(--border);
-    border-radius: 0;
-    background: #f5f3f3;
+    border-radius: var(--radius);
+    background: var(--muted);
 }
 
 .hint {

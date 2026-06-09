@@ -46,7 +46,7 @@
 
 .title {
     margin: 0;
-    font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+    font-family: var(--font-serif);
     font-size: 32px;
     line-height: 1.2;
     font-weight: 600;
@@ -58,7 +58,7 @@
     width: 100%;
     max-width: 24rem;
     border: 1px solid var(--border);
-    border-radius: 0;
+    border-radius: var(--radius);
     background: var(--background);
     padding: 20px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);

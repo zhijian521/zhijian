@@ -43,7 +43,7 @@
     font-size: 0.875rem;
     color: var(--primary);
     border: 1px solid var(--primary);
-    border-radius: 0;
+    border-radius: var(--radius);
     background: var(--primary-subtle-soft);
     padding: 0.5rem 0.75rem;
     margin: 0;

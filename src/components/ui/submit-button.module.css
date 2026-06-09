@@ -13,7 +13,7 @@
 }
 
 .button:hover {
-    background: #c41e3a;
+    background: var(--primary-hover);
 }
 
 .button:active {

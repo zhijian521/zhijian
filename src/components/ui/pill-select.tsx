@@ -28,7 +28,7 @@ export function PillSelect<T extends string>({ options, value, onChange, name, s
                         checked={value === opt.value}
                         className={styles.input}
                         name={name}
-                        onChange={() => onChange(opt.value)}
+                        readOnly
                         type='radio'
                         value={opt.value}
                     />

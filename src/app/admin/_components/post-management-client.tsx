@@ -131,7 +131,7 @@ export default function PostManagementClient() {
 
             {/* 搜索 + 筛选 + 新建 */}
             <div className={styles.toolbar}>
-                <div className={styles.searchRow}>
+                <div className={styles.searchRow} role="search" aria-label="搜索文章">
                     <TextInput
                         icon={<SearchIcon />}
                         id='post-search'

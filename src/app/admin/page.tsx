@@ -6,8 +6,6 @@ import { MOCK_POSTS, MOCK_USERS } from '@/lib/mock-data';
 import { APP_ROUTES } from '@/lib/site';
 import styles from './page.module.css';
 
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
     title: 'Admin - Zhijian',
 };

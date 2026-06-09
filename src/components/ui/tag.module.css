@@ -35,7 +35,7 @@
 
 /* 颜色变体 */
 .accent {
-    background: color-mix(in srgb, var(--primary) 6%, transparent);
+    background: var(--primary-subtle-medium);
     color: var(--primary);
 }
 

@@ -205,7 +205,7 @@ export default function UserListClient() {
             header: '状态',
             hideBelow: 'md',
             render: (user) => (
-                <Tag size="mini" variant={user.status === 'disabled' ? 'accent' : 'default'}>
+                <Tag size="mini" variant={user.status === 'disabled' ? 'outlined' : 'default'}>
                     {user.status === 'active' ? '正常' : '已禁用'}
                 </Tag>
             ),
@@ -244,7 +244,7 @@ export default function UserListClient() {
         <div>
             {/* 顶部操作栏 */}
             <div className={styles.toolbar}>
-                <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
+                <form className={styles.searchForm} onSubmit={handleSearchSubmit} role="search" aria-label="搜索用户">
                     <TextInput
                         icon={<SearchIcon />}
                         id='user-search'
