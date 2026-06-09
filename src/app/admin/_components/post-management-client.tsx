@@ -65,7 +65,7 @@ export default function PostManagementClient() {
         {
             header: '状态',
             render: (post) => (
-                <Tag size="mini" variant={post.status === 'published' ? 'accent' : 'default'}>
+                <Tag size="mini" variant={post.status === 'published' ? 'primary' : 'default'}>
                     {post.status === 'published' ? '已发布' : '草稿'}
                 </Tag>
             ),

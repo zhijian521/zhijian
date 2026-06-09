@@ -9,7 +9,7 @@ export interface PostCardProps {
     /** 标签文字 */
     tag?: string;
     /** 标签变体 */
-    tagVariant?: 'default' | 'accent';
+    tagVariant?: 'default' | 'primary';
     /** 日期文字 */
     date?: string;
     /** 文章标题 */

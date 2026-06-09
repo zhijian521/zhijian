@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import { PencilIcon, PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -14,7 +14,7 @@ import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
-import type { ListData } from '@/lib/api-response';
+import { useCrudList } from '@/app/admin/_hooks/use-crud-list';
 
 import styles from './category-management.module.css';
 import shared from '@/app/admin/_components/admin-shared.module.css';
@@ -30,12 +30,7 @@ interface CategoryItem {
 
 /*== 分类管理 ==*/
 export default function CategoryManagement() {
-    const [data, setData] = useState<ListData<CategoryItem>>({ data: [], total: 0 });
-    const [loading, setLoading] = useState(true);
-    const [deleting, setDeleting] = useState<number | null>(null);
-    const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
+    const list = useCrudList<CategoryItem>('/admin/categories', '分类');
 
     /* 弹窗表单状态 */
     const [formOpen, setFormOpen] = useState(false);
@@ -47,24 +42,6 @@ export default function CategoryManagement() {
     const [formMessage, setFormMessage] = useState<string | null>(null);
 
     const isEditing = editingId !== null;
-
-    const fetchCategories = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get<ListData<CategoryItem>>('/admin/categories');
-            if (res.code === 0 && res.data) {
-                setData(res.data);
-            }
-        } catch (err) {
-            console.error('获取分类列表失败：', err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories]);
 
     function handleEditClick(cat: CategoryItem) {
         setEditingId(cat.id);
@@ -79,7 +56,7 @@ export default function CategoryManagement() {
         setEditingId(null);
         setFormName('');
         setFormSlug('');
-        setFormSortOrder(data.data.length + 1);
+        setFormSortOrder(list.data.data.length + 1);
         setFormMessage(null);
         setFormOpen(true);
     }
@@ -111,43 +88,13 @@ export default function CategoryManagement() {
 
             setFormOpen(false);
             toast.success(isEditing ? '修改成功' : '新增成功');
-            fetchCategories();
+            list.fetchData();
         } catch {
             setFormMessage('请求失败，请稍后重试。');
         } finally {
             setSubmitting(false);
         }
     }
-
-    async function handleDeleteConfirm() {
-        if (!deleteTarget) return;
-
-        setDeleting(deleteTarget.id);
-        try {
-            const res = await api.delete(`/admin/categories/${deleteTarget.id}`);
-            if (res.code === 0) {
-                setData((prev) => ({
-                    data: prev.data.filter((c) => c.id !== deleteTarget.id),
-                    total: prev.total - 1,
-                }));
-                if (editingId === deleteTarget.id) {
-                    setEditingId(null);
-                    setFormOpen(false);
-                }
-                setDeleteTarget(null);
-                toast.success('删除成功');
-            } else {
-                toast.error(res.message || '删除失败。');
-            }
-        } catch {
-            toast.error('删除请求失败。');
-        } finally {
-            setDeleting(null);
-        }
-    }
-
-    const totalPages = Math.max(1, Math.ceil(data.total / pageSize));
-    const pagedCategories = data.data.slice((page - 1) * pageSize, page * pageSize);
 
     const columns: DataColumn<CategoryItem>[] = [
         { header: '分类名', render: (cat) => cat.name },
@@ -166,9 +113,9 @@ export default function CategoryManagement() {
                         title="编辑"
                     />
                     <IconButton
-                        disabled={deleting === cat.id}
+                        disabled={list.deleting === cat.id}
                         icon={<Trash2Icon />}
-                        onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })}
+                        onClick={() => list.setDeleteTarget({ id: cat.id, name: cat.name })}
                         size="medium"
                         title="删除"
                         variant="danger"
@@ -183,7 +130,7 @@ export default function CategoryManagement() {
             <AdminPageHeader
                 description='管理文章分类，支持新增、编辑和删除。'
                 eyebrow='Categories'
-                tag={`${data.total} 个分类`}
+                tag={`${list.data.total} 个分类`}
                 title='分类管理'
             />
 
@@ -201,20 +148,20 @@ export default function CategoryManagement() {
 
             <DataTable
                 columns={columns}
-                emptyText={loading ? '加载中...' : '暂无分类'}
+                emptyText={list.loading ? '加载中...' : '暂无分类'}
                 rowKey={(cat) => cat.id}
-                rows={pagedCategories}
+                rows={list.pagedData}
             />
 
-            <Pagination current={page} onPageChange={setPage} total={totalPages} />
+            <Pagination current={list.page} onPageChange={list.setPage} total={list.totalPages} />
 
             <ConfirmDialog
                 confirmLabel='删除'
-                message={`确定要删除分类「${deleteTarget?.name ?? ''}」吗？此操作不可撤销。`}
-                onCancel={() => setDeleteTarget(null)}
-                onConfirm={handleDeleteConfirm}
-                open={!!deleteTarget}
-                loading={deleting !== null}
+                message={`确定要删除分类「${list.deleteTarget?.name ?? ''}」吗？此操作不可撤销。`}
+                onCancel={() => list.setDeleteTarget(null)}
+                onConfirm={list.handleDeleteConfirm}
+                open={!!list.deleteTarget}
+                loading={list.deleting !== null}
                 title='确认删除'
             />
 

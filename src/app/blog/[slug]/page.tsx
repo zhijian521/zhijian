@@ -28,7 +28,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 {/* 文章头部 */}
                 <header className={styles.header}>
                     <div className={styles.metaRow}>
-                        <Tag variant="accent">{meta.category}</Tag>
+                        <Tag variant="primary">{meta.category}</Tag>
                         <span className={styles.metaDot}>·</span>
                         <span>{meta.date}</span>
                     </div>

@@ -16,7 +16,7 @@
 .bar1 {
     height: 0.5rem;
     width: 12rem;
-    border-radius: 2px;
+    border-radius: var(--radius);
     background: var(--muted);
     animation: pulse 1.5s ease-in-out infinite;
 }
@@ -24,7 +24,7 @@
 .bar2 {
     height: 0.5rem;
     width: 8rem;
-    border-radius: 2px;
+    border-radius: var(--radius);
     background: var(--border);
     animation: pulse 1.5s ease-in-out infinite 0.3s;
 }

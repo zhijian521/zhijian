@@ -12,30 +12,30 @@ export interface TextInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
 const LABEL_CLASS: Record<string, string> = {
     small: 'labelSmall',
     medium: 'labelMedium',
-    default: 'labelDefault',
 };
 
-const ICON_PADDING_CLASS: Record<string, string | undefined> = {
+const ICON_PADDING_CLASS: Record<string, string> = {
     small: 'hasIconSmall',
     medium: 'hasIconMedium',
     default: 'hasIcon',
 };
 
 /*== TextInput 文本输入框 — 后台通用，支持标签和图标 ==*/
-export function TextInput({ label, icon, inputSize = 'default', className, id, ...props }: TextInputProps) {
+export function TextInput({ label, icon, inputSize = 'medium', className, id, ...props }: TextInputProps) {
     const labelClass = LABEL_CLASS[inputSize];
-    const iconPadClass = ICON_PADDING_CLASS[inputSize];
+    const iconPadClass = icon ? ICON_PADDING_CLASS[inputSize] : undefined;
+    const sizeClass = inputSize !== 'default' ? styles[inputSize] : undefined;
     return (
         <div className={styles.fieldset}>
             {label ? (
-                <label className={`${styles.label} ${styles[labelClass]}`} htmlFor={id}>
+                <label className={`${styles.label}${labelClass ? ` ${styles[labelClass]}` : ''}`} htmlFor={id}>
                     {label}
                 </label>
             ) : null}
             <div className={styles.inputWrap}>
                 {icon ? <span className={styles.iconSlot}>{icon}</span> : null}
                 <input
-                    className={`${styles.input} ${styles[inputSize]}${icon ? ` ${styles[iconPadClass || 'hasIcon']}` : ''}${className ? ` ${className}` : ''}`}
+                    className={`${styles.input}${sizeClass ? ` ${sizeClass}` : ''}${iconPadClass ? ` ${styles[iconPadClass]}` : ''}${className ? ` ${className}` : ''}`}
                     id={id}
                     {...props}
                 />

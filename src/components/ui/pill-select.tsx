@@ -14,9 +14,16 @@ interface PillSelectProps<T extends string> {
     size?: 'small' | 'medium' | 'default';
 }
 
+const SIZE_CLASS: Record<string, string | undefined> = {
+    small: 'small',
+    medium: 'medium',
+    // default 不需要额外 class，.pill 基础样式即为 default 尺寸
+};
+
 export function PillSelect<T extends string>({ options, value, onChange, name, size = 'medium' }: PillSelectProps<T>) {
+    const sizeClass = SIZE_CLASS[size];
     return (
-        <div className={`${styles.group} ${styles[size]}`}>
+        <div className={`${styles.group}${sizeClass ? ` ${styles[sizeClass]}` : ''}`}>
             {options.map((opt) => (
                 <button
                     className={`${styles.pill}${value === opt.value ? ` ${styles.pillActive}` : ''}`}

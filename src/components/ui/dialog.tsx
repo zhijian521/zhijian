@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { XIcon } from '@/components/ui/icons';
 import { IconButton } from '@/components/ui/icon-button';
 
@@ -19,15 +19,43 @@ interface DialogProps {
 export default function Dialog({ open, title, onClose, children, maxWidth }: DialogProps) {
     const panelRef = useRef<HTMLDivElement>(null);
 
-    /* Escape 键关闭 */
+    /* 焦点陷阱：Tab / Shift+Tab 循环在面板内 */
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            onClose();
+            return;
+        }
+        if (e.key !== 'Tab' || !panelRef.current) return;
+
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }, [onClose]);
+
     useEffect(() => {
         if (!open) return;
-        function handleKeyDown(e: KeyboardEvent) {
-            if (e.key === 'Escape') onClose();
-        }
         document.addEventListener('keydown', handleKeyDown);
+        /* 打开时聚焦面板内第一个可聚焦元素 */
+        requestAnimationFrame(() => {
+            const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            );
+            focusable?.[0]?.focus();
+        });
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [open, onClose]);
+    }, [open, handleKeyDown]);
 
     if (!open) return null;
 
@@ -44,7 +72,7 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
             >
                 <div className={styles.header}>
                     <h3 className={styles.title} id="dialog-title">{title}</h3>
-                    <IconButton icon={<XIcon />} onClick={onClose} size="small" variant="muted" aria-label="关闭" />
+                    <IconButton icon={<XIcon />} onClick={onClose} size="small" aria-label="关闭" />
                 </div>
                 <div className={styles.body}>
                     {children}

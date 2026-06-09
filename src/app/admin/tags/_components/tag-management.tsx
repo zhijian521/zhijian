@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import { PencilIcon, PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -14,7 +14,7 @@ import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
-import type { ListData } from '@/lib/api-response';
+import { useCrudList } from '@/app/admin/_hooks/use-crud-list';
 
 import styles from './tag-management.module.css';
 import shared from '@/app/admin/_components/admin-shared.module.css';
@@ -29,12 +29,7 @@ interface TagItem {
 
 /*== 标签管理 ==*/
 export default function TagManagement() {
-    const [data, setData] = useState<ListData<TagItem>>({ data: [], total: 0 });
-    const [loading, setLoading] = useState(true);
-    const [deleting, setDeleting] = useState<number | null>(null);
-    const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
+    const list = useCrudList<TagItem>('/admin/tags', '标签');
 
     /* 弹窗表单状态 */
     const [formOpen, setFormOpen] = useState(false);
@@ -45,24 +40,6 @@ export default function TagManagement() {
     const [formMessage, setFormMessage] = useState<string | null>(null);
 
     const isEditing = editingId !== null;
-
-    const fetchTags = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get<ListData<TagItem>>('/admin/tags');
-            if (res.code === 0 && res.data) {
-                setData(res.data);
-            }
-        } catch (err) {
-            console.error('获取标签列表失败：', err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchTags();
-    }, [fetchTags]);
 
     function handleEditClick(tag: TagItem) {
         setEditingId(tag.id);
@@ -107,43 +84,13 @@ export default function TagManagement() {
 
             setFormOpen(false);
             toast.success(isEditing ? '修改成功' : '新增成功');
-            fetchTags();
+            list.fetchData();
         } catch {
             setFormMessage('请求失败，请稍后重试。');
         } finally {
             setSubmitting(false);
         }
     }
-
-    async function handleDeleteConfirm() {
-        if (!deleteTarget) return;
-
-        setDeleting(deleteTarget.id);
-        try {
-            const res = await api.delete(`/admin/tags/${deleteTarget.id}`);
-            if (res.code === 0) {
-                setData((prev) => ({
-                    data: prev.data.filter((t) => t.id !== deleteTarget.id),
-                    total: prev.total - 1,
-                }));
-                if (editingId === deleteTarget.id) {
-                    setEditingId(null);
-                    setFormOpen(false);
-                }
-                setDeleteTarget(null);
-                toast.success('删除成功');
-            } else {
-                toast.error(res.message || '删除失败。');
-            }
-        } catch {
-            toast.error('删除请求失败。');
-        } finally {
-            setDeleting(null);
-        }
-    }
-
-    const totalPages = Math.max(1, Math.ceil(data.total / pageSize));
-    const pagedTags = data.data.slice((page - 1) * pageSize, page * pageSize);
 
     const columns: DataColumn<TagItem>[] = [
         { header: '标签名', render: (tag) => tag.name },
@@ -161,9 +108,9 @@ export default function TagManagement() {
                         title="编辑"
                     />
                     <IconButton
-                        disabled={deleting === tag.id}
+                        disabled={list.deleting === tag.id}
                         icon={<Trash2Icon />}
-                        onClick={() => setDeleteTarget({ id: tag.id, name: tag.name })}
+                        onClick={() => list.setDeleteTarget({ id: tag.id, name: tag.name })}
                         size="medium"
                         title="删除"
                         variant="danger"
@@ -178,7 +125,7 @@ export default function TagManagement() {
             <AdminPageHeader
                 description='管理文章标签，支持新增、编辑和删除。'
                 eyebrow='Tags'
-                tag={`${data.total} 个标签`}
+                tag={`${list.data.total} 个标签`}
                 title='标签管理'
             />
 
@@ -196,20 +143,20 @@ export default function TagManagement() {
 
             <DataTable
                 columns={columns}
-                emptyText={loading ? '加载中...' : '暂无标签'}
+                emptyText={list.loading ? '加载中...' : '暂无标签'}
                 rowKey={(tag) => tag.id}
-                rows={pagedTags}
+                rows={list.pagedData}
             />
 
-            <Pagination current={page} onPageChange={setPage} total={totalPages} />
+            <Pagination current={list.page} onPageChange={list.setPage} total={list.totalPages} />
 
             <ConfirmDialog
                 confirmLabel='删除'
-                message={`确定要删除标签「${deleteTarget?.name ?? ''}」吗？此操作不可撤销。`}
-                onCancel={() => setDeleteTarget(null)}
-                onConfirm={handleDeleteConfirm}
-                open={!!deleteTarget}
-                loading={deleting !== null}
+                message={`确定要删除标签「${list.deleteTarget?.name ?? ''}」吗？此操作不可撤销。`}
+                onCancel={() => list.setDeleteTarget(null)}
+                onConfirm={list.handleDeleteConfirm}
+                open={!!list.deleteTarget}
+                loading={list.deleting !== null}
                 title='确认删除'
             />
 

@@ -98,7 +98,7 @@ export default function HomePage() {
                     <div className={styles.postsGrid}>
                         <PostCard
                             tag='生活方式'
-                            tagVariant='accent'
+                            tagVariant='primary'
                             date='2026年5月20日'
                             title='茶道与留白的美学'
                             summary='在喧嚣的现代生活中，泡一壶清茶，体会杯盏间的留白。这不仅仅是一种饮品，更是一种减法生活的哲学实践。'
@@ -117,7 +117,7 @@ export default function HomePage() {
 
                         <PostCard
                             tag='文化随笔'
-                            tagVariant='accent'
+                            tagVariant='primary'
                             date='2026年5月1日'
                             title='《考工记》与现代工艺精神'
                             summary='"天有时，地有气，材有美，工有巧，合此四者，然后可以为良。"重读古代造物典籍，寻找属于这个时代的工匠精神回归之路。'

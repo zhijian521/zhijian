@@ -11,9 +11,16 @@ export interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorE
     asButton?: boolean;
 }
 
+const SIZE_CLASS: Record<string, string | undefined> = {
+    small: 'small',
+    medium: 'medium',
+    // default 不需要额外 class，基础样式即为 default 尺寸
+};
+
 /*== GhostButton 幽灵按钮 — 边框按钮+图标，hover 变暖 ==*/
 export function GhostButton({ icon, variant = 'default', size = 'medium', asButton, className, children, ...props }: GhostButtonProps) {
-    const classes = `${styles.button} ${styles[variant]} ${styles[size]}${className ? ` ${className}` : ''}`;
+    const sizeClass = SIZE_CLASS[size];
+    const classes = `${styles.button} ${styles[variant]}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`;
     const iconEl = icon ? <span className={styles.icon}>{icon}</span> : null;
 
     if (asButton) {

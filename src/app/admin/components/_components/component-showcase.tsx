@@ -111,30 +111,30 @@ export default function ComponentShowcase() {
                 {/* Tag */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>Tag</h3>
-                    <p className={styles.componentDesc}>标签组件，支持 default / accent / outlined 三种变体，mini / small / medium / default 四种尺寸。</p>
+                    <p className={styles.componentDesc}>标签组件，支持 default / primary / outlined 三种变体，mini / small / medium / default 四种尺寸。</p>
                     <div className={styles.demoRow}>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>mini</span>
                             <Tag size='mini' variant='default'>默认</Tag>
-                            <Tag size='mini' variant='accent'>强调</Tag>
+                            <Tag size='mini' variant='primary'>强调</Tag>
                             <Tag size='mini' variant='outlined'>描边</Tag>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>small</span>
                             <Tag size='small' variant='default'>默认</Tag>
-                            <Tag size='small' variant='accent'>强调</Tag>
+                            <Tag size='small' variant='primary'>强调</Tag>
                             <Tag size='small' variant='outlined'>描边</Tag>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>medium</span>
                             <Tag size='medium' variant='default'>默认</Tag>
-                            <Tag size='medium' variant='accent'>强调</Tag>
+                            <Tag size='medium' variant='primary'>强调</Tag>
                             <Tag size='medium' variant='outlined'>描边</Tag>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>default</span>
                             <Tag size='default' variant='default'>默认</Tag>
-                            <Tag size='default' variant='accent'>强调</Tag>
+                            <Tag size='default' variant='primary'>强调</Tag>
                             <Tag size='default' variant='outlined'>描边</Tag>
                         </div>
                     </div>
@@ -166,25 +166,22 @@ export default function ComponentShowcase() {
                 {/* IconButton */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>IconButton</h3>
-                    <p className={styles.componentDesc}>正方形图标按钮，纯图标无文字，支持 default / danger / muted 三种变体，small / medium / default 三种尺寸。</p>
+                    <p className={styles.componentDesc}>正方形图标按钮，纯图标无文字，支持 default / danger 两种变体，small / medium / default 三种尺寸。</p>
                     <div className={styles.demoRow}>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>small</span>
                             <IconButton icon={<PencilIcon />} size='small' />
                             <IconButton icon={<Trash2Icon />} size='small' variant='danger' />
-                            <IconButton icon={<XIcon />} size='small' variant='muted' />
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>medium</span>
                             <IconButton icon={<PencilIcon />} size='medium' />
                             <IconButton icon={<Trash2Icon />} size='medium' variant='danger' />
-                            <IconButton icon={<XIcon />} size='medium' variant='muted' />
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>default</span>
                             <IconButton icon={<PencilIcon />} size='default' />
                             <IconButton icon={<Trash2Icon />} size='default' variant='danger' />
-                            <IconButton icon={<XIcon />} size='default' variant='muted' />
                         </div>
                     </div>
                 </div>

@@ -32,23 +32,14 @@
     /* 朱砂中底 — 页眉标签背景、标签 accent 底色。主色 6% 透明度 */
     --primary-subtle-medium: color-mix(in srgb, var(--primary) 6%, transparent);
 
-    /* 焦朱 — 输入框 focus 时的边框色 / outline 色_ring，比主色略亮一档，让焦点更醒目但不刺眼 */
-    --ring: #c8161d;
-
     /* 朱砂 focus ring 底色 — 输入框 focus 的 box-shadow。主色 10% 透明度 */
     --ring-subtle: color-mix(in srgb, var(--primary) 10%, transparent);
 
     /* 危险红 — 删除按钮、错误提示、校验失败。比主色偏正红，与"朱砂"区分语义 */
     --destructive: #ba1a1a;
 
-    /* 危险红上的白字 */
-    --destructive-foreground: #ffffff;
-
     /* 危险淡底 — danger 按钮 hover 背景。危险色 8% 透明度 */
     --destructive-subtle: color-mix(in srgb, var(--destructive) 8%, transparent);
-
-    /* 危险微底 — toast error 底色。危险色 6% 透明度 */
-    --destructive-subtle-soft: color-mix(in srgb, var(--destructive) 6%, transparent);
 
 
     /* ─────────────────────────────────────────────────────────────────
@@ -82,9 +73,6 @@
     /* 旧纸色 — 次级按钮背景、表格斑马纹。比 muted 深一档 */
     --secondary: #f3ece4;
 
-    /* 次级按钮文字 */
-    --secondary-foreground: #494551;
-
 
     /* ─────────────────────────────────────────────────────────────────
        四、点缀 · 青苔与驼色
@@ -112,14 +100,8 @@
     /* 卡片半透明背景 — 毛玻璃卡片效果，叠在 paper/background 之上 */
     --card: rgba(255, 255, 255, 0.8);
 
-    /* 卡片文字色 */
-    --card-foreground: #1d1b20;
-
     /* 弹窗背景 */
     --popover: #ffffff;
-
-    /* 弹窗文字色 */
-    --popover-foreground: #1d1b20;
 
 
     /* ─────────────────────────────────────────────────────────────────
@@ -139,9 +121,6 @@
 
     /* 无衬线体 — 正文、UI 控件、按钮、输入框 */
     --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-
-    /* UI 字体 — 与 --font-sans 相同，语义别名（供 Tailwind @theme 引用） */
-    --font-ui: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
 
 
     /* ─────────────────────────────────────────────────────────────────

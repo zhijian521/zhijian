@@ -12,12 +12,7 @@
     color: var(--muted-foreground);
 }
 
-/* 尺寸变体 */
-.defaultSize {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
-}
-
+/* 尺寸变体（仅 non-default，default 已在 .tag 基础样式中） */
 .medium {
     padding: 0.5rem 0.8125rem;
     font-size: 0.84375rem;
@@ -34,7 +29,7 @@
 }
 
 /* 颜色变体 */
-.accent {
+.primary {
     background: var(--primary-subtle-medium);
     color: var(--primary);
 }

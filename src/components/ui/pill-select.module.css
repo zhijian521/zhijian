@@ -37,12 +37,7 @@
     clip: rect(0, 0, 0, 0);
 }
 
-/* 尺寸变体 */
-.default .pill {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
-}
-
+/* 尺寸变体（仅 non-default，default 已在 .pill 基础样式中） */
 .medium .pill {
     padding: 0.5rem 0.8125rem;
     font-size: 0.84375rem;

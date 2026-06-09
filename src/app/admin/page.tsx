@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Admin - Zhijian',
 };
 
-/*== 后台概览页：静态数据展示统计指标和近期文章。 ==*/
+/*== 后台概览页：静态展示统计指标和近期文章（数据待接入 API 后改为动态）。 ==*/
 export default function AdminPage() {
     const posts = MOCK_POSTS;
     const publishedPosts = posts.filter((post) => post.status === 'published');

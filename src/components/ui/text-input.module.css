@@ -12,11 +12,7 @@
     color: var(--muted-foreground);
 }
 
-/* 标签尺寸变体 */
-.labelDefault {
-    font-size: 0.875rem;
-}
-
+/* 标签尺寸变体（仅 non-default 需覆盖） */
 .labelMedium {
     font-size: 0.84375rem;
 }
@@ -48,6 +44,7 @@
     height: 100%;
 }
 
+/* 基础输入框 — 对应 default 尺寸 */
 .input {
     width: 100%;
     padding: 0.625rem 0.875rem;
@@ -70,12 +67,7 @@
     box-shadow: 0 0 0 3px var(--ring-subtle);
 }
 
-/* 尺寸变体 */
-.default {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
-}
-
+/* 尺寸变体（仅 non-default，default 已在 .input 基础样式中） */
 .medium {
     padding: 0.5rem 0.8125rem;
     font-size: 0.84375rem;
@@ -86,6 +78,7 @@
     font-size: 0.8125rem;
 }
 
+/* 图标左侧间距（仅在有 icon 时应用） */
 .hasIcon {
     padding-left: 2.25rem;
 }

@@ -75,7 +75,7 @@ export default function UserListClient() {
                 setData(res.data);
             }
         } catch (err) {
-            console.error('获取用户列表失败：', err);
+            toast.error('获取用户列表失败');
         } finally {
             setLoading(false);
         }
@@ -196,7 +196,7 @@ export default function UserListClient() {
         {
             header: '角色',
             render: (user) => (
-                <Tag size="mini" variant={user.role === 'admin' ? 'accent' : 'default'}>
+                <Tag size="mini" variant={user.role === 'admin' ? 'primary' : 'default'}>
                     {user.role === 'admin' ? '管理员' : '用户'}
                 </Tag>
             ),

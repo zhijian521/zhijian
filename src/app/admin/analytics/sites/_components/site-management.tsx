@@ -173,7 +173,7 @@ export default function SiteManagement() {
         {
             header: '状态',
             render: (site) => (
-                <Tag size="mini" variant={site.status === 'active' ? 'accent' : 'default'}>
+                <Tag size="mini" variant={site.status === 'active' ? 'primary' : 'default'}>
                     {site.status === 'active' ? '运行中' : '已暂停'}
                 </Tag>
             ),
