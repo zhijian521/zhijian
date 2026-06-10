@@ -7,12 +7,16 @@ import type { Post, PostStatus } from '@/lib/post-shared';
 
 /*== 更新文章的输入参数，由后台编辑表单提交后传入。 ==*/
 export interface UpdatePostInput {
-    slug: string;
-    title: string;
-    summary: string;
-    content: string;
-    status: PostStatus;
-    publishedAt: string | null;
+    slug?: string;
+    title?: string;
+    summary?: string;
+    content?: string;
+    status?: PostStatus;
+    publishedAt?: string | null;
+    coverImage?: string | null;
+    altText?: string | null;
+    categoryId?: number | null;
+    tags?: number[];
 }
 
 /*== 创建新文章的输入参数，仅需提供标题即可生成草稿。 ==*/
@@ -21,6 +25,10 @@ export interface CreatePostInput {
     title: string;
     summary: string;
     content: string;
+    coverImage?: string | null;
+    altText?: string | null;
+    categoryId?: number | null;
+    tags?: number[];
 }
 
 /*== 内部查询选项，统一数据库读取时的条件组合逻辑。 ==*/
@@ -37,6 +45,10 @@ interface PostRow extends RowDataPacket {
     title: string;
     summary: string | null;
     content: string | null;
+    cover_image: string | null;
+    alt_text: string | null;
+    category_id: number | null;
+    tags: string | null; // JSON 字符串
     status: PostStatus;
     published_at: string | null;
     updated_at: string | null;
@@ -61,6 +73,10 @@ const FALLBACK_POSTS: Post[] = [
             '把博客、后台管理和接口放进同一个 Next.js 项目里，开发和部署路径都会更短，也更适合个人长期维护。',
             '等博客稳定后，再逐步补充备忘录、导航首页、项目陈列和关于页，会比一开始铺太大更从容。',
         ].join('\n\n'),
+        coverImage: null,
+        altText: null,
+        categoryId: null,
+        tags: [],
         status: 'published',
         publishedAt: '2026-05-24 09:30:00',
         updatedAt: '2026-05-24 09:30:00',
@@ -75,6 +91,10 @@ const FALLBACK_POSTS: Post[] = [
             '当页面结构、字段模型和权限边界都很清晰时，直接在 Next.js 里封装接口，会有更高的掌控感。',
             '这样后续扩展新模块时，也可以继续沿用同一套页面、接口和数据库连接方式，不需要维护两套系统。',
         ].join('\n\n'),
+        coverImage: null,
+        altText: null,
+        categoryId: null,
+        tags: [],
         status: 'published',
         publishedAt: '2026-05-20 20:15:00',
         updatedAt: '2026-05-20 20:15:00',
@@ -129,7 +149,7 @@ export async function getPostById(id: number): Promise<Post | null> {
 
 /*== 写入操作 ==*/
 
-/*== 更新指定文章。 数据库字段映射统一放在 lib 层处理，避免 API route 直接拼接 SQL 细节。 ==*/
+/*== 更新指定文章。 采用动态 SET 子句，仅更新传入的字段。 ==*/
 export async function updatePostById(id: number, input: UpdatePostInput): Promise<Post | null> {
     const db = getDb();
 
@@ -137,16 +157,39 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
         return null;
     }
 
-    const publishedAt = normalizePublishedAt(input.publishedAt, input.status);
+    const sets: string[] = [];
+    const values: unknown[] = [];
+
+    if (input.slug !== undefined) { sets.push('slug = ?'); values.push(input.slug); }
+    if (input.title !== undefined) { sets.push('title = ?'); values.push(input.title); }
+    if (input.summary !== undefined) { sets.push('summary = ?'); values.push(input.summary); }
+    if (input.content !== undefined) { sets.push('content = ?'); values.push(input.content); }
+    if (input.status !== undefined) {
+        sets.push('status = ?');
+        values.push(input.status);
+        const publishedAt = normalizePublishedAt(input.publishedAt ?? null, input.status);
+        sets.push('published_at = ?');
+        values.push(publishedAt);
+    } else if (input.publishedAt !== undefined) {
+        sets.push('published_at = ?');
+        values.push(input.publishedAt);
+    }
+    if (input.coverImage !== undefined) { sets.push('cover_image = ?'); values.push(input.coverImage); }
+    if (input.altText !== undefined) { sets.push('alt_text = ?'); values.push(input.altText); }
+    if (input.categoryId !== undefined) { sets.push('category_id = ?'); values.push(input.categoryId); }
+    if (input.tags !== undefined) { sets.push('tags = ?'); values.push(JSON.stringify(input.tags)); }
+
+    if (sets.length === 0) {
+        return getPostById(id);
+    }
+
+    sets.push('updated_at = NOW()');
+    values.push(id);
 
     try {
         const [result] = await db.execute<ResultSetHeader>(
-            `
-                UPDATE zhijian_blog_posts
-                SET slug = ?, title = ?, summary = ?, content = ?, status = ?, published_at = ?, updated_at = NOW()
-                WHERE id = ?
-            `,
-            [input.slug, input.title, input.summary, input.content, input.status, publishedAt, id],
+            `UPDATE zhijian_blog_posts SET ${sets.join(', ')} WHERE id = ?`,
+            values,
         );
 
         if (result.affectedRows === 0) {
@@ -171,10 +214,20 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
     try {
         const [result] = await db.execute<ResultSetHeader>(
             `
-                INSERT INTO zhijian_blog_posts (slug, title, summary, content, status, published_at, created_at, updated_at)
-                VALUES (?, ?, ?, ?, 'draft', NULL, NOW(), NOW())
+                INSERT INTO zhijian_blog_posts
+                    (slug, title, summary, content, cover_image, alt_text, category_id, tags, status, published_at, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', NULL, NOW(), NOW())
             `,
-            [input.slug, input.title, input.summary, input.content],
+            [
+                input.slug,
+                input.title,
+                input.summary,
+                input.content,
+                input.coverImage ?? null,
+                input.altText ?? null,
+                input.categoryId ?? null,
+                input.tags ? JSON.stringify(input.tags) : null,
+            ],
         );
 
         return getPostById(result.insertId);
@@ -182,6 +235,17 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
         console.error('Failed to create post.', { error });
         return null;
     }
+}
+
+/*== 删除指定文章。 ==*/
+export async function deletePostById(id: number): Promise<boolean> {
+    const db = getDb();
+    if (!db) return false;
+    const [result] = await db.execute<ResultSetHeader>(
+        'DELETE FROM zhijian_blog_posts WHERE id = ?',
+        [id],
+    );
+    return result.affectedRows > 0;
 }
 
 /*== 内部查询 ==*/
@@ -223,6 +287,10 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                     title,
                     summary,
                     content,
+                    cover_image,
+                    alt_text,
+                    category_id,
+                    tags,
                     status,
                     DATE_FORMAT(published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
                     DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
@@ -239,6 +307,10 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
             title: row.title,
             summary: row.summary?.trim() || EMPTY_SUMMARY_FALLBACK,
             content: row.content?.trim() || EMPTY_CONTENT_FALLBACK,
+            coverImage: row.cover_image ?? null,
+            altText: row.alt_text ?? null,
+            categoryId: row.category_id ?? null,
+            tags: row.tags ? JSON.parse(row.tags) : [],
             status: row.status,
             publishedAt: row.published_at,
             updatedAt: row.updated_at,
@@ -250,6 +322,11 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
 }
 
 /*== 内部工具 ==*/
+
+/*== 判断值是否为合法的文章发布状态。 ==*/
+export function isPostStatus(value: unknown): value is PostStatus {
+    return value === 'draft' || value === 'published';
+}
 
 /*== 根据文章状态规范化发布时间。 ==*/
 function normalizePublishedAt(value: string | null, status: PostStatus): string | null {

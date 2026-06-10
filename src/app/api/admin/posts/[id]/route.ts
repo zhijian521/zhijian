@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { requireAdminFromRequest } from '@/lib/auth';
 import { BizCode, fail, success } from '@/lib/api-response';
-import type { PostStatus } from '@/lib/post-shared';
+import { isPostStatus, updatePostById } from '@/lib/posts';
 import type { UpdatePostInput } from '@/lib/posts';
-import { updatePostById } from '@/lib/posts';
 
 interface RouteContext { params: Promise<{ id: string }>; }
 
@@ -51,8 +50,4 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     return NextResponse.json(success(updatedPost, '保存成功。'));
-}
-
-function isPostStatus(value: unknown): value is PostStatus {
-    return value === 'draft' || value === 'published';
 }
