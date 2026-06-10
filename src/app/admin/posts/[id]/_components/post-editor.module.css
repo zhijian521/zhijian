@@ -1,0 +1,90 @@
+.editor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--background);
+}
+
+.body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.contentSplit {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.editPane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.previewPane {
+    flex: 1;
+    overflow: auto;
+}
+
+.contentEdit {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.contentPreview {
+    flex: 1;
+    overflow: auto;
+}
+
+.sidePanel {
+    width: 320px;
+    border-left: 1px solid var(--border);
+    background: var(--background);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.titleInput {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 0.5rem 0;
+    outline: none;
+    color: var(--foreground);
+}
+
+.titleInput::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.5;
+}
+
+.summaryInput {
+    font-size: 0.875rem;
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 0.5rem 0;
+    resize: none;
+    outline: none;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+}
+
+.summaryInput::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.4;
+}
+
+.headerArea {
+    padding: 1rem 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+}

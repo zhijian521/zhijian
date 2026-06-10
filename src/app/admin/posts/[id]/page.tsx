@@ -1,38 +1,33 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import PostEditorForm from '@/app/admin/_components/post-editor-form';
 import { getPostById } from '@/lib/posts';
+import { listCategories } from '@/lib/categories';
+import { listTags } from '@/lib/tags';
+import PostEditor from './_components/post-editor';
 
-interface AdminPostDetailPageProps {
-    params: Promise<{
-        id: string;
-    }>;
+interface PageProps {
+    params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: AdminPostDetailPageProps): Promise<Metadata> {
-    const { id } = await params;
-    const post = await getPostById(Number(id));
-
-    return {
-        title: `${post?.title ?? "编辑文章"} - Zhijian`,
-    };
-}
-
-/*== 后台文章编辑页：按 ID 加载指定文章并使用编辑模式表单。 ==*/
-export default async function AdminPostDetailPage({ params }: AdminPostDetailPageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
     const postId = Number(id);
-
-    if (!Number.isInteger(postId) || postId <= 0) {
-        notFound();
-    }
+    if (!Number.isFinite(postId) || postId <= 0) return { title: '编辑文章 - Zhijian' };
 
     const post = await getPostById(postId);
+    return { title: post ? `编辑：${post.title} - Zhijian` : '文章不存在 - Zhijian' };
+}
 
-    if (!post) {
-        notFound();
-    }
+export default async function EditPostPage({ params }: PageProps) {
+    const { id } = await params;
+    const postId = Number(id);
+    if (!Number.isFinite(postId) || postId <= 0) return notFound();
 
-    return <PostEditorForm mode='edit' post={post} />;
+    const post = await getPostById(postId);
+    if (!post) return notFound();
+
+    const [categories, tags] = await Promise.all([listCategories(), listTags()]);
+
+    return <PostEditor categories={categories} post={post} tags={tags} />;
 }

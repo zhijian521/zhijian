@@ -1,11 +1,27 @@
-import type { Metadata } from "next";
-import PostEditorForm from '@/app/admin/_components/post-editor-form';
+import type { Metadata } from 'next';
+
+import { createPost } from '@/lib/posts';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-    title: "新建文章 - Zhijian",
+    title: '新建文章 - Zhijian',
 };
 
-/*== 后台新建文章页：展示创建模式下的文章编辑器。 ==*/
-export default async function AdminNewPostPage() {
-    return <PostEditorForm mode='create' />;
+export default async function NewPostPage() {
+    const post = await createPost({
+        slug: `draft-${Date.now()}`,
+        title: '无标题草稿',
+        summary: '',
+        content: '',
+    });
+
+    if (post) {
+        redirect(`/admin/posts/${post.id}`);
+    }
+
+    return (
+        <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
+            创建文章失败，请返回重试。
+        </div>
+    );
 }
