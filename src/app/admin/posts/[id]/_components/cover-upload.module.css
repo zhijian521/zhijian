@@ -1,0 +1,122 @@
+.coverUpload {
+    margin-bottom: 1rem;
+}
+
+/* 拖拽上传区 */
+.dropZone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 8rem;
+    border: 2px dashed var(--border);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dropZone:hover {
+    border-color: var(--primary);
+    background: var(--primary-subtle-soft);
+}
+
+.dropZone:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring-subtle);
+    outline: none;
+}
+
+.dropZoneDragging {
+    border-color: var(--primary);
+    background: var(--primary-subtle-soft);
+    color: var(--primary);
+}
+
+.dropIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.dropText {
+    font-size: 0.8125rem;
+}
+
+/* 预览区 */
+.previewWrap {
+    position: relative;
+    margin-bottom: 0.75rem;
+}
+
+.previewImage {
+    display: block;
+    width: 100%;
+    max-height: 12rem;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.deleteBtn {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background: var(--background);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.deleteBtn:hover {
+    color: var(--destructive);
+    border-color: var(--destructive);
+    background: var(--destructive-subtle);
+}
+
+.deleteBtn:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring-subtle);
+    outline: none;
+}
+
+.deleteIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+/* Alt 输入 */
+.altField {
+    margin-top: 0.5rem;
+}
+
+.altLabel {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.25rem;
+}
+
+.altInput {
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--foreground);
+    background: var(--background);
+    border: 1px solid var(--border);
+    transition: border-color 0.2s ease;
+}
+
+.altInput:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--ring-subtle);
+    outline: none;
+}
+
+.altInput::placeholder {
+    color: var(--muted-foreground);
+}
