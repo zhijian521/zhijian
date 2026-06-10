@@ -48,6 +48,7 @@ interface PostRow extends RowDataPacket {
     cover_image: string | null;
     alt_text: string | null;
     category_id: number | null;
+    category_name: string | null;
     tags: string | null; // JSON 字符串
     status: PostStatus;
     published_at: string | null;
@@ -105,10 +106,10 @@ const FALLBACK_POSTS: Post[] = [
 
 /*== 获取已发布文章列表。 数据库无数据时回退到内置示例数据，保证页面始终可渲染。 ==*/
 export async function getPublishedPosts(): Promise<Post[]> {
-    const zhijian_blog_posts = await readPostsFromDatabase({ includeDrafts: false });
+    const posts = await readPostsFromDatabase({ includeDrafts: false });
 
-    if (zhijian_blog_posts.length > 0) {
-        return zhijian_blog_posts;
+    if (posts.length > 0) {
+        return enrichPostsWithTagNames(posts);
     }
 
     return FALLBACK_POSTS.filter((post) => post.status === 'published');
@@ -116,10 +117,10 @@ export async function getPublishedPosts(): Promise<Post[]> {
 
 /*== 获取全部文章（含草稿），供后台管理列表使用。 数据库无数据时回退到完整示例数据。 ==*/
 export async function getAllPosts(): Promise<Post[]> {
-    const zhijian_blog_posts = await readPostsFromDatabase({ includeDrafts: true });
+    const posts = await readPostsFromDatabase({ includeDrafts: true });
 
-    if (zhijian_blog_posts.length > 0) {
-        return zhijian_blog_posts;
+    if (posts.length > 0) {
+        return enrichPostsWithTagNames(posts);
     }
 
     return FALLBACK_POSTS;
@@ -262,17 +263,17 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
     const values: Array<number | string> = [];
 
     if (!options.includeDrafts) {
-        conditions.push('status = ?');
+        conditions.push('p.status = ?');
         values.push('published');
     }
 
     if (typeof options.id === 'number') {
-        conditions.push('id = ?');
+        conditions.push('p.id = ?');
         values.push(options.id);
     }
 
     if (options.slug) {
-        conditions.push('slug = ?');
+        conditions.push('p.slug = ?');
         values.push(options.slug);
     }
 
@@ -282,21 +283,23 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         const [rows] = await db.query<PostRow[]>(
             `
                 SELECT
-                    id,
-                    slug,
-                    title,
-                    summary,
-                    content,
-                    cover_image,
-                    alt_text,
-                    category_id,
-                    tags,
-                    status,
-                    DATE_FORMAT(published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
-                    DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
-                FROM zhijian_blog_posts
+                    p.id,
+                    p.slug,
+                    p.title,
+                    p.summary,
+                    p.content,
+                    p.cover_image,
+                    p.alt_text,
+                    p.category_id,
+                    p.tags,
+                    p.status,
+                    DATE_FORMAT(p.published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
+                    DATE_FORMAT(p.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at,
+                    c.name as category_name
+                FROM zhijian_blog_posts p
+                LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
                 ${whereClause}
-                ORDER BY published_at IS NULL, published_at DESC, id DESC
+                ORDER BY p.published_at IS NULL, p.published_at DESC, p.id DESC
             `,
             values,
         );
@@ -310,6 +313,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
             coverImage: row.cover_image ?? null,
             altText: row.alt_text ?? null,
             categoryId: row.category_id ?? null,
+            categoryName: row.category_name ?? undefined,
             tags: row.tags ? JSON.parse(row.tags) : [],
             status: row.status,
             publishedAt: row.published_at,
@@ -319,6 +323,31 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         console.error('Failed to read zhijian_blog_posts.', { options, error });
         return [];
     }
+}
+
+/*== 批量查询标签名称，拼装到文章的 tagNames 字段上。 ==*/
+async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
+    const allTagIds = posts.flatMap((p) => p.tags).filter(Boolean);
+    if (allTagIds.length === 0) return posts;
+
+    const uniqueIds = [...new Set(allTagIds)];
+    const db = getDb();
+    if (!db) return posts;
+
+    const [tagRows] = await db.execute<RowDataPacket[]>(
+        `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`,
+        uniqueIds,
+    );
+
+    const tagMap = new Map<number, { id: number; name: string; slug: string }>();
+    for (const row of tagRows) {
+        tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
+    }
+
+    return posts.map((p) => ({
+        ...p,
+        tagNames: p.tags.map((id) => tagMap.get(id)).filter(Boolean) as { id: number; name: string; slug: string }[],
+    }));
 }
 
 /*== 内部工具 ==*/
