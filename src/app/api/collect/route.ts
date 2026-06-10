@@ -147,9 +147,9 @@ export async function POST(request: NextRequest) {
         const forwarded = request.headers.get('x-forwarded-for');
         const rawIp = forwarded
             ? forwarded.split(',')[0].trim()
-            : request.headers.get('x-real-ip') || '127.0.0.1';
-        const maskedIp = maskIp(rawIp);
-        const geo = lookup(rawIp);
+            : (request.headers.get('x-real-ip') || '');
+        const maskedIp = rawIp ? maskIp(rawIp) : null;
+        const geo = rawIp ? lookup(rawIp) : null;
 
         /*-- 构建批量 INSERT --*/
         const values: any[] = [];

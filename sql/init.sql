@@ -114,6 +114,8 @@ CREATE TABLE IF NOT EXISTS zhijian_track_events (
   created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_zhijian_track_events_site_created (site_id, created_at),
+  KEY idx_zhijian_track_events_site_type_created (site_id, type, created_at),
+  KEY idx_zhijian_track_events_site_session_type (site_id, session_id, type),
   KEY idx_zhijian_track_events_site_path (site_id, path(191)),
   KEY idx_zhijian_track_events_site_country (site_id, country)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -153,3 +155,10 @@ INSERT IGNORE INTO zhijian_blog_tags (id, name, slug) VALUES
   (4, 'TypeScript', 'typescript'),
   (5, '设计', 'design'),
   (6, 'Node.js', 'nodejs');
+
+-- --------------------------------------------------------------------------
+--  增量索引（已部署环境手动执行）
+-- --------------------------------------------------------------------------
+-- ALTER TABLE zhijian_track_events
+--   ADD KEY idx_zhijian_track_events_site_type_created (site_id, type, created_at),
+--   ADD KEY idx_zhijian_track_events_site_session_type (site_id, session_id, type);

@@ -9,7 +9,7 @@ const VALID_RANGES = new Set<DateRange>(['7d', '30d', '90d']);
 
 /*== GET /admin/analytics/visits — 访问记录分页列表 ==*/
 export async function GET(request: NextRequest) {
-    const admin = await requireAdminFromRequest(request);
+    const admin = requireAdminFromRequest(request);
     if (!admin) {
         return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
     }

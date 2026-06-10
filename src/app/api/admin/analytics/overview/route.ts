@@ -26,21 +26,24 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // 先聚合一次，后续查询共享结果，不再重复 ensureAggregated
+        // 先聚合，后续查询共享结果
         await ensureAggregated(siteId, range);
 
-        const overview = await getOverview(siteId, range, true);
-        const trend = await getTrend(siteId, range, true);
-        const pages = await getPageRank(siteId, range, 10, true);
-        const sources = await getSources(siteId, range);
-        const devices = await getDevices(siteId, range);
-        const languages = await getLanguages(siteId, range);
-        const countries = await getCountries(siteId, range);
-        const regions = await getRegions(siteId, range);
-        const browsers = await getBrowsers(siteId, range);
-        const os = await getOS(siteId, range);
-        const entryPages = await getEntryPages(siteId, range);
-        const exitPages = await getExitPages(siteId, range);
+        // 聚合后所有查询互不依赖，并行执行
+        const [overview, trend, pages, sources, devices, languages, countries, regions, browsers, os, entryPages, exitPages] = await Promise.all([
+            getOverview(siteId, range, true),
+            getTrend(siteId, range, true),
+            getPageRank(siteId, range, 10, true),
+            getSources(siteId, range),
+            getDevices(siteId, range),
+            getLanguages(siteId, range),
+            getCountries(siteId, range),
+            getRegions(siteId, range),
+            getBrowsers(siteId, range),
+            getOS(siteId, range),
+            getEntryPages(siteId, range),
+            getExitPages(siteId, range),
+        ]);
 
         return NextResponse.json(success({
             overview,

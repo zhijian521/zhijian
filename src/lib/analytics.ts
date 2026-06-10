@@ -43,13 +43,6 @@ export interface SourceItem {
     percent: number;  // 百分比
 }
 
-/*== 设备分布项 ==*/
-export interface DeviceItem {
-    device: string;
-    count: number;
-    percent: number;
-}
-
 /*== 日期范围工具 ==*/
 export type DateRange = '7d' | '30d' | '90d';
 
@@ -59,6 +52,18 @@ function getDaysAgo(range: DateRange): number {
         case '30d': return 30;
         case '90d': return 90;
     }
+}
+
+/*== 从 screen 字段推导设备类型（与 SQL 中 CASE WHEN 逻辑保持一致） ==*/
+function detectDevice(screen: string | null): string {
+    if (screen && screen.includes('x')) {
+        const w = parseInt(screen.split('x')[0], 10);
+        if (!isNaN(w)) {
+            if (w <= 768) return 'Mobile';
+            if (w <= 1200) return 'Tablet';
+        }
+    }
+    return 'Desktop';
 }
 
 function formatDate(d: Date): string {
@@ -84,21 +89,25 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
     const pv = (pvRows[0] as any)?.pv || 0;
     const uv = (pvRows[0] as any)?.uv || 0;
 
-    /* 第二步：跳出数——只有 1 个 pageview 的 session 且无 leave 或 leave.duration < 10 */
+    /* 第二步：跳出数——只有 1 个 pageview 的 session 且无有效 leave（duration >= 10）
+       用 LEFT JOIN + IS NULL 代替 NOT IN，避免 NULL 语义问题 */
     const [bounceRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS bounce FROM (
-            SELECT session_id
-            FROM zhijian_track_events
-            WHERE site_id = ? AND DATE(created_at) = ? AND type = 'pageview' AND session_id IS NOT NULL
-            GROUP BY session_id
-            HAVING COUNT(*) = 1
+        SELECT COUNT(*) AS bounce
+        FROM (
+            SELECT e.session_id
+            FROM zhijian_track_events e
+            LEFT JOIN zhijian_track_events l
+                ON l.session_id = e.session_id
+                AND l.site_id = e.site_id
+                AND l.type = 'leave'
+                AND l.duration >= 10
+                AND DATE(l.created_at) = DATE(e.created_at)
+            WHERE e.site_id = ? AND DATE(e.created_at) = ? AND e.type = 'pageview'
+              AND e.session_id IS NOT NULL
+            GROUP BY e.session_id
+            HAVING COUNT(e.id) = 1 AND MAX(l.id) IS NULL
         ) single
-        WHERE single.session_id NOT IN (
-            SELECT session_id FROM zhijian_track_events
-            WHERE site_id = ? AND DATE(created_at) = ?
-              AND type = 'leave' AND duration >= 10 AND session_id IS NOT NULL
-        )
-    `, [siteId, date, siteId, date]);
+    `, [siteId, date]);
     const bounce = (bounceRows[0] as any)?.bounce || 0;
 
     /* 第三步：平均停留——从 leave 事件取 duration */
@@ -182,6 +191,13 @@ export async function ensureAggregated(siteId: string, range: DateRange): Promis
             await aggregateDaily(siteId, d);
         }
     }
+
+    /* 清理 90 天前的原始 events（已聚合到 daily 表的不再需要） */
+    const cutoffDate = formatDate(new Date(Date.now() - 90 * 86400000));
+    await db.execute(
+        `DELETE FROM zhijian_track_events WHERE site_id = ? AND created_at < ?`,
+        [siteId, cutoffDate + ' 00:00:00'],
+    );
 }
 
 /*== 概览卡片 ==*/
@@ -300,36 +316,37 @@ export async function getPageRank(siteId: string, range: DateRange, limit = 10, 
     }));
 }
 
-/*== 来源智能归类（#18 新增） ==*/
+/*== 来源智能归类 ==*/
 function categorizeSource(source: string): string {
     if (!source || source === '直接访问') return '直接访问';
 
-    const s = source.toLowerCase();
+    /* 提取纯域名用于精确匹配，避免 includes 误匹配（如 so.com 匹配到 stackoverflow.com） */
+    const domain = source.toLowerCase();
 
     /* 搜索引擎 */
-    if (s.includes('google.')) return 'Google 搜索';
-    if (s.includes('baidu.com')) return '百度搜索';
-    if (s.includes('bing.com')) return 'Bing 搜索';
-    if (s.includes('sogou.com')) return '搜狗搜索';
-    if (s.includes('so.com') || s.includes('360.cn')) return '360 搜索';
-    if (s.includes('duckduckgo.com')) return 'DuckDuckGo';
+    if (/google\./.test(domain)) return 'Google 搜索';
+    if (domain === 'baidu.com' || domain.endsWith('.baidu.com')) return '百度搜索';
+    if (domain === 'bing.com' || domain.endsWith('.bing.com')) return 'Bing 搜索';
+    if (domain === 'sogou.com' || domain.endsWith('.sogou.com')) return '搜狗搜索';
+    if (domain === 'so.com' || domain.endsWith('.so.com') || domain === '360.cn' || domain.endsWith('.360.cn')) return '360 搜索';
+    if (domain === 'duckduckgo.com' || domain.endsWith('.duckduckgo.com')) return 'DuckDuckGo';
 
     /* 社交/内容平台 */
-    if (s.includes('weixin.qq.com') || s.includes('mp.weixin')) return '微信';
-    if (s.includes('weibo.com') || s.includes('weibo.cn')) return '微博';
-    if (s.includes('douyin.com') || s.includes('tiktok.com')) return '抖音/TikTok';
-    if (s.includes('xiaohongshu.com') || s.includes('xhslink.com')) return '小红书';
-    if (s.includes('zhihu.com')) return '知乎';
-    if (s.includes('bilibili.com')) return 'B站';
-    if (s.includes('twitter.com') || s.includes('x.com')) return 'Twitter/X';
-    if (s.includes('facebook.com') || s.includes('fb.com')) return 'Facebook';
-    if (s.includes('linkedin.com')) return 'LinkedIn';
-    if (s.includes('github.com')) return 'GitHub';
+    if (domain === 'weixin.qq.com' || domain.endsWith('.weixin.qq.com') || domain.startsWith('mp.weixin')) return '微信';
+    if (domain === 'weibo.com' || domain === 'weibo.cn' || domain.endsWith('.weibo.com') || domain.endsWith('.weibo.cn')) return '微博';
+    if (domain === 'douyin.com' || domain.endsWith('.douyin.com') || domain === 'tiktok.com' || domain.endsWith('.tiktok.com')) return '抖音/TikTok';
+    if (domain === 'xiaohongshu.com' || domain.endsWith('.xiaohongshu.com') || domain === 'xhslink.com' || domain.endsWith('.xhslink.com')) return '小红书';
+    if (domain === 'zhihu.com' || domain.endsWith('.zhihu.com')) return '知乎';
+    if (domain === 'bilibili.com' || domain.endsWith('.bilibili.com')) return 'B站';
+    if (domain === 'twitter.com' || domain.endsWith('.twitter.com') || domain === 'x.com' || domain.endsWith('.x.com')) return 'Twitter/X';
+    if (domain === 'facebook.com' || domain.endsWith('.facebook.com') || domain === 'fb.com' || domain.endsWith('.fb.com')) return 'Facebook';
+    if (domain === 'linkedin.com' || domain.endsWith('.linkedin.com')) return 'LinkedIn';
+    if (domain === 'github.com' || domain.endsWith('.github.com')) return 'GitHub';
 
     /* AI 来源 */
-    if (s.includes('chatgpt.com') || s.includes('chat.openai.com')) return 'ChatGPT';
-    if (s.includes('perplexity.ai')) return 'Perplexity';
-    if (s.includes('claude.ai')) return 'Claude';
+    if (domain === 'chatgpt.com' || domain === 'chat.openai.com') return 'ChatGPT';
+    if (domain === 'perplexity.ai' || domain.endsWith('.perplexity.ai')) return 'Perplexity';
+    if (domain === 'claude.ai' || domain.endsWith('.claude.ai')) return 'Claude';
 
     /* 其他：返回原始域名 */
     return source;
@@ -384,38 +401,80 @@ export async function getSources(siteId: string, range: DateRange, limit = 8): P
     }));
 }
 
-/*== 设备分布（从 events 表实时查） ==*/
-export async function getDevices(siteId: string, range: DateRange): Promise<DeviceItem[]> {
+/*== 通用分布查询（合并设备/语言/浏览器/OS/国家/省份/入口/出口） ==*/
+interface DistributionConfig {
+    columnExpr: string;        // SELECT 的分组列表达式
+    columnAlias: string;       // 列别名（也是返回对象的 key）
+    extraWhere?: string;       // 额外 WHERE 条件（追加在 baseWhere 后）
+    totalExtraWhere?: string;  // total 查询的额外 WHERE（默认同 extraWhere）
+    overrideWhere?: string;    // 完全覆盖 baseWhere（出口页面：type='leave' 而非 pageview）
+    overrideTotalWhere?: string; // total 查询的完全覆盖 WHERE
+    limit?: number;
+    useReduceTotal?: boolean;  // true = 从结果行 reduce 求和（无 LIMIT 的场景）
+}
+
+async function getDistribution(siteId: string, range: DateRange, config: DistributionConfig): Promise<Record<string, any>[]> {
     const db = getDb();
     if (!db) return [];
 
     const days = getDaysAgo(range);
     const startDate = formatDate(new Date(Date.now() - days * 86400000));
+    const startDateTime = startDate + ' 00:00:00';
+
+    const baseWhere = `site_id = ? AND type = 'pageview' AND created_at >= ?`;
+    const whereClause = config.overrideWhere
+        ? config.overrideWhere
+        : (config.extraWhere ? `${baseWhere} ${config.extraWhere}` : baseWhere);
+    const limitClause = config.limit ? ' LIMIT ?' : '';
+    const limitParams = config.limit ? [config.limit] : [];
 
     const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            CASE
-                WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 768 THEN 'Mobile'
-                WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 1200 THEN 'Tablet'
-                ELSE 'Desktop'
-            END AS device,
-            COUNT(*) AS count
+        SELECT ${config.columnExpr} AS ${config.columnAlias}, COUNT(*) AS count
         FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-        GROUP BY device
-        ORDER BY count DESC
-    `, [siteId, startDate + ' 00:00:00']);
+        WHERE ${whereClause}
+        GROUP BY ${config.columnAlias}
+        ORDER BY count DESC${limitClause}
+    `, [siteId, startDateTime, ...limitParams]);
 
-    const total = (rows as any[]).reduce((sum, r) => sum + (r.count || 0), 0);
+    let total: number;
+    if (config.useReduceTotal) {
+        total = (rows as any[]).reduce((sum, r) => sum + (r.count || 0), 0);
+    } else {
+        const totalWhere = config.overrideTotalWhere
+            ? config.overrideTotalWhere
+            : (config.overrideWhere
+                ? config.overrideWhere
+                : (config.totalExtraWhere || config.extraWhere
+                    ? `${baseWhere} ${config.totalExtraWhere || config.extraWhere}`
+                    : baseWhere));
+        const [totalRows] = await db.execute<RowDataPacket[]>(`
+            SELECT COUNT(*) AS total FROM zhijian_track_events WHERE ${totalWhere}
+        `, [siteId, startDateTime]);
+        total = (totalRows[0] as any)?.total || 0;
+    }
 
     return (rows as any[]).map(r => ({
-        device: r.device,
+        [config.columnAlias]: r[config.columnAlias],
         count: r.count || 0,
         percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
     }));
 }
+/*== 设备分布 ==*/
+export interface DeviceItem {
+    device: string;
+    count: number;
+    percent: number;
+}
 
-/*== 语言分布（#5 新增，复用设备分布模式） ==*/
+export async function getDevices(siteId: string, range: DateRange): Promise<DeviceItem[]> {
+    return getDistribution(siteId, range, {
+        columnExpr: `CASE WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 768 THEN 'Mobile' WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 1200 THEN 'Tablet' ELSE 'Desktop' END`,
+        columnAlias: 'device',
+        useReduceTotal: true,
+    }) as Promise<DeviceItem[]>;
+}
+
+/*== 语言分布 ==*/
 export interface LanguageItem {
     language: string;
     count: number;
@@ -423,33 +482,14 @@ export interface LanguageItem {
 }
 
 export async function getLanguages(siteId: string, range: DateRange, limit = 8): Promise<LanguageItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            COALESCE(lang, '未知') AS language,
-            COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-        GROUP BY language
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    const total = (rows as any[]).reduce((sum, r) => sum + (r.count || 0), 0);
-
-    return (rows as any[]).map(r => ({
-        language: r.language,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: `COALESCE(lang, '未知')`,
+        columnAlias: 'language',
+        limit,
+    }) as Promise<LanguageItem[]>;
 }
 
-/*== 浏览器分布（#15 新增） ==*/
+/*== 浏览器分布 ==*/
 export interface BrowserItem {
     browser: string;
     count: number;
@@ -457,38 +497,14 @@ export interface BrowserItem {
 }
 
 export async function getBrowsers(siteId: string, range: DateRange, limit = 8): Promise<BrowserItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            COALESCE(browser, '未知') AS browser,
-            COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-        GROUP BY browser
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS total
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-    `, [siteId, startDate + ' 00:00:00']);
-    const total = (totalRows[0] as any)?.total || 0;
-
-    return (rows as any[]).map(r => ({
-        browser: r.browser,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: `COALESCE(browser, '未知')`,
+        columnAlias: 'browser',
+        limit,
+    }) as Promise<BrowserItem[]>;
 }
 
-/*== 操作系统分布（#16 新增） ==*/
+/*== 操作系统分布 ==*/
 export interface OSItem {
     os: string;
     count: number;
@@ -496,115 +512,40 @@ export interface OSItem {
 }
 
 export async function getOS(siteId: string, range: DateRange, limit = 8): Promise<OSItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            COALESCE(os, '未知') AS os,
-            COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-        GROUP BY os
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS total
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-    `, [siteId, startDate + ' 00:00:00']);
-    const total = (totalRows[0] as any)?.total || 0;
-
-    return (rows as any[]).map(r => ({
-        os: r.os,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: `COALESCE(os, '未知')`,
+        columnAlias: 'os',
+        limit,
+    }) as Promise<OSItem[]>;
 }
 
-/*== 地理分布项（#9 #10 新增） ==*/
+/*== 地理分布项 ==*/
 export interface GeoItem {
-    name: string;    // 国家/省份名
+    name: string;
     count: number;
     percent: number;
 }
 
 /*== 国家分布排行 ==*/
 export async function getCountries(siteId: string, range: DateRange, limit = 8): Promise<GeoItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            COALESCE(country, '未知') AS name,
-            COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-        GROUP BY name
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    /* 计算全站总量而非只算 TOP N */
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS total
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-    `, [siteId, startDate + ' 00:00:00']);
-    const total = (totalRows[0] as any)?.total || 0;
-
-    return (rows as any[]).map(r => ({
-        name: r.name,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: `COALESCE(country, '未知')`,
+        columnAlias: 'name',
+        limit,
+    }) as Promise<GeoItem[]>;
 }
 
-/*== 省份/城市 TOP N 排行 ==*/
+/*== 省份 TOP N（仅中国访客） ==*/
 export async function getRegions(siteId: string, range: DateRange, limit = 10): Promise<GeoItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            COALESCE(region, '未知') AS name,
-            COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-          AND country = '中国'
-        GROUP BY name
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    /* 中国访客总量 */
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS total
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-          AND country = '中国'
-    `, [siteId, startDate + ' 00:00:00']);
-    const total = (totalRows[0] as any)?.total || 0;
-
-    return (rows as any[]).map(r => ({
-        name: r.name,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: `COALESCE(region, '未知')`,
+        columnAlias: 'name',
+        extraWhere: "AND country = '中国'",
+        limit,
+    }) as Promise<GeoItem[]>;
 }
 
-/*== 入口页面排行（#19 新增：is_session = 1 的 pageview） ==*/
+/*== 入口/出口页面排行 ==*/
 export interface EntryExitItem {
     path: string;
     count: number;
@@ -612,64 +553,22 @@ export interface EntryExitItem {
 }
 
 export async function getEntryPages(siteId: string, range: DateRange, limit = 10): Promise<EntryExitItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT path, COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND is_session = 1 AND created_at >= ?
-        GROUP BY path
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS total
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND is_session = 1 AND created_at >= ?
-    `, [siteId, startDate + ' 00:00:00']);
-    const total = (totalRows[0] as any)?.total || 0;
-
-    return (rows as any[]).map(r => ({
-        path: r.path,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: 'path',
+        columnAlias: 'path',
+        extraWhere: 'AND is_session = 1',
+        limit,
+    }) as Promise<EntryExitItem[]>;
 }
 
-/*== 出口页面排行（#20 新增：type = 'leave' 的 path） ==*/
 export async function getExitPages(siteId: string, range: DateRange, limit = 10): Promise<EntryExitItem[]> {
-    const db = getDb();
-    if (!db) return [];
-
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT path, COUNT(*) AS count
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'leave' AND created_at >= ?
-        GROUP BY path
-        ORDER BY count DESC
-        LIMIT ?
-    `, [siteId, startDate + ' 00:00:00', limit]);
-
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COUNT(*) AS total
-        FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'leave' AND created_at >= ?
-    `, [siteId, startDate + ' 00:00:00']);
-    const total = (totalRows[0] as any)?.total || 0;
-
-    return (rows as any[]).map(r => ({
-        path: r.path,
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
-    }));
+    return getDistribution(siteId, range, {
+        columnExpr: 'path',
+        columnAlias: 'path',
+        overrideWhere: "site_id = ? AND type = 'leave' AND created_at >= ?",
+        overrideTotalWhere: "site_id = ? AND type = 'leave' AND created_at >= ?",
+        limit,
+    }) as Promise<EntryExitItem[]>;
 }
 
 /*== 访问记录 ==*/
@@ -726,26 +625,19 @@ export async function getVisits(
             p.city,
             p.created_at
         FROM zhijian_track_events p
-        LEFT JOIN zhijian_track_events l
-            ON l.site_id = p.site_id
-            AND l.session_id = p.session_id
-            AND l.type = 'leave'
-            AND l.duration IS NOT NULL
+        LEFT JOIN (
+            SELECT session_id, site_id, MAX(duration) AS duration
+            FROM zhijian_track_events
+            WHERE type = 'leave' AND duration IS NOT NULL
+            GROUP BY session_id, site_id
+        ) l ON l.site_id = p.site_id AND l.session_id = p.session_id
         WHERE p.site_id = ? AND p.type = 'pageview' AND p.created_at >= ?
         ORDER BY p.created_at DESC
         LIMIT ? OFFSET ?
     `, [siteId, startDate + ' 00:00:00', pageSize, offset]);
 
     const data: VisitRecord[] = (rows as any[]).map((r) => {
-        /* 从 screen 字段推导设备类型，格式如 "1920x1080" */
-        let device = 'Desktop';
-        if (r.screen && typeof r.screen === 'string' && r.screen.includes('x')) {
-            const w = parseInt(r.screen.split('x')[0], 10);
-            if (!isNaN(w)) {
-                if (w <= 768) device = 'Mobile';
-                else if (w <= 1200) device = 'Tablet';
-            }
-        }
+        const device = detectDevice(r.screen);
 
         /* 来源：空则显示「直接访问」，否则提取域名 */
         let referrer = '直接访问';

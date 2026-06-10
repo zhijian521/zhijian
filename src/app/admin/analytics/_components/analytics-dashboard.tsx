@@ -5,7 +5,7 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import type { DateRange } from '@/lib/analytics';
+import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem } from '@/lib/analytics';
 
 import { TrendingUpIcon, TrendingDownIcon, CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
@@ -20,72 +20,7 @@ import { api } from '@/lib/http-client';
 
 import styles from './analytics-dashboard.module.css';
 
-/*== 数据类型 ==*/
-interface OverviewData {
-    pv: number;
-    uv: number;
-    bounceRate: number;
-    avgDuration: number;
-    newVisitorRate: number;   // #4 新增
-    pvChange: number;
-    uvChange: number;
-}
-
-interface TrendPoint {
-    date: string;
-    pv: number;
-    uv: number;
-}
-
-interface PageRankItem {
-    path: string;
-    pv: number;
-    uv: number;
-    bounceRate: number;   // #1 新增
-    avgDuration: number;  // #1 新增
-}
-
-interface SourceItem {
-    source: string;
-    count: number;
-    percent: number;
-}
-
-interface DeviceItem {
-    device: string;
-    count: number;
-    percent: number;
-}
-
-interface LanguageItem {
-    language: string;
-    count: number;
-    percent: number;
-}
-
-interface GeoItem {
-    name: string;
-    count: number;
-    percent: number;
-}
-
-interface BrowserItem {
-    browser: string;
-    count: number;
-    percent: number;
-}
-
-interface OSItem {
-    os: string;
-    count: number;
-    percent: number;
-}
-
-interface EntryExitItem {
-    path: string;
-    count: number;
-    percent: number;
-}
+/*== 数据类型（从后端共享，仅前端专有类型在此定义） ==*/
 
 interface AnalyticsData {
     overview: OverviewData;
