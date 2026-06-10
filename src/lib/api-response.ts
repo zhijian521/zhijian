@@ -31,6 +31,10 @@ export const BizCode = {
     /*-- 标签 --*/
     TAG_NOT_FOUND: 40403,
     TAG_EXISTS: 40903,
+    /*-- 上传 --*/
+    UPLOAD_NOT_FOUND: 40404,
+    UPLOAD_INVALID_FILE: 40002,
+    UPLOAD_TOO_LARGE: 40003,
 } as const;
 
 export type BizCodeValue = (typeof BizCode)[keyof typeof BizCode];

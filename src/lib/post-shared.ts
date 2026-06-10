@@ -8,9 +8,16 @@ export interface Post {
     title: string;
     summary: string;
     content: string;
+    coverImage: string | null;
+    altText: string | null;
+    categoryId: number | null;
+    tags: number[];
     status: PostStatus;
     publishedAt: string | null;
     updatedAt: string | null;
+    /* 查询时拼装的展示字段，不存数据库 */
+    categoryName?: string;
+    tagNames?: { id: number; name: string; slug: string }[];
 }
 
 /*== 前台阅读页使用更偏内容展示的日期格式。 ==*/
