@@ -26,10 +26,11 @@
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（37 个图标） |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（39 个图标） |
 | UI 组件 | 自建 CSS Module 组件 | — | ✅ 13 个组件 |
-| 图表 | Recharts | ^2.x | ✅ 观澜仪表盘 |
+| 图表 | Recharts | ^3.8.1 | ✅ 观澜仪表盘 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
+| GeoIP | ip2region | ^2.3.0 | ✅ IP 地理定位（替代 geoip-lite） |
 
 **路径别名**: `@/*` → `./src/*`
 
@@ -43,12 +44,12 @@ src/
 │   ├── admin/                    # 后台管理 (/admin/*)
 │   │   ├── _components/          # 后台私有组件
 │   │   │   ├── admin-shared.module.css   # 后台共享样式（表格操作/弹窗表单/提示消息）
+│   │   │   ├── admin-login-card.tsx + .module.css  # 登录表单卡片
 │   │   │   ├── admin-shell.tsx           # 后台布局壳（侧边栏+内容区）
 │   │   │   ├── admin-sidebar.tsx         # 侧边栏导航（数据驱动二级折叠菜单）
 │   │   │   ├── admin-page-header.tsx     # 页面标题区（eyebrow+title+tag+description）
 │   │   │   ├── post-editor-form.tsx      # 文章编辑表单
 │   │   │   ├── post-management-client.tsx # 文章列表（客户端）
-│   │   │   ├── user-form.tsx             # 用户编辑表单
 │   │   │   └── user-list-client.tsx      # 用户列表（客户端）
 │   │   ├── layout.tsx            # 后台布局（鉴权+AdminShell）
 │   │   ├── login/                # 后台登录页
@@ -80,6 +81,7 @@ src/
 │   │   │   ├── users/            # 用户 CRUD
 │   │   │   └── analytics/        # 站点监控 API
 │   │   │       ├── overview/     # 仪表盘数据
+│   │   │       ├── visits/       # 访问记录（分页）
 │   │   │       └── sites/        # 站点 CRUD
 │   │   ├── auth/                 # 认证 API
 │   │   │   ├── login/            # 登录
@@ -104,7 +106,7 @@ src/
 │   │   ├── post-card.tsx         # 博客文章卡片
 │   │   └── project-card.tsx      # 项目展示卡片
 │   └── ui/                       # 自建 UI 组件库（全部 CSS Modules）
-│       ├── icons/                # 自建 SVG 图标库（37 个图标）
+│       ├── icons/                # 自建 SVG 图标库（39 个图标）
 │       │   └── index.ts          # IconProps + 桶导出
 │       ├── confirm-dialog.tsx + .module.css   # 确认弹窗
 │       ├── data-table.tsx + .module.css       # 数据表格
@@ -113,6 +115,7 @@ src/
 │       ├── icon-button.tsx + .module.css      # 图标按钮（正方形，default/danger/muted）
 │       ├── pagination.tsx + .module.css       # 分页
 │       ├── pill-select.tsx + .module.css      # 胶囊选择器
+│       ├── select.tsx + .module.css            # 下拉选择器
 │       ├── submit-button.tsx + .module.css    # 提交按钮
 │       ├── tag.tsx + .module.css              # 标签（mini/small/medium/default）
 │       ├── text-input.tsx + .module.css       # 文本输入框
@@ -132,6 +135,8 @@ src/
 │   ├── tags.ts                   # 标签数据层
 │   ├── site.ts                   # 路由/导航配置（NavGroup 二级菜单）
 │   ├── analytics.ts              # 站点监控分析数据层（聚合+查询）
+│   ├── geo.ts                    # IP 地理定位（ip2region 离线库）
+│   ├── ua.ts                     # User-Agent 解析（浏览器/OS 提取）
 │   ├── track-sites.ts            # 站点数据层（CRUD）
 │   └── utils.ts                  # 工具函数 (cn + isNavItemActive)
 └── middleware.ts                 # 中间件（注入路径头）
@@ -423,7 +428,7 @@ export function Component({ variant = 'default', size = 'default', className, ..
 
 ### 图标系统
 
-全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（32 个图标）：
+全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（39 个图标）：
 
 ```typescript
 import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
@@ -537,6 +542,66 @@ created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ```
 
+### zhijian_track_sites 表（监控模块）
+
+```sql
+id          VARCHAR(32) NOT NULL PRIMARY KEY           -- 8位随机字符
+name        VARCHAR(200) NOT NULL
+domain      VARCHAR(255) NOT NULL UNIQUE
+status      ENUM('active', 'paused', 'deleted') DEFAULT 'active'
+created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+```
+
+### zhijian_track_events 表（监控模块，写入密集，保留 90 天）
+
+```sql
+id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+site_id     VARCHAR(32) NOT NULL                      -- FK → track_sites
+type        ENUM('pageview', 'heartbeat', 'leave') DEFAULT 'pageview'
+path        VARCHAR(500) NOT NULL
+referrer    VARCHAR(500) NULL
+title       VARCHAR(500) NULL
+duration    INT UNSIGNED NULL                         -- 停留秒数（leave 事件）
+screen      VARCHAR(20) NULL                          -- 如 1920x1080
+lang        VARCHAR(10) NULL
+is_new      TINYINT(1) DEFAULT 0                      -- 新访客标识
+is_session  TINYINT(1) DEFAULT 0                      -- 会话首页标识
+visitor_id  VARCHAR(64) NULL                          -- 访客匿名ID（随机 cookie）
+session_id  VARCHAR(64) NULL
+ip          VARCHAR(45) NULL                          -- 遮蔽 IP（末位 xxx）
+country     VARCHAR(50) NULL                          -- 国家（中文名，ip2region）
+region      VARCHAR(50) NULL                          -- 省份/州（中文名）
+city        VARCHAR(100) NULL
+ua          VARCHAR(500) NULL                         -- 原始 User-Agent
+browser     VARCHAR(50) NULL                          -- 解析后的浏览器名
+os          VARCHAR(50) NULL                          -- 解析后的操作系统名
+created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+
+INDEX idx_zhijian_track_events_site_created (site_id, created_at)
+INDEX idx_zhijian_track_events_site_type_created (site_id, type, created_at)
+INDEX idx_zhijian_track_events_site_session_type (site_id, session_id, type)
+INDEX idx_zhijian_track_events_site_path (site_id, path(191))
+INDEX idx_zhijian_track_events_site_country (site_id, country)
+```
+
+### zhijian_track_daily 表（监控模块，日聚合统计，查询加速）
+
+```sql
+id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+site_id      VARCHAR(32) NOT NULL
+date         DATE NOT NULL
+path         VARCHAR(500) NOT NULL DEFAULT ''          -- 空=整站汇总
+pv           INT UNSIGNED DEFAULT 0
+uv           INT UNSIGNED DEFAULT 0
+bounce       INT UNSIGNED DEFAULT 0
+avg_duration INT UNSIGNED DEFAULT 0                    -- 平均停留秒数
+created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+UNIQUE KEY uniq_zhijian_track_daily_site_date_path (site_id, date, path)
+```
+
 ---
 
 ## 环境变量
@@ -544,6 +609,7 @@ updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ```bash
 # .env.local
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SCRIPT_URL=http://localhost:3000  # 分析脚本分发 URL（默认同 SITE_URL）
 DATABASE_URL=mysql://user:password@host:3306/database
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your-password
@@ -553,6 +619,7 @@ ADMIN_SESSION_SECRET=your-random-secret-string
 | 变量 | 用途 |
 |------|------|
 | `NEXT_PUBLIC_SITE_URL` | 站点 URL（公开） |
+| `NEXT_PUBLIC_SCRIPT_URL` | 分析脚本分发 URL（供第三方站点嵌入） |
 | `DATABASE_URL` | MySQL 连接字符串 |
 | `ADMIN_USERNAME` | 初始管理员用户名 |
 | `ADMIN_PASSWORD` | 初始管理员密码 |
@@ -572,7 +639,7 @@ npm run start        # 启动生产服务器
 
 # 代码检查
 npm run lint         # ESLint
-npx tsc --noEmit     # TypeScript 类型检查
+npm run typecheck    # TypeScript 类型检查 (tsc --noEmit)
 
 # 数据库
 node sql/seed-admin.mjs  # 初始化管理员账户
@@ -620,6 +687,8 @@ fix(api): handle null response from database
 | Toast 提示 | `src/components/ui/toast.tsx` + `use-toast.ts` |
 | 站点监控嵌入脚本 | `public/script.js` |
 | 站点监控数据层 | `src/lib/analytics.ts` + `track-sites.ts` |
+| IP 地理定位 | `src/lib/geo.ts` |
+| UA 解析 | `src/lib/ua.ts` |
 | 数据收集 API | `src/app/api/collect/route.ts` |
 | 仪表盘页面 | `src/app/admin/analytics/page.tsx` |
 | 站点管理页面 | `src/app/admin/analytics/sites/page.tsx` |
@@ -642,6 +711,8 @@ fix(api): handle null response from database
 - Session Token 使用 HMAC-SHA256 签名，防篡改
 - SQL 查询必须参数化，禁止字符串拼接
 - `/api/collect` 是唯一无鉴权 API，有令牌桶限流（10次/秒/siteId），验证 siteId 存在且启用
+- IP 地址使用 ip2region 离线库解析地理位置（中国 IP 精度高），存储时遮蔽末位（如 `192.168.1.xxx`）
+- User-Agent 在服务端解析为浏览器/操作系统名称，原始 UA 也存储
 
 ### 性能
 
@@ -699,4 +770,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-09*
+*最后更新: 2026-06-10*

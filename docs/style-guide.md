@@ -22,29 +22,31 @@
 |------|-----|------|------|
 | `--primary` | `#9f000f` | 标题强调、边框、按钮 | 朱砂印章 |
 | `--primary-foreground` | `#ffffff` | 主色上的白字 | — |
+| `--primary-hover` | `#c41e3a` | 主按钮按压态、侧边栏活跃项 hover | 略亮朱砂 |
+| `--primary-subtle` | `color-mix(var(--primary) 8%, transparent)` | hover 背景、错误提示底色 | 朱砂淡底 |
+| `--primary-subtle-soft` | `color-mix(var(--primary) 4%, transparent)` | 标签底色、formMessage 底色 | 朱砂微底 |
+| `--primary-subtle-medium` | `color-mix(var(--primary) 6%, transparent)` | 页眉标签背景、标签 accent 底色 | 朱砂中底 |
+| `--ring-subtle` | `color-mix(var(--primary) 10%, transparent)` | 输入框 focus box-shadow | 焦点环底色 |
 | `--foreground` | `#1d1b20` | 正文墨色 | 浓墨 |
 | `--muted-foreground` | `#6f655c` | 副文、描述 | 淡墨 |
 | `--background` | `#fbf9f9` | 页面底色 | 温白纸 |
+| `--highlight` | `#faf7f4` | 卡片 hover 底色 | 米白 |
 | `--muted` | `#f6efe7` | 次级背景、侧边栏、表格头 | 米黄宣纸 |
 | `--secondary` | `#f3ece4` | 次级按钮背景 | 旧纸色 |
 | `--accent` | `#e6efe5` | 标签、hover 背景 | 青苔绿 |
 | `--accent-foreground` | `#31483f` | 青苔深色 | — |
 | `--border` | `#e7ddd1` | 分割线、边框 | 驼色 |
 | `--input` | `#d9cbbc` | 输入框边框 | 深驼色 |
-| `--ring` | `#c8161d` | 焦点环色 | 焦朱 |
 | `--destructive` | `#ba1a1a` | 错误/危险色 | — |
+| `--destructive-subtle` | `color-mix(var(--destructive) 8%, transparent)` | danger 按钮 hover 背景 | 危险淡底 |
 | `--card` | `rgba(255, 255, 255, 0.8)` | 卡片半透明背景 | — |
+| `--popover` | `#ffffff` | 弹窗背景 | — |
 | `--radius` | `0` | 全站零圆角 | — |
+| `--font-serif` | `'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif` | 标题/大数字 | 衬线体 |
+| `--font-sans` | `system-ui, -apple-system, 'PingFang SC', ...` | 正文/UI | 无衬线体 |
+| `--selection` | `rgba(182, 72, 43, 0.18)` | 文字选中背景 | 赭色 |
 
 **调性关键词**：朱砂 · 浓墨 · 宣纸 · 青苔 · 驼色 → 温润、文人、书斋
-
-### 特殊页面色
-
-| 变量 | 值 | 用途 |
-|------|-----|------|
-| `--public-ink` | `#281715` | 首页正文（浓墨偏暖） |
-| `--public-ink-soft` | `#5c403c` | 首页副文（淡墨偏暖） |
-| `--public-paper` | `#f9f5f0` | 首页背景（米白） |
 
 ---
 
@@ -105,7 +107,7 @@
 | 侧边栏导航项 | `color: var(--muted-foreground)` | `bg: rgba(243,236,228,0.6)` | — |
 | 侧边栏导航项(活跃) | `border-right: 4px solid var(--primary)`, `bg: rgba(159,0,15,0.08)`, `color: var(--primary)` | — | — |
 | 标签 | `border: 1px solid var(--border)`, `bg: var(--muted)` | `border-color: var(--primary)` | — |
-| 输入框 | `border: 1px solid var(--input)` | `border-color: var(--primary)` | — |
+| 输入框 | `border: 1px solid var(--input)` | `border-color: var(--primary)`, `box-shadow: 0 0 0 3px var(--ring-subtle)` | — |
 
 ---
 
@@ -115,12 +117,50 @@
 
 | 类型 | 样式 |
 |------|------|
-| 强调(accent) | `border-radius: 0`, `border: 1px solid var(--primary)`, `bg: rgba(159,0,15,0.06)`, `color: var(--primary)` |
+| 强调(accent) | `border-radius: 0`, `border: 1px solid var(--primary)`, `bg: var(--primary-subtle-soft)`, `color: var(--primary)` |
 | 默认(default) | `border-radius: 0`, `border: 1px solid var(--border)`, `bg: var(--muted)`, `color: var(--muted-foreground)` |
 
 尺寸：mini / small / medium / default
 
-### 表格
+### Select 下拉选择器
+
+| 元素 | 样式 |
+|------|------|
+| 触发器 | `border: 1px solid var(--input)`, `bg: var(--background)`, `padding: 0.625rem 0.875rem`, 右侧箭头 `2rem` |
+| 触发器 hover | `border-color: var(--primary)` |
+| 触发器 focus/打开 | `border-color: var(--primary)`, `box-shadow: 0 0 0 3px var(--ring-subtle)` |
+| 下拉面板 | `border: 1px solid var(--border)`, `bg: var(--popover)`, `box-shadow: 0 4px 12px rgba(0,0,0,0.08)`, `max-height: 240px` |
+| 选项 | `padding: 0.5rem 0.875rem`, `border-left: 2px solid transparent` |
+| 选项 hover | `bg: var(--highlight)` |
+| 选项活跃 | `bg: var(--primary-subtle)`, `color: var(--primary)`, `border-left-color: var(--primary)` |
+| 禁用态 | `opacity: 0.5`, `cursor: not-allowed` |
+
+尺寸：small / medium / default
+
+### IconButton 图标按钮
+
+| 元素 | 样式 |
+|------|------|
+| 默认 | `width/height: 2.375rem`, `bg: var(--muted)`, `color: var(--muted-foreground)`, `border: 0` |
+| hover | `color: var(--primary)`, `bg: var(--primary-subtle)` |
+| danger hover | `color: var(--destructive)`, `bg: var(--destructive-subtle)` |
+| 禁用 | `opacity: 0.3`, `cursor: not-allowed` |
+
+尺寸：small (1.75rem) / medium (2rem) / default (2.375rem)
+图标尺寸：small (0.875rem) / medium (1rem) / default (1.125rem)
+
+### PillSelect 药丸单选
+
+| 元素 | 样式 |
+|------|------|
+| 容器 | `display: inline-flex`, `border: 1px solid var(--border)`, `bg: var(--muted)` |
+| 选项 | `padding: 0.625rem 0.875rem`, `color: var(--muted-foreground)`, `bg: transparent` |
+| 选项 hover | `color: var(--foreground)` |
+| 选项活跃 | `bg: var(--background)`, `color: var(--primary)`, `box-shadow: inset 0 -2px 0 var(--primary)` |
+
+尺寸：small / medium / default
+
+### DataTable 数据表格
 
 | 元素 | 样式 |
 |------|------|
@@ -129,6 +169,8 @@
 | 单元格边框 | `border-right: 1px solid var(--border)`（最后一列无） |
 | 斑马纹 | 无（纯色背景） |
 | 行悬停 | 无背景（保持干净） |
+| 列对齐 | 支持 `left` / `center` / `right` |
+| 固定宽列 | `width` + `min-width` + `max-width` 三重约束 |
 
 ### 面板
 
@@ -160,6 +202,7 @@
 | `.stitch-card` | 指标卡片 |
 | `.stitch-number` | 衬线大数字 |
 | `.data-table` | 数据表格 |
+| `.fixedWidth` | DataTable 固定宽列 |
 
 ---
 
@@ -174,12 +217,13 @@
 | ✅ 渐显边框 | 悬停时边框色渐变（不是突变） |
 | ✅ 0.2s 过渡 | 所有交互统一 `0.2s ease` |
 | ✅ 1.85~2 行高 | 正文留白充裕，适合中文阅读 |
-| ❌ 不用默认蓝 | 选中色用赭色 `rgba(182,72,43,0.18)` |
+| ❌ 不用默认蓝 | 选中色用 `var(--selection)` (`rgba(182,72,43,0.18)`) |
 | ✅ 温白背景 | `#fbf9f9` 而非纯白 `#fff` |
 | ✅ 极细滚动条 | 4px 宽，悬停变红 |
 | ✅ 按钮输入等高 | `height: 2.25rem`，并排视觉对齐 |
+| ✅ focus ring | `box-shadow: 0 0 0 3px var(--ring-subtle)`，主色 10% 透明度 |
 | ✅ 全站统一 | 博客/后台/新页面共用一套变量和组件，不搞双轨 |
 
 ---
 
-*最后更新: 2026-06-08*
+*最后更新: 2026-06-10*
