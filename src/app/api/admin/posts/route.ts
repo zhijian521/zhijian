@@ -26,16 +26,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请求体格式不正确。'), { status: 400 });
     }
 
-    const title = body.title?.trim() ||
-        `新文章 ${new Intl.DateTimeFormat('zh-CN', {
-            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
-        }).format(new Date())}`;
+    /*-- 创建草稿时自动生成 slug 和默认标题 --*/
+    const title = body.title?.trim() || '无标题草稿';
+    const slug = `draft-${Date.now()}`;
 
     const post = await createPost({
         title,
-        slug: `draft-post-${Date.now()}`,
-        summary: '请在这里补充文章摘要。',
-        content: '请在这里开始写正文。',
+        slug,
+        summary: '',
+        content: '',
     });
 
     if (!post) {
