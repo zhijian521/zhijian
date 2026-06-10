@@ -9,6 +9,7 @@ import {
     WrenchIcon,
     CodeIcon,
     ActivityIcon,
+    ImageIcon,
     type IconComponent,
 } from '@/components/ui/icons';
 
@@ -32,6 +33,7 @@ export const APP_ROUTES = {
     adminSettings: '/admin/settings',
     adminCategories: '/admin/categories',
     adminTags: '/admin/tags',
+    adminUploads: '/admin/uploads',
     adminComponents: '/admin/components',
     adminAnalytics: '/admin/analytics',
     adminAnalyticsSites: '/admin/analytics/sites',
@@ -90,6 +92,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
             { href: APP_ROUTES.adminPosts, label: '文章列表', icon: FileTextIcon, match: 'prefix' },
             { href: APP_ROUTES.adminCategories, label: '分类管理', icon: FolderTreeIcon, match: 'prefix' },
             { href: APP_ROUTES.adminTags, label: '标签管理', icon: TagIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminUploads, label: '图片管理', icon: ImageIcon, match: 'prefix' },
         ],
     },
     {

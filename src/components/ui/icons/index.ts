@@ -39,6 +39,7 @@ export { LockIcon } from './lock-icon';
 export { CheckIcon } from './check-icon';
 export { CopyIcon } from './copy-icon';
 export { ActivityIcon } from './activity-icon';
+export { ImageIcon } from './image-icon';
 export { TrendingUpIcon } from './trending-up-icon';
 export { TrendingDownIcon } from './trending-down-icon';
 export { PauseIcon } from './pause-icon';
