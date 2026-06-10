@@ -1,7 +1,7 @@
 'use client';
 
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -13,35 +13,84 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { MOCK_POSTS, type MockPost } from '@/lib/mock-data';
+import { api } from '@/lib/http-client';
+import type { ListData } from '@/lib/api-response';
 import { APP_ROUTES } from '@/lib/site';
 
 import styles from './post-management-client.module.css';
 import shared from '@/app/admin/_components/admin-shared.module.css';
 
-/*== 后台文章管理：静态数据 + 搜索 + 状态筛选 + 删除操作。 ==*/
+/*== 文章列表项：API 返回的列表数据，不含 content（太重），含分类/标签名称。 ==*/
+interface PostListItem {
+    id: number;
+    title: string;
+    slug: string;
+    status: 'draft' | 'published';
+    categoryName: string | null;
+    tagNames: { id: number; name: string; slug: string }[] | null;
+    publishedAt: string | null;
+    updatedAt: string | null;
+}
+
+/*== 后台文章管理：真实 API + 搜索 + 状态筛选 + 删除操作。 ==*/
 export default function PostManagementClient() {
-    const [posts, setPosts] = useState<MockPost[]>([...MOCK_POSTS]);
+    const [posts, setPosts] = useState<PostListItem[]>([]);
+    const [total, setTotal] = useState(0);
+    const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState('');
     const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+    const [deleting, setDeleting] = useState<number | null>(null);
     const [page, setPage] = useState(1);
     const pageSize = 10;
+
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await api.get<ListData<PostListItem>>('/admin/posts');
+            if (res.code === 0 && res.data) {
+                setPosts(res.data.data);
+                setTotal(res.data.total);
+            }
+        } catch {
+            toast.error('获取文章列表失败');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
             const q = keyword.trim().toLowerCase();
-            const matchesKeyword = !q || [post.title, post.slug, post.summary].some((f) => f.toLowerCase().includes(q));
+            const matchesKeyword = !q || [post.title, post.slug].some((f) => f.toLowerCase().includes(q));
             const matchesStatus = status === 'all' || post.status === status;
             return matchesKeyword && matchesStatus;
         });
     }, [posts, keyword, status]);
 
-    function handleDeleteConfirm() {
+    async function handleDeleteConfirm() {
         if (!deleteTarget) return;
-        setPosts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-        toast.success('删除成功');
-        setDeleteTarget(null);
+
+        setDeleting(deleteTarget.id);
+        try {
+            const res = await api.delete(`/admin/posts/${deleteTarget.id}`);
+            if (res.code === 0) {
+                setPosts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+                setTotal((prev) => prev - 1);
+                setDeleteTarget(null);
+                toast.success('删除成功');
+            } else {
+                toast.error(res.message || '删除失败。');
+            }
+        } catch {
+            toast.error('删除请求失败。');
+        } finally {
+            setDeleting(null);
+        }
     }
 
     function formatDate(value: string | null): string {
@@ -52,7 +101,7 @@ export default function PostManagementClient() {
     const totalPages = Math.max(1, Math.ceil(filteredPosts.length / pageSize));
     const pagedPosts = filteredPosts.slice((page - 1) * pageSize, page * pageSize);
 
-    const columns: DataColumn<MockPost>[] = [
+    const columns: DataColumn<PostListItem>[] = [
         {
             header: '文章',
             render: (post) => (
@@ -73,15 +122,15 @@ export default function PostManagementClient() {
         {
             header: '分类',
             hideBelow: 'md',
-            render: (post) => <span className={shared.mutedCell}>{post.category}</span>,
+            render: (post) => <span className={shared.mutedCell}>{post.categoryName || '-'}</span>,
         },
         {
             header: '标签',
             hideBelow: 'md',
             render: (post) => (
                 <div className={styles.tagList}>
-                    {post.tags.map((t) => (
-                        <Tag key={t} size="mini">{t}</Tag>
+                    {post.tagNames?.map((t) => (
+                        <Tag key={t.id} size="mini">{t.name}</Tag>
                     ))}
                 </div>
             ),
@@ -90,11 +139,6 @@ export default function PostManagementClient() {
             header: '发布时间',
             hideBelow: 'lg',
             render: (post) => <span className={shared.mutedCell}>{formatDate(post.publishedAt)}</span>,
-        },
-        {
-            header: '更新时间',
-            hideBelow: 'lg',
-            render: (post) => <span className={shared.mutedCell}>{formatDate(post.updatedAt)}</span>,
         },
         {
             header: '操作',
@@ -108,6 +152,7 @@ export default function PostManagementClient() {
                         title="编辑"
                     />
                     <IconButton
+                        disabled={deleting === post.id}
                         icon={<Trash2Icon />}
                         onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
                         size="medium"
@@ -124,7 +169,7 @@ export default function PostManagementClient() {
             <AdminPageHeader
                 description='集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。'
                 eyebrow='Posts'
-                tag={`${posts.length} 篇文章`}
+                tag={`${total} 篇文章`}
                 title='文章管理'
             />
 
@@ -135,13 +180,13 @@ export default function PostManagementClient() {
                         icon={<SearchIcon />}
                         id='post-search'
                         inputSize='medium'
-                        onChange={(e) => setKeyword(e.target.value)}
-                        placeholder='搜索标题、Slug 或摘要'
+                        onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
+                        placeholder='搜索标题或 Slug'
                         value={keyword}
                     />
                     <PillSelect
                         name='status'
-                        onChange={(v) => setStatus(v as 'all' | 'draft' | 'published')}
+                        onChange={(v) => { setStatus(v as 'all' | 'draft' | 'published'); setPage(1); }}
                         options={[
                             { value: 'all', label: '全部' },
                             { value: 'published', label: '已发布' },
@@ -151,9 +196,9 @@ export default function PostManagementClient() {
                     />
                 </div>
                 <GhostButton
-                    asButton
+                    asButton={false}
+                    href={APP_ROUTES.adminPostCreate}
                     icon={<PlusIcon className={shared.btnIcon} />}
-                    onClick={() => { /* TODO: navigate to create page */ }}
                     size='medium'
                     variant='primary'
                 >
@@ -163,7 +208,7 @@ export default function PostManagementClient() {
 
             <DataTable
                 columns={columns}
-                emptyText='暂无文章'
+                emptyText={loading ? '加载中...' : '暂无文章'}
                 rowKey={(post) => post.id}
                 rows={pagedPosts}
             />
@@ -172,6 +217,7 @@ export default function PostManagementClient() {
 
             <ConfirmDialog
                 confirmLabel='删除'
+                loading={deleting !== null}
                 message={`确定要删除文章「${deleteTarget?.title ?? ''}」吗？此操作不可撤销。`}
                 onCancel={() => setDeleteTarget(null)}
                 onConfirm={handleDeleteConfirm}
