@@ -74,6 +74,31 @@ CREATE TABLE IF NOT EXISTS zhijian_blog_tags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
+--  博客模块 - 文章表扩展字段
+-- --------------------------------------------------------------------------
+ALTER TABLE zhijian_blog_posts
+  ADD COLUMN cover_image  VARCHAR(500) DEFAULT NULL COMMENT '封面图路径' AFTER content,
+  ADD COLUMN alt_text     VARCHAR(200) DEFAULT NULL COMMENT '封面图 alt 描述' AFTER cover_image,
+  ADD COLUMN category_id  INT UNSIGNED DEFAULT NULL COMMENT '分类ID' AFTER alt_text,
+  ADD COLUMN tags         JSON DEFAULT NULL COMMENT '标签ID数组，如 [1,3,5]' AFTER category_id;
+
+-- --------------------------------------------------------------------------
+--  博客模块 - 图片上传记录表
+-- --------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS zhijian_blog_uploads (
+  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  filename    VARCHAR(255) NOT NULL COMMENT '哈希文件名',
+  original    VARCHAR(255) NOT NULL COMMENT '原始文件名',
+  path        VARCHAR(500) NOT NULL COMMENT '存储路径 /uploads/2026/06/xxx.jpg',
+  size        INT UNSIGNED NOT NULL COMMENT '文件大小（字节）',
+  mime        VARCHAR(50) NOT NULL COMMENT 'MIME 类型',
+  alt         VARCHAR(200) DEFAULT '' COMMENT 'alt 描述',
+  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_zhijian_blog_uploads_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------------------------
 --  站点监控模块 - 站点注册表
 -- --------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS zhijian_track_sites (
