@@ -1,0 +1,111 @@
+.editor {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Mini 工具栏 */
+.miniToolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--muted);
+    flex-shrink: 0;
+}
+
+.miniBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.miniBtn:hover {
+    color: var(--foreground);
+    background: var(--background);
+    border-color: var(--border);
+}
+
+.miniBtn:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring-subtle);
+    outline: none;
+}
+
+.miniBtnIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.separator {
+    width: 1px;
+    height: 1.25rem;
+    background: var(--border);
+    margin: 0 0.25rem;
+}
+
+/* 文本编辑区 */
+.textarea {
+    flex: 1;
+    width: 100%;
+    padding: 1rem;
+    font-family: 'SF Mono', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9375rem;
+    line-height: 1.85;
+    color: var(--foreground);
+    background: var(--background);
+    border: 0;
+    resize: none;
+    outline: none;
+    tab-size: 4;
+}
+
+.textarea::placeholder {
+    color: var(--muted-foreground);
+}
+
+.textarea:focus {
+    box-shadow: inset 2px 0 0 var(--primary);
+}
+
+.textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 拖拽叠加层 */
+.dropOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--muted) 85%, transparent);
+    border: 2px dashed var(--primary);
+    color: var(--primary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* 容器（用于拖拽叠加层定位） */
+.editorWrap {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* 全宽模式 */
+.fullWidth .textarea {
+    max-width: none;
+}
