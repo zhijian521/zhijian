@@ -11,6 +11,7 @@ import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, Dev
 import { TrendingUpIcon, TrendingDownIcon, CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { PillSelect } from '@/components/ui/pill-select';
+import { Select } from '@/components/ui/select';
 import { toast } from '@/components/ui/toast';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { Tag } from '@/components/ui/tag';
@@ -294,10 +295,13 @@ export default function AnalyticsDashboard() {
             {/* 控制栏 */}
             <div className={styles.controls}>
                 <div className={styles.siteSelect}>
-                    <select className={styles.select} value={siteId} onChange={(e) => setSiteId(e.target.value)}>
-                        {sites.length === 0 && <option value="">暂无站点</option>}
-                        {sites.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.id})</option>)}
-                    </select>
+                    <Select
+                        options={sites.map((s) => ({ value: s.id, label: `${s.name} (${s.id})` }))}
+                        value={siteId}
+                        onChange={setSiteId}
+                        placeholder="暂无站点"
+                        size="medium"
+                    />
                     {siteId && (
                         <GhostButton asButton icon={<CopyIcon />} onClick={copyEmbedCode} size="small" title="复制接入代码">接入代码</GhostButton>
                     )}

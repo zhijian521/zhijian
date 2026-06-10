@@ -25,6 +25,7 @@ export { UsersIcon } from './users-icon';
 export { Edit3Icon } from './edit3-icon';
 export { ShieldIcon } from './shield-icon';
 export { WrenchIcon } from './wrench-icon';
+export { ChevronDownIcon } from './chevron-down-icon';
 export { ChevronRightIcon } from './chevron-right-icon';
 export { LogOutIcon } from './log-out-icon';
 export { UserCircle2Icon } from './user-circle2-icon';

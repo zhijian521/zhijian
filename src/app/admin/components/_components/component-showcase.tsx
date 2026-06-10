@@ -20,6 +20,7 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { IconButton } from '@/components/ui/icon-button';
 import { Pagination } from '@/components/ui/pagination';
 import { PillSelect } from '@/components/ui/pill-select';
+import { Select } from '@/components/ui/select';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
@@ -71,13 +72,14 @@ export default function ComponentShowcase() {
     const [currentPage, setCurrentPage] = useState(3);
     const [textInput, setTextInput] = useState('');
     const [pillValue, setPillValue] = useState('all');
+    const [selectValue, setSelectValue] = useState('draft');
 
     return (
         <>
             <AdminPageHeader
                 description='项目自建组件与图标的示例展示，便于开发时查阅。'
                 eyebrow='Components'
-                tag={`${ICONS.length} 个图标 · 13 个组件`}
+                tag={`${ICONS.length} 个图标 · 14 个组件`}
                 title='组件列表'
             />
 
@@ -304,6 +306,56 @@ export default function ComponentShowcase() {
                                 ]}
                                 size='default'
                                 value={pillValue}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Select */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>Select</h3>
+                    <p className={styles.componentDesc}>下拉选择，自建面板替代原生 select，支持 small / medium / default 三种尺寸，点击外部或 Escape 关闭，选中项左侧朱砂竖线指示。</p>
+                    <div className={styles.demoRow}>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>small</span>
+                            <Select
+                                onChange={setSelectValue}
+                                options={[
+                                    { value: 'all', label: '全部' },
+                                    { value: 'published', label: '已发布' },
+                                    { value: 'draft', label: '草稿' },
+                                ]}
+                                placeholder='请选择'
+                                size='small'
+                                value={selectValue}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>medium</span>
+                            <Select
+                                onChange={setSelectValue}
+                                options={[
+                                    { value: 'all', label: '全部' },
+                                    { value: 'published', label: '已发布' },
+                                    { value: 'draft', label: '草稿' },
+                                ]}
+                                placeholder='请选择'
+                                size='medium'
+                                value={selectValue}
+                            />
+                        </div>
+                        <div className={styles.demoCol}>
+                            <span className={styles.demoLabel}>default</span>
+                            <Select
+                                onChange={setSelectValue}
+                                options={[
+                                    { value: 'all', label: '全部' },
+                                    { value: 'published', label: '已发布' },
+                                    { value: 'draft', label: '草稿' },
+                                ]}
+                                placeholder='请选择'
+                                size='default'
+                                value={selectValue}
                             />
                         </div>
                     </div>
