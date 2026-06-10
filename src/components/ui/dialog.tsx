@@ -47,15 +47,22 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
     useEffect(() => {
         if (!open) return;
         document.addEventListener('keydown', handleKeyDown);
-        /* 打开时聚焦面板内第一个可聚焦元素 */
-        requestAnimationFrame(() => {
-            const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
-                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-            );
-            focusable?.[0]?.focus();
-        });
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [open, handleKeyDown]);
+
+    /* 仅在弹窗打开瞬间自动聚焦第一个元素，后续重渲染不抢焦点 */
+    const prevOpenRef = useRef(false);
+    useEffect(() => {
+        if (open && !prevOpenRef.current) {
+            requestAnimationFrame(() => {
+                const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                );
+                focusable?.[0]?.focus();
+            });
+        }
+        prevOpenRef.current = open;
+    }, [open]);
 
     if (!open) return null;
 
