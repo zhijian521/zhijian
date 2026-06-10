@@ -26,6 +26,7 @@ interface OverviewData {
     uv: number;
     bounceRate: number;
     avgDuration: number;
+    newVisitorRate: number;   // #4 新增
     pvChange: number;
     uvChange: number;
 }
@@ -40,6 +41,8 @@ interface PageRankItem {
     path: string;
     pv: number;
     uv: number;
+    bounceRate: number;   // #1 新增
+    avgDuration: number;  // #1 新增
 }
 
 interface SourceItem {
@@ -54,20 +57,61 @@ interface DeviceItem {
     percent: number;
 }
 
+interface LanguageItem {
+    language: string;
+    count: number;
+    percent: number;
+}
+
+interface GeoItem {
+    name: string;
+    count: number;
+    percent: number;
+}
+
+interface BrowserItem {
+    browser: string;
+    count: number;
+    percent: number;
+}
+
+interface OSItem {
+    os: string;
+    count: number;
+    percent: number;
+}
+
+interface EntryExitItem {
+    path: string;
+    count: number;
+    percent: number;
+}
+
 interface AnalyticsData {
     overview: OverviewData;
     trend: TrendPoint[];
     pages: PageRankItem[];
     sources: SourceItem[];
     devices: DeviceItem[];
+    languages: LanguageItem[];
+    countries: GeoItem[];
+    regions: GeoItem[];
+    browsers: BrowserItem[];
+    os: OSItem[];
+    entryPages: EntryExitItem[];
+    exitPages: EntryExitItem[];
 }
 
 interface VisitRecord {
     id: number;
     path: string;
+    title: string;
     referrer: string;
     device: string;
     visitorId: string;
+    isNew: boolean;
+    ip: string;           // #11 新增
+    location: string;     // #11 新增
     duration: number | null;
     createdAt: string;
 }
@@ -84,8 +128,9 @@ function formatNum(n: number): string {
     return String(n);
 }
 
-/*== 格式化时长 ==*/
+/*== 格式化时长（B12 修复：0 秒显示为 -） ==*/
 function formatDuration(seconds: number): string {
+    if (!seconds || seconds <= 0) return '-';
     if (seconds >= 60) {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
@@ -247,7 +292,12 @@ export default function AnalyticsDashboard() {
     const visitColumns: DataColumn<VisitRecord>[] = [
         {
             header: '页面',
-            render: (v) => <span className={styles.visitPath}>{v.path}</span>,
+            render: (v) => (
+                <div className={styles.visitPageCell}>
+                    <span className={styles.visitPath}>{v.path}</span>
+                    {v.title && <span className={styles.visitTitle}>{v.title}</span>}
+                </div>
+            ),
         },
         {
             header: '来源',
@@ -266,7 +316,17 @@ export default function AnalyticsDashboard() {
         {
             header: '访客',
             hideBelow: 'lg',
-            render: (v) => <span className={styles.visitMuted}>{v.visitorId}</span>,
+            render: (v) => (
+                <span className={styles.visitMuted}>
+                    {v.visitorId}
+                    {v.isNew && <Tag size="mini" variant="primary" className={styles.newTag}>新</Tag>}
+                </span>
+            ),
+        },
+        {
+            header: '位置',
+            hideBelow: 'md',
+            render: (v) => <span className={styles.visitMuted}>{v.location}</span>,
         },
         {
             header: '停留时长',
@@ -288,6 +348,13 @@ export default function AnalyticsDashboard() {
     const pages = data?.pages || [];
     const sources = data?.sources || [];
     const devices = data?.devices || [];
+    const languages = data?.languages || [];
+    const countries = data?.countries || [];
+    const regions = data?.regions || [];
+    const browsers = data?.browsers || [];
+    const osList = data?.os || [];
+    const entryPages = data?.entryPages || [];
+    const exitPages = data?.exitPages || [];
 
     const maxPagePv = pages.length > 0 ? Math.max(...pages.map(p => p.pv)) : 1;
 
@@ -374,6 +441,10 @@ export default function AnalyticsDashboard() {
                                 <p className={styles.cardLabel}>平均停留</p>
                                 <p className={styles.cardValue}>{formatDuration(overview?.avgDuration || 0)}</p>
                             </div>
+                            <div className={styles.card}>
+                                <p className={styles.cardLabel}>新访客</p>
+                                <p className={styles.cardValue}>{overview?.newVisitorRate || 0}%</p>
+                            </div>
                         </div>
 
                         {/* PV/UV 趋势图 */}
@@ -449,6 +520,9 @@ export default function AnalyticsDashboard() {
                                                             style={{ width: `${(page.pv / maxPagePv) * 100}%` }}
                                                         />
                                                     </div>
+                                                    <span className={styles.rankMeta}>
+                                                        跳出 {page.bounceRate}% · 停留 {formatDuration(page.avgDuration)}
+                                                    </span>
                                                 </div>
                                                 <span className={styles.rankValue}>{formatNum(page.pv)}</span>
                                             </div>
@@ -483,30 +557,216 @@ export default function AnalyticsDashboard() {
                             </div>
                         </div>
 
-                        {/* 设备分布 */}
-                        <div className={styles.section}>
-                            <h3 className={styles.sectionTitle}>设备分布</h3>
-                            {devices.length > 0 ? (
-                                <div className={styles.deviceList}>
-                                    {devices.map((dev) => (
-                                        <div key={dev.device} className={styles.deviceItem}>
-                                            <div className={styles.deviceInfo}>
-                                                <span className={styles.deviceName}>{dev.device}</span>
-                                                <span className={styles.deviceCount}>{formatNum(dev.count)} 次</span>
+                        {/* 设备分布 + 语言分布 */}
+                        <div className={styles.twoCol}>
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>设备分布</h3>
+                                {devices.length > 0 ? (
+                                    <div className={styles.deviceList}>
+                                        {devices.map((dev) => (
+                                            <div key={dev.device} className={styles.deviceItem}>
+                                                <div className={styles.deviceInfo}>
+                                                    <span className={styles.deviceName}>{dev.device}</span>
+                                                    <span className={styles.deviceCount}>{formatNum(dev.count)} 次</span>
+                                                </div>
+                                                <div className={styles.deviceBarWrap}>
+                                                    <div
+                                                        className={styles.deviceBar}
+                                                        style={{ width: `${dev.percent}%` }}
+                                                    />
+                                                </div>
+                                                <span className={styles.devicePercent}>{dev.percent}%</span>
                                             </div>
-                                            <div className={styles.deviceBarWrap}>
-                                                <div
-                                                    className={styles.deviceBar}
-                                                    style={{ width: `${dev.percent}%` }}
-                                                />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无设备数据</div>
+                                )}
+                            </div>
+
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>语言分布</h3>
+                                {languages.length > 0 ? (
+                                    <div className={styles.deviceList}>
+                                        {languages.map((lang) => (
+                                            <div key={lang.language} className={styles.deviceItem}>
+                                                <div className={styles.deviceInfo}>
+                                                    <span className={styles.deviceName}>{lang.language}</span>
+                                                    <span className={styles.deviceCount}>{formatNum(lang.count)} 次</span>
+                                                </div>
+                                                <div className={styles.deviceBarWrap}>
+                                                    <div
+                                                        className={styles.deviceBar}
+                                                        style={{ width: `${lang.percent}%` }}
+                                                    />
+                                                </div>
+                                                <span className={styles.devicePercent}>{lang.percent}%</span>
                                             </div>
-                                            <span className={styles.devicePercent}>{dev.percent}%</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className={styles.chartEmpty}>暂无设备数据</div>
-                            )}
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无语言数据</div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 国家分布 + 省份排行 */}
+                        <div className={styles.twoCol}>
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>国家分布</h3>
+                                {countries.length > 0 ? (
+                                    <div className={styles.deviceList}>
+                                        {countries.map((c) => (
+                                            <div key={c.name} className={styles.deviceItem}>
+                                                <div className={styles.deviceInfo}>
+                                                    <span className={styles.deviceName}>{c.name}</span>
+                                                    <span className={styles.deviceCount}>{formatNum(c.count)} 次</span>
+                                                </div>
+                                                <div className={styles.deviceBarWrap}>
+                                                    <div
+                                                        className={styles.deviceBar}
+                                                        style={{ width: `${c.percent}%` }}
+                                                    />
+                                                </div>
+                                                <span className={styles.devicePercent}>{c.percent}%</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无地理数据</div>
+                                )}
+                            </div>
+
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>省份/城市 TOP 10</h3>
+                                {regions.length > 0 ? (
+                                    <div className={styles.deviceList}>
+                                        {regions.map((r) => (
+                                            <div key={r.name} className={styles.deviceItem}>
+                                                <div className={styles.deviceInfo}>
+                                                    <span className={styles.deviceName}>{r.name}</span>
+                                                    <span className={styles.deviceCount}>{formatNum(r.count)} 次</span>
+                                                </div>
+                                                <div className={styles.deviceBarWrap}>
+                                                    <div
+                                                        className={styles.deviceBar}
+                                                        style={{ width: `${r.percent}%` }}
+                                                    />
+                                                </div>
+                                                <span className={styles.devicePercent}>{r.percent}%</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无省份数据</div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 浏览器 + 操作系统 */}
+                        <div className={styles.twoCol}>
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>浏览器分布</h3>
+                                {browsers.length > 0 ? (
+                                    <div className={styles.deviceList}>
+                                        {browsers.map((b) => (
+                                            <div key={b.browser} className={styles.deviceItem}>
+                                                <div className={styles.deviceInfo}>
+                                                    <span className={styles.deviceName}>{b.browser}</span>
+                                                    <span className={styles.deviceCount}>{formatNum(b.count)} 次</span>
+                                                </div>
+                                                <div className={styles.deviceBarWrap}>
+                                                    <div
+                                                        className={styles.deviceBar}
+                                                        style={{ width: `${b.percent}%` }}
+                                                    />
+                                                </div>
+                                                <span className={styles.devicePercent}>{b.percent}%</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无浏览器数据</div>
+                                )}
+                            </div>
+
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>操作系统分布</h3>
+                                {osList.length > 0 ? (
+                                    <div className={styles.deviceList}>
+                                        {osList.map((o) => (
+                                            <div key={o.os} className={styles.deviceItem}>
+                                                <div className={styles.deviceInfo}>
+                                                    <span className={styles.deviceName}>{o.os}</span>
+                                                    <span className={styles.deviceCount}>{formatNum(o.count)} 次</span>
+                                                </div>
+                                                <div className={styles.deviceBarWrap}>
+                                                    <div
+                                                        className={styles.deviceBar}
+                                                        style={{ width: `${o.percent}%` }}
+                                                    />
+                                                </div>
+                                                <span className={styles.devicePercent}>{o.percent}%</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无操作系统数据</div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 入口/出口页面 */}
+                        <div className={styles.twoCol}>
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>入口页面 TOP 10</h3>
+                                {entryPages.length > 0 ? (
+                                    <div className={styles.rankList}>
+                                        {entryPages.map((p, i) => (
+                                            <div key={p.path} className={styles.rankItem}>
+                                                <span className={styles.rankIndex}>{i + 1}</span>
+                                                <div className={styles.rankContent}>
+                                                    <span className={styles.rankLabel}>{p.path}</span>
+                                                    <div className={styles.rankBarWrap}>
+                                                        <div
+                                                            className={styles.rankBar}
+                                                            style={{ width: `${p.percent}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <span className={styles.rankValue}>{p.count}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无入口页面数据</div>
+                                )}
+                            </div>
+
+                            <div className={styles.section}>
+                                <h3 className={styles.sectionTitle}>出口页面 TOP 10</h3>
+                                {exitPages.length > 0 ? (
+                                    <div className={styles.rankList}>
+                                        {exitPages.map((p, i) => (
+                                            <div key={p.path} className={styles.rankItem}>
+                                                <span className={styles.rankIndex}>{i + 1}</span>
+                                                <div className={styles.rankContent}>
+                                                    <span className={styles.rankLabel}>{p.path}</span>
+                                                    <div className={styles.rankBarWrap}>
+                                                        <div
+                                                            className={styles.rankBar}
+                                                            style={{ width: `${p.percent}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <span className={styles.rankValue}>{p.count}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无出口页面数据</div>
+                                )}
+                            </div>
                         </div>
                     </>
                 )

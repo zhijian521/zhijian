@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getDb } from '@/lib/db';
 import { fail, type BizCodeValue } from '@/lib/api-response';
+import { lookup, maskIp } from '@/lib/geo';
+import { parseUA } from '@/lib/ua';
 
 /*============================================================================
   数据收集 API — 供 script.js 上报，无鉴权
@@ -68,6 +70,7 @@ interface RawEvent {
     duration?: number;
     screen?: string;
     lang?: string;
+    ua?: string;           // #12 新增
     isNew?: number;
     isSessionStart?: number;
     ts: number;
@@ -76,13 +79,16 @@ interface RawEvent {
 /*== POST：接收并写入事件 ==*/
 export async function POST(request: NextRequest) {
     /*-- CORS：动态返回请求 origin，兼容 sendBeacon（默认带 cookie）和 fetch（omit） ==*/
-    const origin = request.headers.get('origin') || '*';
+    /* B4 修复：无 origin 时 fallback 为 *，但不设 Allow-Credentials（* + credentials 违反 CORS 规范） */
+    const origin = request.headers.get('origin') || '';
     const corsHeaders: Record<string, string> = {
-        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Origin': origin || '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Credentials': 'true',
     };
+    if (origin) {
+        corsHeaders['Access-Control-Allow-Credentials'] = 'true';
+    }
 
     /*-- 所有返回路径都必须带 CORS 头，否则浏览器拦截跨域响应 --*/
     function corsError(code: BizCodeValue, message: string, status: number) {
@@ -137,6 +143,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(fail(40400, '站点未注册或已停用'), { status: 404, headers: corsHeaders });
         }
 
+        /*-- 提取 IP + 解析地理位置 --*/
+        const forwarded = request.headers.get('x-forwarded-for');
+        const rawIp = forwarded
+            ? forwarded.split(',')[0].trim()
+            : request.headers.get('x-real-ip') || '127.0.0.1';
+        const maskedIp = maskIp(rawIp);
+        const geo = lookup(rawIp);
+
         /*-- 构建批量 INSERT --*/
         const values: any[] = [];
         const placeholders: string[] = [];
@@ -145,7 +159,10 @@ export async function POST(request: NextRequest) {
             if (!evt.type || !VALID_TYPES.has(evt.type)) continue;
             if (!evt.url || typeof evt.url !== 'string') continue;
 
-            placeholders.push('(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            /* #14 UA 解析 */
+            const uaInfo = parseUA(evt.ua || '');
+
+            placeholders.push('(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             values.push(
                 siteId,
                 evt.type,
@@ -159,6 +176,13 @@ export async function POST(request: NextRequest) {
                 evt.isSessionStart ? 1 : 0,
                 (visitorId || '').slice(0, MAX_VISITOR_ID) || null,
                 (sessionId || '').slice(0, MAX_SESSION_ID) || null,
+                maskedIp,
+                geo?.country || null,
+                geo?.region || null,
+                geo?.city || null,
+                (evt.ua || '').slice(0, 500) || null,
+                uaInfo.browser || null,
+                uaInfo.os || null,
             );
         }
 
@@ -168,7 +192,7 @@ export async function POST(request: NextRequest) {
 
         /*-- 批量写入 --*/
         await db.execute(
-            `INSERT INTO zhijian_track_events (site_id, type, path, referrer, title, duration, screen, lang, is_new, is_session, visitor_id, session_id) VALUES ${placeholders.join(', ')}`,
+            `INSERT INTO zhijian_track_events (site_id, type, path, referrer, title, duration, screen, lang, is_new, is_session, visitor_id, session_id, ip, country, region, city, ua, browser, os) VALUES ${placeholders.join(', ')}`,
             values,
         );
 
@@ -181,15 +205,15 @@ export async function POST(request: NextRequest) {
 
 /*== OPTIONS：CORS 预检 ==*/
 export async function OPTIONS(request: NextRequest) {
-    const origin = request.headers.get('origin') || '*';
-    return new NextResponse(null, {
-        status: 204,
-        headers: {
-            'Access-Control-Allow-Origin': origin,
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Max-Age': '86400',
-        },
-    });
+    const origin = request.headers.get('origin') || '';
+    const headers: Record<string, string> = {
+        'Access-Control-Allow-Origin': origin || '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '86400',
+    };
+    if (origin) {
+        headers['Access-Control-Allow-Credentials'] = 'true';
+    }
+    return new NextResponse(null, { status: 204, headers });
 }

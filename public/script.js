@@ -58,13 +58,26 @@
     document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
   }
 
+  /* B6 修复：改用 localStorage 存储访客 ID，第三方嵌入场景下 cookie SameSite=Lax 无法写入 */
+  var VISITOR_KEY = '_zj_vid';
+
   function getVisitorId() {
-    var vid = getCookie(VISITOR_COOKIE);
-    if (!vid) {
-      vid = randomId() + randomId();
-      setCookie(VISITOR_COOKIE, vid, VISITOR_TTL);
+    try {
+      var vid = localStorage.getItem(VISITOR_KEY);
+      if (!vid) {
+        vid = randomId() + randomId();
+        localStorage.setItem(VISITOR_KEY, vid);
+      }
+      return vid;
+    } catch (e) {
+      // localStorage 不可用时降级到 cookie
+      var vid = getCookie(VISITOR_COOKIE);
+      if (!vid) {
+        vid = randomId() + randomId();
+        setCookie(VISITOR_COOKIE, vid, VISITOR_TTL);
+      }
+      return vid;
     }
-    return vid;
   }
 
   function getSessionId() {
@@ -77,7 +90,11 @@
   }
 
   function isNewVisitor() {
-    return !getCookie(VISITOR_COOKIE);
+    try {
+      return !localStorage.getItem(VISITOR_KEY);
+    } catch (e) {
+      return !getCookie(VISITOR_COOKIE);
+    }
   }
 
   function isSessionStart() {
@@ -106,6 +123,7 @@
       title: truncate(document.title, 500),
       screen: screen.width + 'x' + screen.height,
       lang: truncate(navigator.language, 10),
+      ua: truncate(navigator.userAgent, 500),  // #12 新增：采集 UA
       isNew: isNewVisitor() ? 1 : 0,
       isSessionStart: isSessionStart() ? 1 : 0,
       ts: Date.now()

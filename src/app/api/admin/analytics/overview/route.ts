@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { requireAdminFromRequest } from '@/lib/auth';
 import { BizCode, fail, success } from '@/lib/api-response';
-import { getOverview, getTrend, getPageRank, getSources, getDevices, ensureAggregated } from '@/lib/analytics';
+import { getOverview, getTrend, getPageRank, getSources, getDevices, getLanguages, getBrowsers, getOS, getCountries, getRegions, getEntryPages, getExitPages, ensureAggregated } from '@/lib/analytics';
 import type { DateRange } from '@/lib/analytics';
 
 /*== 仪表盘概览数据 API ==*/
@@ -34,6 +34,13 @@ export async function GET(request: NextRequest) {
         const pages = await getPageRank(siteId, range, 10, true);
         const sources = await getSources(siteId, range);
         const devices = await getDevices(siteId, range);
+        const languages = await getLanguages(siteId, range);
+        const countries = await getCountries(siteId, range);
+        const regions = await getRegions(siteId, range);
+        const browsers = await getBrowsers(siteId, range);
+        const os = await getOS(siteId, range);
+        const entryPages = await getEntryPages(siteId, range);
+        const exitPages = await getExitPages(siteId, range);
 
         return NextResponse.json(success({
             overview,
@@ -41,6 +48,13 @@ export async function GET(request: NextRequest) {
             pages,
             sources,
             devices,
+            languages,
+            countries,
+            regions,
+            browsers,
+            os,
+            entryPages,
+            exitPages,
         }));
     } catch (err) {
         console.error('获取分析数据失败：', err);

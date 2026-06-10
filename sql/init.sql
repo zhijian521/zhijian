@@ -104,10 +104,18 @@ CREATE TABLE IF NOT EXISTS zhijian_track_events (
   is_session  TINYINT(1)      DEFAULT 0               COMMENT '会话首页标识',
   visitor_id  VARCHAR(64)     DEFAULT NULL            COMMENT '访客匿名ID（随机 cookie）',
   session_id  VARCHAR(64)     DEFAULT NULL            COMMENT '会话ID',
+  ip          VARCHAR(45)     DEFAULT NULL            COMMENT '遮蔽 IP（192.168.1.xxx）',
+  country     VARCHAR(50)     DEFAULT NULL            COMMENT '国家（中文名）',
+  region      VARCHAR(50)     DEFAULT NULL            COMMENT '省份/州（中文名）',
+  city        VARCHAR(100)    DEFAULT NULL            COMMENT '城市',
+  ua          VARCHAR(500)    DEFAULT NULL            COMMENT 'User-Agent 原始字符串',
+  browser     VARCHAR(50)     DEFAULT NULL            COMMENT '浏览器名（如 Chrome）',
+  os          VARCHAR(50)     DEFAULT NULL            COMMENT '操作系统名（如 Windows）',
   created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_zhijian_track_events_site_created (site_id, created_at),
-  KEY idx_zhijian_track_events_site_path (site_id, path(191))
+  KEY idx_zhijian_track_events_site_path (site_id, path(191)),
+  KEY idx_zhijian_track_events_site_country (site_id, country)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
