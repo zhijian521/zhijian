@@ -1,0 +1,59 @@
+.preview {
+    padding: 2rem;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* 预览头部 — 封面图+标题+元信息 */
+.previewHeader {
+    margin-bottom: 2rem;
+}
+
+.coverImage {
+    display: block;
+    max-height: 20rem;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+}
+
+.previewTitle {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0 0 1rem;
+    line-height: 1.4;
+}
+
+.previewMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.previewCategory {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.8125rem;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: var(--primary-subtle-soft);
+}
+
+.previewTag {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.8125rem;
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    background: var(--muted);
+}
+
+.previewDate {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+}
