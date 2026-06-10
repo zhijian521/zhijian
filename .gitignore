@@ -9,3 +9,4 @@ tsconfig.tsbuildinfo
 .next-start.out.log
 .next-start.err.log
 .stitch-*
+package-lock.json

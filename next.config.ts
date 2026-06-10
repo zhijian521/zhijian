@@ -6,10 +6,10 @@ import type { NextConfig } from 'next';
  */
 const nextConfig: NextConfig = {
     turbopack: {},
-    /* geoip-lite 在 import 时同步读取 .dat 文件，路径基于 __dirname。
-       Next.js 打包会重写 __dirname，导致构建时找不到数据文件。
+    /* ip2region 内置 .xdb 数据文件，路径基于 __dirname。
+       Next.js 打包会重写 __dirname，导致运行时找不到数据文件。
        将其排除出 webpack 打包，运行时直接使用 node_modules 中的原模块。 */
-    serverExternalPackages: ['geoip-lite'],
+    serverExternalPackages: ['ip2region'],
 };
 
 export default nextConfig;
