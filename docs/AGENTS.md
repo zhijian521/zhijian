@@ -31,6 +31,7 @@
 | 图表 | Recharts | ^3.8.1 | ✅ 观澜仪表盘 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 | GeoIP | ip2region | ^2.3.0 | ✅ IP 地理定位（替代 geoip-lite） |
+| 图片上传 | 本地文件系统 public/uploads/ | — | ✅ 按日期分目录存储 |
 
 **路径别名**: `@/*` → `./src/*`
 
@@ -48,12 +49,25 @@ src/
 │   │   │   ├── admin-shell.tsx           # 后台布局壳（侧边栏+内容区）
 │   │   │   ├── admin-sidebar.tsx         # 侧边栏导航（数据驱动二级折叠菜单）
 │   │   │   ├── admin-page-header.tsx     # 页面标题区（eyebrow+title+tag+description）
-│   │   │   ├── post-editor-form.tsx      # 文章编辑表单
 │   │   │   ├── post-management-client.tsx # 文章列表（客户端）
 │   │   │   └── user-list-client.tsx      # 用户列表（客户端）
 │   │   ├── layout.tsx            # 后台布局（鉴权+AdminShell）
 │   │   ├── login/                # 后台登录页
 │   │   ├── posts/                # 文章管理 CRUD
+│   │   │   ├── [id]/             # 文章编辑器（独立全屏页面）
+│   │   │   │   ├── page.tsx      # 编辑器页面（脱离 AdminShell）
+│   │   │   │   └── _components/ # 编辑器组件（8 个）
+│   │   │   │       ├── post-editor.tsx + .module.css         # 编辑器主组件（视图切换+数据管理）
+│   │   │   │       ├── editor-toolbar.tsx + .module.css      # 顶部工具栏（视图切换+保存+返回）
+│   │   │   │       ├── markdown-editor.tsx + .module.css     # Markdown 编辑区
+│   │   │   │       ├── markdown-preview.tsx + .module.css    # Markdown 预览区
+│   │   │   │       ├── metadata-panel.tsx + .module.css      # 侧边元数据面板（分类/标签/封面/摘要）
+│   │   │   │       ├── cover-upload.tsx + .module.css        # 封面图上传区
+│   │   │   │       └── image-upload-dialog.tsx + .module.css # 图片选择弹窗（插入图片到正文）
+│   │   ├── uploads/              # 图片管理（上传/浏览/删除）
+│   │   │   ├── _components/
+│   │   │   │   └── upload-management.tsx + .module.css  # 图片管理组件
+│   │   │   └── page.tsx
 │   │   ├── categories/           # 分类管理（数据库驱动）
 │   │   │   └── _components/
 │   │   │       └── category-management.tsx
@@ -76,6 +90,10 @@ src/
 │   ├── api/                      # API 路由
 │   │   ├── admin/                # 后台 API（需鉴权）
 │   │   │   ├── posts/            # 文章 CRUD
+│   │   │   │   └── [id]/         # 单文章操作（GET/PUT/DELETE）
+│   │   │   ├── upload/           # 图片上传（POST，multipart/form-data）
+│   │   │   ├── uploads/          # 图片列表（GET，分页）
+│   │   │   │   └── [id]/         # 单图片操作（DELETE）
 │   │   │   ├── categories/       # 分类 CRUD
 │   │   │   ├── tags/             # 标签 CRUD
 │   │   │   ├── users/            # 用户 CRUD
@@ -133,6 +151,7 @@ src/
 │   ├── posts.ts                  # 文章数据层（数据库）
 │   ├── static-posts.ts           # 静态文章数据层（MD 文件）
 │   ├── tags.ts                   # 标签数据层
+│   ├── uploads.ts                # 图片上传数据层（CRUD + 文件系统操作）
 │   ├── site.ts                   # 路由/导航配置（NavGroup 二级菜单）
 │   ├── analytics.ts              # 站点监控分析数据层（聚合+查询）
 │   ├── geo.ts                    # IP 地理定位（ip2region 离线库）
@@ -301,6 +320,7 @@ const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM zhijian_blog_pos
 |------|------|
 | `zhijian_users` | 用户表（通用模块） |
 | `zhijian_blog_posts` | 文章表（博客模块） |
+| `zhijian_blog_uploads` | 图片上传记录表（博客模块） |
 | `zhijian_blog_categories` | 分类表（博客模块） |
 | `zhijian_blog_tags` | 标签表（博客模块） |
 | `zhijian_track_sites` | 站点注册表（监控模块） |
@@ -353,6 +373,8 @@ if (res.code === 0 && res.data) {
 |------|----------|------|
 | 公开博客 | `/`, `/blog`, `/blog/[slug]` | `PublicChrome` (头部+底部) |
 | 管理后台 | `/admin/*` | `AdminShell` (侧边栏+内容区) |
+| 文章编辑器 | `/admin/posts/[id]` | 无壳（独立全屏页面，脱离 AdminShell） |
+| 图片管理 | `/admin/uploads` | `AdminShell` |
 | 分类管理 | `/admin/categories` | `AdminShell` |
 | 标签管理 | `/admin/tags` | `AdminShell` |
 | 后台登录 | `/admin/login` | 无壳（独立页面） |
@@ -364,6 +386,7 @@ if (res.code === 0 && res.data) {
 RootLayout
     └── AppFrame (src/components/site/app-frame.tsx)
             ├── pathname.startsWith('/admin/login') → AdminLoginLayout
+            ├── pathname.match(/^\/admin\/posts\/\d+/) → 无壳（编辑器独立全屏页面）
             ├── pathname.startsWith('/admin')       → AdminShell
             └── 其他                                 → PublicChrome
 ```
@@ -513,12 +536,17 @@ slug         VARCHAR(120) NOT NULL UNIQUE
 title        VARCHAR(200) NOT NULL
 summary      VARCHAR(500) NOT NULL
 content      MEDIUMTEXT NOT NULL
+cover_image  VARCHAR(500) DEFAULT NULL           -- 封面图路径
+alt_text     VARCHAR(200) DEFAULT NULL           -- 封面图 alt 描述
+category_id  INT UNSIGNED DEFAULT NULL           -- 分类ID
+tags         JSON DEFAULT NULL                   -- 标签ID数组，如 [1,3,5]
 status       ENUM('draft', 'published') DEFAULT 'draft'
 published_at DATETIME NULL
 created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
 updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
 INDEX idx_zhijian_blog_posts_status_published_at (status, published_at)
+INDEX idx_zhijian_blog_posts_category (category_id)
 ```
 
 ### zhijian_blog_categories 表（博客模块）
@@ -540,6 +568,21 @@ name        VARCHAR(100) NOT NULL
 slug        VARCHAR(120) NOT NULL UNIQUE
 created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+```
+
+### zhijian_blog_uploads 表（博客模块 — 图片上传记录）
+
+```sql
+id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+filename    VARCHAR(255) NOT NULL              -- 哈希文件名
+original    VARCHAR(255) NOT NULL              -- 原始文件名
+path        VARCHAR(500) NOT NULL              -- 存储路径 /uploads/2026/06/xxx.jpg
+size        INT UNSIGNED NOT NULL              -- 文件大小（字节）
+mime        VARCHAR(50) NOT NULL               -- MIME 类型
+alt         VARCHAR(200) DEFAULT ''            -- alt 描述
+created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+INDEX idx_zhijian_blog_uploads_created (created_at)
 ```
 
 ### zhijian_track_sites 表（监控模块）
@@ -680,6 +723,7 @@ fix(api): handle null response from database
 | 标签数据层 | `src/lib/tags.ts` |
 | 文章数据层（数据库） | `src/lib/posts.ts` |
 | 文章数据层（静态 MD） | `src/lib/static-posts.ts` |
+| 图片上传数据层 | `src/lib/uploads.ts` |
 | 数据库连接 | `src/lib/db.ts` |
 | HTTP 客户端 | `src/lib/http-client.ts` |
 | 全局样式 | `src/app/globals.css` |
@@ -692,6 +736,8 @@ fix(api): handle null response from database
 | 数据收集 API | `src/app/api/collect/route.ts` |
 | 仪表盘页面 | `src/app/admin/analytics/page.tsx` |
 | 站点管理页面 | `src/app/admin/analytics/sites/page.tsx` |
+| 文章编辑器 | `src/app/admin/posts/[id]/_components/post-editor.tsx` |
+| 图片管理页面 | `src/app/admin/uploads/page.tsx` |
 | 后台布局 | `src/app/admin/layout.tsx` |
 | 后台共享样式 | `src/app/admin/_components/admin-shared.module.css` |
 | 后台壳组件 | `src/app/admin/_components/admin-shell.tsx` |
@@ -719,6 +765,7 @@ fix(api): handle null response from database
 - 数据库连接池限制 3 连接，避免过度占用
 - 使用 `FALLBACK_POSTS` 兜底数据，数据库不可用时页面仍可渲染
 - 图片使用 Next.js `<Image>` 组件自动优化
+- 图片上传存储在 `public/uploads/` 本地文件系统，按日期分目录（如 `/uploads/2026/06/`）
 
 ### 兼容性
 
@@ -770,4 +817,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-10*
+*最后更新: 2026-06-10（补充文章编辑器、图片管理相关说明）*

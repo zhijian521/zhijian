@@ -90,6 +90,17 @@
 | 后台主内容区 | `margin-left: 16rem`, `padding: 3rem`, `min-height: 100vh` |
 | 后台指标卡片网格 | `grid-template-columns: repeat(3, 1fr)`, `gap: 1rem` |
 | 后台编辑表单网格 | `grid: minmax(0, 1.1fr) 320px`（1024px+） |
+| 文章编辑器页面 | 全屏独立页面（脱离 AdminShell），`height: 100vh` |
+| 编辑器 — 分栏视图 | 左编辑 + 右预览 + 侧边元数据面板（320px） |
+| 编辑器 — 编辑视图 | 全宽编辑区 |
+| 编辑器 — 预览视图 | 全宽预览 |
+| 编辑器顶部工具栏 | `height: 3rem`, `border-bottom: 1px solid var(--border)` |
+| 编辑器 Mini 工具栏 | `bg: var(--muted)`, 按钮高度 `1.75rem` |
+| 编辑器侧边元数据面板 | `width: 320px`, `border-left: 1px solid var(--border)` |
+| 图片卡片网格 | `grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))` |
+| 图片卡片缩略图 | `height: 120px`, `object-fit: cover` |
+| 封面图拖拽区 | `height: 8rem`, `border: 2px dashed var(--border)`, `bg: var(--muted)` |
+| 封面图预览 | `height: 8rem`, `object-fit: cover` |
 | 登录卡片 | `max-width: 24rem (384px)`, `border-radius: 0`, `padding: 20px→28px` |
 | 响应式断点 | 640px / 768px / 1024px |
 
@@ -179,6 +190,48 @@
 | 主面板 | `border: 1px solid var(--primary)`（朱砂红线） |
 | 次级面板 | `border: 1px solid var(--border)`（驼色线） |
 
+### 图片卡片
+
+| 元素 | 样式 |
+|------|------|
+| 网格容器 | `grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))`, `gap: 1rem` |
+| 卡片 | `border: 1px solid var(--border)`, `border-radius: 0` |
+| 卡片 hover | `border-color: rgba(159,0,15,0.4)`, 朱砂渐显边框 |
+| 缩略图 | `height: 120px`, `object-fit: cover`, `width: 100%` |
+| 文件名 | `font-size: 0.8125rem`, `color: var(--muted-foreground)`, 单行截断 |
+| 文件信息 | `font-size: 0.75rem`, `color: var(--muted-foreground)` |
+| 删除按钮 | 卡片右上角，hover 时 `color: var(--destructive)` |
+
+### 封面图上传区
+
+| 元素 | 样式 |
+|------|------|
+| 拖拽区 | `height: 8rem`, `border: 2px dashed var(--border)`, `bg: var(--muted)`, `border-radius: 0` |
+| 拖拽区 hover | `border-color: var(--primary)`, `bg: var(--primary-subtle-soft)` |
+| 拖拽区图标 | `color: var(--muted-foreground)`, hover 时 `color: var(--primary)` |
+| 预览图 | `height: 8rem`, `object-fit: cover`, `width: 100%` |
+| 删除封面按钮 | 图片右上角覆盖，`bg: rgba(0,0,0,0.5)`, `color: #fff` |
+
+### 标签多选交互
+
+| 状态 | 样式 |
+|------|------|
+| 已选标签 | `border: 1px solid var(--primary)`, `bg: var(--primary-subtle-soft)`, `color: var(--primary)` |
+| 可选标签 | `border: 1px solid var(--border)`, `bg: var(--muted)`, `color: var(--muted-foreground)` |
+| 可选标签 hover | `border-color: var(--primary)`, `color: var(--primary)` |
+
+### 编辑器布局
+
+| 元素 | 样式 |
+|------|------|
+| 页面容器 | 全屏独立页面，`height: 100vh`, 脱离 AdminShell |
+| 顶部工具栏 | `height: 3rem`, `border-bottom: 1px solid var(--border)`, `bg: var(--background)` |
+| 工具栏按钮 | `height: 1.75rem`, `padding: 0 0.5rem`, `bg: var(--muted)` |
+| 编辑区 | 等宽字体，`font-family: 'SF Mono', 'Menlo', monospace` |
+| 预览区 | 同文章详情排版规格（H2 红线、衬线标题等） |
+| 侧边元数据面板 | `width: 320px`, `border-left: 1px solid var(--border)`, `bg: var(--background)`, `overflow-y: auto` |
+| 分栏视图 | 左编辑 + 右预览，中间可拖拽分割线 |
+
 ### 页面标题区
 
 ```
@@ -226,4 +279,4 @@
 
 ---
 
-*最后更新: 2026-06-10*
+*最后更新: 2026-06-10（补充编辑器布局、图片卡片、封面上传、标签多选样式）*
