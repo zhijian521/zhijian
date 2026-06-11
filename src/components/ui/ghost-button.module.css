@@ -53,3 +53,10 @@
     height: 1rem;
     flex-shrink: 0;
 }
+
+/* 禁用态：降低透明度 + 禁止交互 */
+.button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
