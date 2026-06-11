@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 
 import type { Post, PostStatus } from '@/lib/post-shared';
 import type { Category } from '@/lib/categories';
@@ -40,8 +39,6 @@ type SaveStatus = 'saved' | 'saving' | 'unsaved';
 
 /*== PostEditor 编辑器主组件：组装所有子组件，管理状态与自动保存。 ==*/
 export default function PostEditor({ post, categories, tags }: PostEditorProps) {
-    const router = useRouter();
-
     const [viewMode, setViewMode] = useState<ViewMode>('split');
     const [formData, setFormData] = useState<FormData>({
         title: post.title,
@@ -123,10 +120,12 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         }
     }, [formData, saveDraft]);
 
-    /* 返回文章列表 */
+    /* 返回文章列表：优先关闭当前标签页；若浏览器阻止（非脚本打开的标签页）则整页跳转，强制重新走 layout 渲染侧边栏。 */
     const handleBack = useCallback(() => {
-        router.push(APP_ROUTES.adminPosts);
-    }, [router]);
+        window.close();
+        // window.close() 失败时标签页不会关闭，继续执行整页跳转
+        window.location.href = APP_ROUTES.adminPosts;
+    }, []);
 
     /* 文章内插入图片回调 */
     const handleInsertImage = useCallback((_markdown: string) => {

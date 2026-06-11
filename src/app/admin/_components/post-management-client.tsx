@@ -14,7 +14,6 @@ import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
-import type { ListData } from '@/lib/api-response';
 import { APP_ROUTES } from '@/lib/site';
 
 import styles from './post-management-client.module.css';
@@ -41,16 +40,18 @@ export default function PostManagementClient() {
     const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
     const [deleting, setDeleting] = useState<number | null>(null);
+    const [creating, setCreating] = useState(false);
     const [page, setPage] = useState(1);
     const pageSize = 10;
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await api.get<ListData<PostListItem>>('/admin/posts');
+            const res = await api.get<PostListItem[]>('/admin/posts');
             if (res.code === 0 && res.data) {
-                setPosts(res.data.data);
-                setTotal(res.data.total);
+                setPosts(res.data);
+                // API 不分页，total 直接取数组长度
+                setTotal(res.data.length);
             }
         } catch {
             toast.error('获取文章列表失败');
@@ -66,7 +67,7 @@ export default function PostManagementClient() {
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
             const q = keyword.trim().toLowerCase();
-            const matchesKeyword = !q || [post.title, post.slug].some((f) => f.toLowerCase().includes(q));
+            const matchesKeyword = !q || [post.title, post.slug].some((f) => f?.toLowerCase().includes(q));
             const matchesStatus = status === 'all' || post.status === status;
             return matchesKeyword && matchesStatus;
         });
@@ -149,6 +150,7 @@ export default function PostManagementClient() {
                         href={`${APP_ROUTES.adminPosts}/${post.id}`}
                         icon={<PencilIcon />}
                         size="medium"
+                        target="_blank"
                         title="编辑"
                     />
                     <IconButton
@@ -196,9 +198,25 @@ export default function PostManagementClient() {
                     />
                 </div>
                 <GhostButton
-                    asButton={false}
-                    href={APP_ROUTES.adminPostCreate}
+                    asButton
+                    disabled={creating}
                     icon={<PlusIcon className={shared.btnIcon} />}
+                    onClick={async () => {
+                        setCreating(true);
+                        try {
+                            const res = await api.post<{ id: number }>('/admin/posts', {});
+                            if (res.code === 0 && res.data) {
+                                window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
+                                fetchData();
+                            } else {
+                                toast.error(res.message || '新建文章失败');
+                            }
+                        } catch {
+                            toast.error('新建文章失败');
+                        } finally {
+                            setCreating(false);
+                        }
+                    }}
                     size='medium'
                     variant='primary'
                 >
