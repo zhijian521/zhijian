@@ -172,11 +172,33 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
             />
 
             <div className={styles.body}>
-                {/* 分栏模式：编辑区 + 元数据面板 */}
+                {/* 分栏模式：元数据面板（左）+ 编辑/预览（右） */}
                 {viewMode === 'split' && (
                     <>
+                        {/* 元数据面板（左侧） */}
+                        <div className={styles.sidePanel}>
+                            <MetadataPanel
+                                altText={formData.altText}
+                                categories={categories}
+                                categoryId={formData.categoryId}
+                                coverImage={formData.coverImage}
+                                onAltTextChange={(v: string | null) => updateField('altText', v)}
+                                onCategoryIdChange={(v: number | null) => updateField('categoryId', v)}
+                                onCoverImageChange={(v: string | null) => updateField('coverImage', v)}
+                                onPublishedAtChange={(v: string | null) => updateField('publishedAt', v)}
+                                onSelectedTagsChange={(v: number[]) => updateField('tags', v)}
+                                onSlugChange={(v: string) => updateField('slug', v)}
+                                onStatusChange={(v: PostStatus) => updateField('status', v)}
+                                publishedAt={formData.publishedAt}
+                                selectedTags={formData.tags}
+                                slug={formData.slug}
+                                status={formData.status}
+                                tags={tags}
+                            />
+                        </div>
+
                         <div className={styles.contentSplit}>
-                            {/* 左侧：标题 + 摘要 + 编辑/预览 */}
+                            {/* 编辑区 */}
                             <div className={styles.editPane}>
                                 <div className={styles.headerArea}>
                                     <input
@@ -204,7 +226,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                 </div>
                             </div>
 
-                            {/* 右侧预览 */}
+                            {/* 预览区 */}
                             <div className={styles.previewPane}>
                                 <MarkdownPreview
                                     categoryName={categoryName}
@@ -217,8 +239,13 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                 />
                             </div>
                         </div>
+                    </>
+                )}
 
-                        {/* 元数据面板 */}
+                {/* 编辑模式：元数据面板（左）+ 全宽编辑（右） */}
+                {viewMode === 'edit' && (
+                    <>
+                        {/* 元数据面板（左侧） */}
                         <div className={styles.sidePanel}>
                             <MetadataPanel
                                 altText={formData.altText}
@@ -239,12 +266,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                 tags={tags}
                             />
                         </div>
-                    </>
-                )}
 
-                {/* 编辑模式：全宽编辑 + 元数据面板 */}
-                {viewMode === 'edit' && (
-                    <>
                         <div className={styles.editPane}>
                             <div className={styles.headerArea}>
                                 <input
@@ -270,28 +292,6 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                     onInsertImage={handleInsertImage}
                                 />
                             </div>
-                        </div>
-
-                        {/* 元数据面板 */}
-                        <div className={styles.sidePanel}>
-                            <MetadataPanel
-                                altText={formData.altText}
-                                categories={categories}
-                                categoryId={formData.categoryId}
-                                coverImage={formData.coverImage}
-                                onAltTextChange={(v: string | null) => updateField('altText', v)}
-                                onCategoryIdChange={(v: number | null) => updateField('categoryId', v)}
-                                onCoverImageChange={(v: string | null) => updateField('coverImage', v)}
-                                onPublishedAtChange={(v: string | null) => updateField('publishedAt', v)}
-                                onSelectedTagsChange={(v: number[]) => updateField('tags', v)}
-                                onSlugChange={(v: string) => updateField('slug', v)}
-                                onStatusChange={(v: PostStatus) => updateField('status', v)}
-                                publishedAt={formData.publishedAt}
-                                selectedTags={formData.tags}
-                                slug={formData.slug}
-                                status={formData.status}
-                                tags={tags}
-                            />
                         </div>
                     </>
                 )}

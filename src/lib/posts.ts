@@ -49,7 +49,7 @@ interface PostRow extends RowDataPacket {
     alt_text: string | null;
     category_id: number | null;
     category_name: string | null;
-    tags: string | null; // JSON 字符串
+    tags: number[] | string | null; // mysql2 可能自动解析为数组，也可能是 JSON 字符串或 null
     status: PostStatus;
     published_at: string | null;
     updated_at: string | null;
@@ -306,10 +306,15 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
 
         return rows.map((row) => {
             let tags: number[] = [];
-            try {
-                tags = row.tags ? JSON.parse(row.tags) : [];
-            } catch {
-                tags = [];
+            if (Array.isArray(row.tags)) {
+                // mysql2 自动将 JSON 列解析为 JS 数组
+                tags = row.tags;
+            } else if (row.tags) {
+                try {
+                    tags = JSON.parse(row.tags as string);
+                } catch {
+                    tags = [];
+                }
             }
             return {
                 id: row.id,
