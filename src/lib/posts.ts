@@ -304,28 +304,36 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
             values,
         );
 
-        return rows.map((row) => ({
-            id: row.id,
-            slug: row.slug,
-            title: row.title,
-            summary: row.summary?.trim() || EMPTY_SUMMARY_FALLBACK,
-            content: row.content?.trim() || EMPTY_CONTENT_FALLBACK,
-            coverImage: row.cover_image ?? null,
-            altText: row.alt_text ?? null,
-            categoryId: row.category_id ?? null,
-            categoryName: row.category_name ?? undefined,
-            tags: row.tags ? JSON.parse(row.tags) : [],
-            status: row.status,
-            publishedAt: row.published_at,
-            updatedAt: row.updated_at,
-        }));
+        return rows.map((row) => {
+            let tags: number[] = [];
+            try {
+                tags = row.tags ? JSON.parse(row.tags) : [];
+            } catch {
+                tags = [];
+            }
+            return {
+                id: row.id,
+                slug: row.slug,
+                title: row.title,
+                summary: row.summary?.trim() || EMPTY_SUMMARY_FALLBACK,
+                content: row.content?.trim() || EMPTY_CONTENT_FALLBACK,
+                coverImage: row.cover_image ?? null,
+                altText: row.alt_text ?? null,
+                categoryId: row.category_id ?? null,
+                categoryName: row.category_name ?? undefined,
+                tags,
+                status: row.status,
+                publishedAt: row.published_at,
+                updatedAt: row.updated_at,
+            };
+        });
     } catch (error) {
         console.error('Failed to read zhijian_blog_posts.', { options, error });
         return [];
     }
 }
 
-/*== 批量查询标签名称，拼装到文章的 tagNames 字段上。 ==*/
+/*== 批量查询标签名称，拼装到文章的 tagNames 字段上。查询失败时静默回退，不影响文章列表返回。 ==*/
 async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     const allTagIds = posts.flatMap((p) => p.tags).filter(Boolean);
     if (allTagIds.length === 0) return posts;
@@ -334,20 +342,25 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     const db = getDb();
     if (!db) return posts;
 
-    const [tagRows] = await db.execute<RowDataPacket[]>(
-        `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`,
-        uniqueIds,
-    );
+    try {
+        const [tagRows] = await db.execute<RowDataPacket[]>(
+            `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`,
+            uniqueIds,
+        );
 
-    const tagMap = new Map<number, { id: number; name: string; slug: string }>();
-    for (const row of tagRows) {
-        tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
+        const tagMap = new Map<number, { id: number; name: string; slug: string }>();
+        for (const row of tagRows) {
+            tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
+        }
+
+        return posts.map((p) => ({
+            ...p,
+            tagNames: p.tags.map((id) => tagMap.get(id)).filter(Boolean) as { id: number; name: string; slug: string }[],
+        }));
+    } catch (error) {
+        console.error('Failed to enrich posts with tag names.', { error });
+        return posts;
     }
-
-    return posts.map((p) => ({
-        ...p,
-        tagNames: p.tags.map((id) => tagMap.get(id)).filter(Boolean) as { id: number; name: string; slug: string }[],
-    }));
 }
 
 /*== 内部工具 ==*/
