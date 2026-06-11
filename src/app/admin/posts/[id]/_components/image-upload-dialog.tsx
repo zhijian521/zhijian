@@ -110,11 +110,11 @@ export function ImageUploadDialog({
             });
             const result = await res.json();
 
-            if (!res.ok || !result.data?.upload?.path) {
-                throw new Error(result.error || '上传失败');
+            if (!res.ok || !result.data?.path) {
+                throw new Error(result.message || '上传失败');
             }
 
-            const markdown = `![${altText}](${result.data.upload.path})`;
+            const markdown = `![${altText}](${result.data.path})`;
             onInsert(markdown);
             handleClose();
         } catch {

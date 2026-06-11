@@ -99,12 +99,12 @@ export function MarkdownEditor({
                 });
                 const result = await res.json();
 
-                if (!res.ok || !result.data?.upload?.path) {
-                    throw new Error(result.error || '上传失败');
+                if (!res.ok || !result.data?.path) {
+                    throw new Error(result.message || '上传失败');
                 }
 
                 // 用 ref 读取最新 content，替换上传中标记为最终 markdown
-                const finalMarkdown = `![${file.name}](${result.data.upload.path})`;
+                const finalMarkdown = `![${file.name}](${result.data.path})`;
                 const latestContent = contentRef.current;
                 const newContent = latestContent.replace(startMarker, finalMarkdown);
                 onInsertImage(finalMarkdown);

@@ -40,11 +40,11 @@ export function CoverUpload({
                 });
                 const result = await res.json();
 
-                if (!res.ok || !result.data?.upload?.path) {
-                    throw new Error(result.error || '上传失败');
+                if (!res.ok || !result.data?.path) {
+                    throw new Error(result.message || '上传失败');
                 }
 
-                onCoverImageChange(result.data.upload.path);
+                onCoverImageChange(result.data.path);
             } catch {
                 toast.error('封面图上传失败');
             }
