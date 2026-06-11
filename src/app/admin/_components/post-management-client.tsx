@@ -220,7 +220,7 @@ export default function PostManagementClient() {
                     size='medium'
                     variant='primary'
                 >
-                    新建文章
+                    {creating ? '创建中...' : '新建文章'}
                 </GhostButton>
             </div>
 
