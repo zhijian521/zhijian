@@ -145,22 +145,25 @@ export default function ComponentShowcase() {
                 {/* GhostButton */}
                 <div className={styles.componentBlock}>
                     <h3 className={styles.componentName}>GhostButton</h3>
-                    <p className={styles.componentDesc}>幽灵边框按钮，渲染为 &lt;a&gt; 标签，支持 default / primary 两种变体，small / medium / default 三种尺寸。</p>
+                    <p className={styles.componentDesc}>幽灵边框按钮，渲染为 &lt;a&gt; 标签，支持 default / primary 两种变体，small / medium / default 三种尺寸，disabled 时降低透明度并禁止交互。</p>
                     <div className={styles.demoRow}>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>small</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='small' variant='primary'>新建</GhostButton>
                             <GhostButton href='#' size='small'>默认</GhostButton>
+                            <GhostButton asButton disabled size='small'>禁用</GhostButton>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>medium</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='medium' variant='primary'>新建</GhostButton>
                             <GhostButton href='#' size='medium'>默认</GhostButton>
+                            <GhostButton asButton disabled size='medium' variant='primary'>禁用</GhostButton>
                         </div>
                         <div className={styles.demoCol}>
                             <span className={styles.demoLabel}>default</span>
                             <GhostButton href='#' icon={<PlusIcon className={styles.btnIcon} />} size='default' variant='primary'>新建</GhostButton>
                             <GhostButton href='#' size='default'>默认</GhostButton>
+                            <GhostButton asButton disabled size='default'>禁用</GhostButton>
                         </div>
                     </div>
                 </div>
