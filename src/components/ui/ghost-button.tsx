@@ -9,6 +9,8 @@ export interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorE
     size?: 'small' | 'medium' | 'default';
     /** 渲染为 button 标签（用于弹窗等非链接场景） */
     asButton?: boolean;
+    /** 禁用态（仅 asButton 模式生效） */
+    disabled?: boolean;
 }
 
 const SIZE_CLASS: Record<string, string | undefined> = {
