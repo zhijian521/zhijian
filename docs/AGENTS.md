@@ -817,4 +817,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-10（补充文章编辑器、图片管理相关说明）*
+*最后更新: 2026-06-11（编辑器元数据面板移至左侧 260px，PillSelect 替换状态选择器，修复图片上传闭包 bug）*

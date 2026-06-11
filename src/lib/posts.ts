@@ -379,8 +379,14 @@ export function isPostStatus(value: unknown): value is PostStatus {
 function normalizePublishedAt(value: string | null, status: PostStatus): string | null {
     if (!value && status === 'draft') return null;
     if (!value && status === 'published') return formatSqlDate(new Date());
-    // 此时 value 必不为 null（status ∈ {draft, published} 已全覆盖）
-    return value!.replace('T', ' ') + ':00';
+    // value 可能来自 datetime-local（YYYY-MM-DDTHH:mm）或数据库（YYYY-MM-DD HH:mm:ss）
+    const normalized = value!.replace('T', ' ');
+    // 已包含秒数（数据库格式），直接使用
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(normalized)) {
+        return normalized;
+    }
+    // datetime-local 格式，补充秒数
+    return normalized + ':00';
 }
 
 /*== 把 JS Date 格式化成 MySQL DATETIME 字符串。 ==*/

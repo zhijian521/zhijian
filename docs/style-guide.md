@@ -96,7 +96,7 @@
 | 编辑器 — 预览视图 | 全宽预览 |
 | 编辑器顶部工具栏 | `height: 3rem`, `border-bottom: 1px solid var(--border)` |
 | 编辑器 Mini 工具栏 | `bg: var(--muted)`, 按钮高度 `1.75rem` |
-| 编辑器侧边元数据面板 | `width: 320px`, `border-left: 1px solid var(--border)` |
+| 编辑器侧边元数据面板 | `width: 260px`, `border-right: 1px solid var(--border)` |
 | 图片卡片网格 | `grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))` |
 | 图片卡片缩略图 | `height: 120px`, `object-fit: cover` |
 | 封面图拖拽区 | `height: 8rem`, `border: 2px dashed var(--border)`, `bg: var(--muted)` |

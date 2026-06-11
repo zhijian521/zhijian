@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { Select } from '@/components/ui/select';
+import { PillSelect } from '@/components/ui/pill-select';
 import { XIcon } from '@/components/ui/icons';
 import type { PostStatus } from '@/lib/post-shared';
 import { toDateTimeLocalValue } from '@/lib/post-shared';
@@ -37,7 +38,7 @@ const STATUS_OPTIONS: { value: PostStatus; label: string }[] = [
 
 const NONE_VALUE = '__none__';
 
-/*== MetadataPanel 右侧元数据面板 ==*/
+/*== MetadataPanel 左侧元数据面板 ==*/
 export function MetadataPanel({
     categories,
     tags,
@@ -111,6 +112,7 @@ export function MetadataPanel({
             <div className={styles.field}>
                 <span className={styles.fieldLabel}>分类</span>
                 <Select
+                    className={styles.fieldFull}
                     onChange={handleCategoryChange}
                     options={categoryOptions}
                     size="small"
@@ -175,10 +177,11 @@ export function MetadataPanel({
                 />
             </div>
 
-            {/* 状态 */}
+            {/* 状态：药丸单选 */}
             <div className={styles.field}>
                 <span className={styles.fieldLabel}>状态</span>
-                <Select
+                <PillSelect
+                    name="post-status"
                     onChange={onStatusChange}
                     options={STATUS_OPTIONS}
                     size="small"

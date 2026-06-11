@@ -37,6 +37,13 @@ interface FormData {
 
 type SaveStatus = 'saved' | 'saving' | 'unsaved';
 
+/*== 当前时间的 datetime-local 格式 ==*/
+function nowDateTimeLocal(): string {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 /*== PostEditor 编辑器主组件：组装所有子组件，管理状态与自动保存。 ==*/
 export default function PostEditor({ post, categories, tags }: PostEditorProps) {
     const [viewMode, setViewMode] = useState<ViewMode>('split');
@@ -57,6 +64,11 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
 
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastSavedRef = useRef(JSON.stringify(formData));
+    /* 用 ref 追踪最新 formData，避免异步回调中闭包捕获过时值 */
+    const formDataRef = useRef(formData);
+    useEffect(() => {
+        formDataRef.current = formData;
+    }, [formData]);
 
     /* 自动保存 */
     const saveDraft = useCallback(async (data: FormData) => {
@@ -90,7 +102,11 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
     }, [saveDraft]);
 
     function updateField<K extends keyof FormData>(key: K, value: FormData[K]) {
-        const newData = { ...formData, [key]: value };
+        let newData = { ...formData, [key]: value };
+        // 切换为已发布且无发布时间时，自动填充当前时间
+        if (key === 'status' && value === 'published' && !newData.publishedAt) {
+            newData = { ...newData, publishedAt: nowDateTimeLocal() };
+        }
         setFormData(newData);
         // 草稿状态或内容变更时自动保存
         if (newData.status === 'draft' || key === 'content' || key === 'title') {
@@ -101,13 +117,14 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
     /* 手动保存 */
     const handleManualSave = useCallback(async () => {
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-        await saveDraft(formData);
-    }, [formData, saveDraft]);
+        await saveDraft(formDataRef.current);
+    }, [saveDraft]);
 
     /* 发布 / 取消发布 */
     const handleTogglePublish = useCallback(async () => {
-        const newStatus: PostStatus = formData.status === 'published' ? 'draft' : 'published';
-        const newData = { ...formData, status: newStatus };
+        const current = formDataRef.current;
+        const newStatus: PostStatus = current.status === 'published' ? 'draft' : 'published';
+        const newData = { ...current, status: newStatus };
         setFormData(newData);
 
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
@@ -118,13 +135,16 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         } else {
             toast.success('文章已取消发布');
         }
-    }, [formData, saveDraft]);
+    }, [saveDraft]);
 
-    /* 返回文章列表：优先关闭当前标签页；若浏览器阻止（非脚本打开的标签页）则整页跳转，强制重新走 layout 渲染侧边栏。 */
+    /* 返回文章列表：优先关闭当前标签页；若浏览器阻止（非脚本打开的标签页）则延迟跳转。 */
     const handleBack = useCallback(() => {
         window.close();
-        // window.close() 失败时标签页不会关闭，继续执行整页跳转
-        window.location.href = APP_ROUTES.adminPosts;
+        // window.close() 成功时标签页已关闭，setTimeout 不会执行
+        // 失败时（用户手动打开的标签页），200ms 后跳转回列表页
+        setTimeout(() => {
+            window.location.href = APP_ROUTES.adminPosts;
+        }, 200);
     }, []);
 
     /* 文章内插入图片回调 */

@@ -1,6 +1,5 @@
 .panel {
     padding: 1rem;
-    border-left: 1px solid var(--border);
     background: var(--background);
     overflow-y: auto;
     height: 100%;
@@ -16,6 +15,12 @@
     font-weight: 500;
     color: var(--muted-foreground);
     margin-bottom: 0.375rem;
+}
+
+/* 分类 Select 撑满宽度 */
+.fieldFull {
+    display: block;
+    width: 100%;
 }
 
 .fieldInput {

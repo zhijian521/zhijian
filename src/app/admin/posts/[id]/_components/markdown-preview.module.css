@@ -4,9 +4,10 @@
     height: 100%;
 }
 
-/* 预览头部 — 封面图+标题+元信息 */
+/* 预览头部 — 封面图+标题+元信息，与正文同宽左对齐 */
 .previewHeader {
-    margin-bottom: 2rem;
+    max-width: 42rem;
+    margin: 0 auto 2rem;
 }
 
 .coverImage {

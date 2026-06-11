@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageIcon } from '@/components/ui/icons';
 import { toast } from '@/components/ui/toast';
 
@@ -26,6 +26,12 @@ export function MarkdownEditor({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
+
+    /* 用 ref 追踪最新 content，避免异步回调中闭包捕获过时值 */
+    const contentRef = useRef(content);
+    useEffect(() => {
+        contentRef.current = content;
+    }, [content]);
 
     /* 在光标位置插入文本 */
     const insertAtCursor = useCallback(
@@ -97,19 +103,21 @@ export function MarkdownEditor({
                     throw new Error(result.error || '上传失败');
                 }
 
-                // 替换上传中标记为最终 markdown
+                // 用 ref 读取最新 content，替换上传中标记为最终 markdown
                 const finalMarkdown = `![${file.name}](${result.data.upload.path})`;
-                const newContent = content.replace(startMarker, finalMarkdown);
+                const latestContent = contentRef.current;
+                const newContent = latestContent.replace(startMarker, finalMarkdown);
                 onInsertImage(finalMarkdown);
                 onContentChange(newContent);
             } catch {
-                // 上传失败，清除上传标记
-                const newContent = content.replace(startMarker, '');
+                // 上传失败，用 ref 读取最新 content，清除上传标记
+                const latestContent = contentRef.current;
+                const newContent = latestContent.replace(startMarker, '');
                 onContentChange(newContent);
                 toast.error('上传失败');
             }
         },
-        [content, insertAtCursor, onContentChange, onInsertImage],
+        [insertAtCursor, onContentChange, onInsertImage],
     );
 
     /* 处理粘贴事件 */

@@ -64,6 +64,15 @@ export default function PostManagementClient() {
         fetchData();
     }, [fetchData]);
 
+    /* 从编辑器标签页返回时重新加载列表 */
+    useEffect(() => {
+        function handleFocus() {
+            fetchData();
+        }
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [fetchData]);
+
     const filteredPosts = useMemo(() => {
         return posts.filter((post) => {
             const q = keyword.trim().toLowerCase();
