@@ -40,6 +40,7 @@
   var enterTime = 0;
   var lastPageviewUrl = '';
   var lastPageviewTs = 0;
+  var sessionVisited = {};  // session 内已访问过的路径去重
 
   /*-- 工具函数 --*/
 
@@ -187,13 +188,17 @@
 
   function trackPageview() {
     var url = getPath();
-    var title = truncate(document.title, 500);
 
-    // 防重复：同一 URL + title 3 秒内不重复触发
+    // 短防抖：同 URL + title 500ms 内不重复触发（防止 SPA 路由事件重复触发）
+    var title = truncate(document.title, 500);
     var key = url + '\t' + title;
-    if (key === lastPageviewUrl && Date.now() - lastPageviewTs < 3000) return;
+    if (key === lastPageviewUrl && Date.now() - lastPageviewTs < 500) return;
     lastPageviewUrl = key;
     lastPageviewTs = Date.now();
+
+    // session 内去重：同一路径只记录第一次访问，避免用户来回切换页面产生大量重复
+    if (sessionVisited[url]) return;
+    sessionVisited[url] = true;
 
     queue.push(buildEvent('pageview'));
     enterTime = Date.now();
