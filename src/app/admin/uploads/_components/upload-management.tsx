@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { CopyIcon, Trash2Icon } from '@/components/ui/icons';
+import { CheckIcon, CopyIcon, Trash2Icon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { api } from '@/lib/http-client';
@@ -36,6 +36,7 @@ export default function UploadManagement() {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [copiedId, setCopiedId] = useState<number | null>(null);
 
     /* 删除确认弹窗 */
     const [deleteTarget, setDeleteTarget] = useState<UploadItem | null>(null);
@@ -72,7 +73,8 @@ export default function UploadManagement() {
         const markdown = `![](${upload.path})`;
         try {
             await navigator.clipboard.writeText(markdown);
-            toast.success('已复制 Markdown');
+            setCopiedId(upload.id);
+            setTimeout(() => setCopiedId(null), 1500);
         } catch {
             toast.error('复制失败');
         }
@@ -114,6 +116,27 @@ export default function UploadManagement() {
                     <div className={styles.grid}>
                         {uploads.map((upload) => (
                             <div className={styles.card} key={upload.id}>
+                                <div className={styles.cardActions}>
+                                    <button
+                                        aria-label="复制 Markdown"
+                                        className={styles.iconBtn}
+                                        onClick={() => handleCopy(upload)}
+                                        type="button"
+                                    >
+                                        {copiedId === upload.id
+                                            ? <CheckIcon className={styles.iconSmall} />
+                                            : <CopyIcon className={styles.iconSmall} />
+                                        }
+                                    </button>
+                                    <button
+                                        aria-label="删除图片"
+                                        className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                                        onClick={() => setDeleteTarget(upload)}
+                                        type="button"
+                                    >
+                                        <Trash2Icon className={styles.iconSmall} />
+                                    </button>
+                                </div>
                                 <img
                                     alt={upload.alt || upload.original}
                                     className={styles.thumbnail}
@@ -128,38 +151,17 @@ export default function UploadManagement() {
                                         {formatSize(upload.size)} · {upload.createdAt}
                                     </span>
                                 </div>
-                                <div className={styles.actions}>
-                                    <button
-                                        className={styles.actionBtn}
-                                        onClick={() => handleCopy(upload)}
-                                        title="复制 Markdown"
-                                        type="button"
-                                    >
-                                        <CopyIcon className={styles.copyIcon} />
-                                        复制
-                                    </button>
-                                    <button
-                                        className={styles.deleteBtn}
-                                        onClick={() => setDeleteTarget(upload)}
-                                        title="删除图片"
-                                        type="button"
-                                    >
-                                        <Trash2Icon className={styles.deleteIcon} />
-                                    </button>
-                                </div>
                             </div>
                         ))}
                     </div>
 
-                    {totalPages > 1 && (
-                        <div className={styles.paginationWrap}>
-                            <Pagination
-                                current={page}
-                                onPageChange={setPage}
-                                total={totalPages}
-                            />
-                        </div>
-                    )}
+                    <div className={styles.paginationWrap}>
+                        <Pagination
+                            current={page}
+                            onPageChange={setPage}
+                            total={totalPages}
+                        />
+                    </div>
                 </>
             )}
 
