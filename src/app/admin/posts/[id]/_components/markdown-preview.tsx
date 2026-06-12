@@ -8,6 +8,7 @@ import styles from './markdown-preview.module.css';
 export interface MarkdownPreviewProps {
     content: string;
     title?: string;
+    summary?: string;
     coverImage?: string | null;
     altText?: string | null;
     categoryName?: string | null;
@@ -19,13 +20,14 @@ export interface MarkdownPreviewProps {
 export function MarkdownPreview({
     content,
     title,
+    summary,
     coverImage,
     altText,
     categoryName,
     tagNames,
     publishedAt,
 }: MarkdownPreviewProps) {
-    const hasHeader = title || coverImage || categoryName || (tagNames && tagNames.length > 0) || publishedAt;
+    const hasHeader = title || summary || coverImage || categoryName || (tagNames && tagNames.length > 0) || publishedAt;
 
     return (
         <div className={styles.preview}>
@@ -39,6 +41,7 @@ export function MarkdownPreview({
                         />
                     )}
                     {title && <h1 className={styles.previewTitle}>{title}</h1>}
+                    {summary && <p className={styles.previewSummary}>{summary}</p>}
                     <div className={styles.previewMeta}>
                         {categoryName && (
                             <span className={styles.previewCategory}>{categoryName}</span>

@@ -4,42 +4,46 @@
     height: 100%;
 }
 
-/* 预览头部 — 封面图+标题+元信息，与正文同宽左对齐 */
+/* 预览头部 — 标题+摘要+元信息+封面图，与正文柔和区分 */
 .previewHeader {
-    max-width: 42rem;
-    margin: 0 auto 2rem;
-}
-
-.coverImage {
-    display: block;
-    max-height: 20rem;
-    width: 100%;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    margin-bottom: 1.25rem;
+    max-width: 56rem;
+    margin: 0 auto 2.5rem;
+    padding: 1.5rem 1.25rem;
+    background: var(--highlight);
 }
 
 .previewTitle {
     font-family: var(--font-serif);
-    font-size: 1.75rem;
+    font-size: 1.875rem;
     font-weight: 700;
     color: var(--foreground);
+    margin: 0 0 0.75rem;
+    line-height: 1.35;
+}
+
+.previewSummary {
+    font-family: var(--font-serif);
+    font-size: 0.9375rem;
+    font-style: italic;
+    line-height: 1.75;
+    color: var(--muted-foreground);
     margin: 0 0 1rem;
-    line-height: 1.4;
 }
 
 .previewMeta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
 }
 
 .previewCategory {
     display: inline-block;
     padding: 0.125rem 0.5rem;
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
     border: 1px solid var(--primary);
     color: var(--primary);
     background: var(--primary-subtle-soft);
@@ -48,13 +52,21 @@
 .previewTag {
     display: inline-block;
     padding: 0.125rem 0.5rem;
-    font-size: 0.8125rem;
-    border: 1px solid var(--border);
+    font-size: 0.75rem;
     color: var(--muted-foreground);
-    background: var(--muted);
+    background: var(--secondary);
 }
 
 .previewDate {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     color: var(--muted-foreground);
+    margin-left: auto;
+}
+
+/* 封面图：头部最顶部，与标题之间留间距 */
+.coverImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
 }

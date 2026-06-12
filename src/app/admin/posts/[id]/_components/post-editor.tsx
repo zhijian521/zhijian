@@ -257,6 +257,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                     content={formData.content}
                                     coverImage={formData.coverImage}
                                     publishedAt={formData.publishedAt}
+                                    summary={formData.summary}
                                     tagNames={tagNames}
                                     title={formData.title}
                                     altText={formData.altText}
@@ -328,6 +329,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                             content={formData.content}
                             coverImage={formData.coverImage}
                             publishedAt={formData.publishedAt}
+                            summary={formData.summary}
                             tagNames={tagNames}
                             title={formData.title}
                             altText={formData.altText}
