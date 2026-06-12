@@ -27,7 +27,6 @@ export const APP_ROUTES = {
     admin: '/admin',
     adminLogin: '/admin/login',
     adminPosts: '/admin/posts',
-    adminPostCreate: '/admin/posts/new',
     adminUsers: '/admin/users',
     adminUserCreate: '/admin/users/new',
     adminSettings: '/admin/settings',

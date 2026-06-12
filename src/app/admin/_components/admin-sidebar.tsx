@@ -8,6 +8,7 @@ import { useState } from 'react';
 
 import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/site';
 import { api } from '@/lib/http-client';
+import { toast } from '@/components/ui/toast';
 import { cn, isNavItemActive } from '@/lib/utils';
 import styles from './admin-sidebar.module.css';
 
@@ -15,6 +16,7 @@ import styles from './admin-sidebar.module.css';
 export default function AdminSidebar() {
     const pathname = usePathname();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
 
     /* 计算每个分组的展开状态：当前路由匹配分组下任一子项时自动展开，否则用手动状态 */
     const [manualOpen, setManualOpen] = useState<Record<string, boolean>>({});
@@ -58,10 +60,29 @@ export default function AdminSidebar() {
             </div>
 
             {/* 撰写文章快捷入口 */}
-            <Link className={styles.createButton} href={APP_ROUTES.adminPostCreate}>
+            <button
+                className={styles.createButton}
+                disabled={isCreating}
+                onClick={async () => {
+                    setIsCreating(true);
+                    try {
+                        const res = await api.post<{ id: number }>('/admin/posts', {});
+                        if (res.code === 0 && res.data) {
+                            window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
+                        } else {
+                            toast.error(res.message || '新建文章失败');
+                        }
+                    } catch {
+                        toast.error('新建文章失败');
+                    } finally {
+                        setIsCreating(false);
+                    }
+                }}
+                type="button"
+            >
                 <PlusIcon className={styles.navIcon} />
-                <span>撰写文章</span>
-            </Link>
+                <span>{isCreating ? '创建中...' : '撰写文章'}</span>
+            </button>
 
             {/* 导航区 */}
             <nav aria-label='后台主导航' className={styles.nav}>
