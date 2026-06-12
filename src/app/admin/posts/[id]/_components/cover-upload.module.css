@@ -42,6 +42,35 @@
     font-size: 0.8125rem;
 }
 
+/* 上传中态 */
+.dropZoneUploading {
+    border-style: solid;
+    border-color: var(--primary);
+    cursor: not-allowed;
+    color: var(--primary);
+}
+
+.dropZoneUploading:hover {
+    border-color: var(--primary);
+    background: var(--muted);
+}
+
+/* 旋转加载指示器 */
+.spinner {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-bottom: 0.5rem;
+    border: 2px solid var(--primary-subtle);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* 预览区 */
 .previewWrap {
     position: relative;
@@ -54,10 +83,16 @@
     max-height: 12rem;
     object-fit: cover;
     border: 1px solid var(--border);
+    transition: opacity 0.2s ease;
+}
+
+.previewImageUploading {
+    opacity: 0.5;
 }
 
 .deleteBtn {
     position: absolute;
+    z-index: 1;
     top: 0.375rem;
     right: 0.375rem;
     display: flex;
@@ -82,6 +117,12 @@
 .deleteBtn:focus-visible {
     box-shadow: 0 0 0 3px var(--ring-subtle);
     outline: none;
+}
+
+.deleteBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .deleteIcon {

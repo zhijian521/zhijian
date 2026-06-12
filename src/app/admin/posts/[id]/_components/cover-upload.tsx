@@ -22,6 +22,7 @@ export function CoverUpload({
 }: CoverUploadProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     /* 上传图片 */
     const uploadCover = useCallback(
@@ -31,6 +32,7 @@ export function CoverUpload({
                 return;
             }
 
+            setUploading(true);
             try {
                 const formData = new FormData();
                 formData.append('file', file);
@@ -47,6 +49,8 @@ export function CoverUpload({
                 onCoverImageChange(result.data.path);
             } catch {
                 toast.error('封面图上传失败');
+            } finally {
+                setUploading(false);
             }
         },
         [onCoverImageChange],
@@ -56,8 +60,8 @@ export function CoverUpload({
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDragging(true);
-    }, []);
+        if (!uploading) setIsDragging(true);
+    }, [uploading]);
 
     const handleDragLeave = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -71,18 +75,19 @@ export function CoverUpload({
             e.stopPropagation();
             setIsDragging(false);
 
+            if (uploading) return;
             const file = e.dataTransfer.files[0];
             if (file) {
                 uploadCover(file);
             }
         },
-        [uploadCover],
+        [uploadCover, uploading],
     );
 
     /* 点击上传 */
     const handleClick = useCallback(() => {
-        fileInputRef.current?.click();
-    }, []);
+        if (!uploading) fileInputRef.current?.click();
+    }, [uploading]);
 
     const handleFileChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,9 +102,9 @@ export function CoverUpload({
 
     /* 删除封面 */
     const handleDelete = useCallback(() => {
+        if (uploading) return;
         onCoverImageChange(null);
-        onAltTextChange(null);
-    }, [onCoverImageChange, onAltTextChange]);
+    }, [onCoverImageChange, uploading]);
 
     /* Alt 文本变更 */
     const handleAltChange = useCallback(
@@ -116,12 +121,13 @@ export function CoverUpload({
                     <div className={styles.previewWrap}>
                         <img
                             alt={altText || '封面图'}
-                            className={styles.previewImage}
+                            className={`${styles.previewImage}${uploading ? ` ${styles.previewImageUploading}` : ''}`}
                             src={coverImage}
                         />
                         <button
                             aria-label="删除封面图"
                             className={styles.deleteBtn}
+                            disabled={uploading}
                             onClick={handleDelete}
                             type="button"
                         >
@@ -134,6 +140,7 @@ export function CoverUpload({
                         </label>
                         <input
                             className={styles.altInput}
+                            disabled={uploading}
                             id="cover-alt"
                             onChange={handleAltChange}
                             placeholder="描述封面图内容"
@@ -144,7 +151,7 @@ export function CoverUpload({
                 </>
             ) : (
                 <div
-                    className={`${styles.dropZone}${isDragging ? ` ${styles.dropZoneDragging}` : ''}`}
+                    className={`${styles.dropZone}${isDragging ? ` ${styles.dropZoneDragging}` : ''}${uploading ? ` ${styles.dropZoneUploading}` : ''}`}
                     onClick={handleClick}
                     onDragLeave={handleDragLeave}
                     onDragOver={handleDragOver}
@@ -156,15 +163,25 @@ export function CoverUpload({
                         }
                     }}
                     role="button"
-                    tabIndex={0}
+                    tabIndex={uploading ? -1 : 0}
                 >
-                    <ImageIcon className={styles.dropIcon} />
-                    <span className={styles.dropText}>点击或拖拽上传封面图</span>
+                    {uploading ? (
+                        <>
+                            <span className={styles.spinner} />
+                            <span className={styles.dropText}>上传中...</span>
+                        </>
+                    ) : (
+                        <>
+                            <ImageIcon className={styles.dropIcon} />
+                            <span className={styles.dropText}>点击或拖拽上传封面图</span>
+                        </>
+                    )}
                 </div>
             )}
 
             <input
                 accept="image/*"
+                disabled={uploading}
                 onChange={handleFileChange}
                 ref={fileInputRef}
                 style={{ display: 'none' }}

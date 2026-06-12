@@ -107,9 +107,13 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         if (key === 'status' && value === 'published' && !newData.publishedAt) {
             newData = { ...newData, publishedAt: nowDateTimeLocal() };
         }
+        // 删除封面图时同时清空替代文本
+        if (key === 'coverImage' && value === null) {
+            newData.altText = null;
+        }
         setFormData(newData);
-        // 草稿状态或内容变更时自动保存
-        if (newData.status === 'draft' || key === 'content' || key === 'title') {
+        // 草稿状态、内容/标题/封面图变更时自动保存
+        if (newData.status === 'draft' || key === 'content' || key === 'title' || key === 'coverImage' || key === 'altText') {
             scheduleSave(newData);
         }
     }
