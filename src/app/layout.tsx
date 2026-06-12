@@ -6,10 +6,30 @@ import { SITE_METADATA } from '@/lib/site';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'Zhijian',
+    metadataBase: new URL(SITE_METADATA.siteUrl),
+    title: {
+        default: SITE_METADATA.title,
+        template: `%s | ${SITE_METADATA.title}`,
+    },
     description: SITE_METADATA.description,
     icons: {
         icon: '/images/logo.png',
+    },
+    openGraph: {
+        type: 'website',
+        locale: SITE_METADATA.locale,
+        siteName: SITE_METADATA.title,
+        images: [{ url: SITE_METADATA.ogImage, alt: SITE_METADATA.title }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+    },
+    alternates: {
+        canonical: '/',
+    },
+    robots: {
+        index: true,
+        follow: true,
     },
 };
 

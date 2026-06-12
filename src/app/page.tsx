@@ -7,11 +7,19 @@ import { ArrowDownIcon, ArrowRightIcon, BookIcon, CodeIcon, ExternalLinkIcon, Gi
 import { TextLink } from '@/components/ui/text-link';
 import { getPublishedPosts } from '@/lib/posts';
 import { formatPostDate } from '@/lib/post-shared';
+import { SITE_METADATA } from '@/lib/site';
 
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: 'Home - Zhijian',
+    title: '首页',
+    description: SITE_METADATA.description,
+    alternates: { canonical: '/' },
+    openGraph: {
+        title: SITE_METADATA.title,
+        description: SITE_METADATA.description,
+        url: '/',
+    },
 };
 
 export const revalidate = 60;

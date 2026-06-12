@@ -1,10 +1,16 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { GhostButton } from '@/components/ui/ghost-button';
 import { ArticleView } from '@/components/site/article-view';
 import { getPostBySlug, getPublishedPosts } from '@/lib/posts';
+import { SITE_METADATA } from '@/lib/site';
 
 import styles from './page.module.css';
+
+interface PageProps {
+    params: Promise<{ slug: string }>;
+}
 
 /*== ISR：每 60 秒重新验证 ==*/
 export const revalidate = 60;
@@ -15,8 +21,41 @@ export async function generateStaticParams() {
     return posts.map((post) => ({ slug: post.slug }));
 }
 
+/*== 详情页 metadata：每篇文章独立的 title/description/OG/canonical ==*/
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const post = await getPostBySlug(slug);
+    if (!post) notFound();
+
+    const title = post.title;
+    const description = post.summary || `${post.title} — ${SITE_METADATA.title}`;
+    const ogImage = post.coverImage || undefined;
+
+    return {
+        title,
+        description,
+        alternates: { canonical: `/blog/${slug}` },
+        openGraph: {
+            type: 'article',
+            title,
+            description,
+            url: `/blog/${slug}`,
+            publishedTime: post.publishedAt || undefined,
+            authors: [SITE_METADATA.title],
+            tags: post.tagNames?.map((t) => t.name),
+            ...(ogImage && { images: [{ url: ogImage, alt: post.altText || title }] }),
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            ...(ogImage && { images: [{ url: ogImage, alt: post.altText || title }] }),
+        },
+    };
+}
+
 /*== 博客详情页：从数据库读取文章，复用 ArticleView 组件 ==*/
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({ params }: PageProps) {
     const { slug } = await params;
     const post = await getPostBySlug(slug);
 
@@ -24,8 +63,34 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         notFound();
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        description: post.summary,
+        ...(post.coverImage && { image: `${SITE_METADATA.siteUrl}${post.coverImage}` }),
+        datePublished: post.publishedAt || undefined,
+        dateModified: post.updatedAt || undefined,
+        author: {
+            '@type': 'Person',
+            name: SITE_METADATA.title,
+        },
+        publisher: {
+            '@type': 'Person',
+            name: SITE_METADATA.title,
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `${SITE_METADATA.siteUrl}/blog/${post.slug}`,
+        },
+    };
+
     return (
         <main className={styles.page}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <article className={styles.article}>
                 <ArticleView
                     altText={post.altText}

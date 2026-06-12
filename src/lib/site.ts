@@ -16,8 +16,11 @@ import {
 export const SITE_METADATA = {
     name: 'Zhijian',
     adminName: 'Zhijian Admin',
-    title: 'Zhijian',
-    description: 'Zhijian: A simple personal website.',
+    title: '知简',
+    description: '知简 — 一个简洁的个人博客网站。',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
+    locale: 'zh_CN',
+    ogImage: '/images/main.png',
 } as const;
 
 export const APP_ROUTES = {
