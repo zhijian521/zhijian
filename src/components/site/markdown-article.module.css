@@ -79,8 +79,8 @@
 
 /*== 引用 ==*/
 .body :global(blockquote) {
-    margin: 2.5rem 0;
-    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
     border-left: 2px solid var(--primary);
     background: var(--muted);
     font-family: var(--font-serif);

@@ -76,7 +76,7 @@
 }
 
 .textarea:focus {
-    box-shadow: inset 2px 0 0 var(--primary);
+    outline: none;
 }
 
 .textarea:disabled {
