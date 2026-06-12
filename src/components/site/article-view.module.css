@@ -3,11 +3,10 @@
     margin: 0 auto;
 }
 
-/* 文章头部 — 封面图+标题+摘要+元信息，与正文柔和区分 */
+/* 文章头部 — 封面图+标题+摘要+元信息 */
 .header {
     margin: 0 auto 2.5rem;
     padding: 1.5rem 1.25rem;
-    background: var(--highlight);
 }
 
 .headerTitle {
