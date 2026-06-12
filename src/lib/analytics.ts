@@ -671,21 +671,5 @@ export async function getVisits(
         };
     });
 
-    /* 展示层去重：同一访客 + 同一路径 60 秒内只保留第一条，过滤历史脏数据和快速重复触发 */
-    const DEDUP_WINDOW_MS = 60_000;
-    const deduped: VisitRecord[] = [];
-    for (const record of data) {
-        const prev = deduped[deduped.length - 1];
-        if (
-            prev
-            && prev.visitorId === record.visitorId
-            && prev.path === record.path
-            && Math.abs(new Date(record.createdAt).getTime() - new Date(prev.createdAt).getTime()) < DEDUP_WINDOW_MS
-        ) {
-            continue;
-        }
-        deduped.push(record);
-    }
-
-    return { data: deduped, total };
+    return { data, total };
 }
