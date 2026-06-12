@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { GhostButton } from '@/components/ui/ghost-button';
 import { ArticleView } from '@/components/site/article-view';
 import { getPostBySlug, getPublishedPosts } from '@/lib/posts';
 import { SITE_METADATA } from '@/lib/site';
+import { ArticleFooterActions } from './_components/article-footer-actions';
 
 import styles from './page.module.css';
 
@@ -110,11 +110,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                             <span className={styles.footerTag} key={t.id}>{t.name}</span>
                         ))}
                     </div>
-                    <div className={styles.footerActions}>
-                        <GhostButton href="/blog">
-                            ← 返回列表
-                        </GhostButton>
-                    </div>
+                    <ArticleFooterActions />
                 </footer>
             </article>
         </main>

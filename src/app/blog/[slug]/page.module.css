@@ -47,7 +47,5 @@
 .footerActions {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    font-size: 0.875rem;
-    color: var(--muted-foreground);
+    gap: 0.75rem;
 }
