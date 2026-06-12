@@ -204,9 +204,7 @@
     if (leftPage) return;
     leftPage = true;
 
-    // leave 后重置 pageview 防重复
-    lastPageviewUrl = '';
-    lastPageviewTs = 0;
+    // 不重置 lastPageviewUrl/Ts：保留防抖状态，避免用户切标签页再切回时产生重复 pageview
 
     queue.push(buildEvent('leave'));
 

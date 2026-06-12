@@ -151,13 +151,23 @@ export async function POST(request: NextRequest) {
         const maskedIp = rawIp ? maskIp(rawIp) : null;
         const geo = rawIp ? lookup(rawIp) : null;
 
+        /*-- 批次内去重：相同 siteId + visitorId + sessionId + type + path + 60秒窗口视为重复 --*/
+        const DEDUP_WINDOW_MS = 60_000;
+        const seen = new Set<string>();
+        const dedupedEvents = events.filter((evt) => {
+            if (!evt.type || !VALID_TYPES.has(evt.type)) return false;
+            if (!evt.url || typeof evt.url !== 'string') return false;
+            const key = `${evt.type}:${(evt.url || '').slice(0, MAX_PATH)}:${visitorId}:${sessionId}:${Math.floor((evt.ts || 0) / DEDUP_WINDOW_MS)}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
         /*-- 构建批量 INSERT --*/
         const values: any[] = [];
         const placeholders: string[] = [];
 
-        for (const evt of events) {
-            if (!evt.type || !VALID_TYPES.has(evt.type)) continue;
-            if (!evt.url || typeof evt.url !== 'string') continue;
+        for (const evt of dedupedEvents) {
 
             /* #14 UA 解析 */
             const uaInfo = parseUA(evt.ua || '');
