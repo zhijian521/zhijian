@@ -44,6 +44,15 @@ export { TrendingUpIcon } from './trending-up-icon';
 export { TrendingDownIcon } from './trending-down-icon';
 export { PauseIcon } from './pause-icon';
 export { PlayIcon } from './play-icon';
+export { BoldIcon } from './bold-icon';
+export { ItalicIcon } from './italic-icon';
+export { HeadingIcon } from './heading-icon';
+export { LinkIcon } from './link-icon';
+export { QuoteIcon } from './quote-icon';
+export { ListIcon } from './list-icon';
+export { ListOrderedIcon } from './list-ordered-icon';
+export { MinusIcon } from './minus-icon';
+export { CodeBlockIcon } from './codeblock-icon';
 
 /** 图标组件的函数类型，用于 NavSubItem 等 */
 export type IconComponent = React.ComponentType<IconProps>;
