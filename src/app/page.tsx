@@ -5,12 +5,16 @@ import { PostCard } from '@/components/site/post-card';
 import { ProjectCard, type ProjectAction } from '@/components/site/project-card';
 import { ArrowDownIcon, ArrowRightIcon, BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon, MailIcon } from '@/components/ui/icons';
 import { TextLink } from '@/components/ui/text-link';
+import { getPublishedPosts } from '@/lib/posts';
+import { formatPostDate } from '@/lib/post-shared';
 
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
     title: 'Home - Zhijian',
 };
+
+export const revalidate = 60;
 
 /*== 项目数据 ==*/
 const PROJECTS: { icon: React.ReactNode; title: string; description: string; tags: string[]; actions: ProjectAction[] }[] = [
@@ -36,8 +40,11 @@ const PROJECTS: { icon: React.ReactNode; title: string; description: string; tag
     },
 ];
 
-/*== 首页：纯静态展示，使用 theme.css 统一变量。 ==*/
-export default function HomePage() {
+/*== 首页：从数据库读取最新文章 + 纯静态项目展示。 ==*/
+export default async function HomePage() {
+    const posts = await getPublishedPosts();
+    const latestPosts = posts.slice(0, 3);
+
     return (
         <main className={styles.page}>
             <section className={styles.hero}>
@@ -96,33 +103,28 @@ export default function HomePage() {
                     </div>
 
                     <div className={styles.postsGrid}>
-                        <PostCard
-                            tag='生活方式'
-                            tagVariant='primary'
-                            date='2026年5月20日'
-                            title='茶道与留白的美学'
-                            summary='在喧嚣的现代生活中，泡一壶清茶，体会杯盏间的留白。这不仅仅是一种饮品，更是一种减法生活的哲学实践。'
-                            href='/blog/tea-ceremony'
-                            visual={<div className={styles.postVisualTea} />}
-                        />
-
-                        <PostCard
-                            tag='设计札记'
-                            date='2026年5月15日'
-                            title='秩序之美：网格系统的力量'
-                            summary='探讨如何通过严谨的网格系统在数字设计中建立秩序感。和谐的视觉比例能够引导用户的视线，传递品牌的沉稳与专业。'
-                            href='/blog/grid-system-order'
-                            visual={<div className={styles.postVisualArchitecture} />}
-                        />
-
-                        <PostCard
-                            tag='文化随笔'
-                            tagVariant='primary'
-                            date='2026年5月1日'
-                            title='《考工记》与现代工艺精神'
-                            summary='"天有时，地有气，材有美，工有巧，合此四者，然后可以为良。"重读古代造物典籍，寻找属于这个时代的工匠精神回归之路。'
-                            href='/blog/craftsmanship'
-                        />
+                        {latestPosts.length > 0 ? latestPosts.map((post) => (
+                            <PostCard
+                                key={post.id}
+                                tag={post.categoryName ?? undefined}
+                                tagVariant='primary'
+                                date={formatPostDate(post.publishedAt)}
+                                title={post.title}
+                                summary={post.summary}
+                                href={`/blog/${post.slug}`}
+                                visual={post.coverImage ? (
+                                    <img
+                                        alt={post.altText || post.title}
+                                        src={post.coverImage}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                ) : undefined}
+                            />
+                        )) : (
+                            <p style={{ color: 'var(--muted-foreground)', fontSize: '0.9375rem' }}>
+                                暂无文章，去后台写一篇吧。
+                            </p>
+                        )}
                     </div>
                 </section>
 

@@ -1,7 +1,6 @@
 'use client';
 
-import { MarkdownArticle } from '@/components/site/markdown-article';
-import { formatPostDate } from '@/lib/post-shared';
+import { ArticleView } from '@/components/site/article-view';
 
 import styles from './markdown-preview.module.css';
 
@@ -16,7 +15,7 @@ export interface MarkdownPreviewProps {
     publishedAt?: string | null;
 }
 
-/*== MarkdownPreview 实时预览区 ==*/
+/*== MarkdownPreview 编辑器实时预览区 — 复用 ArticleView 组件 ==*/
 export function MarkdownPreview({
     content,
     title,
@@ -27,37 +26,18 @@ export function MarkdownPreview({
     tagNames,
     publishedAt,
 }: MarkdownPreviewProps) {
-    const hasHeader = title || summary || coverImage || categoryName || (tagNames && tagNames.length > 0) || publishedAt;
-
     return (
         <div className={styles.preview}>
-            {hasHeader && (
-                <div className={styles.previewHeader}>
-                    {coverImage && (
-                        <img
-                            alt={altText || title || '封面图'}
-                            className={styles.coverImage}
-                            src={coverImage}
-                        />
-                    )}
-                    {title && <h1 className={styles.previewTitle}>{title}</h1>}
-                    {summary && <p className={styles.previewSummary}>{summary}</p>}
-                    <div className={styles.previewMeta}>
-                        {categoryName && (
-                            <span className={styles.previewCategory}>{categoryName}</span>
-                        )}
-                        {tagNames?.map((name) => (
-                            <span className={styles.previewTag} key={name}>{name}</span>
-                        ))}
-                        {publishedAt && (
-                            <span className={styles.previewDate}>
-                                {formatPostDate(publishedAt)}
-                            </span>
-                        )}
-                    </div>
-                </div>
-            )}
-            <MarkdownArticle content={content} />
+            <ArticleView
+                altText={altText}
+                categoryName={categoryName}
+                content={content}
+                coverImage={coverImage}
+                publishedAt={publishedAt}
+                summary={summary}
+                tagNames={tagNames}
+                title={title}
+            />
         </div>
     );
 }

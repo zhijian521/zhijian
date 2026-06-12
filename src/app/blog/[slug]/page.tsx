@@ -1,65 +1,48 @@
 import { notFound } from 'next/navigation';
 
-import { Tag } from '@/components/ui/tag';
 import { GhostButton } from '@/components/ui/ghost-button';
-import { MarkdownArticle } from '@/components/site/markdown-article';
-import { getStaticPostSlugs, getStaticPostMeta, getStaticPostContent } from '@/lib/static-posts';
+import { ArticleView } from '@/components/site/article-view';
+import { getPostBySlug, getPublishedPosts } from '@/lib/posts';
 
 import styles from './page.module.css';
 
-/*== 生成静态路径 ==*/
-export function generateStaticParams() {
-    return getStaticPostSlugs().map((slug) => ({ slug }));
+/*== ISR：每 60 秒重新验证 ==*/
+export const revalidate = 60;
+
+/*== 生成静态路径（ISR 预渲染） ==*/
+export async function generateStaticParams() {
+    const posts = await getPublishedPosts();
+    return posts.map((post) => ({ slug: post.slug }));
 }
 
-/*== 博客详情页：纯静态，从 MD 文件读取正文 ==*/
+/*== 博客详情页：从数据库读取文章，复用 ArticleView 组件 ==*/
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const meta = getStaticPostMeta(slug);
-    const content = await getStaticPostContent(slug);
+    const post = await getPostBySlug(slug);
 
-    if (!meta || !content) {
+    if (!post) {
         notFound();
     }
 
     return (
         <main className={styles.page}>
             <article className={styles.article}>
-                {/* 文章头部 */}
-                <header className={styles.header}>
-                    <div className={styles.metaRow}>
-                        <Tag variant="primary">{meta.category}</Tag>
-                        <span className={styles.metaDot}>·</span>
-                        <span>{meta.date}</span>
-                    </div>
-                    <h1 className={styles.title}>{meta.title}</h1>
-                    <p className={styles.subtitle}>{meta.subtitle}</p>
-                    <div className={styles.authorRow}>
-                        <div className={styles.avatar}>简</div>
-                        <div>
-                            <div className={styles.authorName}>Zhi Jian</div>
-                            <div className={styles.authorDate}>前端开发 · 简约设计</div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* 封面视觉 */}
-                <div className={styles.cover}>
-                    <div className={styles.coverCenter} />
-                    <div className={styles.coverLine} />
-                    <div className={styles.coverRing} style={{ width: '12rem', height: '12rem' }} />
-                    <div className={styles.coverRing2} style={{ width: '18rem', height: '18rem' }} />
-                    <div className={styles.coverRing3} style={{ width: '24rem', height: '24rem' }} />
-                </div>
-
-                {/* 正文：MarkdownArticle 统一渲染 */}
-                <MarkdownArticle content={content} />
+                <ArticleView
+                    altText={post.altText}
+                    categoryName={post.categoryName}
+                    content={post.content}
+                    coverImage={post.coverImage}
+                    publishedAt={post.publishedAt}
+                    summary={post.summary}
+                    tagNames={post.tagNames}
+                    title={post.title}
+                />
 
                 {/* 文章底部 */}
                 <footer className={styles.footer}>
                     <div className={styles.footerTags}>
-                        {meta.tags.map((tag) => (
-                            <Tag key={tag} variant="outlined">{tag}</Tag>
+                        {post.tagNames?.map((t) => (
+                            <span className={styles.footerTag} key={t.id}>{t.name}</span>
                         ))}
                     </div>
                     <div className={styles.footerActions}>

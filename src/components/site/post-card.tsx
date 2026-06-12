@@ -20,7 +20,7 @@ export interface PostCardProps {
     href: string;
 }
 
-/*== PostCard 文章卡片 — 组合 Tag + TextLink ==*/
+/*== PostCard 文章卡片 — 有封面图时图片+渐变+内容叠层，无封面图时纯文字 ==*/
 export function PostCard({
     visual,
     tag,
@@ -30,30 +30,38 @@ export function PostCard({
     summary,
     href,
 }: PostCardProps) {
-    const isTextOnly = !visual;
+    const hasVisual = !!visual;
 
     return (
         <article className={styles.card}>
-            {visual ? (
-                <div className={styles.visual}>
-                    <div className={styles.visualContent}>{visual}</div>
+            {hasVisual ? (
+                /* 封面图 + 渐变叠层 + 内容 */
+                <div className={styles.visualCard}>
+                    <div className={styles.visualImage}>{visual}</div>
+                    <div className={styles.visualGradient} />
+                    <div className={styles.visualBody}>
+                        <div className={styles.metaRow}>
+                            {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
+                            {date ? <span className={styles.date}>{date}</span> : null}
+                        </div>
+                        <h3 className={styles.title}>{title}</h3>
+                        {summary ? <p className={styles.summary}>{summary}</p> : null}
+                        <TextLink href={href}>阅读更多</TextLink>
+                    </div>
                 </div>
-            ) : null}
-
-            <div className={styles.body}>
-                <div className={styles.metaRow}>
-                    {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
-                    {date ? <span className={styles.date}>{date}</span> : null}
+            ) : (
+                /* 纯文字卡片 */
+                <div className={styles.body}>
+                    <div className={styles.metaRow}>
+                        {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
+                        {date ? <span className={styles.date}>{date}</span> : null}
+                    </div>
+                    <h3 className={styles.title}>{title}</h3>
+                    {summary ? <p className={styles.summary}>{summary}</p> : null}
+                    <div className={styles.divider} />
+                    <TextLink href={href}>阅读更多</TextLink>
                 </div>
-
-                <h3 className={styles.title}>{title}</h3>
-
-                {summary ? <p className={styles.summary}>{summary}</p> : null}
-
-                {isTextOnly ? <div className={styles.divider} /> : null}
-
-                <TextLink href={href}>阅读更多</TextLink>
-            </div>
+            )}
         </article>
     );
 }

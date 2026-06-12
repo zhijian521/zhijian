@@ -77,13 +77,17 @@ export async function getAllPosts(): Promise<Post[]> {
 /*== 按 Slug 获取单篇已发布文章，用于前台详情页。 @param slug - 文章的唯一标识符 @returns 匹配的文章，未找到时返回 null ==*/
 export async function getPostBySlug(slug: string): Promise<Post | null> {
     const posts = await readPostsFromDatabase({ includeDrafts: false, slug });
-    return posts[0] ?? null;
+    if (posts.length === 0) return null;
+    const enriched = await enrichPostsWithTagNames(posts);
+    return enriched[0] ?? null;
 }
 
 /*== 按 ID 获取单篇文章（含草稿），供后台编辑页使用。 @param id - 文章主键 ID @returns 匹配的文章，未找到时返回 null ==*/
 export async function getPostById(id: number): Promise<Post | null> {
     const posts = await readPostsFromDatabase({ includeDrafts: true, id });
-    return posts[0] ?? null;
+    if (posts.length === 0) return null;
+    const enriched = await enrichPostsWithTagNames(posts);
+    return enriched[0] ?? null;
 }
 
 /*== 写入操作 ==*/
