@@ -154,7 +154,7 @@
     margin: 0.25rem 0;
 }
 
-/*== 行内代码 ==*/
+/*== 代码块 — 由 CodeBlock 组件渲染，此处仅覆盖行内 code 样式 ==*/
 .body :global(code) {
     padding: 0.125rem 0.375rem;
     border: 1px solid var(--border);
@@ -164,22 +164,13 @@
     color: var(--foreground);
 }
 
-/*== 代码块 ==*/
-.body :global(pre) {
-    margin: 2rem 0;
-    padding: 1.25rem 1.5rem;
-    overflow-x: auto;
-    border: 1px solid var(--border);
-    background: var(--muted);
-    line-height: 1.6;
-}
-
+/* 代码块内的 code 不需要行内样式覆盖 */
 .body :global(pre code) {
     padding: 0;
     border: none;
     background: transparent;
-    font-size: 0.875rem;
-    color: var(--foreground);
+    font-size: inherit;
+    color: inherit;
 }
 
 /*== 链接 ==*/

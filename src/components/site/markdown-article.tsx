@@ -1,6 +1,10 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 
+import { CodeBlock } from './code-block';
+
+import 'highlight.js/styles/github.css';
 import styles from './markdown-article.module.css';
 
 export interface MarkdownArticleProps {
@@ -12,7 +16,13 @@ export interface MarkdownArticleProps {
 export function MarkdownArticle({ content }: MarkdownArticleProps) {
     return (
         <div className={styles.body}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                components={{ pre: CodeBlock }}
+            >
+                {content}
+            </ReactMarkdown>
         </div>
     );
 }
