@@ -187,10 +187,12 @@
 
   function trackPageview() {
     var url = getPath();
+    var title = truncate(document.title, 500);
 
-    // 防重复：同一 URL 3 秒内不重复触发
-    if (url === lastPageviewUrl && Date.now() - lastPageviewTs < 3000) return;
-    lastPageviewUrl = url;
+    // 防重复：同一 URL + title 3 秒内不重复触发
+    var key = url + '\t' + title;
+    if (key === lastPageviewUrl && Date.now() - lastPageviewTs < 3000) return;
+    lastPageviewUrl = key;
     lastPageviewTs = Date.now();
 
     queue.push(buildEvent('pageview'));
