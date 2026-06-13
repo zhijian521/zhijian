@@ -176,6 +176,7 @@ export default function AnalyticsDashboard() {
     const [range, setRange] = useState<DateRange>('7d');
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [tab, setTab] = useState<'overview' | 'visits'>('overview');
     const [visits, setVisits] = useState<{ data: VisitRecord[]; total: number }>({ data: [], total: 0 });
     const [visitsPage, setVisitsPage] = useState(1);
@@ -198,11 +199,14 @@ export default function AnalyticsDashboard() {
     const fetchData = useCallback(async () => {
         if (!siteId) return;
         setLoading(true);
+        setError(null);
         try {
             const res = await api.get<AnalyticsData>('/admin/analytics/overview', { siteId, range });
             if (res.code === 0 && res.data) setData(res.data);
+            else setError(res.message || '获取数据失败');
         } catch (err) {
             console.error('获取分析数据失败：', err);
+            setError('网络请求失败，请检查网络连接后重试');
         } finally {
             setLoading(false);
         }
@@ -313,7 +317,12 @@ export default function AnalyticsDashboard() {
             </div>
 
             {tab === 'overview' && (
-                loading && !data ? (
+                error ? (
+                    <div className={styles.errorBanner}>
+                        <p className={styles.errorText}>{error}</p>
+                        <GhostButton asButton onClick={fetchData} size="small" variant="primary">重试</GhostButton>
+                    </div>
+                ) : loading && !data ? (
                     <div className={styles.loading}>加载中...</div>
                 ) : !siteId ? (
                     <div className={styles.empty}>

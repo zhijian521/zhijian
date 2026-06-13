@@ -147,20 +147,34 @@ CREATE TABLE IF NOT EXISTS zhijian_track_events (
 
 -- --------------------------------------------------------------------------
 --  站点监控模块 - 日聚合统计表（查询仪表盘时读此表）
+--  维度行：path='' 为整站汇总，维度列有值时 path 也为 ''
+--  页面行：path 有值，维度列均为 ''
 -- --------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS zhijian_track_daily (
   id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   site_id      VARCHAR(32)     NOT NULL                COMMENT '站点ID',
   date         DATE            NOT NULL                COMMENT '统计日期',
-  path         VARCHAR(500)    NOT NULL DEFAULT ''     COMMENT '页面路径（空=整站汇总）',
+  path         VARCHAR(500)    NOT NULL DEFAULT ''     COMMENT '页面路径（空=整站汇总或维度行）',
   pv           INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '页面浏览量',
   uv           INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '独立访客数',
+  sessions     INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '会话数（跳出率分母）',
+  new_visitors INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '新访客数',
   bounce       INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '跳出次数',
   avg_duration INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '平均停留秒数',
+  source       VARCHAR(200)    NOT NULL DEFAULT ''      COMMENT '来源域名（维度行）',
+  device       VARCHAR(20)     NOT NULL DEFAULT ''      COMMENT '设备类型（维度行）',
+  browser      VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '浏览器（维度行）',
+  os           VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '操作系统（维度行）',
+  lang         VARCHAR(10)     NOT NULL DEFAULT ''      COMMENT '语言（维度行）',
+  country      VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '国家（维度行）',
+  region       VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '省份（维度行）',
   created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uniq_zhijian_track_daily_site_date_path (site_id, date, path)
+  UNIQUE KEY uniq_zhijian_track_daily_site_date_path_dims (site_id, date, path(191), source(80), device, browser, os, lang, country, region),
+  KEY idx_zhijian_track_daily_site_date (site_id, date),
+  KEY idx_zhijian_track_daily_site_date_source (site_id, date, source(80)),
+  KEY idx_zhijian_track_daily_site_date_device (site_id, date, device)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
@@ -187,3 +201,22 @@ INSERT IGNORE INTO zhijian_blog_tags (id, name, slug) VALUES
 -- ALTER TABLE zhijian_track_events
 --   ADD KEY idx_zhijian_track_events_site_type_created (site_id, type, created_at),
 --   ADD KEY idx_zhijian_track_events_site_session_type (site_id, session_id, type);
+
+-- --------------------------------------------------------------------------
+--  daily 表增量变更（已部署环境手动执行）
+-- --------------------------------------------------------------------------
+-- ALTER TABLE zhijian_track_daily
+--   ADD COLUMN sessions     INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '会话数' AFTER uv,
+--   ADD COLUMN new_visitors INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '新访客数' AFTER sessions,
+--   ADD COLUMN source       VARCHAR(200) NOT NULL DEFAULT '' COMMENT '来源域名' AFTER avg_duration,
+--   ADD COLUMN device       VARCHAR(20)  NOT NULL DEFAULT '' COMMENT '设备类型' AFTER source,
+--   ADD COLUMN browser      VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '浏览器' AFTER device,
+--   ADD COLUMN os           VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '操作系统' AFTER browser,
+--   ADD COLUMN lang         VARCHAR(10)  NOT NULL DEFAULT '' COMMENT '语言' AFTER os,
+--   ADD COLUMN country      VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '国家' AFTER lang,
+--   ADD COLUMN region       VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '省份' AFTER country,
+--   DROP INDEX uniq_zhijian_track_daily_site_date_path,
+--   ADD UNIQUE KEY uniq_zhijian_track_daily_site_date_path_dims (site_id, date, path(191), source(80), device, browser, os, lang, country, region),
+--   ADD KEY idx_zhijian_track_daily_site_date (site_id, date),
+--   ADD KEY idx_zhijian_track_daily_site_date_source (site_id, date, source(80)),
+--   ADD KEY idx_zhijian_track_daily_site_date_device (site_id, date, device);

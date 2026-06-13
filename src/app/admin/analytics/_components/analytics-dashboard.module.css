@@ -452,11 +452,29 @@
 .tablePath { font-size: 0.8rem; color: var(--foreground); word-break: break-all; }
 .tableNum { font-size: 0.8rem; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
 
-/*== 空状态 / 加载 ==*/
+/*== 空状态 / 加载 / 错误 ==*/
 
 .empty { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem 1rem; text-align: center; }
 .empty p { margin: 0; font-size: 0.9rem; color: var(--muted-foreground); }
 .loading { display: flex; align-items: center; justify-content: center; padding: 3rem; font-size: 0.9rem; color: var(--muted-foreground); }
+
+.errorBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e8b4b4;
+    border-radius: var(--radius);
+    background: #fdf2f2;
+}
+
+.errorText {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #9f1239;
+}
 
 /*== 访问记录 ==*/
 
