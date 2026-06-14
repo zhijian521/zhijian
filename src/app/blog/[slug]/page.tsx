@@ -4,6 +4,7 @@ import { cache } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
 import { getPostBySlug } from '@/lib/posts';
+import { toPostIsoDateTime } from '@/lib/post-shared';
 import { SITE_METADATA } from '@/lib/site';
 
 import { ArticleFooterActions } from './_components/article-footer-actions';
@@ -15,10 +16,8 @@ interface PageProps {
 
 const getBlogPost = cache(async (slug: string) => getPostBySlug(slug));
 
-/*== 文章详情依赖数据库实时内容，禁用 ISR 与构建期预渲染，避免部署后先展示旧文章快照。 ==*/
 export const dynamic = 'force-dynamic';
 
-/*== 详情页 metadata：每篇文章独立的 title/description/OG/canonical。 ==*/
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const post = await getBlogPost(slug);
@@ -31,6 +30,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const description = post.summary || `${post.title} - ${SITE_METADATA.blogDescription}`;
     const ogImage = post.coverImage || undefined;
     const canonical = `${SITE_METADATA.siteUrl}/blog/${slug}`;
+    const publishedTime = toPostIsoDateTime(post.publishedAt);
+    const modifiedTime = toPostIsoDateTime(post.updatedAt);
     const keywords = [
         ...(post.tagNames?.map((tag) => tag.name) ?? []),
         ...(post.categoryName ? [post.categoryName] : []),
@@ -52,8 +53,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title,
             description,
             url: canonical,
-            publishedTime: post.publishedAt || undefined,
-            modifiedTime: post.updatedAt || undefined,
+            publishedTime,
+            modifiedTime,
             authors: [SITE_METADATA.author],
             section: post.categoryName || undefined,
             tags: post.tagNames?.map((tag) => tag.name),
@@ -68,7 +69,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-/*== 博客详情页：从数据库读取文章，复用 ArticleView 组件。 ==*/
 export default async function BlogPostPage({ params }: PageProps) {
     const { slug } = await params;
     const post = await getBlogPost(slug);
@@ -78,6 +78,8 @@ export default async function BlogPostPage({ params }: PageProps) {
     }
 
     const canonical = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
+    const publishedTime = toPostIsoDateTime(post.publishedAt);
+    const modifiedTime = toPostIsoDateTime(post.updatedAt);
     const wordCount = post.content.trim().length;
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -112,8 +114,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                 headline: post.title,
                 description: post.summary,
                 ...(post.coverImage && { image: `${SITE_METADATA.siteUrl}${post.coverImage}` }),
-                datePublished: post.publishedAt || undefined,
-                dateModified: post.updatedAt || undefined,
+                datePublished: publishedTime,
+                dateModified: modifiedTime,
                 author: {
                     '@type': 'Person',
                     name: SITE_METADATA.author,
