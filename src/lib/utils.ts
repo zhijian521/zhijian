@@ -25,6 +25,19 @@ export function getScriptUrl(): string {
     return process.env.NEXT_PUBLIC_SCRIPT_URL || getSiteUrl();
 }
 
+/*== 将站内相对地址或完整外链统一转换为绝对 URL。 ==*/
+export function toAbsoluteUrl(value: string | null | undefined): string | undefined {
+    if (!value) {
+        return undefined;
+    }
+
+    try {
+        return new URL(value, getSiteUrl()).toString();
+    } catch {
+        return undefined;
+    }
+}
+
 /*== 生成监控接入代码片段。 ==*/
 export function getEmbedScript(siteId: string): string {
     const base = getScriptUrl();

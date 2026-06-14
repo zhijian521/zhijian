@@ -90,7 +90,7 @@ export default function BlogListClient({
                 <section className={styles.main}>
                     <div className={styles.list}>
                         {posts.length > 0 ? posts.map((post) => (
-                            <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id} prefetch={false}>
+                            <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id}>
                                 <div className={styles.itemBody}>
                                     <h2 className={styles.itemTitle}>{post.title}</h2>
                                     <p className={styles.itemSummary}>{post.summary}</p>

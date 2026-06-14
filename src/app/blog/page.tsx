@@ -119,6 +119,7 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
     });
+    const hasFilterState = Boolean(activeCategorySlug) || activeTagSlugs.length > 0;
     const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
     const currentPage = Math.min(filters.currentPage, totalPages);
     const canonical = buildBlogUrl({
@@ -155,6 +156,15 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
             ...(activeCategorySlug ? [activeCategoryLabel] : []),
             ...SITE_METADATA.keywords,
         ],
+        robots: hasFilterState
+            ? {
+                index: false,
+                follow: true,
+            }
+            : {
+                index: true,
+                follow: true,
+            },
         authors: [{ name: SITE_METADATA.author }],
         creator: SITE_METADATA.author,
         publisher: SITE_METADATA.author,

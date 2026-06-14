@@ -6,6 +6,7 @@ import { ArticleView } from '@/components/site/article-view';
 import { getPostBySlug } from '@/lib/posts';
 import { toPostIsoDateTime } from '@/lib/post-shared';
 import { SITE_METADATA } from '@/lib/site';
+import { toAbsoluteUrl } from '@/lib/utils';
 
 import { ArticleFooterActions } from './_components/article-footer-actions';
 import styles from './page.module.css';
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const title = `${post.title} - ${SITE_METADATA.title}`;
     const description = post.summary || `${post.title} - ${SITE_METADATA.blogDescription}`;
-    const ogImage = post.coverImage || undefined;
+    const ogImage = toAbsoluteUrl(post.coverImage);
     const canonical = `${SITE_METADATA.siteUrl}/blog/${slug}`;
     const publishedTime = toPostIsoDateTime(post.publishedAt);
     const modifiedTime = toPostIsoDateTime(post.updatedAt);
@@ -78,6 +79,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     }
 
     const canonical = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
+    const articleImage = toAbsoluteUrl(post.coverImage);
     const publishedTime = toPostIsoDateTime(post.publishedAt);
     const modifiedTime = toPostIsoDateTime(post.updatedAt);
     const wordCount = post.content.trim().length;
@@ -113,7 +115,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 '@id': `${canonical}#article`,
                 headline: post.title,
                 description: post.summary,
-                ...(post.coverImage && { image: `${SITE_METADATA.siteUrl}${post.coverImage}` }),
+                ...(articleImage && { image: articleImage }),
                 datePublished: publishedTime,
                 dateModified: modifiedTime,
                 author: {
