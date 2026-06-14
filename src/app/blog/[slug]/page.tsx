@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
 import { getPostBySlug } from '@/lib/posts';
@@ -12,13 +13,15 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+const getBlogPost = cache(async (slug: string) => getPostBySlug(slug));
+
 /*== 文章详情依赖数据库实时内容，禁用 ISR 与构建期预渲染，避免部署后先展示旧文章快照。 ==*/
 export const dynamic = 'force-dynamic';
 
 /*== 详情页 metadata：每篇文章独立的 title/description/OG/canonical。 ==*/
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const post = await getPostBySlug(slug);
+    const post = await getBlogPost(slug);
 
     if (!post) {
         notFound();
@@ -68,7 +71,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 /*== 博客详情页：从数据库读取文章，复用 ArticleView 组件。 ==*/
 export default async function BlogPostPage({ params }: PageProps) {
     const { slug } = await params;
-    const post = await getPostBySlug(slug);
+    const post = await getBlogPost(slug);
 
     if (!post) {
         notFound();
