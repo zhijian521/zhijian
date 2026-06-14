@@ -95,8 +95,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: false, slug });
     if (posts.length === 0) return null;
-    const enriched = await enrichPostsWithTagNames(posts);
-    return enriched[0] ?? null;
+    return enrichPostWithTagNames(posts[0]);
 }
 
 /*== 按 ID 获取单篇文章（含草稿），供后台编辑页使用。 @param id - 文章主键 ID @returns 匹配的文章，未找到时返回 null ==*/
@@ -104,8 +103,7 @@ export async function getPostById(id: number): Promise<Post | null> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true, id });
     if (posts.length === 0) return null;
-    const enriched = await enrichPostsWithTagNames(posts);
-    return enriched[0] ?? null;
+    return enrichPostWithTagNames(posts[0]);
 }
 
 /*== 写入操作 ==*/
@@ -343,6 +341,44 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     } catch (error) {
         console.error('Failed to enrich posts with tag names.', { error });
         return posts;
+    }
+}
+
+/*== 单篇文章详情补齐标签名称。详情页只处理当前文章的标签，避免复用列表批量补全路径。 ==*/
+async function enrichPostWithTagNames(post: Post | undefined): Promise<Post | null> {
+    if (!post) {
+        return null;
+    }
+
+    if (post.tags.length === 0) {
+        return post;
+    }
+
+    const db = getDb();
+    if (!db) {
+        return post;
+    }
+
+    try {
+        const [tagRows] = await db.execute<RowDataPacket[]>(
+            `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${post.tags.map(() => '?').join(', ')})`,
+            post.tags,
+        );
+
+        const tagMap = new Map<number, { id: number; name: string; slug: string }>();
+        for (const row of tagRows) {
+            tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
+        }
+
+        return {
+            ...post,
+            tagNames: post.tags
+                .map((id) => tagMap.get(id))
+                .filter(Boolean) as { id: number; name: string; slug: string }[],
+        };
+    } catch (error) {
+        console.error('Failed to enrich single post with tag names.', { postId: post.id, error });
+        return post;
     }
 }
 

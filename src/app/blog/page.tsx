@@ -22,6 +22,7 @@ interface BlogFilters {
 }
 
 interface FilterOption {
+    href: string;
     label: string;
     slug: string;
 }
@@ -103,6 +104,77 @@ function resolveFilterState(
         activeTagNames,
         activeTagSlugs,
     };
+}
+
+function buildFilterOptions(options: {
+    activeCategorySlug?: string;
+    activeTagSlugs: string[];
+    categories: Awaited<ReturnType<typeof listCategories>>;
+    tags: Awaited<ReturnType<typeof listTags>>;
+}): {
+    categoryOptions: FilterOption[];
+    paginationHrefs: Record<number, string>;
+    tagOptions: FilterOption[];
+} {
+    const categoryOptions: FilterOption[] = [
+        {
+            href: buildBlogUrl({
+                tagSlugs: options.activeTagSlugs,
+            }),
+            label: '全部',
+            slug: ALL_CATEGORY_SLUG,
+        },
+        ...options.categories.map((category) => ({
+            href: buildBlogUrl({
+                categorySlug: category.slug,
+                tagSlugs: options.activeTagSlugs,
+            }),
+            label: category.name,
+            slug: category.slug,
+        })),
+    ];
+
+    const tagOptions: FilterOption[] = options.tags.map((tag) => {
+        const nextTagSlugs = options.activeTagSlugs.includes(tag.slug)
+            ? options.activeTagSlugs.filter((activeTag) => activeTag !== tag.slug)
+            : [...options.activeTagSlugs, tag.slug];
+
+        return {
+            href: buildBlogUrl({
+                categorySlug: options.activeCategorySlug,
+                tagSlugs: nextTagSlugs,
+            }),
+            label: tag.name,
+            slug: tag.slug,
+        };
+    });
+
+    return {
+        categoryOptions,
+        paginationHrefs: {},
+        tagOptions,
+    };
+}
+
+function buildPaginationHrefs(options: {
+    activeCategorySlug?: string;
+    activeTagSlugs: string[];
+    totalPages: number;
+}): Record<number, string> {
+    return Object.fromEntries(
+        Array.from({ length: options.totalPages }, (_, index) => {
+            const page = index + 1;
+
+            return [
+                page,
+                buildBlogUrl({
+                    categorySlug: options.activeCategorySlug,
+                    page,
+                    tagSlugs: options.activeTagSlugs,
+                }),
+            ];
+        }),
+    );
 }
 
 export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
@@ -229,17 +301,17 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
         siteUrl: true,
         tagSlugs: activeTagSlugs,
     });
-    const categoryOptions: FilterOption[] = [
-        { label: '全部', slug: ALL_CATEGORY_SLUG },
-        ...categories.map((category) => ({
-            label: category.name,
-            slug: category.slug,
-        })),
-    ];
-    const tagOptions: FilterOption[] = tags.map((tag) => ({
-        label: tag.name,
-        slug: tag.slug,
-    }));
+    const { categoryOptions, tagOptions } = buildFilterOptions({
+        activeCategorySlug,
+        activeTagSlugs,
+        categories,
+        tags,
+    });
+    const paginationHrefs = buildPaginationHrefs({
+        activeCategorySlug,
+        activeTagSlugs,
+        totalPages,
+    });
     const listStartIndex = (currentPage - 1) * PAGE_SIZE;
     const pageName = [
         SITE_METADATA.blogTitle,
@@ -286,6 +358,7 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
                 activeTagSlugs={activeTagSlugs}
                 categoryOptions={categoryOptions}
                 currentPage={currentPage}
+                paginationHrefs={paginationHrefs}
                 posts={pagedPosts}
                 tagOptions={tagOptions}
                 totalPages={totalPages}

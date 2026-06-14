@@ -9,6 +9,7 @@ import type { Post } from '@/lib/post-shared';
 import styles from '../page.module.css';
 
 interface FilterOption {
+    href: string;
     label: string;
     slug: string;
 }
@@ -18,6 +19,7 @@ interface BlogListClientProps {
     activeTagSlugs: string[];
     categoryOptions: FilterOption[];
     currentPage: number;
+    paginationHrefs: Record<number, string>;
     posts: Post[];
     tagOptions: FilterOption[];
     totalPages: number;
@@ -28,55 +30,12 @@ export default function BlogListClient({
     activeTagSlugs,
     categoryOptions,
     currentPage,
+    paginationHrefs,
     posts,
     tagOptions,
     totalPages,
 }: BlogListClientProps) {
     const activeTagSet = new Set(activeTagSlugs);
-
-    function buildBlogHref(updates: { page?: number | null; category?: string | null; tags?: string[] | null }) {
-        const params = new URLSearchParams();
-        const nextCategory = updates.category === undefined ? activeCategorySlug : updates.category;
-        const nextTags = updates.tags === undefined ? activeTagSlugs : updates.tags;
-        const nextPage = updates.page === undefined ? currentPage : updates.page;
-
-        if (nextCategory) {
-            params.set('category', nextCategory);
-        }
-
-        if (nextTags && nextTags.length > 0) {
-            params.set('tags', nextTags.join(','));
-        }
-
-        if (nextPage && nextPage > 1) {
-            params.set('page', String(nextPage));
-        }
-
-        const query = params.toString();
-        return query ? `/blog?${query}` : '/blog';
-    }
-
-    function buildCategoryHref(categorySlug: string) {
-        return buildBlogHref({
-            category: categorySlug || null,
-            page: null,
-        });
-    }
-
-    function buildTagHref(tagSlug: string) {
-        const nextTags = activeTagSet.has(tagSlug)
-            ? activeTagSlugs.filter((activeTag) => activeTag !== tagSlug)
-            : [...activeTagSlugs, tagSlug];
-
-        return buildBlogHref({
-            tags: nextTags,
-            page: null,
-        });
-    }
-
-    function buildPaginationHref(page: number) {
-        return buildBlogHref({ page });
-    }
 
     return (
         <main className={styles.page}>
@@ -121,7 +80,7 @@ export default function BlogListClient({
                     </div>
 
                     {totalPages > 1 ? (
-                        <Pagination current={currentPage} getHref={buildPaginationHref} total={totalPages} />
+                        <Pagination current={currentPage} getHref={(page) => paginationHrefs[page] ?? '/blog'} total={totalPages} />
                     ) : null}
                 </section>
 
@@ -133,7 +92,7 @@ export default function BlogListClient({
                                 {categoryOptions.map((category) => (
                                     <Link
                                         className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
-                                        href={buildCategoryHref(category.slug)}
+                                        href={category.href}
                                         key={category.slug || 'all'}
                                     >
                                         {category.label}
@@ -150,7 +109,7 @@ export default function BlogListClient({
                                 {tagOptions.map((tag) => (
                                     <Link
                                         className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
-                                        href={buildTagHref(tag.slug)}
+                                        href={tag.href}
                                         key={tag.slug}
                                     >
                                         {tag.label}
