@@ -37,13 +37,18 @@ CREATE TABLE IF NOT EXISTS zhijian_blog_posts (
   title       VARCHAR(200)    NOT NULL                COMMENT '文章标题',
   summary     VARCHAR(500)    NOT NULL                COMMENT '文章摘要',
   content     MEDIUMTEXT      NOT NULL                COMMENT '文章正文（Markdown）',
+  cover_image VARCHAR(500)    DEFAULT NULL            COMMENT '封面图路径',
+  alt_text    VARCHAR(200)    DEFAULT NULL            COMMENT '封面图 alt 描述',
+  category_id INT UNSIGNED    DEFAULT NULL            COMMENT '分类ID',
+  tags        JSON            DEFAULT NULL            COMMENT '标签ID数组，如 [1,3,5]',
   status      ENUM('draft', 'published') NOT NULL DEFAULT 'draft' COMMENT '发布状态',
   published_at DATETIME       NULL                    COMMENT '发布时间',
   created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uniq_zhijian_blog_posts_slug (slug),
-  KEY idx_zhijian_blog_posts_status_published_at (status, published_at)
+  KEY idx_zhijian_blog_posts_status_published_at (status, published_at),
+  KEY idx_zhijian_blog_posts_category (category_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
@@ -72,15 +77,6 @@ CREATE TABLE IF NOT EXISTS zhijian_blog_tags (
   PRIMARY KEY (id),
   UNIQUE KEY uniq_zhijian_blog_tags_slug (slug)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------------------------
---  博客模块 - 文章表扩展字段
--- --------------------------------------------------------------------------
-ALTER TABLE zhijian_blog_posts
-  ADD COLUMN cover_image  VARCHAR(500) DEFAULT NULL COMMENT '封面图路径' AFTER content,
-  ADD COLUMN alt_text     VARCHAR(200) DEFAULT NULL COMMENT '封面图 alt 描述' AFTER cover_image,
-  ADD COLUMN category_id  INT UNSIGNED DEFAULT NULL COMMENT '分类ID' AFTER alt_text,
-  ADD COLUMN tags         JSON DEFAULT NULL COMMENT '标签ID数组，如 [1,3,5]' AFTER category_id;
 
 -- --------------------------------------------------------------------------
 --  博客模块 - 图片上传记录表
@@ -147,34 +143,31 @@ CREATE TABLE IF NOT EXISTS zhijian_track_events (
 
 -- --------------------------------------------------------------------------
 --  站点监控模块 - 日聚合统计表（查询仪表盘时读此表）
---  维度行：path='' 为整站汇总，维度列有值时 path 也为 ''
---  页面行：path 有值，维度列均为 ''
+--  三种行类型：
+--    summary：整站汇总（path='', dim_name='', dim_value=''）
+--    page：按页面路径聚合（path 有值, dim_name='', dim_value=''）
+--    dim：按维度聚合（path='', dim_name 有值, dim_value 有值）
 -- --------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS zhijian_track_daily (
   id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   site_id      VARCHAR(32)     NOT NULL                COMMENT '站点ID',
   date         DATE            NOT NULL                COMMENT '统计日期',
-  path         VARCHAR(500)    NOT NULL DEFAULT ''     COMMENT '页面路径（空=整站汇总或维度行）',
-  pv           INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '页面浏览量',
-  uv           INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '独立访客数',
-  sessions     INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '会话数（跳出率分母）',
-  new_visitors INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '新访客数',
-  bounce       INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '跳出次数',
-  avg_duration INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '平均停留秒数',
-  source       VARCHAR(200)    NOT NULL DEFAULT ''      COMMENT '来源域名（维度行）',
-  device       VARCHAR(20)     NOT NULL DEFAULT ''      COMMENT '设备类型（维度行）',
-  browser      VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '浏览器（维度行）',
-  os           VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '操作系统（维度行）',
-  lang         VARCHAR(10)     NOT NULL DEFAULT ''      COMMENT '语言（维度行）',
-  country      VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '国家（维度行）',
-  region       VARCHAR(50)     NOT NULL DEFAULT ''      COMMENT '省份（维度行）',
+  row_type     ENUM('summary', 'page', 'dim') NOT NULL DEFAULT 'summary' COMMENT '行类型：summary=整站汇总, page=页面行, dim=维度行',
+  path         VARCHAR(500)    NOT NULL DEFAULT ''     COMMENT '页面路径（summary/dim 行为空）',
+  pv           INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '浏览量',
+  uv           INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '独立访客数（仅 summary/page 有值）',
+  sessions     INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '会话数（仅 summary/page 有值）',
+  new_visitors INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '新访客数（仅 summary 有值）',
+  bounce       INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '跳出次数（仅 summary 有值）',
+  avg_duration INT UNSIGNED    NOT NULL DEFAULT 0       COMMENT '平均停留秒数（仅 summary/page 有值）',
+  dim_name     VARCHAR(20)     NOT NULL DEFAULT ''      COMMENT '维度名（如 source/device/browser）',
+  dim_value    VARCHAR(200)    NOT NULL DEFAULT ''      COMMENT '维度值（如 Desktop/Chrome/中国）',
   created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uniq_zhijian_track_daily_site_date_path_dims (site_id, date, path(191), source(80), device, browser, os, lang, country, region),
+  UNIQUE KEY uniq_zhijian_track_daily (site_id, date, row_type, path(191), dim_name, dim_value(80)),
   KEY idx_zhijian_track_daily_site_date (site_id, date),
-  KEY idx_zhijian_track_daily_site_date_source (site_id, date, source(80)),
-  KEY idx_zhijian_track_daily_site_date_device (site_id, date, device)
+  KEY idx_zhijian_track_daily_dim (site_id, date, dim_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
@@ -194,29 +187,3 @@ INSERT IGNORE INTO zhijian_blog_tags (id, name, slug) VALUES
   (4, 'TypeScript', 'typescript'),
   (5, '设计', 'design'),
   (6, 'Node.js', 'nodejs');
-
--- --------------------------------------------------------------------------
---  增量索引（已部署环境手动执行）
--- --------------------------------------------------------------------------
--- ALTER TABLE zhijian_track_events
---   ADD KEY idx_zhijian_track_events_site_type_created (site_id, type, created_at),
---   ADD KEY idx_zhijian_track_events_site_session_type (site_id, session_id, type);
-
--- --------------------------------------------------------------------------
---  daily 表增量变更（已部署环境手动执行）
--- --------------------------------------------------------------------------
--- ALTER TABLE zhijian_track_daily
---   ADD COLUMN sessions     INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '会话数' AFTER uv,
---   ADD COLUMN new_visitors INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '新访客数' AFTER sessions,
---   ADD COLUMN source       VARCHAR(200) NOT NULL DEFAULT '' COMMENT '来源域名' AFTER avg_duration,
---   ADD COLUMN device       VARCHAR(20)  NOT NULL DEFAULT '' COMMENT '设备类型' AFTER source,
---   ADD COLUMN browser      VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '浏览器' AFTER device,
---   ADD COLUMN os           VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '操作系统' AFTER browser,
---   ADD COLUMN lang         VARCHAR(10)  NOT NULL DEFAULT '' COMMENT '语言' AFTER os,
---   ADD COLUMN country      VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '国家' AFTER lang,
---   ADD COLUMN region       VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '省份' AFTER country,
---   DROP INDEX uniq_zhijian_track_daily_site_date_path,
---   ADD UNIQUE KEY uniq_zhijian_track_daily_site_date_path_dims (site_id, date, path(191), source(80), device, browser, os, lang, country, region),
---   ADD KEY idx_zhijian_track_daily_site_date (site_id, date),
---   ADD KEY idx_zhijian_track_daily_site_date_source (site_id, date, source(80)),
---   ADD KEY idx_zhijian_track_daily_site_date_device (site_id, date, device);

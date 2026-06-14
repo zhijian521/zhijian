@@ -67,7 +67,32 @@ function detectDevice(screen: string | null): string {
 }
 
 function formatDate(d: Date): string {
-    return d.toISOString().slice(0, 10);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
+/*== 将本地日期转换为 UTC 范围字符串，用于匹配 events 表的 created_at（UTC） ==*/
+function localDateToUtcRange(date: string): { start: string; end: string } {
+    /* events 表的 created_at 由 MySQL CURRENT_TIMESTAMP 写入，存储的是 UTC 时间。
+       本地日期 "2026-06-14"（UTC+8）对应的 UTC 范围是：
+       2026-06-13T16:00:00 ~ 2026-06-14T16:00:00
+       用 new Date(localMidnight + timezoneOffset) 让 JS 自动转 UTC */
+    const offset = -(new Date().getTimezoneOffset() / 60);  // 正数=东时区，如 +8
+    const sign = offset >= 0 ? '+' : '-';
+    const absOffset = Math.abs(offset);
+    const hours = Math.floor(absOffset);
+    const mins = (absOffset - hours) * 60;
+    const tzStr = sign + String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
+
+    const startDt = new Date(date + 'T00:00:00' + tzStr);
+    const endDt = new Date(date + 'T23:59:59' + tzStr);
+    endDt.setSeconds(endDt.getSeconds() + 1);  // 溢出到次日 00:00:00
+
+    const start = startDt.toISOString().slice(0, 19).replace('T', ' ');
+    const end = endDt.toISOString().slice(0, 19).replace('T', ' ');
+    return { start, end };
 }
 
 /*== 日聚合：将指定日期的 events 聚合到 daily 表 ==*/
@@ -75,9 +100,9 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
     const db = getDb();
     if (!db) return;
 
-    /* 范围查询：created_at >= date 00:00:00 AND created_at < date+1 00:00:00，利用索引 */
-    const dayStart = date + ' 00:00:00';
-    const nextDay = formatDate(new Date(new Date(date).getTime() + 86400000)) + ' 00:00:00';
+    /* 范围查询：created_at >= UTC起点 AND created_at < UTC终点，利用索引
+       date 是本地日期（如 "2026-06-14"），需转为 UTC 范围匹配 events 的 UTC created_at */
+    const utcRange = localDateToUtcRange(date);
 
     /*-- 整站汇总 --*/
     /* PV/UV/sessions/new_visitors */
@@ -86,7 +111,7 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
                COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
         FROM zhijian_track_events
         WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-    `, [siteId, dayStart, nextDay]);
+    `, [siteId, utcRange.start, utcRange.end]);
     const pv = (pvRows[0] as any)?.pv || 0;
     const uv = (pvRows[0] as any)?.uv || 0;
     const sessions = (pvRows[0] as any)?.sessions || 0;
@@ -109,7 +134,7 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
             GROUP BY e.session_id
             HAVING COUNT(e.id) = 1 AND MAX(l.id) IS NULL
         ) single
-    `, [dayStart, nextDay, siteId, dayStart, nextDay]);
+    `, [utcRange.start, utcRange.end, siteId, utcRange.start, utcRange.end]);
     const bounce = (bounceRows[0] as any)?.bounce || 0;
 
     /* 平均停留——从 leave 事件取 duration */
@@ -117,16 +142,16 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
         SELECT ROUND(AVG(duration)) AS avg_duration
         FROM zhijian_track_events
         WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'leave' AND duration > 0
-    `, [siteId, dayStart, nextDay]);
+    `, [siteId, utcRange.start, utcRange.end]);
     const avgDuration = (durRows[0] as any)?.avg_duration || 0;
 
     if (pv > 0) {
         await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration)
-            VALUES (?, ?, '', ?, ?, ?, ?, ?, ?)
+            INSERT INTO zhijian_track_daily (site_id, date, row_type, path, pv, uv, sessions, new_visitors, bounce, avg_duration)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
                 new_visitors=VALUES(new_visitors), bounce=VALUES(bounce), avg_duration=VALUES(avg_duration)
-        `, [siteId, date, pv, uv, sessions, newVisitors, bounce, avgDuration]);
+        `, [siteId, date, 'summary', '', pv, uv, sessions, newVisitors, bounce, avgDuration]);
     }
 
     /*-- 按页面路径聚合 --*/
@@ -140,7 +165,7 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
         FROM zhijian_track_events
         WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
         GROUP BY path
-    `, [siteId, dayStart, nextDay]);
+    `, [siteId, utcRange.start, utcRange.end]);
 
     /* 按路径统计 leave 事件的平均停留——直接查 leave.path，消除笛卡尔积 */
     const [pageDurRows] = await db.execute<RowDataPacket[]>(`
@@ -148,7 +173,7 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
         FROM zhijian_track_events
         WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'leave' AND duration > 0
         GROUP BY path
-    `, [siteId, dayStart, nextDay]);
+    `, [siteId, utcRange.start, utcRange.end]);
 
     const pageDurMap = new Map<string, number>();
     for (const r of pageDurRows as any[]) {
@@ -158,157 +183,63 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
     for (const row of pageRows as any[]) {
         const pathAvgDur = pageDurMap.get(row.path) || 0;
         await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
+            INSERT INTO zhijian_track_daily (site_id, date, row_type, path, pv, uv, sessions, new_visitors, bounce, avg_duration)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), avg_duration=VALUES(avg_duration)
-        `, [siteId, date, row.path, row.pv, row.uv, row.sessions, row.new_visitors, pathAvgDur]);
+                avg_duration=VALUES(avg_duration)
+        `, [siteId, date, 'page', row.path, row.pv, row.uv, row.sessions, row.new_visitors || 0, 0, pathAvgDur]);
     }
 
-    /*-- 维度聚合：source/device/browser/os/lang/country/region --*/
-    /* 来源域名 */
-    const [sourceRows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            CASE
-                WHEN referrer IS NULL OR referrer = '' THEN ''
-                ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(referrer, '://', -1), '/', 1)
-            END AS source,
-            COUNT(*) AS pv,
-            COUNT(DISTINCT visitor_id) AS uv,
-            COUNT(DISTINCT session_id) AS sessions,
-            SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY source
-    `, [siteId, dayStart, nextDay]);
+    /*-- 维度聚合：统一循环，每个维度只存 pv（维度行不需要 uv/sessions 等冗余指标） --*/
+    type DimDef = { name: string; expr: string; skipEmpty?: boolean };
+    const DIMENSIONS: DimDef[] = [
+        {
+            name: 'source',
+            expr: `CASE WHEN referrer IS NULL OR referrer = '' THEN '' ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(referrer, '://', -1), '/', 1) END`,
+            skipEmpty: true,  // 直接访问归入整站汇总行，不单独存维度行
+        },
+        {
+            name: 'device',
+            expr: `CASE WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 768 THEN 'Mobile' WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 1200 THEN 'Tablet' ELSE 'Desktop' END`,
+        },
+        {
+            name: 'browser',
+            expr: `COALESCE(browser, '未知')`,
+        },
+        {
+            name: 'os',
+            expr: `COALESCE(os, '未知')`,
+        },
+        {
+            name: 'lang',
+            expr: `COALESCE(lang, '未知')`,
+        },
+        {
+            name: 'country',
+            expr: `COALESCE(country, '未知')`,
+        },
+        {
+            name: 'region',
+            expr: `COALESCE(region, '未知')`,
+        },
+    ];
 
-    for (const row of sourceRows as any[]) {
-        if (!row.source) continue; // 直接访问归入整站汇总行，不单独存维度行
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, source)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), source=VALUES(source)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.source]);
-    }
+    for (const dim of DIMENSIONS) {
+        const [dimRows] = await db.execute<RowDataPacket[]>(`
+            SELECT ${dim.expr} AS dim_val, COUNT(*) AS pv
+            FROM zhijian_track_events
+            WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
+            GROUP BY dim_val
+        `, [siteId, utcRange.start, utcRange.end]);
 
-    /* 设备类型 */
-    const [deviceRows] = await db.execute<RowDataPacket[]>(`
-        SELECT
-            CASE
-                WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 768 THEN 'Mobile'
-                WHEN screen LIKE '%x%' AND CAST(SUBSTRING_INDEX(screen, 'x', 1) AS UNSIGNED) <= 1200 THEN 'Tablet'
-                ELSE 'Desktop'
-            END AS device,
-            COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
-            COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY device
-    `, [siteId, dayStart, nextDay]);
-
-    for (const row of deviceRows as any[]) {
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, device)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), device=VALUES(device)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.device]);
-    }
-
-    /* 浏览器 */
-    const [browserRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COALESCE(browser, '未知') AS browser,
-               COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
-               COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY browser
-    `, [siteId, dayStart, nextDay]);
-
-    for (const row of browserRows as any[]) {
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, browser)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), browser=VALUES(browser)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.browser]);
-    }
-
-    /* 操作系统 */
-    const [osRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COALESCE(os, '未知') AS os,
-               COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
-               COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY os
-    `, [siteId, dayStart, nextDay]);
-
-    for (const row of osRows as any[]) {
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, os)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), os=VALUES(os)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.os]);
-    }
-
-    /* 语言 */
-    const [langRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COALESCE(lang, '未知') AS lang,
-               COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
-               COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY lang
-    `, [siteId, dayStart, nextDay]);
-
-    for (const row of langRows as any[]) {
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, lang)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), lang=VALUES(lang)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.lang]);
-    }
-
-    /* 国家 */
-    const [countryRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COALESCE(country, '未知') AS country,
-               COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
-               COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY country
-    `, [siteId, dayStart, nextDay]);
-
-    for (const row of countryRows as any[]) {
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, country)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), country=VALUES(country)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.country]);
-    }
-
-    /* 省份 */
-    const [regionRows] = await db.execute<RowDataPacket[]>(`
-        SELECT COALESCE(region, '未知') AS region,
-               COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
-               COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
-        FROM zhijian_track_events
-        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'pageview'
-        GROUP BY region
-    `, [siteId, dayStart, nextDay]);
-
-    for (const row of regionRows as any[]) {
-        await db.execute(`
-            INSERT INTO zhijian_track_daily (site_id, date, path, pv, uv, sessions, new_visitors, bounce, avg_duration, region)
-            VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, ?)
-            ON DUPLICATE KEY UPDATE pv=VALUES(pv), uv=VALUES(uv), sessions=VALUES(sessions),
-                new_visitors=VALUES(new_visitors), region=VALUES(region)
-        `, [siteId, date, row.pv, row.uv, row.sessions, row.new_visitors, row.region]);
+        for (const row of dimRows as any[]) {
+            if (dim.skipEmpty && !row.dim_val) continue;
+            await db.execute(`
+                INSERT INTO zhijian_track_daily (site_id, date, row_type, path, pv, dim_name, dim_value)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE pv=VALUES(pv)
+            `, [siteId, date, 'dim', '', row.pv, dim.name, row.dim_val]);
+        }
     }
 }
 
@@ -320,14 +251,14 @@ export async function ensureAggregated(siteId: string, range: DateRange): Promis
     const days = getDaysAgo(range);
     const startDate = formatDate(new Date(Date.now() - days * 86400000));
 
-    /* 查询 daily 表中已有数据的日期 */
+    /* 查询 daily 表中已有整站汇总行的日期 */
     const [existingRows] = await db.execute<RowDataPacket[]>(`
         SELECT DISTINCT date FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = ''
+        WHERE site_id = ? AND date >= ? AND row_type = 'summary'
         ORDER BY date
     `, [siteId, startDate]);
 
-    const existingDates = new Set((existingRows as any[]).map(r => formatDate(new Date(r.date))));
+    const existingDates = new Set((existingRows as any[]).map(r => r.date instanceof Date ? formatDate(r.date) : String(r.date).slice(0, 10)));
 
     /* 收集缺失日期 */
     const today = formatDate(new Date());
@@ -353,7 +284,7 @@ export async function ensureAggregated(siteId: string, range: DateRange): Promis
     /* 确认 daily 表中 cutoff 之前已有聚合数据 */
     const [aggCheck] = await db.execute<RowDataPacket[]>(`
         SELECT COUNT(*) AS cnt FROM zhijian_track_daily
-        WHERE site_id = ? AND date < ? AND path = ''
+        WHERE site_id = ? AND date < ? AND row_type = 'summary'
     `, [siteId, cutoffDate]);
     const hasAggregated = ((aggCheck[0] as any)?.cnt || 0) > 0;
 
@@ -389,7 +320,7 @@ export async function getOverview(siteId: string, range: DateRange, skipAggregat
                SUM(new_visitors) AS new_visitors, SUM(bounce) AS bounce,
                CASE WHEN SUM(pv) > 0 THEN ROUND(SUM(pv * avg_duration) / SUM(pv)) ELSE 0 END AS avg_duration
         FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = ''
+        WHERE site_id = ? AND date >= ? AND row_type = 'summary'
     `, [siteId, startDate]);
     const cur = curRows[0] as any;
 
@@ -397,7 +328,7 @@ export async function getOverview(siteId: string, range: DateRange, skipAggregat
     const [prevRows] = await db.execute<RowDataPacket[]>(`
         SELECT SUM(pv) AS pv, SUM(uv) AS uv
         FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND date <= ? AND path = ''
+        WHERE site_id = ? AND date >= ? AND date <= ? AND row_type = 'summary'
     `, [siteId, prevPeriodStart, prevPeriodEnd]);
     const prev = prevRows[0] as any;
 
@@ -430,14 +361,16 @@ export async function getTrend(siteId: string, range: DateRange, skipAggregate =
 
     const [rows] = await db.execute<RowDataPacket[]>(`
         SELECT date, pv, uv FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = ''
+        WHERE site_id = ? AND date >= ? AND row_type = 'summary'
         ORDER BY date
     `, [siteId, startDate]);
 
     /* B5 修复：补全缺失日期，保证时间轴连续 */
     const dataMap = new Map<string, TrendPoint>();
     for (const r of rows as any[]) {
-        dataMap.set(formatDate(new Date(r.date)), { date: formatDate(new Date(r.date)), pv: r.pv || 0, uv: r.uv || 0 });
+        /* r.date 可能是 Date 对象（mysql2 解析）或字符串，统一用 formatDate 格式化 */
+        const dateStr = r.date instanceof Date ? formatDate(r.date) : String(r.date).slice(0, 10);
+        dataMap.set(dateStr, { date: dateStr, pv: r.pv || 0, uv: r.uv || 0 });
     }
 
     const result: TrendPoint[] = [];
@@ -465,7 +398,7 @@ export async function getPageRank(siteId: string, range: DateRange, limit = 10, 
         SELECT path, SUM(pv) AS pv, SUM(uv) AS uv, SUM(sessions) AS sessions, SUM(bounce) AS bounce,
                CASE WHEN SUM(pv) > 0 THEN ROUND(SUM(pv * avg_duration) / SUM(pv)) ELSE 0 END AS avg_duration
         FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path != ''
+        WHERE site_id = ? AND date >= ? AND row_type = 'page'
         GROUP BY path
         ORDER BY pv DESC
         LIMIT ?
@@ -524,27 +457,35 @@ export async function getSources(siteId: string, range: DateRange, limit = 8): P
     const days = getDaysAgo(range);
     const startDate = formatDate(new Date(Date.now() - days * 86400000));
 
-    /* 从 daily 表查 source 维度行 */
-    const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT source, SUM(pv) AS count
-        FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = '' AND source != ''
-        GROUP BY source
-        ORDER BY count DESC
-    `, [siteId, startDate]);
-
-    /* 整站 PV 总量（source='' 的整站汇总行） */
+    /* 整站 PV 总量 */
     const [totalRows] = await db.execute<RowDataPacket[]>(`
         SELECT SUM(pv) AS total FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = '' AND source = ''
+        WHERE site_id = ? AND date >= ? AND row_type = 'summary'
     `, [siteId, startDate]);
     const total = (totalRows[0] as any)?.total || 0;
 
+    /* 从 daily 表查 source 维度行 */
+    const [rows] = await db.execute<RowDataPacket[]>(`
+        SELECT dim_value AS source, SUM(pv) AS count
+        FROM zhijian_track_daily
+        WHERE site_id = ? AND date >= ? AND row_type = 'dim' AND dim_name = 'source'
+        GROUP BY dim_value
+        ORDER BY count DESC
+    `, [siteId, startDate]);
+
     /* 来源智能归类：归类后合并同名的 count */
     const merged = new Map<string, number>();
+    let sourceTotal = 0;
     for (const r of rows as any[]) {
         const category = categorizeSource(r.source);
         merged.set(category, (merged.get(category) || 0) + (r.count || 0));
+        sourceTotal += (r.count || 0);
+    }
+
+    /* 无外部来源时，剩余 PV 全部归入"直接访问" */
+    const directCount = total - sourceTotal;
+    if (directCount > 0) {
+        merged.set('直接访问', (merged.get('直接访问') || 0) + directCount);
     }
 
     /* 按合并后的 count 降序排列，截取 TOP N */
@@ -630,10 +571,9 @@ async function getDistribution(siteId: string, range: DateRange, config: Distrib
 
 /*== 通用分布查询（从 daily 表查维度数据） ==*/
 interface DailyDistributionConfig {
-    dailyColumn: string;    // daily 表的维度列名
-    columnAlias: string;    // 返回对象的 key
-    extraWhere?: string;    // 额外 WHERE 条件（如 AND country = '中国'）
-    extraParams?: unknown[]; // extraWhere 的参数
+    dimName: string;            // 维度名（如 source/device/browser）
+    columnAlias: string;        // 返回对象的 key（如 device/language/name）
+    regionFilter?: string;      // 省份查询时的国家过滤条件（如 '中国'）
     limit?: number;
 }
 
@@ -644,26 +584,27 @@ async function getDistributionFromDaily(siteId: string, range: DateRange, config
     const days = getDaysAgo(range);
     const startDate = formatDate(new Date(Date.now() - days * 86400000));
 
-    const extraWhere = config.extraWhere || '';
-    const extraParams = config.extraParams || [];
+    const regionJoin = config.regionFilter
+        ? `INNER JOIN zhijian_track_daily c
+             ON c.site_id = d.site_id AND c.date = d.date
+             AND c.row_type = 'dim' AND c.dim_name = 'country' AND c.dim_value = ?`
+        : '';
+    const regionParams = config.regionFilter ? [config.regionFilter] : [];
     const limitClause = config.limit ? ' LIMIT ?' : '';
     const limitParams = config.limit ? [config.limit] : [];
 
-    /* 从 daily 表查维度分布，path='' 过滤整站汇总行和维度行 */
     const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT ${config.dailyColumn} AS ${config.columnAlias}, SUM(pv) AS count
-        FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = '' AND ${config.dailyColumn} != '' ${extraWhere}
-        GROUP BY ${config.dailyColumn}
+        SELECT d.dim_value AS ${config.columnAlias}, SUM(d.pv) AS count,
+               (SELECT SUM(pv) FROM zhijian_track_daily
+                WHERE site_id = ? AND date >= ? AND row_type = 'summary') AS total
+        FROM zhijian_track_daily d
+        ${regionJoin}
+        WHERE d.site_id = ? AND d.date >= ? AND d.row_type = 'dim' AND d.dim_name = ?
+        GROUP BY d.dim_value
         ORDER BY count DESC${limitClause}
-    `, [siteId, startDate, ...extraParams, ...limitParams]);
+    `, [...regionParams, siteId, startDate, siteId, startDate, config.dimName, ...limitParams]);
 
-    /* 总量：整站汇总行的 PV 总和 */
-    const [totalRows] = await db.execute<RowDataPacket[]>(`
-        SELECT SUM(pv) AS total FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND path = '' AND ${config.dailyColumn} = '' ${extraWhere}
-    `, [siteId, startDate, ...extraParams]);
-    const total = (totalRows[0] as any)?.total || 0;
+    const total = (rows[0] as any)?.total || 0;
 
     return (rows as any[]).map(r => ({
         [config.columnAlias]: r[config.columnAlias],
@@ -681,7 +622,7 @@ export interface DeviceItem {
 
 export async function getDevices(siteId: string, range: DateRange): Promise<DeviceItem[]> {
     return getDistributionFromDaily(siteId, range, {
-        dailyColumn: 'device',
+        dimName: 'device',
         columnAlias: 'device',
     }) as Promise<DeviceItem[]>;
 }
@@ -695,7 +636,7 @@ export interface LanguageItem {
 
 export async function getLanguages(siteId: string, range: DateRange, limit = 8): Promise<LanguageItem[]> {
     return getDistributionFromDaily(siteId, range, {
-        dailyColumn: 'lang',
+        dimName: 'lang',
         columnAlias: 'language',
         limit,
     }) as Promise<LanguageItem[]>;
@@ -710,7 +651,7 @@ export interface BrowserItem {
 
 export async function getBrowsers(siteId: string, range: DateRange, limit = 8): Promise<BrowserItem[]> {
     return getDistributionFromDaily(siteId, range, {
-        dailyColumn: 'browser',
+        dimName: 'browser',
         columnAlias: 'browser',
         limit,
     }) as Promise<BrowserItem[]>;
@@ -725,7 +666,7 @@ export interface OSItem {
 
 export async function getOS(siteId: string, range: DateRange, limit = 8): Promise<OSItem[]> {
     return getDistributionFromDaily(siteId, range, {
-        dailyColumn: 'os',
+        dimName: 'os',
         columnAlias: 'os',
         limit,
     }) as Promise<OSItem[]>;
@@ -741,7 +682,7 @@ export interface GeoItem {
 /*== 国家分布排行 ==*/
 export async function getCountries(siteId: string, range: DateRange, limit = 8): Promise<GeoItem[]> {
     return getDistributionFromDaily(siteId, range, {
-        dailyColumn: 'country',
+        dimName: 'country',
         columnAlias: 'name',
         limit,
     }) as Promise<GeoItem[]>;
@@ -750,9 +691,9 @@ export async function getCountries(siteId: string, range: DateRange, limit = 8):
 /*== 省份 TOP N（仅中国访客） ==*/
 export async function getRegions(siteId: string, range: DateRange, limit = 10): Promise<GeoItem[]> {
     return getDistributionFromDaily(siteId, range, {
-        dailyColumn: 'region',
+        dimName: 'region',
         columnAlias: 'name',
-        extraWhere: "AND country = '中国'",
+        regionFilter: '中国',
         limit,
     }) as Promise<GeoItem[]>;
 }
