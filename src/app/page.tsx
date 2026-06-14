@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 
+import { ContentImage } from '@/components/site/content-image';
 import { PostCard } from '@/components/site/post-card';
 import { ProjectCard, type ProjectAction } from '@/components/site/project-card';
 import {
@@ -199,8 +200,9 @@ export default async function HomePage() {
                                 summary={post.summary}
                                 href={`/blog/${post.slug}`}
                                 visual={post.coverImage ? (
-                                    <img
+                                    <ContentImage
                                         alt={post.altText || post.title}
+                                        sizes='(min-width: 1024px) 22rem, 100vw'
                                         src={post.coverImage}
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />

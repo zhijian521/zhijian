@@ -16,6 +16,14 @@ interface PageProps {
 }
 
 const getBlogPost = cache(async (slug: string) => getPostBySlug(slug));
+const AUTHOR_URL = `${SITE_METADATA.siteUrl}/#about-me`;
+const WEBSITE_ID = `${SITE_METADATA.siteUrl}#website`;
+const PUBLISHER_ID = `${SITE_METADATA.siteUrl}#publisher`;
+
+function estimateReadingMinutes(content: string): number {
+    const plainTextLength = content.replace(/\s+/g, '').length;
+    return Math.max(1, Math.ceil(plainTextLength / 450));
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -82,10 +90,33 @@ export default async function BlogPostPage({ params }: PageProps) {
     const articleImage = toAbsoluteUrl(post.coverImage);
     const publishedTime = toPostIsoDateTime(post.publishedAt);
     const modifiedTime = toPostIsoDateTime(post.updatedAt);
+    const readingMinutes = estimateReadingMinutes(post.content);
     const wordCount = post.content.trim().length;
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
+            {
+                '@type': 'WebSite',
+                '@id': WEBSITE_ID,
+                url: SITE_METADATA.siteUrl,
+                name: SITE_METADATA.title,
+            },
+            {
+                '@type': 'Person',
+                '@id': AUTHOR_URL,
+                name: SITE_METADATA.author,
+                url: AUTHOR_URL,
+            },
+            {
+                '@type': 'Organization',
+                '@id': PUBLISHER_ID,
+                name: SITE_METADATA.title,
+                url: SITE_METADATA.siteUrl,
+                logo: {
+                    '@type': 'ImageObject',
+                    url: toAbsoluteUrl('/images/logo.png'),
+                },
+            },
             {
                 '@type': 'BreadcrumbList',
                 '@id': `${canonical}#breadcrumb`,
@@ -119,19 +150,21 @@ export default async function BlogPostPage({ params }: PageProps) {
                 datePublished: publishedTime,
                 dateModified: modifiedTime,
                 author: {
-                    '@type': 'Person',
-                    name: SITE_METADATA.author,
+                    '@id': AUTHOR_URL,
                 },
                 publisher: {
-                    '@type': 'Person',
-                    name: SITE_METADATA.author,
+                    '@id': PUBLISHER_ID,
                 },
                 mainEntityOfPage: {
                     '@type': 'WebPage',
                     '@id': canonical,
+                    isPartOf: {
+                        '@id': WEBSITE_ID,
+                    },
                 },
                 articleSection: post.categoryName || undefined,
                 keywords: post.tagNames?.map((tag) => tag.name).join(', ') || undefined,
+                timeRequired: `PT${readingMinutes}M`,
                 wordCount,
                 inLanguage: 'zh-CN',
             },

@@ -1,3 +1,4 @@
+import { ContentImage } from '@/components/site/content-image';
 import { MarkdownArticle } from '@/components/site/markdown-article';
 import { formatPostDate } from '@/lib/post-shared';
 
@@ -14,7 +15,7 @@ export interface ArticleViewProps {
     publishedAt?: string | null;
 }
 
-/*== ArticleView 文章展示组件 — 编辑器预览 + 前台详情页共用 ==*/
+/*== ArticleView 文章展示组件：编辑器预览与前台详情页共用。 ==*/
 export function ArticleView({
     content,
     title,
@@ -26,38 +27,35 @@ export function ArticleView({
     publishedAt,
 }: ArticleViewProps) {
     const hasHeader = title || summary || coverImage || categoryName || (tagNames && tagNames.length > 0) || publishedAt;
-
-    /* 兼容 tagNames 两种格式：对象数组（来自 Post）和字符串数组（编辑器预览） */
-    const tagLabels = tagNames?.map((t) => typeof t === 'string' ? t : t.name) ?? [];
+    const tagLabels = tagNames?.map((tag) => typeof tag === 'string' ? tag : tag.name) ?? [];
 
     return (
         <div className={styles.article}>
-            {hasHeader && (
+            {hasHeader ? (
                 <div className={styles.header}>
-                    {coverImage && (
-                        <img
+                    {coverImage ? (
+                        <ContentImage
                             alt={altText || title || '封面图'}
                             className={styles.coverImage}
+                            sizes='(min-width: 896px) 56rem, 100vw'
                             src={coverImage}
                         />
-                    )}
-                    {title && <h1 className={styles.headerTitle}>{title}</h1>}
-                    {summary && <p className={styles.headerSummary}>{summary}</p>}
+                    ) : null}
+                    {title ? <h1 className={styles.headerTitle}>{title}</h1> : null}
+                    {summary ? <p className={styles.headerSummary}>{summary}</p> : null}
                     <div className={styles.headerMeta}>
-                        {categoryName && (
-                            <span className={styles.category}>{categoryName}</span>
-                        )}
+                        {categoryName ? <span className={styles.category}>{categoryName}</span> : null}
                         {tagLabels.map((name) => (
                             <span className={styles.tag} key={name}>{name}</span>
                         ))}
-                        {publishedAt && (
+                        {publishedAt ? (
                             <span className={styles.date}>
                                 {formatPostDate(publishedAt)}
                             </span>
-                        )}
+                        ) : null}
                     </div>
                 </div>
-            )}
+            ) : null}
             <MarkdownArticle content={content} />
         </div>
     );

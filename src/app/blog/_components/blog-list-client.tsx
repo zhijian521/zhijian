@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo } from 'react';
 
+import { ContentImage } from '@/components/site/content-image';
 import { Pagination } from '@/components/ui/pagination';
 import { Tag } from '@/components/ui/tag';
 import { formatPostDate } from '@/lib/post-shared';
@@ -106,7 +107,12 @@ export default function BlogListClient({
                                 </div>
                                 {post.coverImage ? (
                                     <div className={styles.itemCover}>
-                                        <img alt={post.altText || post.title} src={post.coverImage} />
+                                        <ContentImage
+                                            alt={post.altText || post.title}
+                                            sizes='180px'
+                                            src={post.coverImage}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
                                     </div>
                                 ) : null}
                             </Link>
