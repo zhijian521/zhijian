@@ -17,14 +17,16 @@ export const SITE_METADATA = {
     name: 'Zhijian',
     adminName: 'Zhijian Admin',
     title: '知简',
-    description: '知简 — 一个简洁的个人博客网站。',
+    brandTitle: 'Zhijian - 简静造物',
+    description: '简静造物，以代码与文字记录所思所学。知简 — 涵盖前端开发、React、Next.js、TypeScript、全栈实践与简约设计思考的个人技术博客。',
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
     locale: 'zh_CN',
     ogImage: '/images/main.png',
     author: 'Zhi Jian',
-    blogTitle: '知简文章',
-    blogDescription: '写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。知简的技术文章与实践记录，涵盖前端开发、React、Next.js、TypeScript 与全栈实践。',
-    keywords: ['前端开发', '简约设计', '造物', 'React', 'Next.js', 'TypeScript', '全栈开发', '技术博客', '知简'],
+    blogTitle: '文章列表',
+    blogDescription:
+        '写代码，也写文字；喜欢简洁的设计，追求美好的事物。知简的技术博客，涵盖前端开发、React、Next.js、TypeScript 与全栈实践，安静造物，步履不停。',
+    keywords: ['简静造物', '知简', 'Zhijian', '前端开发', '全栈开发', '全栈实践', 'React', 'Next.js', 'TypeScript', 'CSS Modules', 'MySQL', '简约设计', '技术博客', '个人博客'],
 } as const;
 
 export const APP_ROUTES = {

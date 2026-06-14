@@ -21,7 +21,7 @@ import { SITE_METADATA } from '@/lib/site';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: `${SITE_METADATA.title} - 前端开发 · 全栈 · 简约设计 · 造物`,
+    title: SITE_METADATA.brandTitle,
     description: SITE_METADATA.blogDescription,
     keywords: [...SITE_METADATA.keywords],
     authors: [{ name: SITE_METADATA.author }],
@@ -31,14 +31,14 @@ export const metadata: Metadata = {
         canonical: SITE_METADATA.siteUrl,
     },
     openGraph: {
-        title: SITE_METADATA.title,
+        title: SITE_METADATA.brandTitle,
         description: SITE_METADATA.blogDescription,
         url: SITE_METADATA.siteUrl,
-        images: [{ url: SITE_METADATA.ogImage, alt: SITE_METADATA.title }],
+        images: [{ url: SITE_METADATA.ogImage, alt: SITE_METADATA.brandTitle }],
     },
     twitter: {
         card: 'summary_large_image',
-        title: SITE_METADATA.title,
+        title: SITE_METADATA.brandTitle,
         description: SITE_METADATA.blogDescription,
         images: [SITE_METADATA.ogImage],
     },
@@ -96,7 +96,7 @@ export default async function HomePage() {
                 '@type': 'CollectionPage',
                 '@id': `${SITE_METADATA.siteUrl}#home`,
                 url: SITE_METADATA.siteUrl,
-                name: `${SITE_METADATA.title} - 前端开发 · 全栈 · 简约设计 · 造物`,
+                name: SITE_METADATA.brandTitle,
                 description: SITE_METADATA.blogDescription,
                 isPartOf: { '@id': `${SITE_METADATA.siteUrl}#website` },
                 about: { '@id': `${SITE_METADATA.siteUrl}#author` },

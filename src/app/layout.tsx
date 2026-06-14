@@ -7,8 +7,8 @@ import './globals.css';
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_METADATA.siteUrl),
     title: {
-        default: SITE_METADATA.title,
-        template: `%s | ${SITE_METADATA.title}`,
+        default: SITE_METADATA.brandTitle,
+        template: `%s - ${SITE_METADATA.brandTitle}`,
     },
     description: SITE_METADATA.description,
     icons: {

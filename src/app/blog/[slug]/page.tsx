@@ -35,7 +35,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         notFound();
     }
 
-    const title = `${post.title} - ${SITE_METADATA.title}`;
+    const title = post.title;
+    const fullTitle = `${title} - ${SITE_METADATA.brandTitle}`;
     const description = post.summary || `${post.title} - ${SITE_METADATA.blogDescription}`;
     const ogImage = toAbsoluteUrl(post.coverImage);
     const canonical = `${SITE_METADATA.siteUrl}/blog/${slug}`;
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         openGraph: {
             type: 'article',
-            title,
+            title: fullTitle,
             description,
             url: canonical,
             publishedTime,
@@ -71,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         twitter: {
             card: 'summary_large_image',
-            title,
+            title: fullTitle,
             description,
             ...(ogImage && { images: [{ url: ogImage, alt: post.altText || post.title }] }),
         },

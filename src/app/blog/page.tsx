@@ -222,8 +222,10 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         descriptionSegments.push(`当前为第 ${currentPage} 页。`);
     }
 
+    const pageTitle = titleSegments.join(' - ');
+
     return {
-        title: `${titleSegments.join(' - ')} - ${SITE_METADATA.title}`,
+        title: pageTitle,
         description: descriptionSegments.join(' '),
         keywords: [
             ...activeTagNames,
@@ -260,14 +262,14 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
             }),
         },
         openGraph: {
-            title: titleSegments.join(' - '),
+            title: pageTitle,
             description: descriptionSegments.join(' '),
             url: canonical,
             images: [{ url: SITE_METADATA.ogImage, alt: SITE_METADATA.blogTitle }],
         },
         twitter: {
             card: 'summary_large_image',
-            title: titleSegments.join(' - '),
+            title: pageTitle,
             description: descriptionSegments.join(' '),
             images: [SITE_METADATA.ogImage],
         },
