@@ -12,7 +12,7 @@ export interface TextLinkProps extends React.ComponentProps<typeof Link> {
 /*== TextLink 纯文字链接 — 朱砂红文字+箭头，hover 淡出 ==*/
 export function TextLink({ showArrow = true, children, className, ...props }: TextLinkProps) {
     return (
-        <Link className={`${styles.link} ${className || ''}`} {...props}>
+        <Link className={`${styles.link} ${className || ''}`} prefetch={false} {...props}>
             {children}
             {showArrow ? <ArrowRightIcon className={styles.icon} /> : null}
         </Link>

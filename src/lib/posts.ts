@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from 'next/cache';
 import { getDb } from '@/lib/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
@@ -64,18 +65,21 @@ const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
 
 /*== 获取已发布文章列表。 ==*/
 export async function getPublishedPosts(): Promise<Post[]> {
+    noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: false });
     return enrichPostsWithTagNames(posts);
 }
 
 /*== 获取全部文章（含草稿），供后台管理列表使用。 ==*/
 export async function getAllPosts(): Promise<Post[]> {
+    noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true });
     return enrichPostsWithTagNames(posts);
 }
 
 /*== 按 Slug 获取单篇已发布文章，用于前台详情页。 @param slug - 文章的唯一标识符 @returns 匹配的文章，未找到时返回 null ==*/
 export async function getPostBySlug(slug: string): Promise<Post | null> {
+    noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: false, slug });
     if (posts.length === 0) return null;
     const enriched = await enrichPostsWithTagNames(posts);
@@ -84,6 +88,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
 /*== 按 ID 获取单篇文章（含草稿），供后台编辑页使用。 @param id - 文章主键 ID @returns 匹配的文章，未找到时返回 null ==*/
 export async function getPostById(id: number): Promise<Post | null> {
+    noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true, id });
     if (posts.length === 0) return null;
     const enriched = await enrichPostsWithTagNames(posts);

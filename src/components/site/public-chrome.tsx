@@ -40,6 +40,7 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                                         className={`${styles.navLink} ${isActive ? styles.navLinkActive : styles.navLinkInactive}`}
                                         href={item.href}
                                         key={item.label}
+                                        prefetch={false}
                                     >
                                         {item.label}
                                         {isActive ? <span aria-hidden className={styles.navUnderline} /> : null}

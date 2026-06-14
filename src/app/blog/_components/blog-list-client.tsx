@@ -99,7 +99,7 @@ export default function BlogListClient({ posts }: BlogListClientProps) {
                 <section className={styles.main}>
                     <div className={styles.list}>
                         {paged.length > 0 ? paged.map((post) => (
-                            <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id}>
+                            <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id} prefetch={false}>
                                 <div className={styles.itemBody}>
                                     <h2 className={styles.itemTitle}>{post.title}</h2>
                                     <p className={styles.itemSummary}>{post.summary}</p>
