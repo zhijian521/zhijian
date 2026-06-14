@@ -7,7 +7,7 @@
     color: var(--foreground);
 }
 
-/*== 导航栏 — 首页透明 ==*/
+/*== 导航栏：首页透明 ==*/
 .headerHome {
     z-index: 40;
     width: 100%;
@@ -18,7 +18,7 @@
     transition: background-color 0.2s;
 }
 
-/*== 导航栏 — 内页吸附 ==*/
+/*== 导航栏：内页吸附 ==*/
 .headerInner {
     z-index: 40;
     width: 100%;
@@ -123,32 +123,108 @@
     background: var(--primary);
 }
 
-/*== 移动端菜单按钮 ==*/
-.mobileMenu {
-    display: flex;
-    height: 2.25rem;
-    width: 2.25rem;
+/*== 移动端导航 ==*/
+.mobileNavWrapper {
+    position: relative;
+}
+
+.mobileMenu,
+.mobileClose {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    background: var(--muted);
     color: var(--muted-foreground);
+    cursor: pointer;
     transition:
-        color 0.2s,
-        background-color 0.2s;
+        color 0.15s,
+        background-color 0.15s;
 }
 
-.mobileMenuIcon {
-    width: 1.125rem;
-    height: 1.125rem;
+.mobileMenu:hover,
+.mobileClose:hover {
+    color: var(--primary);
+    background: var(--primary-subtle);
 }
 
-.mobileMenu:hover {
-    background: color-mix(in srgb, var(--secondary) 70%, transparent);
+.mobileMenuOpen {
+    color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+.mobileMenuIcon,
+.mobileCloseIcon {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
 }
 
 @media (min-width: 768px) {
-    .mobileMenu {
+    .mobileNavWrapper {
         display: none;
     }
+}
+
+.mobilePanel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 50;
+    width: 10rem;
+    border: 1px solid var(--border);
+    background: var(--popover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.mobilePanelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.5rem 0.375rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.mobilePanelTitle {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--foreground);
+}
+
+.mobileNav {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.5rem;
+}
+
+.mobileNavLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--foreground);
+    border-left: 2px solid transparent;
+    transition:
+        background-color 0.1s,
+        color 0.1s,
+        border-color 0.1s;
+}
+
+.mobileNavLink:hover {
+    background: var(--highlight);
+}
+
+.mobileNavLinkActive {
+    background: var(--primary-subtle);
+    color: var(--primary);
+    border-left-color: var(--primary);
 }
 
 /*== 主内容区 ==*/
