@@ -1,12 +1,16 @@
+import Link from 'next/link';
+
 import styles from './pagination.module.css';
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
-    /** 当前页码（1-based） */
+    /** 当前页码，1-based */
     current: number;
     /** 总页数 */
     total: number;
+    /** 目标页链接生成函数 */
+    getHref?: (page: number) => string;
     /** 页码变更回调 */
-    onPageChange: (page: number) => void;
+    onPageChange?: (page: number) => void;
 }
 
 /*== 生成带省略号的页码列表 ==*/
@@ -37,47 +41,71 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
     return pages;
 }
 
-/*== Pagination 分页 — 朱砂红当前页 + 描边翻页按钮 ==*/
-export function Pagination({ current, total, onPageChange, className, ...props }: PaginationProps) {
+/*== Pagination 分页：支持服务端链接模式和客户端回调模式 ==*/
+export function Pagination({ current, total, getHref, onPageChange, className, ...props }: PaginationProps) {
     const pages = buildPageNumbers(current, total);
 
-    return (
-        <nav aria-label="分页导航" className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>
+    function renderPageButton(page: number, isNav = false, label?: string) {
+        const text = label ?? String(page);
+        const buttonClass = `${styles.btn}${page === current && !isNav ? ` ${styles.active}` : ''}${isNav ? ` ${styles.navBtn}` : ''}`;
+
+        if (getHref) {
+            const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
+            if (isDisabled) {
+                return (
+                    <span aria-disabled='true' className={`${buttonClass} ${styles.disabledLink}`}>
+                        {text}
+                    </span>
+                );
+            }
+
+            return (
+                <Link
+                    aria-current={page === current && !isNav ? 'page' : undefined}
+                    className={buttonClass}
+                    href={getHref(page)}
+                >
+                    {text}
+                </Link>
+            );
+        }
+
+        if (!onPageChange) {
+            return null;
+        }
+
+        const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
+
+        return (
             <button
-                className={`${styles.btn} ${styles.navBtn}`}
-                disabled={current <= 1}
-                onClick={() => onPageChange(current - 1)}
-                type="button"
+                aria-current={page === current && !isNav ? 'page' : undefined}
+                className={buttonClass}
+                disabled={isDisabled}
+                onClick={() => onPageChange(page)}
+                type='button'
             >
-                上一页
+                {text}
             </button>
+        );
+    }
+
+    return (
+        <nav aria-label='分页导航' className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>
+            {renderPageButton(current - 1, true, '上一页')}
 
             {pages.map((page, index) =>
                 page === 'ellipsis' ? (
-                    <span aria-hidden="true" className={styles.ellipsis} key={`ellipsis-${index}`}>
+                    <span aria-hidden='true' className={styles.ellipsis} key={`ellipsis-${index}`}>
                         …
                     </span>
                 ) : (
-                    <button
-                        aria-current={page === current ? 'page' : undefined}
-                        className={`${styles.btn}${page === current ? ` ${styles.active}` : ''}`}
-                        key={page}
-                        onClick={() => onPageChange(page)}
-                        type="button"
-                    >
-                        {page}
-                    </button>
+                    <span key={page}>
+                        {renderPageButton(page)}
+                    </span>
                 ),
             )}
 
-            <button
-                className={`${styles.btn} ${styles.navBtn}`}
-                disabled={current >= total}
-                onClick={() => onPageChange(current + 1)}
-                type="button"
-            >
-                下一页
-            </button>
+            {renderPageButton(current + 1, true, '下一页')}
         </nav>
     );
 }

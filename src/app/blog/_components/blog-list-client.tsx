@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 
 import { Pagination } from '@/components/ui/pagination';
 import { Tag } from '@/components/ui/tag';
@@ -11,82 +10,74 @@ import type { Post } from '@/lib/post-shared';
 
 import styles from '../page.module.css';
 
-const PAGE_SIZE = 10;
-
-interface BlogListClientProps {
-    posts: Post[];
+interface FilterOption {
+    label: string;
+    slug: string;
 }
 
-/*== 博客列表客户端组件：筛选 + URL 参数分页 + prev/next SEO link ==*/
-export default function BlogListClient({ posts }: BlogListClientProps) {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const rawPage = Number(searchParams.get('page')) || 1;
-    const category = searchParams.get('category') || '全部';
+interface BlogListClientProps {
+    activeCategorySlug: string;
+    activeTagSlugs: string[];
+    categoryOptions: FilterOption[];
+    currentPage: number;
+    posts: Post[];
+    tagOptions: FilterOption[];
+    totalPages: number;
+}
 
-    /* 从数据库文章中提取用到的分类和标签 */
-    const usedCategories = useMemo(() => {
-        const names = new Set(posts.map((p) => p.categoryName).filter(Boolean));
-        return ['全部', ...names] as string[];
-    }, [posts]);
+export default function BlogListClient({
+    activeCategorySlug,
+    activeTagSlugs,
+    categoryOptions,
+    currentPage,
+    posts,
+    tagOptions,
+    totalPages,
+}: BlogListClientProps) {
+    const activeTagSet = useMemo(() => new Set(activeTagSlugs), [activeTagSlugs]);
 
-    const usedTags = useMemo(() => {
-        const allTagNames = posts.flatMap((p) => p.tagNames?.map((t) => t.name) ?? []);
-        return [...new Set(allTagNames)];
-    }, [posts]);
+    function buildBlogHref(updates: { page?: number | null; category?: string | null; tags?: string[] | null }) {
+        const params = new URLSearchParams();
+        const nextCategory = updates.category === undefined ? activeCategorySlug : updates.category;
+        const nextTags = updates.tags === undefined ? activeTagSlugs : updates.tags;
+        const nextPage = updates.page === undefined ? currentPage : updates.page;
 
-    const activeTags = useMemo(() => {
-        const t = searchParams.get('tags');
-        return t ? t.split(',').filter(Boolean) : [];
-    }, [searchParams]);
-
-    const filtered = useMemo(() => {
-        let result = posts;
-
-        if (category !== '全部') {
-            result = result.filter((p) => p.categoryName === category);
+        if (nextCategory) {
+            params.set('category', nextCategory);
         }
 
-        if (activeTags.length > 0) {
-            result = result.filter((p) =>
-                activeTags.some((t) => p.tagNames?.some((pt) => pt.name === t)),
-            );
+        if (nextTags && nextTags.length > 0) {
+            params.set('tags', nextTags.join(','));
         }
 
-        return result;
-    }, [posts, category, activeTags]);
-
-    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-    const page = Math.min(Math.max(rawPage, 1), totalPages);
-    const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-    /* 统一的 URL 参数更新函数 */
-    const updateParams = useCallback((updates: Record<string, string | null>) => {
-        const params = new URLSearchParams(searchParams.toString());
-        for (const [key, value] of Object.entries(updates)) {
-            if (value === null || value === '全部') {
-                params.delete(key);
-            } else {
-                params.set(key, value);
-            }
+        if (nextPage && nextPage > 1) {
+            params.set('page', String(nextPage));
         }
-        const qs = params.toString();
-        router.push(qs ? `/blog?${qs}` : '/blog');
-    }, [searchParams, router]);
 
-    function handlePageChange(newPage: number) {
-        updateParams({ page: newPage > 1 ? String(newPage) : null });
+        const query = params.toString();
+        return query ? `/blog?${query}` : '/blog';
     }
 
-    function handleCategoryChange(cat: string) {
-        updateParams({ category: cat !== '全部' ? cat : null, page: null });
+    function buildCategoryHref(categorySlug: string) {
+        return buildBlogHref({
+            category: categorySlug || null,
+            page: null,
+        });
     }
 
-    function toggleTag(tag: string) {
-        const next = activeTags.includes(tag)
-            ? activeTags.filter((t) => t !== tag)
-            : [...activeTags, tag];
-        updateParams({ tags: next.length > 0 ? next.join(',') : null, page: null });
+    function buildTagHref(tagSlug: string) {
+        const nextTags = activeTagSet.has(tagSlug)
+            ? activeTagSlugs.filter((activeTag) => activeTag !== tagSlug)
+            : [...activeTagSlugs, tagSlug];
+
+        return buildBlogHref({
+            tags: nextTags,
+            page: null,
+        });
+    }
+
+    function buildPaginationHref(page: number) {
+        return buildBlogHref({ page });
     }
 
     return (
@@ -98,21 +89,19 @@ export default function BlogListClient({ posts }: BlogListClientProps) {
             <div className={styles.layout}>
                 <section className={styles.main}>
                     <div className={styles.list}>
-                        {paged.length > 0 ? paged.map((post) => (
+                        {posts.length > 0 ? posts.map((post) => (
                             <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id} prefetch={false}>
                                 <div className={styles.itemBody}>
                                     <h2 className={styles.itemTitle}>{post.title}</h2>
                                     <p className={styles.itemSummary}>{post.summary}</p>
                                     <div className={styles.itemMeta}>
-                                        {post.categoryName && (
+                                        {post.categoryName ? (
                                             <span className={styles.itemCategory}>{post.categoryName}</span>
-                                        )}
-                                        {post.tagNames?.map((t) => (
-                                            <Tag variant="outlined" size="mini" key={t.id}>{t.name}</Tag>
+                                        ) : null}
+                                        {post.tagNames?.map((tag) => (
+                                            <Tag key={tag.id} size='mini' variant='outlined'>{tag.name}</Tag>
                                         ))}
-                                        <span className={styles.itemDate}>
-                                            {formatPostDate(post.publishedAt)}
-                                        </span>
+                                        <span className={styles.itemDate}>{formatPostDate(post.publishedAt)}</span>
                                     </div>
                                 </div>
                                 {post.coverImage ? (
@@ -128,47 +117,45 @@ export default function BlogListClient({ posts }: BlogListClientProps) {
                         )}
                     </div>
 
-                    {totalPages > 1 && (
-                        <Pagination current={page} onPageChange={handlePageChange} total={totalPages} />
-                    )}
+                    {totalPages > 1 ? (
+                        <Pagination current={currentPage} getHref={buildPaginationHref} total={totalPages} />
+                    ) : null}
                 </section>
 
                 <aside className={styles.sidebar}>
-                    {usedCategories.length > 1 && (
+                    {categoryOptions.length > 1 ? (
                         <div className={styles.sidebarCard}>
                             <h3 className={styles.sidebarTitle}>分类</h3>
                             <div className={styles.categories}>
-                                {usedCategories.map((cat) => (
-                                    <button
-                                        className={`${styles.catBtn} ${category === cat ? styles.catActive : ''}`}
-                                        key={cat}
-                                        onClick={() => handleCategoryChange(cat)}
-                                        type="button"
+                                {categoryOptions.map((category) => (
+                                    <Link
+                                        className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
+                                        href={buildCategoryHref(category.slug)}
+                                        key={category.slug || 'all'}
                                     >
-                                        {cat}
-                                    </button>
+                                        {category.label}
+                                    </Link>
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ) : null}
 
-                    {usedTags.length > 0 && (
+                    {tagOptions.length > 0 ? (
                         <div className={styles.sidebarCard}>
                             <h3 className={styles.sidebarTitle}>标签</h3>
                             <div className={styles.tagFilter}>
-                                {usedTags.map((tag) => (
-                                    <button
-                                        className={`${styles.tagBtn} ${activeTags.includes(tag) ? styles.tagActive : ''}`}
-                                        key={tag}
-                                        onClick={() => toggleTag(tag)}
-                                        type="button"
+                                {tagOptions.map((tag) => (
+                                    <Link
+                                        className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
+                                        href={buildTagHref(tag.slug)}
+                                        key={tag.slug}
                                     >
-                                        {tag}
-                                    </button>
+                                        {tag.label}
+                                    </Link>
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ) : null}
                 </aside>
             </div>
         </main>

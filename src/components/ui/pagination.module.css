@@ -10,6 +10,9 @@
 
 /*== 通用按钮基础 ==*/
 .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-width: 2.25rem;
     height: 2.25rem;
     padding: 0 0.5rem;
@@ -37,6 +40,12 @@
 .btn:disabled {
     opacity: 0.35;
     cursor: default;
+}
+
+.disabledLink {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
 }
 
 /*== 翻页按钮（上一页/下一页） ==*/

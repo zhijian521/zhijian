@@ -32,11 +32,19 @@ export interface CreatePostInput {
     tags?: number[];
 }
 
+/*== 前台文章列表查询参数：支持分类和标签服务端过滤。 ==*/
+export interface PublishedPostFilter {
+    categorySlug?: string;
+    tagSlugs?: string[];
+}
+
 /*== 内部查询选项，统一数据库读取时的条件组合逻辑。 ==*/
 interface ReadPostsOptions {
     includeDrafts: boolean;
     id?: number;
     slug?: string;
+    categorySlug?: string;
+    tagSlugs?: string[];
 }
 
 /*== MySQL 查询返回的原始行类型，字段名与数据库列名保持一致。 ==*/
@@ -50,7 +58,8 @@ interface PostRow extends RowDataPacket {
     alt_text: string | null;
     category_id: number | null;
     category_name: string | null;
-    tags: number[] | string | null; // mysql2 可能自动解析为数组，也可能是 JSON 字符串或 null
+    category_slug: string | null;
+    tags: number[] | string | null;
     status: PostStatus;
     published_at: string | null;
     updated_at: string | null;
@@ -64,9 +73,13 @@ const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
 /*== 公开查询 ==*/
 
 /*== 获取已发布文章列表。 ==*/
-export async function getPublishedPosts(): Promise<Post[]> {
+export async function getPublishedPosts(filter: PublishedPostFilter = {}): Promise<Post[]> {
     noStore();
-    const posts = await readPostsFromDatabase({ includeDrafts: false });
+    const posts = await readPostsFromDatabase({
+        includeDrafts: false,
+        categorySlug: filter.categorySlug,
+        tagSlugs: filter.tagSlugs,
+    });
     return enrichPostsWithTagNames(posts);
 }
 
@@ -97,7 +110,7 @@ export async function getPostById(id: number): Promise<Post | null> {
 
 /*== 写入操作 ==*/
 
-/*== 更新指定文章。 采用动态 SET 子句，仅更新传入的字段。 ==*/
+/*== 更新指定文章。采用动态 SET 子句，仅更新传入的字段。 ==*/
 export async function updatePostById(id: number, input: UpdatePostInput): Promise<Post | null> {
     const db = getDb();
 
@@ -151,7 +164,7 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
     }
 }
 
-/*== 创建草稿文章。 新文章默认先保存为 draft，降低后台误发布风险。 ==*/
+/*== 创建草稿文章。新文章默认先保存为 draft，降低后台误发布风险。 ==*/
 export async function createPost(input: CreatePostInput): Promise<Post | null> {
     const db = getDb();
 
@@ -198,7 +211,7 @@ export async function deletePostById(id: number): Promise<boolean> {
 
 /*== 内部查询 ==*/
 
-/*== 统一读取文章数据。 includeDrafts、slug、id 等条件都在这一层组合，避免查询逻辑散落到多个 route 中。 ==*/
+/*== 统一读取文章数据。 includeDrafts、slug、id、分类、标签等条件都在这一层组合。 ==*/
 async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]> {
     const db = getDb();
 
@@ -224,6 +237,23 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         values.push(options.slug);
     }
 
+    if (options.categorySlug) {
+        conditions.push('c.slug = ?');
+        values.push(options.categorySlug);
+    }
+
+    if (options.tagSlugs && options.tagSlugs.length > 0) {
+        conditions.push(`
+            EXISTS (
+                SELECT 1
+                FROM zhijian_blog_tags filter_t
+                WHERE filter_t.slug IN (${options.tagSlugs.map(() => '?').join(', ')})
+                    AND JSON_CONTAINS(p.tags, CAST(filter_t.id AS JSON), '$')
+            )
+        `);
+        values.push(...options.tagSlugs);
+    }
+
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
     try {
@@ -242,7 +272,8 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                     p.status,
                     DATE_FORMAT(p.published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
                     DATE_FORMAT(p.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at,
-                    c.name as category_name
+                    c.name AS category_name,
+                    c.slug AS category_slug
                 FROM zhijian_blog_posts p
                 LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
                 ${whereClause}
@@ -254,7 +285,6 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         return rows.map((row) => {
             let tags: number[] = [];
             if (Array.isArray(row.tags)) {
-                // mysql2 自动将 JSON 列解析为 JS 数组
                 tags = row.tags;
             } else if (row.tags) {
                 try {
@@ -263,6 +293,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                     tags = [];
                 }
             }
+
             return {
                 id: row.id,
                 slug: row.slug,
@@ -285,9 +316,9 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
     }
 }
 
-/*== 批量查询标签名称，拼装到文章的 tagNames 字段上。查询失败时静默回退，不影响文章列表返回。 ==*/
+/*== 批量查询标签名称，拼装到文章的 tagNames 字段中。查询失败时静默回退，不影响文章列表返回。 ==*/
 async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
-    const allTagIds = posts.flatMap((p) => p.tags).filter(Boolean);
+    const allTagIds = posts.flatMap((post) => post.tags).filter(Boolean);
     if (allTagIds.length === 0) return posts;
 
     const uniqueIds = [...new Set(allTagIds)];
@@ -305,9 +336,9 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
             tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
         }
 
-        return posts.map((p) => ({
-            ...p,
-            tagNames: p.tags.map((id) => tagMap.get(id)).filter(Boolean) as { id: number; name: string; slug: string }[],
+        return posts.map((post) => ({
+            ...post,
+            tagNames: post.tags.map((id) => tagMap.get(id)).filter(Boolean) as { id: number; name: string; slug: string }[],
         }));
     } catch (error) {
         console.error('Failed to enrich posts with tag names.', { error });
@@ -326,13 +357,10 @@ export function isPostStatus(value: unknown): value is PostStatus {
 function normalizePublishedAt(value: string | null, status: PostStatus): string | null {
     if (!value && status === 'draft') return null;
     if (!value && status === 'published') return formatSqlDate(new Date());
-    // value 可能来自 datetime-local（YYYY-MM-DDTHH:mm）或数据库（YYYY-MM-DD HH:mm:ss）
     const normalized = value!.replace('T', ' ');
-    // 已包含秒数（数据库格式），直接使用
     if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(normalized)) {
         return normalized;
     }
-    // datetime-local 格式，补充秒数
     return normalized + ':00';
 }
 
