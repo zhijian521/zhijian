@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { ArticleView } from '@/components/site/article-view';
-import { getPostBySlug, getPublishedPosts } from '@/lib/posts';
+import { getPostBySlug } from '@/lib/posts';
 import { SITE_METADATA } from '@/lib/site';
 import { ArticleFooterActions } from './_components/article-footer-actions';
 
@@ -12,14 +12,8 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
-/*== ISR：每 60 秒重新验证 ==*/
-export const revalidate = 60;
-
-/*== 生成静态路径（ISR 预渲染） ==*/
-export async function generateStaticParams() {
-    const posts = await getPublishedPosts();
-    return posts.map((post) => ({ slug: post.slug }));
-}
+/*== 文章详情依赖数据库实时内容，禁用 ISR 与构建期预渲染，避免部署后先展示旧文章快照。 ==*/
+export const dynamic = 'force-dynamic';
 
 /*== 详情页 metadata：每篇文章独立的 title/description/OG/canonical ==*/
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

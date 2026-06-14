@@ -22,7 +22,8 @@ export const metadata: Metadata = {
     },
 };
 
-export const revalidate = 60;
+/*== 首页文章区依赖数据库最新内容，禁用 ISR，避免部署后先返回构建期博客数据。 ==*/
+export const dynamic = 'force-dynamic';
 
 /*== 项目数据 ==*/
 const PROJECTS: { icon: React.ReactNode; title: string; description: string; tags: string[]; actions: ProjectAction[] }[] = [

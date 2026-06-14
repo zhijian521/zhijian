@@ -35,7 +35,8 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     };
 }
 
-export const revalidate = 60;
+/*== 博客列表依赖实时文章数据，禁用 ISR，避免部署后先命中构建期缓存。 ==*/
+export const dynamic = 'force-dynamic';
 
 /*== 博客列表页：服务端查库，客户端筛选 ==*/
 export default async function BlogListPage() {
