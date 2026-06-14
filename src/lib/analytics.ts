@@ -177,7 +177,7 @@ export async function aggregateDaily(siteId: string, date: string): Promise<void
 
     const pageDurMap = new Map<string, number>();
     for (const r of pageDurRows as any[]) {
-        pageDurMap.set(r.path, r.avg_duration || 0);
+        pageDurMap.set(r.path, Number(r.avg_duration) || 0);
     }
 
     for (const row of pageRows as any[]) {
@@ -332,17 +332,17 @@ export async function getOverview(siteId: string, range: DateRange, skipAggregat
     `, [siteId, prevPeriodStart, prevPeriodEnd]);
     const prev = prevRows[0] as any;
 
-    const pv = cur?.pv || 0;
-    const uv = cur?.uv || 0;
-    const sessions = cur?.sessions || 0;
-    const newVisitors = cur?.new_visitors || 0;
-    const bounce = cur?.bounce || 0;
-    const avgDuration = cur?.avg_duration || 0;
+    const pv = Number(cur?.pv) || 0;
+    const uv = Number(cur?.uv) || 0;
+    const sessions = Number(cur?.sessions) || 0;
+    const newVisitors = Number(cur?.new_visitors) || 0;
+    const bounce = Number(cur?.bounce) || 0;
+    const avgDuration = Number(cur?.avg_duration) || 0;
     const bounceRate = sessions > 0 ? Math.round((bounce / sessions) * 1000) / 10 : 0;
     const newVisitorRate = uv > 0 ? Math.round((newVisitors / uv) * 1000) / 10 : 0;
 
-    const prevPv = prev?.pv || 0;
-    const prevUv = prev?.uv || 0;
+    const prevPv = Number(prev?.pv) || 0;
+    const prevUv = Number(prev?.uv) || 0;
     const pvChange = prevPv > 0 ? Math.round(((pv - prevPv) / prevPv) * 1000) / 10 : 0;
     const uvChange = prevUv > 0 ? Math.round(((uv - prevUv) / prevUv) * 1000) / 10 : 0;
 
@@ -370,7 +370,7 @@ export async function getTrend(siteId: string, range: DateRange, skipAggregate =
     for (const r of rows as any[]) {
         /* r.date 可能是 Date 对象（mysql2 解析）或字符串，统一用 formatDate 格式化 */
         const dateStr = r.date instanceof Date ? formatDate(r.date) : String(r.date).slice(0, 10);
-        dataMap.set(dateStr, { date: dateStr, pv: r.pv || 0, uv: r.uv || 0 });
+        dataMap.set(dateStr, { date: dateStr, pv: Number(r.pv) || 0, uv: Number(r.uv) || 0 });
     }
 
     const result: TrendPoint[] = [];
@@ -406,10 +406,10 @@ export async function getPageRank(siteId: string, range: DateRange, limit = 10, 
 
     return (rows as any[]).map(r => ({
         path: r.path,
-        pv: r.pv || 0,
-        uv: r.uv || 0,
-        bounceRate: (r.sessions || 0) > 0 ? Math.round((r.bounce / r.sessions) * 1000) / 10 : 0,
-        avgDuration: r.avg_duration || 0,
+        pv: Number(r.pv) || 0,
+        uv: Number(r.uv) || 0,
+        bounceRate: (Number(r.sessions) || 0) > 0 ? Math.round((Number(r.bounce) / Number(r.sessions)) * 1000) / 10 : 0,
+        avgDuration: Number(r.avg_duration) || 0,
     }));
 }
 
@@ -462,7 +462,7 @@ export async function getSources(siteId: string, range: DateRange, limit = 8): P
         SELECT SUM(pv) AS total FROM zhijian_track_daily
         WHERE site_id = ? AND date >= ? AND row_type = 'summary'
     `, [siteId, startDate]);
-    const total = (totalRows[0] as any)?.total || 0;
+    const total = Number((totalRows[0] as any)?.total) || 0;
 
     /* 从 daily 表查 source 维度行 */
     const [rows] = await db.execute<RowDataPacket[]>(`
@@ -478,8 +478,8 @@ export async function getSources(siteId: string, range: DateRange, limit = 8): P
     let sourceTotal = 0;
     for (const r of rows as any[]) {
         const category = categorizeSource(r.source);
-        merged.set(category, (merged.get(category) || 0) + (r.count || 0));
-        sourceTotal += (r.count || 0);
+        merged.set(category, (merged.get(category) || 0) + (Number(r.count) || 0));
+        sourceTotal += (Number(r.count) || 0);
     }
 
     /* 无外部来源时，剩余 PV 全部归入"直接访问" */
@@ -542,7 +542,7 @@ async function getDistribution(siteId: string, range: DateRange, config: Distrib
 
     let total: number;
     if (config.useReduceTotal) {
-        total = (rows as any[]).reduce((sum, r) => sum + (r.count || 0), 0);
+        total = (rows as any[]).reduce((sum, r) => sum + (Number(r.count) || 0), 0);
     } else {
         const totalWhere = config.overrideTotalWhere
             ? config.overrideTotalWhere
@@ -559,13 +559,13 @@ async function getDistribution(siteId: string, range: DateRange, config: Distrib
         const [totalRows] = await db.execute<RowDataPacket[]>(`
             SELECT COUNT(*) AS total FROM zhijian_track_events WHERE ${totalWhere}
         `, totalParams);
-        total = (totalRows[0] as any)?.total || 0;
+        total = Number((totalRows[0] as any)?.total) || 0;
     }
 
     return (rows as any[]).map(r => ({
         [config.columnAlias]: r[config.columnAlias],
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
+        count: Number(r.count) || 0,
+        percent: total > 0 ? Math.round((Number(r.count) / total) * 1000) / 10 : 0,
     }));
 }
 
@@ -604,12 +604,12 @@ async function getDistributionFromDaily(siteId: string, range: DateRange, config
         ORDER BY count DESC${limitClause}
     `, [...regionParams, siteId, startDate, siteId, startDate, config.dimName, ...limitParams]);
 
-    const total = (rows[0] as any)?.total || 0;
+    const total = Number((rows[0] as any)?.total) || 0;
 
     return (rows as any[]).map(r => ({
         [config.columnAlias]: r[config.columnAlias],
-        count: r.count || 0,
-        percent: total > 0 ? Math.round((r.count / total) * 1000) / 10 : 0,
+        count: Number(r.count) || 0,
+        percent: total > 0 ? Math.round((Number(r.count) / total) * 1000) / 10 : 0,
     }));
 }
 
@@ -760,7 +760,7 @@ export async function getVisits(
         FROM zhijian_track_events
         WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
     `, [siteId, startDate + ' 00:00:00']);
-    const total = (countRows[0] as any)?.total || 0;
+    const total = Number((countRows[0] as any)?.total) || 0;
 
     /* 分页数据 — LEFT JOIN 同一 session 的 leave 事件获取 duration
        子查询加 site_id + 日期过滤，避免全表扫描 */
@@ -811,16 +811,16 @@ export async function getVisits(
         const location = locationParts.length > 0 ? locationParts.join('·') : '-';
 
         return {
-            id: r.id,
+            id: Number(r.id),
             path: r.path || '/',
             title: r.title || '',
             referrer,
             device,
             visitorId: (r.visitor_id || '').slice(0, 8),
-            isNew: r.is_new === 1,
+            isNew: Number(r.is_new) === 1,
             ip: r.ip || '-',
             location,
-            duration: r.duration != null && r.duration > 0 ? r.duration : null,
+            duration: r.duration != null && Number(r.duration) > 0 ? Number(r.duration) : null,
             createdAt: r.created_at instanceof Date
                 ? r.created_at.toISOString()
                 : String(r.created_at),
