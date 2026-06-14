@@ -1,7 +1,4 @@
-'use client';
-
 import Link from 'next/link';
-import { useMemo } from 'react';
 
 import { ContentImage } from '@/components/site/content-image';
 import { Pagination } from '@/components/ui/pagination';
@@ -35,7 +32,7 @@ export default function BlogListClient({
     tagOptions,
     totalPages,
 }: BlogListClientProps) {
-    const activeTagSet = useMemo(() => new Set(activeTagSlugs), [activeTagSlugs]);
+    const activeTagSet = new Set(activeTagSlugs);
 
     function buildBlogHref(updates: { page?: number | null; category?: string | null; tags?: string[] | null }) {
         const params = new URLSearchParams();

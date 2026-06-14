@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
 
 import { listCategories } from '@/lib/categories';
 import { getPublishedPosts } from '@/lib/posts';
@@ -7,7 +6,6 @@ import { SITE_METADATA } from '@/lib/site';
 import { listTags } from '@/lib/tags';
 
 import BlogListClient from './_components/blog-list-client';
-import styles from './page.module.css';
 
 const BLOG_DESCRIPTION = SITE_METADATA.blogDescription;
 const PAGE_SIZE = 10;
@@ -82,7 +80,11 @@ function buildBlogUrl(filters: {
     return filters.siteUrl ? `${SITE_METADATA.siteUrl}${path}` : path;
 }
 
-function resolveFilterState(filters: BlogFilters, categories: Awaited<ReturnType<typeof listCategories>>, tags: Awaited<ReturnType<typeof listTags>>) {
+function resolveFilterState(
+    filters: BlogFilters,
+    categories: Awaited<ReturnType<typeof listCategories>>,
+    tags: Awaited<ReturnType<typeof listTags>>,
+) {
     const categoryMap = new Map(categories.map((category) => [category.slug, category]));
     const tagMap = new Map(tags.map((tag) => [tag.slug, tag]));
 
@@ -279,25 +281,15 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
                 type='application/ld+json'
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <Suspense
-                fallback={(
-                    <main className={styles.page}>
-                        <p style={{ color: 'var(--muted-foreground)', padding: '2rem 0', fontSize: '0.9375rem' }}>
-                            加载中...
-                        </p>
-                    </main>
-                )}
-            >
-                <BlogListClient
-                    activeCategorySlug={activeCategorySlug ?? ALL_CATEGORY_SLUG}
-                    activeTagSlugs={activeTagSlugs}
-                    categoryOptions={categoryOptions}
-                    currentPage={currentPage}
-                    posts={pagedPosts}
-                    tagOptions={tagOptions}
-                    totalPages={totalPages}
-                />
-            </Suspense>
+            <BlogListClient
+                activeCategorySlug={activeCategorySlug ?? ALL_CATEGORY_SLUG}
+                activeTagSlugs={activeTagSlugs}
+                categoryOptions={categoryOptions}
+                currentPage={currentPage}
+                posts={pagedPosts}
+                tagOptions={tagOptions}
+                totalPages={totalPages}
+            />
         </>
     );
 }
