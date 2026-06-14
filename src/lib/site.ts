@@ -21,6 +21,10 @@ export const SITE_METADATA = {
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
     locale: 'zh_CN',
     ogImage: '/images/main.png',
+    author: 'Zhi Jian',
+    blogTitle: '知简文章',
+    blogDescription: '写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。知简的技术文章与实践记录，涵盖前端开发、React、Next.js、TypeScript 与全栈实践。',
+    keywords: ['前端开发', '简约设计', '造物', 'React', 'Next.js', 'TypeScript', '全栈开发', '技术博客', '知简'],
 } as const;
 
 export const APP_ROUTES = {
@@ -42,8 +46,6 @@ export const APP_ROUTES = {
     /*-- 错误 --*/
     forbidden: '/forbidden',
 } as const;
-
-
 
 export const STORAGE_KEYS = {
     adminRememberedUsername: 'zhijian_admin_remembered_username',
@@ -82,9 +84,7 @@ export const PUBLIC_NAV_ITEMS: NavItem[] = [
 export const ADMIN_NAV_GROUPS: NavGroup[] = [
     {
         key: 'overview',
-        items: [
-            { href: APP_ROUTES.admin, label: '概览', icon: LayoutDashboardIcon, match: 'exact' },
-        ],
+        items: [{ href: APP_ROUTES.admin, label: '概览', icon: LayoutDashboardIcon, match: 'exact' }],
     },
     {
         key: 'content',
