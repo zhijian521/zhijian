@@ -95,6 +95,17 @@ function localDateToUtcRange(date: string): { start: string; end: string } {
     return { start, end };
 }
 
+/*== 将本地日期范围转换为 UTC 范围，用于匹配 events 表的 created_at（UTC） ==*/
+function rangeToUtcRange(range: DateRange): { start: string; end: string } {
+    const days = getDaysAgo(range);
+    const startDate = formatDate(new Date(Date.now() - days * 86400000));
+    const todayEnd = formatDate(new Date());
+    return {
+        start: localDateToUtcRange(startDate).start,
+        end: localDateToUtcRange(todayEnd).end,
+    };
+}
+
 /*== 日聚合：将指定日期的 events 聚合到 daily 表 ==*/
 export async function aggregateDaily(siteId: string, date: string): Promise<void> {
     const db = getDb();
@@ -290,56 +301,87 @@ export async function ensureAggregated(siteId: string, range: DateRange): Promis
 
     if (hasAggregated) {
         /* 分批 LIMIT 5000 删除，避免长事务锁表 */
+        const cutoffUtcStart = localDateToUtcRange(cutoffDate).start;
         const DELETE_LIMIT = 5000;
         let deleted = 0;
         do {
             const [result] = await db.execute(
                 `DELETE FROM zhijian_track_events WHERE site_id = ? AND created_at < ? LIMIT ?`,
-                [siteId, cutoffDate + ' 00:00:00', DELETE_LIMIT],
+                [siteId, cutoffUtcStart, DELETE_LIMIT],
             );
             deleted = (result as any)?.affectedRows || 0;
         } while (deleted >= DELETE_LIMIT);
     }
 }
 
-/*== 概览卡片 ==*/
+/*== 概览卡片 — 直接从 events 表实时查询，保证 PV/UV 与访问记录一致 ==*/
 export async function getOverview(siteId: string, range: DateRange, skipAggregate = false): Promise<OverviewData> {
     const db = getDb();
     if (!db) return { pv: 0, uv: 0, bounceRate: 0, avgDuration: 0, newVisitorRate: 0, pvChange: 0, uvChange: 0 };
 
     if (!skipAggregate) await ensureAggregated(siteId, range);
 
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-    const prevPeriodStart = formatDate(new Date(Date.now() - (days + 1) * 86400000));
-    const prevPeriodEnd = formatDate(new Date(Date.now() - 86400000));
+    const utc = rangeToUtcRange(range);
 
-    /* 当期汇总 — avg_duration 改为按 PV 加权平均，跳出率分母改为 sessions */
+    /*-- 当期：从 events 表实时查，UV 用 COUNT(DISTINCT visitor_id) 跨天去重 --*/
     const [curRows] = await db.execute<RowDataPacket[]>(`
-        SELECT SUM(pv) AS pv, SUM(uv) AS uv, SUM(sessions) AS sessions,
-               SUM(new_visitors) AS new_visitors, SUM(bounce) AS bounce,
-               CASE WHEN SUM(pv) > 0 THEN ROUND(SUM(pv * avg_duration) / SUM(pv)) ELSE 0 END AS avg_duration
-        FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND row_type = 'summary'
-    `, [siteId, startDate]);
+        SELECT COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv,
+               COUNT(DISTINCT session_id) AS sessions, SUM(is_new) AS new_visitors
+        FROM zhijian_track_events
+        WHERE site_id = ? AND type = 'pageview' AND created_at >= ? AND created_at < ?
+    `, [siteId, utc.start, utc.end]);
     const cur = curRows[0] as any;
 
-    /* 上期汇总（用于对比） */
-    const [prevRows] = await db.execute<RowDataPacket[]>(`
-        SELECT SUM(pv) AS pv, SUM(uv) AS uv
-        FROM zhijian_track_daily
-        WHERE site_id = ? AND date >= ? AND date <= ? AND row_type = 'summary'
-    `, [siteId, prevPeriodStart, prevPeriodEnd]);
-    const prev = prevRows[0] as any;
+    /* 跳出数——只有 1 个 pageview 的 session 且无有效 leave（duration >= 10） */
+    const [bounceRows] = await db.execute<RowDataPacket[]>(`
+        SELECT COUNT(*) AS bounce
+        FROM (
+            SELECT e.session_id
+            FROM zhijian_track_events e
+            LEFT JOIN zhijian_track_events l
+                ON l.session_id = e.session_id
+                AND l.site_id = e.site_id
+                AND l.type = 'leave'
+                AND l.duration >= 10
+                AND l.created_at >= ? AND l.created_at < ?
+            WHERE e.site_id = ? AND e.created_at >= ? AND e.created_at < ? AND e.type = 'pageview'
+              AND e.session_id IS NOT NULL
+            GROUP BY e.session_id
+            HAVING COUNT(e.id) = 1 AND MAX(l.id) IS NULL
+        ) single
+    `, [utc.start, utc.end, siteId, utc.start, utc.end]);
+    const bounce = Number((bounceRows[0] as any)?.bounce) || 0;
+
+    /* 平均停留——从 leave 事件取 duration */
+    const [durRows] = await db.execute<RowDataPacket[]>(`
+        SELECT ROUND(AVG(duration)) AS avg_duration
+        FROM zhijian_track_events
+        WHERE site_id = ? AND created_at >= ? AND created_at < ? AND type = 'leave' AND duration > 0
+    `, [siteId, utc.start, utc.end]);
+    const avgDuration = Number((durRows[0] as any)?.avg_duration) || 0;
 
     const pv = Number(cur?.pv) || 0;
     const uv = Number(cur?.uv) || 0;
     const sessions = Number(cur?.sessions) || 0;
     const newVisitors = Number(cur?.new_visitors) || 0;
-    const bounce = Number(cur?.bounce) || 0;
-    const avgDuration = Number(cur?.avg_duration) || 0;
     const bounceRate = sessions > 0 ? Math.round((bounce / sessions) * 1000) / 10 : 0;
     const newVisitorRate = uv > 0 ? Math.round((newVisitors / uv) * 1000) / 10 : 0;
+
+    /*-- 上期：同样从 events 表查，保证对比口径一致 --*/
+    const days = getDaysAgo(range);
+    const prevStartDate = formatDate(new Date(Date.now() - (days + 1) * 86400000));
+    const prevEndDate = formatDate(new Date(Date.now() - 86400000));
+    const prevUtc = {
+        start: localDateToUtcRange(prevStartDate).start,
+        end: localDateToUtcRange(prevEndDate).end,
+    };
+
+    const [prevRows] = await db.execute<RowDataPacket[]>(`
+        SELECT COUNT(*) AS pv, COUNT(DISTINCT visitor_id) AS uv
+        FROM zhijian_track_events
+        WHERE site_id = ? AND type = 'pageview' AND created_at >= ? AND created_at < ?
+    `, [siteId, prevUtc.start, prevUtc.end]);
+    const prev = prevRows[0] as any;
 
     const prevPv = Number(prev?.pv) || 0;
     const prevUv = Number(prev?.uv) || 0;
@@ -505,30 +547,26 @@ interface DistributionConfig {
     columnExpr: string;        // SELECT 的分组列表达式
     columnAlias: string;       // 列别名（也是返回对象的 key）
     extraWhere?: string;       // 额外 WHERE 条件（追加在 baseWhere 后）
-    totalExtraWhere?: string;  // total 查询的额外 WHERE（默认同 extraWhere）
     overrideWhere?: string;    // 完全覆盖 baseWhere（出口页面：type='leave' 而非 pageview）
     overrideTotalWhere?: string; // total 查询的完全覆盖 WHERE
     overrideParams?: unknown[];   // overrideWhere 的参数（显式传入，避免推断错误）
     overrideTotalParams?: unknown[]; // overrideTotalWhere 的参数
     limit?: number;
-    useReduceTotal?: boolean;  // true = 从结果行 reduce 求和（无 LIMIT 的场景）
 }
 
 async function getDistribution(siteId: string, range: DateRange, config: DistributionConfig): Promise<Record<string, any>[]> {
     const db = getDb();
     if (!db) return [];
 
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
-    const startDateTime = startDate + ' 00:00:00';
+    const utc = rangeToUtcRange(range);
 
-    const baseWhere = `site_id = ? AND type = 'pageview' AND created_at >= ?`;
+    const baseWhere = `site_id = ? AND type = 'pageview' AND created_at >= ? AND created_at < ?`;
     const whereClause = config.overrideWhere
         ? config.overrideWhere
         : (config.extraWhere ? `${baseWhere} ${config.extraWhere}` : baseWhere);
     const whereParams = config.overrideWhere
-        ? (config.overrideParams || [siteId, startDateTime])
-        : [siteId, startDateTime];
+        ? (config.overrideParams || [siteId, utc.start, utc.end])
+        : [siteId, utc.start, utc.end];
     const limitClause = config.limit ? ' LIMIT ?' : '';
     const limitParams = config.limit ? [config.limit] : [];
 
@@ -540,27 +578,20 @@ async function getDistribution(siteId: string, range: DateRange, config: Distrib
         ORDER BY count DESC${limitClause}
     `, [...whereParams, ...limitParams]);
 
-    let total: number;
-    if (config.useReduceTotal) {
-        total = (rows as any[]).reduce((sum, r) => sum + (Number(r.count) || 0), 0);
-    } else {
-        const totalWhere = config.overrideTotalWhere
-            ? config.overrideTotalWhere
-            : (config.overrideWhere
-                ? config.overrideWhere
-                : (config.totalExtraWhere || config.extraWhere
-                    ? `${baseWhere} ${config.totalExtraWhere || config.extraWhere}`
-                    : baseWhere));
-        const totalParams = config.overrideTotalWhere
-            ? (config.overrideTotalParams || config.overrideParams || [siteId, startDateTime])
-            : (config.overrideWhere
-                ? (config.overrideParams || [siteId, startDateTime])
-                : [siteId, startDateTime]);
-        const [totalRows] = await db.execute<RowDataPacket[]>(`
-            SELECT COUNT(*) AS total FROM zhijian_track_events WHERE ${totalWhere}
-        `, totalParams);
-        total = Number((totalRows[0] as any)?.total) || 0;
-    }
+    const totalWhere = config.overrideTotalWhere
+        ? config.overrideTotalWhere
+        : (config.overrideWhere
+            ? config.overrideWhere
+            : baseWhere);
+    const totalParams = config.overrideTotalWhere
+        ? (config.overrideTotalParams || config.overrideParams || [siteId, utc.start, utc.end])
+        : (config.overrideWhere
+            ? (config.overrideParams || [siteId, utc.start, utc.end])
+            : [siteId, utc.start, utc.end]);
+    const [totalRows] = await db.execute<RowDataPacket[]>(`
+        SELECT COUNT(*) AS total FROM zhijian_track_events WHERE ${totalWhere}
+    `, totalParams);
+    const total = Number((totalRows[0] as any)?.total) || 0;
 
     return (rows as any[]).map(r => ({
         [config.columnAlias]: r[config.columnAlias],
@@ -593,18 +624,21 @@ async function getDistributionFromDaily(siteId: string, range: DateRange, config
     const limitClause = config.limit ? ' LIMIT ?' : '';
     const limitParams = config.limit ? [config.limit] : [];
 
+    /* 整站 PV 总量（独立查询，避免子查询每行重复执行） */
+    const [totalRows] = await db.execute<RowDataPacket[]>(`
+        SELECT SUM(pv) AS total FROM zhijian_track_daily
+        WHERE site_id = ? AND date >= ? AND row_type = 'summary'
+    `, [siteId, startDate]);
+    const total = Number((totalRows[0] as any)?.total) || 0;
+
     const [rows] = await db.execute<RowDataPacket[]>(`
-        SELECT d.dim_value AS ${config.columnAlias}, SUM(d.pv) AS count,
-               (SELECT SUM(pv) FROM zhijian_track_daily
-                WHERE site_id = ? AND date >= ? AND row_type = 'summary') AS total
+        SELECT d.dim_value AS ${config.columnAlias}, SUM(d.pv) AS count
         FROM zhijian_track_daily d
         ${regionJoin}
         WHERE d.site_id = ? AND d.date >= ? AND d.row_type = 'dim' AND d.dim_name = ?
         GROUP BY d.dim_value
         ORDER BY count DESC${limitClause}
-    `, [...regionParams, siteId, startDate, siteId, startDate, config.dimName, ...limitParams]);
-
-    const total = Number((rows[0] as any)?.total) || 0;
+    `, [...regionParams, siteId, startDate, config.dimName, ...limitParams]);
 
     return (rows as any[]).map(r => ({
         [config.columnAlias]: r[config.columnAlias],
@@ -715,13 +749,14 @@ export async function getEntryPages(siteId: string, range: DateRange, limit = 10
 }
 
 export async function getExitPages(siteId: string, range: DateRange, limit = 10): Promise<EntryExitItem[]> {
+    const utc = rangeToUtcRange(range);
     return getDistribution(siteId, range, {
         columnExpr: 'path',
         columnAlias: 'path',
-        overrideWhere: "site_id = ? AND type = 'leave' AND created_at >= ?",
-        overrideTotalWhere: "site_id = ? AND type = 'leave' AND created_at >= ?",
-        overrideParams: [siteId, formatDate(new Date(Date.now() - getDaysAgo(range) * 86400000)) + ' 00:00:00'],
-        overrideTotalParams: [siteId, formatDate(new Date(Date.now() - getDaysAgo(range) * 86400000)) + ' 00:00:00'],
+        overrideWhere: "site_id = ? AND type = 'leave' AND created_at >= ? AND created_at < ?",
+        overrideTotalWhere: "site_id = ? AND type = 'leave' AND created_at >= ? AND created_at < ?",
+        overrideParams: [siteId, utc.start, utc.end],
+        overrideTotalParams: [siteId, utc.start, utc.end],
         limit,
     }) as Promise<EntryExitItem[]>;
 }
@@ -750,16 +785,15 @@ export async function getVisits(
     const db = getDb();
     if (!db) return { data: [], total: 0 };
 
-    const days = getDaysAgo(range);
-    const startDate = formatDate(new Date(Date.now() - days * 86400000));
+    const utc = rangeToUtcRange(range);
     const offset = (page - 1) * pageSize;
 
     /* 总数 */
     const [countRows] = await db.execute<RowDataPacket[]>(`
         SELECT COUNT(*) AS total
         FROM zhijian_track_events
-        WHERE site_id = ? AND type = 'pageview' AND created_at >= ?
-    `, [siteId, startDate + ' 00:00:00']);
+        WHERE site_id = ? AND type = 'pageview' AND created_at >= ? AND created_at < ?
+    `, [siteId, utc.start, utc.end]);
     const total = Number((countRows[0] as any)?.total) || 0;
 
     /* 分页数据 — LEFT JOIN 同一 session 的 leave 事件获取 duration
@@ -784,13 +818,13 @@ export async function getVisits(
             SELECT session_id, site_id, MAX(duration) AS duration
             FROM zhijian_track_events
             WHERE type = 'leave' AND duration IS NOT NULL
-              AND site_id = ? AND created_at >= ?
+              AND site_id = ? AND created_at >= ? AND created_at < ?
             GROUP BY session_id, site_id
         ) l ON l.site_id = p.site_id AND l.session_id = p.session_id
-        WHERE p.site_id = ? AND p.type = 'pageview' AND p.created_at >= ?
+        WHERE p.site_id = ? AND p.type = 'pageview' AND p.created_at >= ? AND p.created_at < ?
         ORDER BY p.created_at DESC
         LIMIT ? OFFSET ?
-    `, [siteId, startDate + ' 00:00:00', siteId, startDate + ' 00:00:00', pageSize, offset]);
+    `, [siteId, utc.start, utc.end, siteId, utc.start, utc.end, pageSize, offset]);
 
     const data: VisitRecord[] = (rows as any[]).map((r) => {
         const device = detectDevice(r.screen);

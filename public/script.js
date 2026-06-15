@@ -16,9 +16,10 @@
 
   /*-- 配置 --*/
   var BATCH_INTERVAL = 5000;
-  var VISITOR_COOKIE = '_zj_vid';
+  var VISITOR_KEY = '_zj_vid';
   var SESSION_KEY = '_zj_sid';
   var VISITOR_TTL = 365;
+  var MIN_DURATION = 1;  // leave 事件最短停留秒数，低于此值不上报
 
   /*-- 从 <script> 标签读取 siteId 和上报地址 --*/
   var scriptEl = document.currentScript;
@@ -40,7 +41,7 @@
   var enterTime = 0;
   var lastPageviewUrl = '';
   var lastPageviewTs = 0;
-  var sessionVisited = {};  // session 内已访问过的路径去重
+  var cachedIsNew = null;  // 缓存新访客判断，同一页面生命周期内不变
 
   /*-- 工具函数 --*/
 
@@ -59,9 +60,6 @@
     document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
   }
 
-  /* B6 修复：改用 localStorage 存储访客 ID，第三方嵌入场景下 cookie SameSite=Lax 无法写入 */
-  var VISITOR_KEY = '_zj_vid';
-
   function getVisitorId() {
     try {
       var vid = localStorage.getItem(VISITOR_KEY);
@@ -72,10 +70,10 @@
       return vid;
     } catch (e) {
       // localStorage 不可用时降级到 cookie
-      var vid = getCookie(VISITOR_COOKIE);
+      var vid = getCookie(VISITOR_KEY);
       if (!vid) {
         vid = randomId() + randomId();
-        setCookie(VISITOR_COOKIE, vid, VISITOR_TTL);
+        setCookie(VISITOR_KEY, vid, VISITOR_TTL);
       }
       return vid;
     }
@@ -91,11 +89,14 @@
   }
 
   function isNewVisitor() {
+    // 缓存判断结果，同一页面生命周期内 localStorage 不会变化
+    if (cachedIsNew !== null) return cachedIsNew;
     try {
-      return !localStorage.getItem(VISITOR_KEY);
+      cachedIsNew = !localStorage.getItem(VISITOR_KEY);
     } catch (e) {
-      return !getCookie(VISITOR_COOKIE);
+      cachedIsNew = !getCookie(VISITOR_KEY);
     }
+    return cachedIsNew;
   }
 
   function isSessionStart() {
@@ -124,7 +125,7 @@
       title: truncate(document.title, 500),
       screen: screen.width + 'x' + screen.height,
       lang: truncate(navigator.language, 10),
-      ua: truncate(navigator.userAgent, 500),  // #12 新增：采集 UA
+      ua: truncate(navigator.userAgent, 500),
       isNew: isNewVisitor() ? 1 : 0,
       isSessionStart: isSessionStart() ? 1 : 0,
       ts: Date.now()
@@ -196,10 +197,6 @@
     lastPageviewUrl = key;
     lastPageviewTs = Date.now();
 
-    // session 内去重：同一路径只记录第一次访问，避免用户来回切换页面产生大量重复
-    if (sessionVisited[url]) return;
-    sessionVisited[url] = true;
-
     queue.push(buildEvent('pageview'));
     enterTime = Date.now();
     leftPage = false;
@@ -209,9 +206,12 @@
 
   function trackLeave() {
     if (leftPage) return;
-    leftPage = true;
 
-    // 不重置 lastPageviewUrl/Ts：保留防抖状态，避免用户切标签页再切回时产生重复 pageview
+    // 极短停留不上报 leave（减少无意义事件）
+    var duration = enterTime > 0 ? Math.round((Date.now() - enterTime) / 1000) : 0;
+    if (duration < MIN_DURATION) return;
+
+    leftPage = true;
 
     queue.push(buildEvent('leave'));
 
@@ -254,6 +254,10 @@
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'hidden') {
       trackLeave();
+    } else if (document.visibilityState === 'visible') {
+      // 用户切回标签页，重置进入时间，避免下次 leave 累积旧停留
+      enterTime = Date.now();
+      leftPage = false;
     }
   });
 

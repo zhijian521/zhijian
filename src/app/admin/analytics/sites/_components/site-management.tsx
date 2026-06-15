@@ -16,22 +16,14 @@ import { getEmbedScript } from '@/lib/utils';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
 import type { ListData } from '@/lib/api-response';
+import type { TrackSite } from '@/lib/track-sites';
 
 import styles from './site-management.module.css';
 import shared from '@/app/admin/_components/admin-shared.module.css';
 
-interface TrackSiteItem {
-    id: string;
-    name: string;
-    domain: string;
-    status: 'active' | 'paused' | 'deleted';
-    created_at: string;
-    updated_at: string;
-}
-
 /*== 站点管理 ==*/
 export default function SiteManagement() {
-    const [data, setData] = useState<ListData<TrackSiteItem>>({ data: [], total: 0 });
+    const [data, setData] = useState<ListData<TrackSite>>({ data: [], total: 0 });
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
@@ -39,7 +31,7 @@ export default function SiteManagement() {
     /* 弹窗表单状态 */
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-    const [editingSite, setEditingSite] = useState<TrackSiteItem | null>(null);
+    const [editingSite, setEditingSite] = useState<TrackSite | null>(null);
     const [formName, setFormName] = useState('');
     const [formDomain, setFormDomain] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -52,7 +44,7 @@ export default function SiteManagement() {
     const fetchSites = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await api.get<ListData<TrackSiteItem>>('/admin/analytics/sites');
+            const res = await api.get<ListData<TrackSite>>('/admin/analytics/sites');
             if (res.code === 0 && res.data) {
                 setData(res.data);
             }
@@ -76,7 +68,7 @@ export default function SiteManagement() {
         setFormOpen(true);
     }
 
-    function openEditForm(site: TrackSiteItem) {
+    function openEditForm(site: TrackSite) {
         setFormMode('edit');
         setEditingSite(site);
         setFormName(site.name);
@@ -95,8 +87,8 @@ export default function SiteManagement() {
         try {
             const body = { name: formName.trim(), domain: formDomain.trim() };
             const res = formMode === 'create'
-                ? await api.post<{ site: TrackSiteItem }>('/admin/analytics/sites', body)
-                : await api.put<{ site: TrackSiteItem }>('/admin/analytics/sites', { id: editingSite!.id, ...body });
+                ? await api.post<{ site: TrackSite }>('/admin/analytics/sites', body)
+                : await api.put<{ site: TrackSite }>('/admin/analytics/sites', { id: editingSite!.id, ...body });
 
             if (res.code !== 0) {
                 setFormMessage(res.message || '操作失败。');
@@ -119,7 +111,7 @@ export default function SiteManagement() {
         }
     }
 
-    async function handleToggleStatus(site: TrackSiteItem) {
+    async function handleToggleStatus(site: TrackSite) {
         const newStatus = site.status === 'active' ? 'paused' : 'active';
         try {
             const res = await api.put('/admin/analytics/sites', { id: site.id, status: newStatus });
@@ -167,7 +159,7 @@ export default function SiteManagement() {
         }
     }
 
-    const columns: DataColumn<TrackSiteItem>[] = [
+    const columns: DataColumn<TrackSite>[] = [
         { header: '站点名称', render: (site) => <span className={styles.nameCell}>{site.name}</span> },
         { header: '域名', render: (site) => <span className={shared.mutedCell}>{site.domain}</span>, hideBelow: 'sm' },
         {

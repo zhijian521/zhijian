@@ -81,7 +81,7 @@
     font-size: 1.75rem;
     font-weight: 600;
     line-height: 1.2;
-    color: #b44a4a;
+    color: var(--primary);
     font-variant-numeric: tabular-nums;
 }
 

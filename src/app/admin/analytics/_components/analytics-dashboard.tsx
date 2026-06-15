@@ -94,6 +94,8 @@ const DEVICE_PALETTE = ['#9f000f', '#c4616d', '#d9969e', '#efcdd2'];
 const BROWSER_PALETTE = ['#4a6741', '#6d8f64', '#96b68e', '#c2dbc0'];
 const OS_PALETTE = ['#5c4a2a', '#8b7355', '#b5a07a', '#d9cbb0'];
 
+const VISITS_PAGE_SIZE = 20;
+
 /*== 变化指示器 ==*/
 
 function ChangeIndicator({ value }: { value: number }) {
@@ -181,7 +183,6 @@ export default function AnalyticsDashboard() {
     const [visits, setVisits] = useState<{ data: VisitRecord[]; total: number }>({ data: [], total: 0 });
     const [visitsPage, setVisitsPage] = useState(1);
     const [visitsLoading, setVisitsLoading] = useState(false);
-    const visitsPageSize = 20;
 
     const fetchSites = useCallback(async () => {
         try {
@@ -230,7 +231,7 @@ export default function AnalyticsDashboard() {
         setVisitsLoading(true);
         try {
             const res = await api.get<{ data: VisitRecord[]; total: number }>('/admin/analytics/visits', {
-                siteId, range, page: visitsPage, pageSize: visitsPageSize,
+                siteId, range, page: visitsPage, pageSize: VISITS_PAGE_SIZE,
             });
             if (res.code === 0 && res.data) setVisits(res.data);
         } catch (err) {
@@ -534,7 +535,7 @@ export default function AnalyticsDashboard() {
                 ) : (
                     <>
                         <DataTable columns={visitColumns} emptyText={visitsLoading ? '加载中...' : '暂无访问记录'} rowKey={(v) => v.id} rows={visits.data} />
-                        <Pagination current={visitsPage} onPageChange={setVisitsPage} total={Math.max(1, Math.ceil(visits.total / visitsPageSize))} />
+                        <Pagination current={visitsPage} onPageChange={setVisitsPage} total={Math.max(1, Math.ceil(visits.total / VISITS_PAGE_SIZE))} />
                     </>
                 )
             )}
