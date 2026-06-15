@@ -75,8 +75,7 @@ const PROJECTS: { icon: React.ReactNode; title: string; description: string; tag
 
 /*== 首页：从数据库读取最新文章 + 静态项目信息展示。 ==*/
 export default async function HomePage() {
-    const posts = await getPublishedPosts();
-    const latestPosts = posts.slice(0, 3);
+    const posts = await getPublishedPosts({ limit: 3 });
     const homeJsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -108,8 +107,8 @@ export default async function HomePage() {
                 '@id': `${SITE_METADATA.siteUrl}#latest-posts`,
                 name: `${SITE_METADATA.title}最新文章`,
                 itemListOrder: 'https://schema.org/ItemListOrderDescending',
-                numberOfItems: latestPosts.length,
-                itemListElement: latestPosts.map((post, index) => ({
+                numberOfItems: posts.length,
+                itemListElement: posts.map((post, index) => ({
                     '@type': 'ListItem',
                     position: index + 1,
                     url: `${SITE_METADATA.siteUrl}/blog/${post.slug}`,
@@ -201,7 +200,7 @@ export default async function HomePage() {
                     </div>
 
                     <div className={styles.postsGrid}>
-                        {latestPosts.length > 0 ? latestPosts.map((post) => (
+                        {posts.length > 0 ? posts.map((post) => (
                             <PostCard
                                 key={post.id}
                                 tag={post.categoryName ?? undefined}

@@ -37,9 +37,8 @@
 
 ### 数据流
 
-1. 调用 `getPublishedPosts()` 获取全部已发布文章
-2. 取 `posts.slice(0, 3)` 展示最新 3 篇
-3. 开源项目数据为组件内硬编码的 `PROJECTS` 常量
+1. 调用 `getPublishedPosts({ limit: 3 })` 获取最新 3 篇已发布文章（SQL `LIMIT 3`，不拉全量）
+2. 开源项目数据为组件内硬编码的 `PROJECTS` 常量
 
 ### 关键细节
 
@@ -314,7 +313,7 @@ interface Post {
 
 | 函数 | 文件 | 说明 |
 |------|------|------|
-| `getPublishedPosts(filter?)` | `src/lib/posts.ts` | 查询已发布文章，支持分类/标签筛选 |
+| `getPublishedPosts(filter?)` | `src/lib/posts.ts` | 查询已发布文章，支持分类/标签筛选和数量限制 |
 | `getPostBySlug(slug)` | `src/lib/posts.ts` | 按 slug 查询单篇已发布文章，不存在返回 `null` |
 | `listCategories()` | `src/lib/categories.ts` | 查询全部分类，按 sort_order 排序 |
 | `listTags()` | `src/lib/tags.ts` | 查询全部标签，按 id 排序 |
@@ -325,6 +324,7 @@ interface Post {
    - `status = 'published'` 必选
    - `categorySlug` → JOIN 分类表匹配
    - `tagSlugs` → `JSON_CONTAINS` 子查询匹配标签表
+   - `limit` → SQL `LIMIT N`（首页传 3，列表页不传）
    - 排序：`published_at DESC, id DESC`（未发布的排最后）
 2. **标签补全**：收集所有文章的 `tags` ID，批量查询 `zhijian_blog_tags`，Map 匹配后附加 `tagNames`
 3. 容错：数据库不可用时 `listCategories()` / `listTags()` 返回空数组

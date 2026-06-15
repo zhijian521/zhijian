@@ -32,10 +32,11 @@ export interface CreatePostInput {
     tags?: number[];
 }
 
-/*== 前台文章列表查询参数：支持分类和标签服务端过滤。 ==*/
+/*== 前台文章列表查询参数：支持分类、标签服务端过滤和数量限制。 ==*/
 export interface PublishedPostFilter {
     categorySlug?: string;
     tagSlugs?: string[];
+    limit?: number;
 }
 
 /*== 内部查询选项，统一数据库读取时的条件组合逻辑。 ==*/
@@ -45,6 +46,7 @@ interface ReadPostsOptions {
     slug?: string;
     categorySlug?: string;
     tagSlugs?: string[];
+    limit?: number;
 }
 
 /*== MySQL 查询返回的原始行类型，字段名与数据库列名保持一致。 ==*/
@@ -79,6 +81,7 @@ export async function getPublishedPosts(filter: PublishedPostFilter = {}): Promi
         includeDrafts: false,
         categorySlug: filter.categorySlug,
         tagSlugs: filter.tagSlugs,
+        limit: filter.limit,
     });
     return enrichPostsWithTagNames(posts);
 }
@@ -253,6 +256,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const limitClause = options.limit && options.limit > 0 ? `LIMIT ${Math.floor(options.limit)}` : '';
 
     try {
         const [rows] = await db.query<PostRow[]>(
@@ -276,6 +280,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                 LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
                 ${whereClause}
                 ORDER BY p.published_at IS NULL, p.published_at DESC, p.id DESC
+                ${limitClause}
             `,
             values,
         );
