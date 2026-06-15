@@ -220,7 +220,7 @@ export default async function HomePage() {
                             />
                         )) : (
                             <p style={{ color: 'var(--muted-foreground)', fontSize: '0.9375rem' }}>
-                                暂无文章，去后台写一篇吧。
+                                暂无文章。
                             </p>
                         )}
                     </div>
