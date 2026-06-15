@@ -5,7 +5,7 @@ import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import styles from './settings.module.css';
 
 export const metadata: Metadata = {
-    title: "系统设置 - Zhijian",
+    title: "系统设置",
 };
 
 /*== 后台设置页：匹配博客卡片风格。 ==*/

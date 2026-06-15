@@ -8,7 +8,7 @@ import { APP_ROUTES } from '@/lib/site';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: "Login - Zhijian",
+    title: "Login",
 };
 
 /*== 后台登录页：已登录管理员直接进入后台，普通用户跳转首页。 ==*/

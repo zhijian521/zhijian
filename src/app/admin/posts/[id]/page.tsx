@@ -13,10 +13,10 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
     const postId = Number(id);
-    if (!Number.isFinite(postId) || postId <= 0) return { title: '编辑文章 - Zhijian' };
+    if (!Number.isFinite(postId) || postId <= 0) return { title: '编辑文章' };
 
     const post = await getPostById(postId);
-    return { title: post ? `编辑：${post.title} - Zhijian` : '文章不存在 - Zhijian' };
+    return { title: post ? `编辑：${post.title}` : '文章不存在' };
 }
 
 export default async function EditPostPage({ params }: PageProps) {

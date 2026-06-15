@@ -5,7 +5,7 @@ import { APP_ROUTES } from '@/lib/site';
 import styles from './forbidden.module.css';
 
 export const metadata: Metadata = {
-    title: '403 禁止访问 - Zhijian',
+    title: '403 禁止访问',
 };
 
 /*== 403 页面：非管理员尝试访问后台时展示。 ==*/

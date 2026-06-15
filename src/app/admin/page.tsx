@@ -10,7 +10,7 @@ import { APP_ROUTES } from '@/lib/site';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-    title: 'Admin - Zhijian',
+    title: 'Admin',
 };
 
 /*== 后台概览页：静态展示统计指标和近期文章（数据待接入 API 后改为动态）。 ==*/

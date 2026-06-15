@@ -6,7 +6,7 @@ import UserListClient from '@/app/admin/_components/user-list-client';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: '用户管理 - Zhijian Admin',
+    title: '用户管理',
 };
 
 /*== 后台用户列表页。 ==*/
