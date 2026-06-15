@@ -2,7 +2,7 @@
 
 知简博客前台由三个页面组成：首页、文章列表页、文章详情页。
 
-所有页面均为 Server Component，使用 `force-dynamic` 策略，每次请求直接读取 MySQL 最新数据，不经过 ISR 缓存。
+所有页面均为 Server Component，使用 `force-dynamic` 策略，每次请求直接读取 MySQL 最新数据，不经过 ISR 缓存。数据查询通过 React `cache()` 包裹，同一请求内 `generateMetadata` 与渲染函数共享结果，避免重复查库。
 
 ---
 
@@ -29,7 +29,7 @@
 ```
 <main>
   ├── Hero 区 — 全屏山水背景 + 标题 + 副标题 + 简介 + 锚点按钮
-  ├── 个人信息区 — 头像 + 姓名 + 定位语 + 简介 + 联系方式
+  ├── 个人信息区 — 头像 + 姓名 + 定位语 + 简介 + GhostButton 按钮（联系我 · GitHub · RSS订阅）
   ├── 最新文章区 — 3 篇文章 PostCard 网格
   └── 开源项目区 — ProjectCard 网格（静态数据）
 </main>
@@ -50,6 +50,8 @@
 | Hero 背景 | `/images/home-hero-bg.png`，`object-fit: cover` |
 | 头像 | `/images/logo.png`，7.5rem 方形带边框阴影 |
 | PostCard 封面 | 有 `coverImage` 时渲染 `<ContentImage>`，无则纯文字卡片 |
+| 联系方式 | GhostButton 组件（`size="small"`），统一按钮风格 |
+| RSS 订阅 | `RssCopyButton` 客户端组件，点击复制 `/feed.xml` 地址，1.5s 反馈 |
 
 ---
 
@@ -58,7 +60,7 @@
 **文件**：`src/app/blog/page.tsx`（服务端逻辑）  
 **展示组件**：`src/app/blog/_components/blog-list-client.tsx`  
 **路由**：`/blog`、`/blog?category=tech`、`/blog?tags=react,nextjs`、`/blog?category=tech&tags=react&page=2`  
-**组件类型**：Server Component（page）+ Server Component（client 组件，仅展示）
+**组件类型**：Server Component（page）+ Server Component（blog-list-client，纯展示）
 
 ### URL 参数
 
@@ -122,7 +124,7 @@ buildPaginationHrefs()        — 生成每页的 URL
 - 每页 10 篇（`PAGE_SIZE = 10`）
 - URL 通过 `?page=N` 控制
 - 页码超出范围时自动修正为最后一页
-- `generateMetadata` 输出 `prev` / `next` canonical 链接
+- `generateMetadata` 输出 `alternates.prev` / `alternates.next`（即 `<link rel="prev/next">`）
 
 ### 筛选与 SEO
 
@@ -130,6 +132,11 @@ buildPaginationHrefs()        — 生成每页的 URL
 |----------|----------------|------|
 | 无筛选（`/blog`） | `true` | 列表首页应被索引 |
 | 有筛选（分类/标签/翻页） | `false` | 筛选页为辅助导航，不需索引 |
+
+### 渲染策略
+
+- `export const dynamic = 'force-dynamic'`，禁用 ISR
+- 数据查询通过 React `cache()` 包裹（`cachedCategories` / `cachedTags` / `cachedPublishedPosts`），同一请求内 `generateMetadata` 与 `BlogListPage` 共享查询结果
 
 ---
 
@@ -251,7 +258,7 @@ interface MarkdownArticleProps {
 Markdown 字符串
   → ReactMarkdown
   → remarkGfm（表格、任务列表、删除线）
-  → rehighlight（代码高亮）
+  → rehypeHighlight（代码高亮）
   → CodeBlock（复制按钮）
 ```
 
@@ -344,10 +351,9 @@ interface Post {
 
 列表页和详情页通过根布局 `title.template` 自动拼接品牌后缀：
 ```typescript
-template: '%s - Zhijian - 简静造物'
+template: `%s - ${SITE_METADATA.brandTitle}`
 ```
-
-品牌标题统一在 `SITE_METADATA.brandTitle` 管理，改一处全站生效。
+`brandTitle` 当前值为 `'Zhijian - 简静造物'`，改此一处全站生效。
 
 ### 元数据
 
@@ -402,6 +408,16 @@ template: '%s - Zhijian - 简静造物'
                    inLanguage: zh-CN
 ]
 ```
+
+### RSS Feed
+
+| 项目 | 说明 |
+|------|------|
+| 路由 | `/feed.xml`（`src/app/feed.xml/route.ts`） |
+| 格式 | RSS 2.0 + Atom namespace |
+| 内容 | 全部已发布文章（title / link / guid / description / pubDate / category） |
+| 自动发现 | 根布局 `alternates.types` 输出 `<link rel="alternate" type="application/rss+xml">` |
+| 首页入口 | `RssCopyButton` 客户端组件，点击复制 feed 地址到剪贴板 |
 
 ---
 
@@ -468,3 +484,5 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/lib/categories.ts` | 分类数据层 |
 | `src/lib/tags.ts` | 标签数据层 |
 | `src/lib/site.ts` | 站点元数据与路由配置 |
+| `src/app/feed.xml/route.ts` | RSS 2.0 feed 生成 |
+| `src/app/_components/rss-copy-button.tsx` | RSS 订阅按钮（复制 feed 地址） |

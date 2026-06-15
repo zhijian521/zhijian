@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 
 import { listCategories } from '@/lib/categories';
 import { getPublishedPosts } from '@/lib/posts';
@@ -10,6 +11,11 @@ import BlogListClient from './_components/blog-list-client';
 const BLOG_DESCRIPTION = SITE_METADATA.blogDescription;
 const PAGE_SIZE = 10;
 const ALL_CATEGORY_SLUG = '';
+
+/*== cache 包裹：同一请求内 generateMetadata 与 render 共享查询结果，避免重复查库 ==*/
+const cachedCategories = cache(listCategories);
+const cachedTags = cache(listTags);
+const cachedPublishedPosts = cache(getPublishedPosts);
 
 interface BlogPageProps {
     searchParams: Promise<{ category?: string; page?: string; tags?: string }>;
@@ -180,8 +186,8 @@ function buildPaginationHrefs(options: {
 export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
     const [filters, categories, tags] = await Promise.all([
         resolveBlogFilters(searchParams),
-        listCategories(),
-        listTags(),
+        cachedCategories(),
+        cachedTags(),
     ]);
     const {
         activeCategoryLabel,
@@ -189,7 +195,7 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         activeTagNames,
         activeTagSlugs,
     } = resolveFilterState(filters, categories, tags);
-    const posts = await getPublishedPosts({
+    const posts = await cachedPublishedPosts({
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
     });
@@ -281,8 +287,8 @@ export const dynamic = 'force-dynamic';
 export default async function BlogListPage({ searchParams }: BlogPageProps) {
     const [filters, categories, tags] = await Promise.all([
         resolveBlogFilters(searchParams),
-        listCategories(),
-        listTags(),
+        cachedCategories(),
+        cachedTags(),
     ]);
     const {
         activeCategoryLabel,
@@ -290,7 +296,7 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
         activeTagNames,
         activeTagSlugs,
     } = resolveFilterState(filters, categories, tags);
-    const filteredPosts = await getPublishedPosts({
+    const filteredPosts = await cachedPublishedPosts({
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
     });
