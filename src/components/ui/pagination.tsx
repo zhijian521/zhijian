@@ -105,7 +105,7 @@ export function Pagination({
 
     /* pageSize Select 适配：number → string */
     const sizeOptions = pageSizeOptions.map((n) => ({ value: String(n), label: `${n} 条` }));
-    const sizeValue = String(pageSize ?? 20);
+    const sizeValue = String(pageSize ?? 10);
 
     return (
         <nav aria-label='分页导航' className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>

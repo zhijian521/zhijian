@@ -80,7 +80,7 @@ const DEVICE_PALETTE = ['#9f000f', '#c4616d', '#d9969e', '#efcdd2'];
 const BROWSER_PALETTE = ['#4a6741', '#6d8f64', '#96b68e', '#c2dbc0'];
 const OS_PALETTE = ['#5c4a2a', '#8b7355', '#b5a07a', '#d9cbb0'];
 
-const VISITS_DEFAULT_PAGE_SIZE = 20;
+const VISITS_DEFAULT_PAGE_SIZE = 10;
 
 /*== 变化指示器 ==*/
 

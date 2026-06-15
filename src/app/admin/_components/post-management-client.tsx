@@ -42,7 +42,7 @@ export default function PostManagementClient() {
     const [deleting, setDeleting] = useState<number | null>(null);
     const [creating, setCreating] = useState(false);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize, setPageSize] = useState(10);
 
     const fetchData = useCallback(async () => {
         setLoading(true);

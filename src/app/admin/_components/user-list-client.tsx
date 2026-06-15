@@ -50,7 +50,7 @@ export default function UserListClient() {
     const [searchInput, setSearchInput] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize, setPageSize] = useState(10);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; username: string } | null>(null);

@@ -21,7 +21,7 @@ interface UploadItem {
     createdAt: string;
 }
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 10;
 
 /*== 格式化文件大小 ==*/
 function formatSize(bytes: number): string {

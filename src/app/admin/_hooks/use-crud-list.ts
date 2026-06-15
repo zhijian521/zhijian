@@ -14,7 +14,7 @@ import { toast } from '@/components/ui/toast';
 export function useCrudList<T extends { id: number; name: string }>(
     endpoint: string,
     labelName: string,
-    defaultPageSize = 20,
+    defaultPageSize = 10,
 ) {
     const [data, setData] = useState<ListData<T>>({ data: [], total: 0 });
     const [loading, setLoading] = useState(true);
