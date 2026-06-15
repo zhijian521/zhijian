@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
@@ -157,6 +158,14 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                     © {new Date().getFullYear()} {SITE_METADATA.name}：认真生活，简单做人，用心做事
                 </p>
             </footer>
+
+            {/* 网站统计脚本 — 仅前台加载，后台不触发 */}
+            <Script
+                async
+                src='https://zhijian.yuwb.cn/script.js'
+                data-site-id='y7dbsplr'
+                strategy='afterInteractive'
+            />
         </div>
     );
 }
