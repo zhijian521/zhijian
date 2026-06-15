@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     },
     alternates: {
         canonical: '/',
+        types: {
+            'application/rss+xml': `${SITE_METADATA.siteUrl}/feed.xml`,
+        },
     },
     robots: {
         index: true,

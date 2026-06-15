@@ -195,20 +195,6 @@
     margin-top: 1rem;
 }
 
-.inlineLink {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.75rem;
-    line-height: 1.4;
-    color: var(--muted-foreground);
-    transition: color 0.2s ease;
-}
-
-.inlineLink:hover {
-    color: var(--primary);
-}
-
 /*== 文章卡片网格 ==*/
 .postsGrid {
     display: grid;

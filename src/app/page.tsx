@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ContentImage } from '@/components/site/content-image';
 import { PostCard } from '@/components/site/post-card';
 import { ProjectCard, type ProjectAction } from '@/components/site/project-card';
+import { GhostButton } from '@/components/ui/ghost-button';
 import {
     ArrowDownIcon,
     ArrowRightIcon,
@@ -18,6 +19,7 @@ import { getPublishedPosts } from '@/lib/posts';
 import { formatPostDate } from '@/lib/post-shared';
 import { SITE_METADATA } from '@/lib/site';
 
+import { RssCopyButton } from './_components/rss-copy-button';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
@@ -169,14 +171,23 @@ export default async function HomePage() {
                                 这里没有宏大的叙事，只有一些零散的记录和简单的快乐。
                             </p>
                             <div className={styles.profileLinks}>
-                                <a className={styles.inlineLink} href='mailto:yuwb0521@yeah.net'>
-                                    <MailIcon className={styles.iconSmall} />
+                                <GhostButton
+                                    href='mailto:yuwb0521@yeah.net'
+                                    icon={<MailIcon />}
+                                    size='small'
+                                >
                                     联系我
-                                </a>
-                                <a className={styles.inlineLink} href='https://github.com/zhijian521' rel='noreferrer' target='_blank'>
-                                    <ArrowRightIcon className={styles.iconSmall} />
+                                </GhostButton>
+                                <GhostButton
+                                    href='https://github.com/zhijian521'
+                                    icon={<ArrowRightIcon />}
+                                    rel='noreferrer'
+                                    size='small'
+                                    target='_blank'
+                                >
                                     GitHub
-                                </a>
+                                </GhostButton>
+                                <RssCopyButton />
                             </div>
                         </div>
                     </div>
