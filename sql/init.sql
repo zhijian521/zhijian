@@ -169,21 +169,3 @@ CREATE TABLE IF NOT EXISTS zhijian_track_daily (
   KEY idx_zhijian_track_daily_site_date (site_id, date),
   KEY idx_zhijian_track_daily_dim (site_id, date, dim_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------------------------
---  种子数据
--- --------------------------------------------------------------------------
-
-INSERT IGNORE INTO zhijian_blog_categories (id, name, slug, sort_order) VALUES
-  (1, '技术笔记', 'tech', 1),
-  (2, '生活随想', 'life', 2),
-  (3, '项目实战', 'project', 3),
-  (4, '读书笔记', 'reading', 4);
-
-INSERT IGNORE INTO zhijian_blog_tags (id, name, slug) VALUES
-  (1, 'React', 'react'),
-  (2, 'Next.js', 'nextjs'),
-  (3, 'CSS', 'css'),
-  (4, 'TypeScript', 'typescript'),
-  (5, '设计', 'design'),
-  (6, 'Node.js', 'nodejs');
