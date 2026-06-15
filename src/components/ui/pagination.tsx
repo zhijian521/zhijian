@@ -1,6 +1,9 @@
 import Link from 'next/link';
 
+import { Select } from '@/components/ui/select';
 import styles from './pagination.module.css';
+
+const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
     /** 当前页码，1-based */
@@ -11,6 +14,12 @@ export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
     getHref?: (page: number) => string;
     /** 页码变更回调 */
     onPageChange?: (page: number) => void;
+    /** 每页条数 */
+    pageSize?: number;
+    /** 每页条数变更回调 */
+    onPageSizeChange?: (size: number) => void;
+    /** 可选的每页条数选项，默认 [10, 20, 50, 100] */
+    pageSizeOptions?: number[];
 }
 
 /*== 生成带省略号的页码列表 ==*/
@@ -42,7 +51,12 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
 }
 
 /*== Pagination 分页：支持服务端链接模式和客户端回调模式 ==*/
-export function Pagination({ current, total, getHref, onPageChange, className, ...props }: PaginationProps) {
+export function Pagination({
+    current, total, getHref, onPageChange,
+    pageSize, onPageSizeChange,
+    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+    className, ...props
+}: PaginationProps) {
     const pages = buildPageNumbers(current, total);
 
     function renderPageButton(page: number, isNav = false, label?: string) {
@@ -89,8 +103,24 @@ export function Pagination({ current, total, getHref, onPageChange, className, .
         );
     }
 
+    /* pageSize Select 适配：number → string */
+    const sizeOptions = pageSizeOptions.map((n) => ({ value: String(n), label: `${n} 条` }));
+    const sizeValue = String(pageSize ?? 20);
+
     return (
         <nav aria-label='分页导航' className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>
+            {onPageSizeChange && (
+                <div className={styles.sizeSelector}>
+                    <span className={styles.sizeLabel}>每页</span>
+                    <Select
+                        options={sizeOptions}
+                        onChange={(v) => onPageSizeChange(Number(v))}
+                        size='small'
+                        value={sizeValue}
+                    />
+                </div>
+            )}
+
             {renderPageButton(current - 1, true, '上一页')}
 
             {pages.map((page, index) =>

@@ -21,7 +21,7 @@ interface UploadItem {
     createdAt: string;
 }
 
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 20;
 
 /*== 格式化文件大小 ==*/
 function formatSize(bytes: number): string {
@@ -35,6 +35,7 @@ export default function UploadManagement() {
     const [uploads, setUploads] = useState<UploadItem[]>([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
     const [loading, setLoading] = useState(true);
     const [copiedId, setCopiedId] = useState<number | null>(null);
 
@@ -42,14 +43,14 @@ export default function UploadManagement() {
     const [deleteTarget, setDeleteTarget] = useState<UploadItem | null>(null);
     const [deleting, setDeleting] = useState(false);
 
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
     /* 加载图片列表 */
     const fetchUploads = useCallback(async (p: number) => {
         setLoading(true);
         try {
             const res = await api.get<{ data: UploadItem[]; total: number }>(
-                `/admin/uploads?page=${p}&pageSize=${PAGE_SIZE}`,
+                `/admin/uploads?page=${p}&pageSize=${pageSize}`,
             );
             if (res.code === 0 && res.data) {
                 setUploads(res.data.data);
@@ -62,7 +63,7 @@ export default function UploadManagement() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [pageSize]);
 
     useEffect(() => {
         fetchUploads(page);
@@ -160,6 +161,8 @@ export default function UploadManagement() {
                             current={page}
                             onPageChange={setPage}
                             total={totalPages}
+                            pageSize={pageSize}
+                            onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
                         />
                     </div>
                 </>

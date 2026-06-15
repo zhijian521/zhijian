@@ -80,7 +80,7 @@ const DEVICE_PALETTE = ['#9f000f', '#c4616d', '#d9969e', '#efcdd2'];
 const BROWSER_PALETTE = ['#4a6741', '#6d8f64', '#96b68e', '#c2dbc0'];
 const OS_PALETTE = ['#5c4a2a', '#8b7355', '#b5a07a', '#d9cbb0'];
 
-const VISITS_PAGE_SIZE = 10;
+const VISITS_DEFAULT_PAGE_SIZE = 20;
 
 /*== 变化指示器 ==*/
 
@@ -168,6 +168,7 @@ export default function AnalyticsDashboard() {
     const [tab, setTab] = useState<'overview' | 'visits'>('overview');
     const [visits, setVisits] = useState<{ data: VisitRecord[]; total: number }>({ data: [], total: 0 });
     const [visitsPage, setVisitsPage] = useState(1);
+    const [visitsPageSize, setVisitsPageSize] = useState(VISITS_DEFAULT_PAGE_SIZE);
     const [visitsLoading, setVisitsLoading] = useState(false);
 
     const fetchSites = useCallback(async () => {
@@ -217,7 +218,7 @@ export default function AnalyticsDashboard() {
         setVisitsLoading(true);
         try {
             const res = await api.get<{ data: VisitRecord[]; total: number }>('/admin/analytics/visits', {
-                siteId, range, page: visitsPage, pageSize: VISITS_PAGE_SIZE,
+                siteId, range, page: visitsPage, pageSize: visitsPageSize,
             });
             if (res.code === 0 && res.data) setVisits(res.data);
         } catch (err) {
@@ -225,7 +226,7 @@ export default function AnalyticsDashboard() {
         } finally {
             setVisitsLoading(false);
         }
-    }, [siteId, range, visitsPage]);
+    }, [siteId, range, visitsPage, visitsPageSize]);
 
     useEffect(() => { if (tab === 'visits') fetchVisits(); }, [tab, fetchVisits]);
 
@@ -304,7 +305,7 @@ export default function AnalyticsDashboard() {
                 </div>
                 <div className={styles.rightControls}>
                     <PillSelect name="range" onChange={(v) => setRange(v as DateRange)} options={[{ value: '7d', label: '7 天' }, { value: '30d', label: '30 天' }, { value: '90d', label: '90 天' }]} value={range} />
-                    <PillSelect name="analytics-tab" onChange={(v) => { setTab(v as 'overview' | 'visits'); setVisitsPage(1); }} options={[{ value: 'overview', label: '统计概览' }, { value: 'visits', label: '访问记录' }]} value={tab} />
+                    <PillSelect name="analytics-tab" onChange={(v) => { setTab(v as 'overview' | 'visits'); setVisitsPage(1); setVisitsPageSize(VISITS_DEFAULT_PAGE_SIZE); }} options={[{ value: 'overview', label: '统计概览' }, { value: 'visits', label: '访问记录' }]} value={tab} />
                 </div>
             </div>
 
@@ -526,7 +527,7 @@ export default function AnalyticsDashboard() {
                 ) : (
                     <>
                         <DataTable scrollable columns={visitColumns} emptyText={visitsLoading ? '加载中...' : '暂无访问记录'} rowKey={(v) => v.id} rows={visits.data} />
-                        <Pagination current={visitsPage} onPageChange={setVisitsPage} total={Math.max(1, Math.ceil(visits.total / VISITS_PAGE_SIZE))} />
+                        <Pagination current={visitsPage} onPageChange={setVisitsPage} total={Math.max(1, Math.ceil(visits.total / visitsPageSize))} pageSize={visitsPageSize} onPageSizeChange={(s) => { setVisitsPageSize(s); setVisitsPage(1); }} />
                     </>
                 )
             )}

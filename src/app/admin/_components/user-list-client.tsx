@@ -50,10 +50,10 @@ export default function UserListClient() {
     const [searchInput, setSearchInput] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
     const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(20);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; username: string } | null>(null);
-    const pageSize = 20;
 
     /* 弹窗表单状态 */
     const [formOpen, setFormOpen] = useState(false);
@@ -369,7 +369,7 @@ export default function UserListClient() {
             </Dialog>
 
             {/* 分页 */}
-            <Pagination current={page} onPageChange={setPage} total={totalPages} />
+            <Pagination current={page} onPageChange={setPage} total={totalPages} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} />
         </div>
     );
 }

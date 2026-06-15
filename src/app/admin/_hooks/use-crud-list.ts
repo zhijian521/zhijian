@@ -14,13 +14,14 @@ import { toast } from '@/components/ui/toast';
 export function useCrudList<T extends { id: number; name: string }>(
     endpoint: string,
     labelName: string,
+    defaultPageSize = 20,
 ) {
     const [data, setData] = useState<ListData<T>>({ data: [], total: 0 });
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
     const [page, setPage] = useState(1);
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(defaultPageSize);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -76,6 +77,8 @@ export function useCrudList<T extends { id: number; name: string }>(
         handleDeleteConfirm,
         page,
         setPage,
+        pageSize,
+        setPageSize,
         totalPages,
         fetchData,
     };

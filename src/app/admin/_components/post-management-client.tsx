@@ -42,7 +42,7 @@ export default function PostManagementClient() {
     const [deleting, setDeleting] = useState<number | null>(null);
     const [creating, setCreating] = useState(false);
     const [page, setPage] = useState(1);
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(20);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -240,7 +240,7 @@ export default function PostManagementClient() {
                 rows={pagedPosts}
             />
 
-            <Pagination current={page} onPageChange={setPage} total={totalPages} />
+            <Pagination current={page} onPageChange={setPage} total={totalPages} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} />
 
             <ConfirmDialog
                 confirmLabel='删除'

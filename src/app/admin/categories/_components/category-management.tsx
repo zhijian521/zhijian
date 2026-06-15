@@ -152,7 +152,7 @@ export default function CategoryManagement() {
                 rows={list.pagedData}
             />
 
-            <Pagination current={list.page} onPageChange={list.setPage} total={list.totalPages} />
+            <Pagination current={list.page} onPageChange={list.setPage} total={list.totalPages} pageSize={list.pageSize} onPageSizeChange={(s) => { list.setPageSize(s); list.setPage(1); }} />
 
             <ConfirmDialog
                 confirmLabel='删除'

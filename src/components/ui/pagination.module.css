@@ -8,6 +8,20 @@
     margin-bottom: 1rem;
 }
 
+/*== 每页条数选择器 ==*/
+
+.sizeSelector {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-right: 0.75rem;
+}
+
+.sizeLabel {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+}
+
 /*== 通用按钮基础 ==*/
 .btn {
     display: inline-flex;
