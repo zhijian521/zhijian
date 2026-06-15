@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './data-table.module.css';
 
 /*== DataTable 列定义 ==*/
@@ -8,44 +9,69 @@ export interface DataColumn<T> {
     render: (row: T, index: number) => React.ReactNode;
     /** 响应式隐藏断点 */
     hideBelow?: 'sm' | 'md' | 'lg';
-    /** 列宽 */
+    /** 列宽（scrollable 模式下用于 colgroup，同时自动启用打点+hover） */
     width?: string;
     /** 列对齐方式，默认 left */
     align?: 'left' | 'center' | 'right';
 }
 
-/*== DataTable 属性 ==*/
-interface DataTableProps<T> {
-    /** 列定义 */
-    columns: DataColumn<T>[];
-    /** 数据行 */
-    rows: T[];
-    /** 行 key 提取器 */
-    rowKey: (row: T) => string | number;
-    /** 空状态文案 */
-    emptyText?: string;
+/*== 从 React 渲染内容提取纯文本，用于 td 的 title 属性 ==*/
+function extractText(node: React.ReactNode): string {
+    if (typeof node === 'string') return node;
+    if (typeof node === 'number') return String(node);
+    if (!node) return '';
+    if (Array.isArray(node)) return node.map(extractText).join('');
+    if (React.isValidElement(node)) return extractText((node.props as Record<string, unknown>).children as React.ReactNode);
+    return '';
 }
 
-/*== DataTable 通用数据表格 — 匹配博客表格风格。 ==*/
-export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据' }: DataTableProps<T>) {
+/*== DataTable 属性 ==*/
+interface DataTableProps<T> {
+    columns: DataColumn<T>[];
+    rows: T[];
+    rowKey: (row: T) => string | number;
+    emptyText?: string;
+    /** 列多可横向滚动：colgroup + table-layout:fixed，列宽由 width 精确控制 */
+    scrollable?: boolean;
+}
+
+/*== 通用数据表格 ==*/
+export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据', scrollable = false }: DataTableProps<T>) {
     const safeRows = rows ?? [];
+
+    /* scrollable 模式：colgroup 声明列宽 + table min-width 保证可滚动 */
+    const colWidths = scrollable
+        ? columns.map((col) => col.width || 'auto')
+        : null;
+
+    const tableMinWidth = scrollable && colWidths
+        ? colWidths.reduce((sum, w) => sum + (w === 'auto' ? 80 : Number(w.replace('px', ''))), 0)
+        : 0;
+
+    /* scrollable 模式下，有 width 的列自动打点+hover */
+    function hasEllipsis(col: DataColumn<T>) {
+        return scrollable && !!col.width;
+    }
+
     return (
         <div className={styles.tableWrapper}>
-            <table className={styles.table}>
+            <table
+                className={scrollable ? `${styles.table} ${styles.tableFixed}` : styles.table}
+                style={scrollable ? { minWidth: `${tableMinWidth}px` } : undefined}
+            >
+                {scrollable && colWidths && (
+                    <colgroup>
+                        {colWidths.map((w, i) => (
+                            <col key={i} style={w !== 'auto' ? { width: w } : undefined} />
+                        ))}
+                    </colgroup>
+                )}
                 <thead>
                     <tr className={styles.thead}>
                         {columns.map((col, i) => (
                             <th
-                                className={`${styles.th}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}${col.width ? ` ${styles.fixedWidth}` : ''}`}
+                                className={`${styles.th}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}${hasEllipsis(col) ? ` ${styles.ellipsisCol}` : ''}`}
                                 key={i}
-                                style={
-                                    col.width || (col.align && col.align !== 'left')
-                                        ? {
-                                              ...(col.width ? { width: col.width, minWidth: col.width, maxWidth: col.width } : {}),
-                                              ...(col.align && col.align !== 'left' ? { textAlign: col.align } : {}),
-                                          }
-                                        : undefined
-                                }
                             >
                                 {col.header}
                             </th>
@@ -62,15 +88,18 @@ export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据'
                     ) : (
                         safeRows.map((row, rowIndex) => (
                             <tr className={styles.row} key={rowKey(row)}>
-                                {columns.map((col, colIndex) => (
-                                    <td
-                                        className={`${styles.td}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}${col.width ? ` ${styles.fixedWidth}` : ''}`}
-                                        key={colIndex}
-                                        style={col.align && col.align !== 'left' ? { textAlign: col.align } : undefined}
-                                    >
-                                        {col.render(row, rowIndex)}
-                                    </td>
-                                ))}
+                                {columns.map((col, colIndex) => {
+                                    const content = col.render(row, rowIndex);
+                                    return (
+                                        <td
+                                            className={`${styles.td}${col.hideBelow ? ` ${styles[`hideBelow${col.hideBelow.charAt(0).toUpperCase()}${col.hideBelow.slice(1)}`]}` : ''}${hasEllipsis(col) ? ` ${styles.ellipsisCol}` : ''}`}
+                                            key={colIndex}
+                                            {...(hasEllipsis(col) ? { title: extractText(content) } : {})}
+                                        >
+                                            {content}
+                                        </td>
+                                    );
+                                })}
                             </tr>
                         ))
                     )}

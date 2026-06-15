@@ -11,6 +11,12 @@
     border-collapse: collapse;
 }
 
+/* 可横向滚动模式：colgroup 控制列宽，table-layout:fixed 让宽度生效 */
+.tableFixed {
+    width: auto;
+    table-layout: fixed;
+}
+
 .thead {
     border-bottom: 1px solid var(--primary);
     background: color-mix(in srgb, var(--muted) 60%, var(--background));
@@ -31,11 +37,6 @@
     border-right: none;
 }
 
-/* 固定宽度列 — 防止被 table-layout: auto 撑大 */
-.fixedWidth {
-    white-space: nowrap;
-}
-
 .row {
     border-bottom: 1px solid var(--border);
 }
@@ -43,10 +44,17 @@
 .td {
     padding: 0.75rem 1rem;
     border-right: 1px solid var(--border);
+    white-space: nowrap;
 }
 
 .td:last-child {
     border-right: none;
+}
+
+/* 超宽打点列 */
+.ellipsisCol {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .emptyRow {

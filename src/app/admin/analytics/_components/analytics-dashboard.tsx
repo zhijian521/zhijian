@@ -6,7 +6,7 @@ import {
     PieChart, Pie, Cell,
     ResponsiveContainer,
 } from 'recharts';
-import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem } from '@/lib/analytics';
+import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem, VisitRecord } from '@/lib/analytics';
 
 import { TrendingUpIcon, TrendingDownIcon, CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
@@ -37,20 +37,6 @@ interface AnalyticsData {
     os: OSItem[];
     entryPages: EntryExitItem[];
     exitPages: EntryExitItem[];
-}
-
-interface VisitRecord {
-    id: number;
-    path: string;
-    title: string;
-    referrer: string;
-    device: string;
-    visitorId: string;
-    isNew: boolean;
-    ip: string;
-    location: string;
-    duration: number | null;
-    createdAt: string;
 }
 
 interface SiteOption { id: string; name: string; }
@@ -94,7 +80,7 @@ const DEVICE_PALETTE = ['#9f000f', '#c4616d', '#d9969e', '#efcdd2'];
 const BROWSER_PALETTE = ['#4a6741', '#6d8f64', '#96b68e', '#c2dbc0'];
 const OS_PALETTE = ['#5c4a2a', '#8b7355', '#b5a07a', '#d9cbb0'];
 
-const VISITS_PAGE_SIZE = 20;
+const VISITS_PAGE_SIZE = 10;
 
 /*== 变化指示器 ==*/
 
@@ -257,13 +243,18 @@ export default function AnalyticsDashboard() {
     };
 
     const visitColumns: DataColumn<VisitRecord>[] = [
-        { header: '页面', render: (v) => <div className={styles.visitPageCell}><span className={styles.visitPath}>{v.path}</span>{v.title && <span className={styles.visitTitle}>{v.title}</span>}</div> },
-        { header: '来源', hideBelow: 'sm', render: (v) => <span className={styles.visitMuted}>{v.referrer}</span> },
-        { header: '设备', hideBelow: 'md', render: (v) => <Tag size="mini" variant={deviceTagVariant(v.device)}>{v.device}</Tag> },
-        { header: '访客', hideBelow: 'lg', render: (v) => <span className={styles.visitMuted}>{v.visitorId}{v.isNew && <Tag size="mini" variant="primary" className={styles.newTag}>新</Tag>}</span> },
-        { header: '位置', hideBelow: 'md', render: (v) => <span className={styles.visitMuted}>{v.location}</span> },
-        { header: '停留', hideBelow: 'lg', render: (v) => <span className={styles.visitMuted}>{v.duration != null ? `${v.duration}s` : '-'}</span> },
-        { header: '时间', render: (v) => <span className={styles.visitMuted}>{formatVisitTime(v.createdAt)}</span> },
+        { header: '页面', width: '200px', render: (v) => <div className={styles.visitPageCell}><span className={styles.visitPath}>{v.path}</span>{v.title && <span className={styles.visitTitle}>{v.title}</span>}</div> },
+        { header: '来源', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.referrer}</span> },
+        { header: '设备', width: '120px', render: (v) => <Tag size="mini" variant={deviceTagVariant(v.device)}>{v.device}</Tag> },
+        { header: '浏览器', width: '120px', render: (v) => <span className={styles.visitMuted}>{v.browser}</span> },
+        { header: '操作系统', width: '120px', render: (v) => <span className={styles.visitMuted}>{v.os}</span> },
+        { header: '语言', width: '100px', render: (v) => <span className={styles.visitMuted}>{v.lang}</span> },
+        { header: '访客', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.visitorId}{v.isNew && <Tag size="mini" variant="primary" className={styles.newTag}>新</Tag>}</span> },
+        { header: '会话', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.sessionId}{v.isSession && <Tag size="mini" variant="outlined" className={styles.newTag}>入口</Tag>}</span> },
+        { header: '位置', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.location}</span> },
+        { header: 'IP', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.ip}</span> },
+        { header: '停留', width: '100px', render: (v) => <span className={styles.visitMuted}>{v.duration != null ? `${v.duration}s` : '-'}</span> },
+        { header: '时间', width: '150px', render: (v) => <span className={styles.visitMuted}>{formatVisitTime(v.createdAt)}</span> },
     ];
 
     /* 入口/出口页面表格列 */
@@ -534,7 +525,7 @@ export default function AnalyticsDashboard() {
                     </div>
                 ) : (
                     <>
-                        <DataTable columns={visitColumns} emptyText={visitsLoading ? '加载中...' : '暂无访问记录'} rowKey={(v) => v.id} rows={visits.data} />
+                        <DataTable scrollable columns={visitColumns} emptyText={visitsLoading ? '加载中...' : '暂无访问记录'} rowKey={(v) => v.id} rows={visits.data} />
                         <Pagination current={visitsPage} onPageChange={setVisitsPage} total={Math.max(1, Math.ceil(visits.total / VISITS_PAGE_SIZE))} />
                     </>
                 )

@@ -765,13 +765,18 @@ export async function getExitPages(siteId: string, range: DateRange, limit = 10)
 export interface VisitRecord {
     id: number;
     path: string;
-    title: string;        // #2 新增：页面标题
+    title: string;
     referrer: string;
     device: string;
+    browser: string;
+    os: string;
+    lang: string;
     visitorId: string;
-    isNew: boolean;       // #3 新增：新访客标记
-    ip: string;           // #11 新增：遮蔽 IP
-    location: string;     // #11 新增：如 '中国·上海'
+    sessionId: string;
+    isNew: boolean;
+    isSession: boolean;
+    ip: string;
+    location: string;
     duration: number | null;
     createdAt: string;
 }
@@ -806,12 +811,17 @@ export async function getVisits(
             p.referrer,
             p.screen,
             p.visitor_id,
+            p.session_id,
             p.is_new,
+            p.is_session,
             COALESCE(l.duration, p.duration) AS duration,
             p.ip,
             p.country,
             p.region,
             p.city,
+            p.lang,
+            p.browser,
+            p.os,
             p.created_at
         FROM zhijian_track_events p
         LEFT JOIN (
@@ -850,8 +860,13 @@ export async function getVisits(
             title: r.title || '',
             referrer,
             device,
+            browser: r.browser || '未知',
+            os: r.os || '未知',
+            lang: r.lang || '未知',
             visitorId: (r.visitor_id || '').slice(0, 8),
+            sessionId: (r.session_id || '').slice(0, 8),
             isNew: Number(r.is_new) === 1,
+            isSession: Number(r.is_session) === 1,
             ip: r.ip || '-',
             location,
             duration: r.duration != null && Number(r.duration) > 0 ? Number(r.duration) : null,

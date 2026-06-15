@@ -479,7 +479,7 @@
 /*== 访问记录 ==*/
 
 .visitPageCell { display: flex; flex-direction: column; gap: 2px; }
-.visitPath { font-size: 0.8rem; color: var(--foreground); word-break: break-all; }
+.visitPath { font-size: 0.8rem; color: var(--foreground); white-space: nowrap; }
 .visitTitle { font-size: 0.7rem; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
 .visitMuted { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; color: var(--muted-foreground); }
 .newTag { margin-left: 0.25rem; }
