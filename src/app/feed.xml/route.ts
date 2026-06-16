@@ -1,4 +1,5 @@
 import { getPublishedPosts } from '@/lib/posts';
+import { parsePostDate } from '@/lib/post-shared';
 import { SITE_METADATA } from '@/lib/site';
 
 /*== RSS 2.0 Feed — 输出全站已发布文章供 RSS 阅读器订阅 ==*/
@@ -8,23 +9,21 @@ export async function GET() {
 
     const items = posts.map((post) => {
         const link = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
-        const pubDate = post.publishedAt
-            ? new Date(post.publishedAt.replace(' ', 'T')).toUTCString()
-            : undefined;
-        const categories = (post.tagNames ?? [])
-            .map((tag) => `<category>${escapeXml(tag.name)}</category>`)
-            .join('');
+        const pubDate = parsePostDate(post.publishedAt)?.toUTCString();
+        const categoryXml = (post.tagNames ?? [])
+            .map((tag) => `      <category>${escapeXml(tag.name)}</category>`)
+            .join('\n');
 
-        const parts = [
-            `<title><![CDATA[${post.title}]]></title>`,
-            `<link>${link}</link>`,
-            `<guid isPermaLink="true">${link}</guid>`,
-            `<description><![CDATA[${post.summary}]]></description>`,
-            ...(pubDate ? [`<pubDate>${pubDate}</pubDate>`] : []),
-            ...(categories ? [categories] : []),
-        ];
-
-        return `    <item>\n      ${parts.join('\n      ')}\n    </item>`;
+        return [
+            `    <item>`,
+            `      <title><![CDATA[${post.title}]]></title>`,
+            `      <link>${link}</link>`,
+            `      <guid isPermaLink="true">${link}</guid>`,
+            `      <description><![CDATA[${post.summary}]]></description>`,
+            pubDate ? `      <pubDate>${pubDate}</pubDate>` : '',
+            categoryXml,
+            `    </item>`,
+        ].filter(Boolean).join('\n');
     }).join('\n');
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>

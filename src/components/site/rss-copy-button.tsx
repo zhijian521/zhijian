@@ -11,8 +11,8 @@ export function RssCopyButton() {
     const [copied, setCopied] = useState(false);
     const feedUrl = `${SITE_METADATA.siteUrl}/feed.xml`;
 
-    async function handleClick() {
-        await navigator.clipboard.writeText(feedUrl);
+    function handleClick() {
+        navigator.clipboard.writeText(feedUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
     }

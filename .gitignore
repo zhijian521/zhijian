@@ -10,3 +10,7 @@ tsconfig.tsbuildinfo
 .next-start.err.log
 .stitch-*
 package-lock.json
+.reasonix/
+reasonix.toml
+.codegraph/
+.claude/

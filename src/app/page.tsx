@@ -19,7 +19,7 @@ import { getPublishedPosts } from '@/lib/posts';
 import { formatPostDate } from '@/lib/post-shared';
 import { SITE_METADATA } from '@/lib/site';
 
-import { RssCopyButton } from './_components/rss-copy-button';
+import { RssCopyButton } from '@/components/site/rss-copy-button';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
