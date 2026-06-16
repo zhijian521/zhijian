@@ -5,7 +5,10 @@ import { ArrowRightIcon, Edit3Icon, FileTextIcon, UsersIcon } from '@/components
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { IconButton } from '@/components/ui/icon-button';
 import { Tag } from '@/components/ui/tag';
-import { MOCK_POSTS, MOCK_USERS, type MockPost } from '@/lib/mock-data';
+import { countUsersByRole } from '@/lib/auth';
+import type { Post } from '@/lib/post-shared';
+import { formatPostDate } from '@/lib/post-shared';
+import { getAllPosts } from '@/lib/posts';
 import { APP_ROUTES } from '@/lib/site';
 import styles from './page.module.css';
 
@@ -13,16 +16,19 @@ export const metadata: Metadata = {
     title: 'Admin',
 };
 
-/*== 后台概览页：静态展示统计指标和近期文章（数据待接入 API 后改为动态）。 ==*/
-export default function AdminPage() {
-    const posts = MOCK_POSTS;
-    const publishedPosts = posts.filter((post) => post.status === 'published');
-    const recentPosts = posts.slice(0, 5);
-    const totalUsers = MOCK_USERS.length;
-    const adminCount = MOCK_USERS.filter((u) => u.role === 'admin').length;
-    const userCount = MOCK_USERS.filter((u) => u.role === 'user').length;
+/*== 后台概览页：从数据库读取真实文章与用户统计。 ==*/
+export default async function AdminPage() {
+    const [posts, userCounts] = await Promise.all([
+        getAllPosts(),
+        countUsersByRole(),
+    ]);
 
-    const columns: DataColumn<MockPost>[] = [
+    const publishedCount = posts.filter((p) => p.status === 'published').length;
+    const draftCount = posts.length - publishedCount;
+    const totalUsers = userCounts.admin + userCounts.user;
+    const recentPosts = posts.slice(0, 5);
+
+    const columns: DataColumn<Post>[] = [
         {
             header: '标题',
             render: (post) => <span className={styles.tdTitle}>{post.title}</span>,
@@ -39,7 +45,7 @@ export default function AdminPage() {
         {
             header: '日期',
             hideBelow: 'md',
-            render: (post) => <span className={styles.tdMuted}>{post.publishedAt ?? '-'}</span>,
+            render: (post) => <span className={styles.tdMuted}>{formatPostDate(post.publishedAt)}</span>,
         },
         {
             header: '操作',
@@ -48,6 +54,7 @@ export default function AdminPage() {
                 <IconButton
                     href={`${APP_ROUTES.adminPosts}/${post.id}`}
                     icon={<Edit3Icon />}
+                    target="_blank"
                     title="编辑"
                 />
             ),
@@ -65,13 +72,13 @@ export default function AdminPage() {
             {/* 指标卡片 */}
             <section className={styles.metrics}>
                 <MetricCard
-                    description={`${publishedPosts.length} 篇已发布`}
+                    description={`${publishedCount} 篇已发布`}
                     icon={<FileTextIcon className={styles.metricIcon} />}
                     title='文章'
                     value={`${posts.length}`}
                 />
                 <MetricCard
-                    description={`${adminCount} 管理员 · ${userCount} 用户`}
+                    description={`${userCounts.admin} 管理员 · ${userCounts.user} 用户`}
                     icon={<UsersIcon className={styles.metricIcon} />}
                     title='用户'
                     value={`${totalUsers}`}
@@ -80,7 +87,7 @@ export default function AdminPage() {
                     description='草稿与已发布'
                     icon={<Edit3Icon className={styles.metricIcon} />}
                     title='状态'
-                    value={`${posts.length - publishedPosts.length} / ${publishedPosts.length}`}
+                    value={`${draftCount} / ${publishedCount}`}
                 />
             </section>
 
