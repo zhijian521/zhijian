@@ -9,7 +9,8 @@ import { BizCode, fail } from '@/lib/api-response';
 import { requireAdminFromRequest } from '@/lib/auth';
 import { extractImagePaths, getAllPosts } from '@/lib/posts';
 
-/*== 文章一键导出 API — 将所有文章 + 引用图片打包为 ZIP 流式下载 ==*/
+/*== 文章一键导出 API — 将所有文章 + 引用图片打包为 ZIP 流式下载
+    支持 ?id= 参数：指定时只导出该文章；省略时导出全部。 ==*/
 
 export async function GET(request: NextRequest) {
     /*-- 鉴权 --*/
@@ -21,7 +22,13 @@ export async function GET(request: NextRequest) {
         );
     }
 
-    const posts = await getAllPosts();
+    const allPosts = await getAllPosts();
+
+    /*-- 支持单篇导出（?id=） --*/
+    const targetId = request.nextUrl.searchParams.get('id');
+    const posts = targetId
+        ? allPosts.filter((p) => p.id === Number(targetId))
+        : allPosts;
 
     /*-- 收集图片路径映射：源路径 → ZIP 内目标路径 --*/
     const imageMap = new Map<string, string>();

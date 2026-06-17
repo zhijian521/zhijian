@@ -104,21 +104,22 @@ export default function PostManagementClient() {
         }
     }
 
-    async function handleExport() {
+    async function doExport(postId: number | null) {
         setExporting(true);
         try {
-            const res = await fetch('/api/admin/posts/export');
+            const url = `/api/admin/posts/export${postId ? `?id=${postId}` : ''}`;
+            const res = await fetch(url);
             if (!res.ok) {
                 const body = await res.json().catch(() => null);
                 throw new Error(body?.message || '导出失败');
             }
             const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
+            const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
+            a.href = blobUrl;
             a.download = `zhijian-export-${new Date().toISOString().slice(0, 10)}.zip`;
             a.click();
-            URL.revokeObjectURL(url);
+            URL.revokeObjectURL(blobUrl);
             toast.success('导出成功');
         } catch (e: any) {
             toast.error(e.message || '导出失败');
@@ -187,6 +188,13 @@ export default function PostManagementClient() {
                         title="编辑"
                     />
                     <IconButton
+                        disabled={exporting}
+                        icon={<DownloadIcon />}
+                        onClick={() => doExport(post.id)}
+                        size="medium"
+                        title="导出"
+                    />
+                    <IconButton
                         disabled={deleting === post.id}
                         icon={<Trash2Icon />}
                         onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
@@ -234,10 +242,10 @@ export default function PostManagementClient() {
                     asButton
                     disabled={exporting}
                     icon={<DownloadIcon className={shared.btnIcon} />}
-                    onClick={handleExport}
+                    onClick={() => doExport(null)}
                     size='medium'
                 >
-                    {exporting ? '导出中...' : '导出文章'}
+                    {exporting ? '导出中...' : '全部导出'}
                 </GhostButton>
                 <GhostButton
                     asButton
