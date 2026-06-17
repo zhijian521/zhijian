@@ -46,8 +46,15 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
 
     useEffect(() => {
         if (!open) return;
+
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
         document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            document.removeEventListener('keydown', handleKeyDown);
+        };
     }, [open, handleKeyDown]);
 
     /* 仅在弹窗打开瞬间自动聚焦第一个元素，后续重渲染不抢焦点 */
