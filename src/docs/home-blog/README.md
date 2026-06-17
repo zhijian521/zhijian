@@ -485,4 +485,4 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/lib/tags.ts` | 标签数据层 |
 | `src/lib/site.ts` | 站点元数据与路由配置 |
 | `src/app/feed.xml/route.ts` | RSS 2.0 feed 生成 |
-| `src/app/_components/rss-copy-button.tsx` | RSS 订阅按钮（复制 feed 地址） |
+| `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮（复制 feed 地址） |

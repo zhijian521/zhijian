@@ -26,7 +26,7 @@
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（39 个图标） |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（40 个图标） |
 | UI 组件 | 自建 CSS Module 组件 | — | ✅ 13 个组件 |
 | 图表 | Recharts | ^3.8.1 | ✅ 观澜仪表盘 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
@@ -124,7 +124,7 @@ src/
 │   │   ├── post-card.tsx         # 博客文章卡片
 │   │   └── project-card.tsx      # 项目展示卡片
 │   └── ui/                       # 自建 UI 组件库（全部 CSS Modules）
-│       ├── icons/                # 自建 SVG 图标库（39 个图标）
+│       ├── icons/                # 自建 SVG 图标库（40 个图标）
 │       │   └── index.ts          # IconProps + 桶导出
 │       ├── confirm-dialog.tsx + .module.css   # 确认弹窗
 │       ├── data-table.tsx + .module.css       # 数据表格
@@ -146,7 +146,6 @@ src/
 │   ├── categories.ts             # 分类数据层
 │   ├── db.ts                     # 数据库连接池
 │   ├── http-client.ts            # axios 封装
-│   ├── mock-data.ts              # 静态示例数据（MockPost/MockUser）
 │   ├── post-shared.ts            # 文章共享类型/工具
 │   ├── posts.ts                  # 文章数据层（数据库）
 │   ├── static-posts.ts           # 静态文章数据层（MD 文件）
@@ -451,7 +450,7 @@ export function Component({ variant = 'default', size = 'default', className, ..
 
 ### 图标系统
 
-全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（39 个图标）：
+全站统一使用 `src/components/ui/icons/` 自建 SVG 图标库（40 个图标）：
 
 ```typescript
 import { ArrowRightIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons'
