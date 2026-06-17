@@ -55,6 +55,7 @@ export { MinusIcon } from './minus-icon';
 export { CodeBlockIcon } from './codeblock-icon';
 export { ArrowUpIcon } from './arrow-up-icon';
 export { HomeIcon } from './home-icon';
+export { DownloadIcon } from './download-icon';
 
 /** 图标组件的函数类型，用于 NavSubItem 等 */
 export type IconComponent = React.ComponentType<IconProps>;

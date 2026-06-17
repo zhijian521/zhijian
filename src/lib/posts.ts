@@ -416,3 +416,14 @@ function formatSqlDate(date: Date): string {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+/*== 从 Markdown 正文中提取所有 /uploads/ 图片路径并去重。 ==*/
+export function extractImagePaths(content: string): string[] {
+    const regex = /!\[.*?\]\((\/uploads\/[^\s)]+)\)/g;
+    const paths: string[] = [];
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+        paths.push(match[1]);
+    }
+    return [...new Set(paths)];
+}

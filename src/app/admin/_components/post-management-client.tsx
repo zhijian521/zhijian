@@ -1,6 +1,6 @@
 'use client';
 
-import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
+import { DownloadIcon, PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -41,6 +41,7 @@ export default function PostManagementClient() {
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
     const [deleting, setDeleting] = useState<number | null>(null);
     const [creating, setCreating] = useState(false);
+    const [exporting, setExporting] = useState(false);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
@@ -100,6 +101,29 @@ export default function PostManagementClient() {
             toast.error('删除请求失败。');
         } finally {
             setDeleting(null);
+        }
+    }
+
+    async function handleExport() {
+        setExporting(true);
+        try {
+            const res = await fetch('/api/admin/posts/export');
+            if (!res.ok) {
+                const body = await res.json().catch(() => null);
+                throw new Error(body?.message || '导出失败');
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `zhijian-export-${new Date().toISOString().slice(0, 10)}.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success('导出成功');
+        } catch (e: any) {
+            toast.error(e.message || '导出失败');
+        } finally {
+            setExporting(false);
         }
     }
 
@@ -206,6 +230,15 @@ export default function PostManagementClient() {
                         value={status}
                     />
                 </div>
+                <GhostButton
+                    asButton
+                    disabled={exporting}
+                    icon={<DownloadIcon className={shared.btnIcon} />}
+                    onClick={handleExport}
+                    size='medium'
+                >
+                    {exporting ? '导出中...' : '导出文章'}
+                </GhostButton>
                 <GhostButton
                     asButton
                     disabled={creating}
