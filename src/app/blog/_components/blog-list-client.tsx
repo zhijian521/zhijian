@@ -1,6 +1,10 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 
 import { ContentImage } from '@/components/site/content-image';
+import Dialog from '@/components/ui/dialog';
 import { Pagination } from '@/components/ui/pagination';
 import { Tag } from '@/components/ui/tag';
 import { formatPostDate } from '@/lib/post-shared';
@@ -36,11 +40,68 @@ export default function BlogListClient({
     totalPages,
 }: BlogListClientProps) {
     const activeTagSet = new Set(activeTagSlugs);
+    const [filterOpen, setFilterOpen] = useState(false);
+    const hasFilters = categoryOptions.length > 1 || tagOptions.length > 0;
 
     return (
         <main className={styles.page}>
             <header className={styles.pageHeader}>
-                <h1 className={styles.headerTitle}>文章</h1>
+                <div className={styles.headerRow}>
+                    <h1 className={styles.headerTitle}>文章</h1>
+                    {hasFilters ? (
+                        <button
+                            className={styles.filterBtn}
+                            onClick={() => setFilterOpen(true)}
+                            type="button"
+                        >
+                            筛选
+                        </button>
+                    ) : null}
+                </div>
+                <Dialog
+                    maxWidth="20rem"
+                    onClose={() => setFilterOpen(false)}
+                    open={filterOpen}
+                    title="筛选"
+                >
+                    <div className={styles.filterDialogBody}>
+                        {categoryOptions.length > 1 ? (
+                            <div className={styles.filterBlock}>
+                                <h3 className={styles.filterBlockTitle}>分类</h3>
+                                <div className={styles.categories}>
+                                    {categoryOptions.map((category) => (
+                                        <Link
+                                            className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
+                                            href={category.href}
+                                            key={category.slug || 'all'}
+                                            onClick={() => setFilterOpen(false)}
+                                        >
+                                            {category.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+
+                        {tagOptions.length > 0 ? (
+                            <div className={styles.filterBlock}>
+                                <h3 className={styles.filterBlockTitle}>标签</h3>
+                                <div className={styles.tagFilter}>
+                                    {tagOptions.map((tag) => (
+                                        <Link
+                                            className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
+                                            href={tag.href}
+                                            key={tag.slug}
+                                            onClick={() => setFilterOpen(false)}
+                                        >
+                                            {tag.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                </Dialog>
             </header>
 
             <div className={styles.layout}>
@@ -55,9 +116,13 @@ export default function BlogListClient({
                                         {post.categoryName ? (
                                             <span className={styles.itemCategory}>{post.categoryName}</span>
                                         ) : null}
-                                        {post.tagNames?.map((tag) => (
-                                            <Tag key={tag.id} size='mini' variant='outlined'>{tag.name}</Tag>
-                                        ))}
+                                        {post.tagNames && post.tagNames.length > 0 ? (
+                                            <div className={styles.itemTags}>
+                                                {post.tagNames.map((tag) => (
+                                                    <Tag key={tag.id} size='mini' variant='outlined'>{tag.name}</Tag>
+                                                ))}
+                                            </div>
+                                        ) : null}
                                         <span className={styles.itemDate}>{formatPostDate(post.publishedAt)}</span>
                                     </div>
                                 </div>
@@ -65,7 +130,7 @@ export default function BlogListClient({
                                     <div className={styles.itemCover}>
                                         <ContentImage
                                             alt={post.altText || post.title}
-                                            sizes='180px'
+                                            sizes="(max-width: 640px) 100vw, 180px"
                                             src={post.coverImage}
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
