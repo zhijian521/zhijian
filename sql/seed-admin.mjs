@@ -47,10 +47,10 @@ async function seed() {
     const pool = createPool({ uri: dbUrl, connectionLimit: 1 });
 
     try {
-        // 1. 确保 users 表存在
-        console.log('📋 检查 users 表...');
+        // 1. 确保 zhijian_users 表存在
+        console.log('📋 检查 zhijian_users 表...');
         await pool.execute(`
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS zhijian_users (
                 id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                 username      VARCHAR(50)     NOT NULL,
                 email         VARCHAR(255)    NOT NULL,
@@ -60,17 +60,17 @@ async function seed() {
                 created_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id),
-                UNIQUE KEY uniq_users_username (username),
-                UNIQUE KEY uniq_users_email (email),
-                KEY idx_users_role (role),
-                KEY idx_users_status (status)
+                UNIQUE KEY uniq_zhijian_users_username (username),
+                UNIQUE KEY uniq_zhijian_users_email (email),
+                KEY idx_zhijian_users_role (role),
+                KEY idx_zhijian_users_status (status)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        console.log('✅ users 表就绪。');
+        console.log('✅ zhijian_users 表就绪。');
 
         // 2. 检查是否已有管理员
         const [rows] = await pool.execute(
-            'SELECT COUNT(*) AS cnt FROM users WHERE role = ?',
+            'SELECT COUNT(*) AS cnt FROM zhijian_users WHERE role = ?',
             ['admin']
         );
         if (rows[0].cnt > 0) {
@@ -81,7 +81,7 @@ async function seed() {
         // 3. 创建种子管理员
         const passwordHash = await bcrypt.hash(adminPassword, 12);
         await pool.execute(
-            'INSERT INTO users (username, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO zhijian_users (username, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?)',
             [adminUsername, `${adminUsername}@zhijian.local`, passwordHash, 'admin', 'active']
         );
         console.log(`✅ 种子管理员创建成功：${adminUsername}`);
