@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
             `title: ${escapeYaml(post.title)}`,
             `slug: ${post.slug}`,
             `status: ${post.status}`,
+            post.summary ? `summary: ${escapeYaml(post.summary)}` : '',
             post.categoryName ? `category: ${escapeYaml(post.categoryName)}` : '',
             post.tagNames?.length
                 ? `tags: [${post.tagNames.map((t) => escapeYaml(t.name)).join(', ')}]`
