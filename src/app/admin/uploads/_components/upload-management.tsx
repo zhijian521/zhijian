@@ -6,10 +6,13 @@ import { CheckIcon, CopyIcon, DownloadIcon, Trash2Icon } from '@/components/ui/i
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
+import { GhostButton } from '@/components/ui/ghost-button';
 import { api } from '@/lib/http-client';
 import { toast } from '@/components/ui/toast';
+import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 
 import styles from './upload-management.module.css';
+import shared from '@/app/admin/_components/admin-shared.module.css';
 
 interface UploadItem {
     id: number;
@@ -108,20 +111,22 @@ export default function UploadManagement() {
 
     return (
         <div className={styles.management}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>图片管理</h1>
-                <div className={styles.headerActions}>
-                    <span className={styles.total}>共 {total} 张</span>
-                    <button
-                        className={styles.syncBtn}
+            <AdminPageHeader
+                description='上传和管理文章图片，支持复制 Markdown 路径和同步到本地开发环境。'
+                eyebrow='Uploads'
+                tag={`${total} 张图片`}
+                title='图片管理'
+                action={
+                    <GhostButton
+                        asButton
+                        icon={<DownloadIcon className={shared.btnIcon} />}
                         onClick={() => setSyncOpen(true)}
-                        type="button"
+                        size='small'
                     >
-                        <DownloadIcon className={styles.syncBtnIcon} />
                         同步到本地
-                    </button>
-                </div>
-            </div>
+                    </GhostButton>
+                }
+            />
 
             {loading ? (
                 <div className={styles.empty}>加载中...</div>

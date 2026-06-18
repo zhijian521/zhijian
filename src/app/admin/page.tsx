@@ -5,6 +5,7 @@ import { ArrowRightIcon, Edit3Icon, FileTextIcon, UsersIcon } from '@/components
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { IconButton } from '@/components/ui/icon-button';
 import { Tag } from '@/components/ui/tag';
+import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { countUsersByRole } from '@/lib/auth';
 import type { Post } from '@/lib/post-shared';
 import { formatPostDate } from '@/lib/post-shared';
@@ -63,11 +64,12 @@ export default async function AdminPage() {
 
     return (
         <div className={styles.page}>
-            {/* 头部 */}
-            <header>
-                <h1 className='admin-title'>概览</h1>
-                <p className={`${styles.copy} admin-copy`}>欢迎回来，这里是当前站点内容与数据的概览。</p>
-            </header>
+            <AdminPageHeader
+                description='欢迎回来，这里是当前站点内容与数据的概览。'
+                eyebrow='Overview'
+                tag={`${posts.length} 篇文章 · ${totalUsers} 个用户`}
+                title='概览'
+            />
 
             {/* 指标卡片 */}
             <section className={styles.metrics}>
