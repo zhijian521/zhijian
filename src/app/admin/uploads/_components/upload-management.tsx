@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { CheckIcon, CopyIcon, Trash2Icon } from '@/components/ui/icons';
+import { CheckIcon, CopyIcon, DownloadIcon, Trash2Icon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import Dialog from '@/components/ui/dialog';
 import { api } from '@/lib/http-client';
 import { toast } from '@/components/ui/toast';
 
@@ -42,6 +43,10 @@ export default function UploadManagement() {
     /* 删除确认弹窗 */
     const [deleteTarget, setDeleteTarget] = useState<UploadItem | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    /* 同步弹窗 */
+    const [syncOpen, setSyncOpen] = useState(false);
+    const [syncCopied, setSyncCopied] = useState(false);
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -105,7 +110,17 @@ export default function UploadManagement() {
         <div className={styles.management}>
             <div className={styles.header}>
                 <h1 className={styles.title}>图片管理</h1>
-                <span className={styles.total}>共 {total} 张</span>
+                <div className={styles.headerActions}>
+                    <span className={styles.total}>共 {total} 张</span>
+                    <button
+                        className={styles.syncBtn}
+                        onClick={() => setSyncOpen(true)}
+                        type="button"
+                    >
+                        <DownloadIcon className={styles.syncBtnIcon} />
+                        同步到本地
+                    </button>
+                </div>
             </div>
 
             {loading ? (
@@ -179,6 +194,42 @@ export default function UploadManagement() {
                 open={deleteTarget !== null}
                 title="删除图片"
             />
+
+            {/* 同步到本地弹窗 */}
+            <Dialog
+                onClose={() => setSyncOpen(false)}
+                open={syncOpen}
+                title="同步到本地"
+            >
+                <div className={styles.syncBody}>
+                    <p className={styles.syncDesc}>
+                        将服务器上的图片文件同步到本地 <code className={styles.syncCode}>public/uploads/</code> 目录，用于开发环境预览。
+                    </p>
+                    <p className={styles.syncStep}>在项目根目录运行以下命令：</p>
+                    <div className={styles.syncCmdRow}>
+                        <code className={styles.syncCmd}>node src/scripts/sync-uploads.mjs</code>
+                        <button
+                            aria-label="复制命令"
+                            className={styles.syncCopyBtn}
+                            onClick={() => {
+                                navigator.clipboard.writeText('node src/scripts/sync-uploads.mjs');
+                                setSyncCopied(true);
+                                setTimeout(() => setSyncCopied(false), 1500);
+                            }}
+                            type="button"
+                        >
+                            {syncCopied
+                                ? <CheckIcon className={styles.syncCopyIcon} />
+                                : <CopyIcon className={styles.syncCopyIcon} />
+                            }
+                        </button>
+                    </div>
+                    <p className={styles.syncHint}>
+                        可选参数：<code className={styles.syncCode}>--server &lt;url&gt;</code> 指定服务器地址，
+                        <code className={styles.syncCode}>--username</code> / <code className={styles.syncCode}>--password</code> 跳过交互式输入。
+                    </p>
+                </div>
+            </Dialog>
         </div>
     );
 }

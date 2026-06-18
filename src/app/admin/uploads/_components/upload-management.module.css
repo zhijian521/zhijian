@@ -12,6 +12,12 @@
     gap: 1rem;
 }
 
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
 .title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -133,4 +139,102 @@
 .paginationWrap {
     display: flex;
     justify-content: flex-end;
+}
+
+/*== 同步按钮 ==*/
+.syncBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.syncBtn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.syncBtnIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/*== 同步弹窗 ==*/
+.syncBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.syncDesc {
+    font-size: 0.875rem;
+    color: var(--foreground);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.syncStep {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.syncCmdRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--muted);
+}
+
+.syncCmd {
+    flex: 1;
+    font-size: 0.8125rem;
+    font-family: monospace;
+    color: var(--primary);
+    word-break: break-all;
+}
+
+.syncCopyBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
+    background: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.syncCopyBtn:hover {
+    color: var(--primary);
+}
+
+.syncCopyIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.syncHint {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.syncCode {
+    font-size: 0.75rem;
+    font-family: monospace;
+    padding: 0.0625rem 0.25rem;
+    background: var(--muted);
+    border-radius: 2px;
 }
