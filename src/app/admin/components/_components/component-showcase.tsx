@@ -4,14 +4,18 @@ import { useState } from 'react';
 
 import {
     MenuIcon, ArrowRightIcon, ArrowDownIcon, ArrowLeftIcon,
-    MailIcon, ExternalLinkIcon, GitHubIcon, CodeIcon,
+    ArrowUpIcon, MailIcon, ExternalLinkIcon, GitHubIcon, CodeIcon,
     BookIcon, BookOpenIcon, PencilIcon, Edit3Icon,
     Trash2Icon, AlertTriangleIcon, XIcon, PlusIcon,
     SearchIcon, SaveIcon, FileTextIcon, UsersIcon,
-    ShieldIcon, WrenchIcon, ChevronRightIcon, LogOutIcon,
-    UserCircle2Icon, LayoutDashboardIcon, FolderTreeIcon,
-    SettingsIcon, TagIcon, CheckIcon,
-    UserIcon, LockIcon,
+    ShieldIcon, WrenchIcon, ChevronRightIcon,
+    LogOutIcon, UserCircle2Icon, LayoutDashboardIcon, FolderTreeIcon,
+    SettingsIcon, TagIcon, CheckIcon, CopyIcon,
+    UserIcon, LockIcon, ActivityIcon, ImageIcon,
+    TrendingUpIcon, TrendingDownIcon, PauseIcon, PlayIcon,
+    BoldIcon, ItalicIcon, LinkIcon,
+    QuoteIcon, ListIcon, ListOrderedIcon, MinusIcon,
+    CodeBlockIcon, HomeIcon, DownloadIcon,
 } from '@/components/ui/icons';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { DataTable } from '@/components/ui/data-table';
@@ -31,11 +35,15 @@ import styles from './component-showcase.module.css';
 
 /*== 图标清单 ==*/
 const ICONS = [
+    /* 导航与方向 */
     { name: 'MenuIcon', Icon: MenuIcon },
     { name: 'ArrowRightIcon', Icon: ArrowRightIcon },
     { name: 'ArrowDownIcon', Icon: ArrowDownIcon },
     { name: 'ArrowLeftIcon', Icon: ArrowLeftIcon },
+    { name: 'ArrowUpIcon', Icon: ArrowUpIcon },
     { name: 'ChevronRightIcon', Icon: ChevronRightIcon },
+    { name: 'HomeIcon', Icon: HomeIcon },
+    /* 操作 */
     { name: 'PlusIcon', Icon: PlusIcon },
     { name: 'XIcon', Icon: XIcon },
     { name: 'SearchIcon', Icon: SearchIcon },
@@ -43,26 +51,48 @@ const ICONS = [
     { name: 'Edit3Icon', Icon: Edit3Icon },
     { name: 'Trash2Icon', Icon: Trash2Icon },
     { name: 'SaveIcon', Icon: SaveIcon },
+    { name: 'CopyIcon', Icon: CopyIcon },
+    { name: 'DownloadIcon', Icon: DownloadIcon },
+    { name: 'CheckIcon', Icon: CheckIcon },
+    /* 通讯与链接 */
     { name: 'MailIcon', Icon: MailIcon },
     { name: 'ExternalLinkIcon', Icon: ExternalLinkIcon },
+    { name: 'LinkIcon', Icon: LinkIcon },
     { name: 'GitHubIcon', Icon: GitHubIcon },
+    /* 内容与文件 */
     { name: 'CodeIcon', Icon: CodeIcon },
+    { name: 'CodeBlockIcon', Icon: CodeBlockIcon },
     { name: 'BookIcon', Icon: BookIcon },
     { name: 'BookOpenIcon', Icon: BookOpenIcon },
     { name: 'FileTextIcon', Icon: FileTextIcon },
     { name: 'FolderTreeIcon', Icon: FolderTreeIcon },
+    { name: 'ImageIcon', Icon: ImageIcon },
     { name: 'TagIcon', Icon: TagIcon },
+    /* 用户与权限 */
     { name: 'UsersIcon', Icon: UsersIcon },
+    { name: 'UserIcon', Icon: UserIcon },
     { name: 'UserCircle2Icon', Icon: UserCircle2Icon },
+    { name: 'ShieldIcon', Icon: ShieldIcon },
+    { name: 'LockIcon', Icon: LockIcon },
+    /* 管理与设置 */
     { name: 'LayoutDashboardIcon', Icon: LayoutDashboardIcon },
     { name: 'SettingsIcon', Icon: SettingsIcon },
-    { name: 'ShieldIcon', Icon: ShieldIcon },
     { name: 'WrenchIcon', Icon: WrenchIcon },
-    { name: 'AlertTriangleIcon', Icon: AlertTriangleIcon },
     { name: 'LogOutIcon', Icon: LogOutIcon },
-    { name: 'CheckIcon', Icon: CheckIcon },
-    { name: 'UserIcon', Icon: UserIcon },
-    { name: 'LockIcon', Icon: LockIcon },
+    /* 状态与趋势 */
+    { name: 'AlertTriangleIcon', Icon: AlertTriangleIcon },
+    { name: 'ActivityIcon', Icon: ActivityIcon },
+    { name: 'TrendingUpIcon', Icon: TrendingUpIcon },
+    { name: 'TrendingDownIcon', Icon: TrendingDownIcon },
+    { name: 'PauseIcon', Icon: PauseIcon },
+    { name: 'PlayIcon', Icon: PlayIcon },
+    /* 编辑器工具栏 */
+    { name: 'BoldIcon', Icon: BoldIcon },
+    { name: 'ItalicIcon', Icon: ItalicIcon },
+    { name: 'QuoteIcon', Icon: QuoteIcon },
+    { name: 'ListIcon', Icon: ListIcon },
+    { name: 'ListOrderedIcon', Icon: ListOrderedIcon },
+    { name: 'MinusIcon', Icon: MinusIcon },
 ];
 
 /*== 组件列表示例页 ==*/
@@ -79,7 +109,7 @@ export default function ComponentShowcase() {
             <AdminPageHeader
                 description='项目自建组件与图标的示例展示，便于开发时查阅。'
                 eyebrow='Components'
-                tag={`${ICONS.length} 个图标 · 14 个组件`}
+                tag={`${ICONS.length} 个图标 · 16 个组件`}
                 title='组件列表'
             />
 
@@ -413,6 +443,34 @@ export default function ComponentShowcase() {
                             ]}
                             rowKey={(row) => row.id}
                         />
+                    </div>
+                </div>
+
+                {/* StatusPage */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>StatusPage</h3>
+                    <p className={styles.componentDesc}>通用状态页（403/404 等），水墨背景 + 大号水印码 + 毛玻璃卡片 + 诗意文案 + 返回首页按钮。用于 not-found 和 forbidden 页面。</p>
+                    <div className={styles.demoRow}>
+                        <GhostButton asButton onClick={() => toast.success('StatusPage 为独立全屏页面，无法在此预览，请访问不存在的路径查看效果。')} size='medium' variant='primary'>
+                            查看说明
+                        </GhostButton>
+                    </div>
+                </div>
+
+                {/* AdminPageHeader */}
+                <div className={styles.componentBlock}>
+                    <h3 className={styles.componentName}>AdminPageHeader</h3>
+                    <p className={styles.componentDesc}>后台页面统一头部组件，包含 eyebrow（红色英文标签）、title（衬线标题）、description（灰色说明）、tag（统计标签）和 action（操作按钮插槽）。所有后台页面均使用此组件。</p>
+                    <div className={styles.demoRow}>
+                        <div style={{ width: '100%', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
+                            <AdminPageHeader
+                                description='示例页面描述文字'
+                                eyebrow='Demo'
+                                tag='示例标签'
+                                title='页面标题'
+                                action={<GhostButton asButton size='small' variant='primary'>操作按钮</GhostButton>}
+                            />
+                        </div>
                     </div>
                 </div>
             </section>
