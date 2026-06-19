@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { CheckIcon, CopyIcon, DownloadIcon, Trash2Icon } from '@/components/ui/icons';
+import { CheckIcon, CopyIcon, DownloadIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { SubmitButton } from '@/components/ui/submit-button';
+import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/http-client';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
@@ -46,6 +48,11 @@ export default function UploadManagement() {
     /* 删除确认弹窗 */
     const [deleteTarget, setDeleteTarget] = useState<UploadItem | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    /* 重命名弹窗 */
+    const [renameTarget, setRenameTarget] = useState<UploadItem | null>(null);
+    const [renameValue, setRenameValue] = useState('');
+    const [renaming, setRenaming] = useState(false);
 
     /* 同步弹窗 */
     const [syncOpen, setSyncOpen] = useState(false);
@@ -109,6 +116,28 @@ export default function UploadManagement() {
         }
     }, [deleteTarget, page, fetchUploads]);
 
+    /* 重命名图片 */
+    const handleRename = useCallback(async () => {
+        if (!renameTarget || !renameValue.trim()) return;
+        setRenaming(true);
+        try {
+            const res = await api.patch(`/admin/uploads/${renameTarget.id}`, {
+                original: renameValue.trim(),
+            });
+            if (res.code === 0) {
+                toast.success('名称已修改');
+                setRenameTarget(null);
+                fetchUploads(page);
+            } else {
+                toast.error(res.message || '修改失败');
+            }
+        } catch {
+            toast.error('网络错误');
+        } finally {
+            setRenaming(false);
+        }
+    }, [renameTarget, renameValue, page, fetchUploads]);
+
     return (
         <div className={styles.management}>
             <AdminPageHeader
@@ -138,6 +167,17 @@ export default function UploadManagement() {
                         {uploads.map((upload) => (
                             <div className={styles.card} key={upload.id}>
                                 <div className={styles.cardActions}>
+                                    <button
+                                        aria-label="修改名称"
+                                        className={styles.iconBtn}
+                                        onClick={() => {
+                                            setRenameTarget(upload);
+                                            setRenameValue(upload.original);
+                                        }}
+                                        type="button"
+                                    >
+                                        <PencilIcon className={styles.iconSmall} />
+                                    </button>
                                     <button
                                         aria-label="复制 Markdown"
                                         className={styles.iconBtn}
@@ -234,6 +274,30 @@ export default function UploadManagement() {
                         <code className={styles.syncCode}>--username</code> / <code className={styles.syncCode}>--password</code> 跳过交互式输入。
                     </p>
                 </div>
+            </Dialog>
+
+            {/* 重命名弹窗 */}
+            <Dialog
+                onClose={() => setRenameTarget(null)}
+                open={renameTarget !== null}
+                title="修改名称"
+            >
+                <form className={shared.form} onSubmit={(e) => { e.preventDefault(); handleRename(); }}>
+                    <TextInput
+                        id='rename-original'
+                        label='文件名'
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        placeholder='输入新名称'
+                        required
+                        value={renameValue}
+                    />
+                    <div className={shared.formActions}>
+                        <GhostButton asButton onClick={() => setRenameTarget(null)}>取消</GhostButton>
+                        <SubmitButton size='medium' disabled={renaming}>
+                            {renaming ? '保存中...' : '保存'}
+                        </SubmitButton>
+                    </div>
+                </form>
             </Dialog>
         </div>
     );

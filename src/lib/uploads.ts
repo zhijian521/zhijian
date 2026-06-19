@@ -176,6 +176,45 @@ export async function listUploads(
     }
 }
 
+/*== 更新 ==*/
+
+/*== 更新上传记录的名称和/或 alt。 返回更新后的记录，失败返回 null。 ==*/
+export async function updateUploadById(
+    id: number,
+    fields: { original?: string; alt?: string },
+): Promise<Upload | null> {
+    const db = getDb();
+    if (!db) return null;
+
+    const sets: string[] = [];
+    const values: unknown[] = [];
+
+    if (fields.original !== undefined) {
+        sets.push('original = ?');
+        values.push(fields.original);
+    }
+    if (fields.alt !== undefined) {
+        sets.push('alt = ?');
+        values.push(fields.alt);
+    }
+
+    if (sets.length === 0) return getUploadById(id);
+
+    values.push(id);
+
+    try {
+        const [result] = await db.execute<ResultSetHeader>(
+            `UPDATE zhijian_blog_uploads SET ${sets.join(', ')} WHERE id = ?`,
+            values,
+        );
+        if (result.affectedRows === 0) return null;
+        return getUploadById(id);
+    } catch (err) {
+        console.error('更新上传记录失败：', { id, fields, err });
+        return null;
+    }
+}
+
 /*== 删除 ==*/
 
 /*== 删除上传记录 + 物理文件。 返回是否成功删除。 ==*/
