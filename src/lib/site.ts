@@ -3,7 +3,6 @@ import {
     BookOpenIcon,
     FileTextIcon,
     FolderTreeIcon,
-    TagIcon,
     UsersIcon,
     SettingsIcon,
     WrenchIcon,
@@ -88,8 +87,7 @@ export const APP_ROUTES = {
     adminUsers: '/admin/users', // 用户管理
     adminUserCreate: '/admin/users/new', // 新建用户
     adminSettings: '/admin/settings', // 系统设置
-    adminCategories: '/admin/categories', // 分类管理
-    adminTags: '/admin/tags', // 标签管理
+    adminTaxonomy: '/admin/taxonomy', // 分类与标签
     adminUploads: '/admin/uploads', // 图片管理
     adminComponents: '/admin/components', // 组件列表（开发调试用）
     adminAnalytics: '/admin/analytics', // 数据概览（观澜）
@@ -147,8 +145,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
         icon: BookOpenIcon,
         items: [
             { href: APP_ROUTES.adminPosts, label: '文章列表', icon: FileTextIcon, match: 'prefix' },
-            { href: APP_ROUTES.adminCategories, label: '分类管理', icon: FolderTreeIcon, match: 'prefix' },
-            { href: APP_ROUTES.adminTags, label: '标签管理', icon: TagIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminTaxonomy, label: '分类标签', icon: FolderTreeIcon, match: 'prefix' },
             { href: APP_ROUTES.adminUploads, label: '图片管理', icon: ImageIcon, match: 'prefix' },
         ],
     },

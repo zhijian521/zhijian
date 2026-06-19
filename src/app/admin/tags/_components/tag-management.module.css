@@ -1,8 +1,0 @@
-/*== 标签管理样式：工具栏 ==*/
-
-.toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-bottom: 1.25rem;
-}
