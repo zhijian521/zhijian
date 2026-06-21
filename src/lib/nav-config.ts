@@ -22,11 +22,13 @@ export const SEARCH_ENGINES: SearchEngine[] = [
 
 /*-- 书签 --*/
 export interface BookmarkItem {
+    id: string;
     name: string;
     url: string;
 }
 
 export interface BookmarkFolder {
+    id: string;
     name: string;
     children: BookmarkItem[];
 }
@@ -39,23 +41,25 @@ export function isBookmarkFolder(b: Bookmark): b is BookmarkFolder {
 }
 
 export const BOOKMARKS: Bookmark[] = [
-    { name: 'GitHub', url: 'https://github.com' },
-    { name: 'Gmail', url: 'https://mail.google.com' },
+    { id: 'bm-github', name: 'GitHub', url: 'https://github.com' },
+    { id: 'bm-gmail', name: 'Gmail', url: 'https://mail.google.com' },
     {
+        id: 'bf-tools',
         name: '工具',
         children: [
-            { name: 'Notion', url: 'https://notion.so' },
-            { name: 'Figma', url: 'https://figma.com' },
-            { name: 'Vercel', url: 'https://vercel.com' },
+            { id: 'bm-notion', name: 'Notion', url: 'https://notion.so' },
+            { id: 'bm-figma', name: 'Figma', url: 'https://figma.com' },
+            { id: 'bm-vercel', name: 'Vercel', url: 'https://vercel.com' },
         ],
     },
-    { name: 'Stack Overflow', url: 'https://stackoverflow.com' },
-    { name: 'MDN', url: 'https://developer.mozilla.org' },
+    { id: 'bm-stackoverflow', name: 'Stack Overflow', url: 'https://stackoverflow.com' },
+    { id: 'bm-mdn', name: 'MDN', url: 'https://developer.mozilla.org' },
     {
+        id: 'bf-design',
         name: '设计',
         children: [
-            { name: 'Dribbble', url: 'https://dribbble.com' },
-            { name: 'Behance', url: 'https://behance.net' },
+            { id: 'bm-dribbble', name: 'Dribbble', url: 'https://dribbble.com' },
+            { id: 'bm-behance', name: 'Behance', url: 'https://behance.net' },
         ],
     },
 ];

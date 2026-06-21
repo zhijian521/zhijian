@@ -1,0 +1,37 @@
+.menu {
+    position: fixed;
+    z-index: 100;
+    min-width: 10rem;
+    padding: 0.25rem 0;
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.menuItem {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border: none;
+    background: none;
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.1s;
+    box-sizing: border-box;
+}
+
+.menuItem:hover {
+    background: var(--accent);
+}
+
+.menuItemDanger {
+    color: var(--destructive);
+}
+
+.menuItemDanger:hover {
+    background: var(--destructive-subtle, rgba(239, 68, 68, 0.08));
+}

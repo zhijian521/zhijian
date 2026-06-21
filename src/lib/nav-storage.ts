@@ -1,5 +1,8 @@
+import type { Bookmark } from '@/lib/nav-config';
+import { BOOKMARKS } from '@/lib/nav-config';
+
 /*============================================================================
-  导航页本地存储 — 搜索记录、备忘录、笔记
+  导航页本地存储 — 搜索记录、备忘录、笔记、书签
 
   前期数据存 localStorage，后期接入数据库后替换数据源即可。
   上层组件通过此模块读写，不直接操作 localStorage。
@@ -11,6 +14,7 @@ const KEYS = {
     searchEngine: 'zhijian_nav_search_engine',
     todos: 'zhijian_nav_todos',
     notes: 'zhijian_nav_notes',
+    bookmarks: 'zhijian_nav_bookmarks',
 } as const;
 
 /*== 搜索记录 ==*/
@@ -101,4 +105,23 @@ export function getNotes(): NoteItem[] {
 
 export function saveNotes(notes: NoteItem[]): void {
     localStorage.setItem(KEYS.notes, JSON.stringify(notes));
+}
+
+/*== 书签 ==*/
+
+export function getBookmarks(): Bookmark[] {
+    if (typeof window === 'undefined') return [];
+    try {
+        const raw = localStorage.getItem(KEYS.bookmarks);
+        if (raw) return JSON.parse(raw);
+        /*-- 首次加载用静态默认值 --*/
+        localStorage.setItem(KEYS.bookmarks, JSON.stringify(BOOKMARKS));
+        return BOOKMARKS;
+    } catch {
+        return BOOKMARKS;
+    }
+}
+
+export function saveBookmarks(bookmarks: Bookmark[]): void {
+    localStorage.setItem(KEYS.bookmarks, JSON.stringify(bookmarks));
 }
