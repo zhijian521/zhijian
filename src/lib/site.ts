@@ -79,6 +79,7 @@ export const APP_ROUTES = {
     /*-- 前台 --*/
     home: '/', // 首页
     blog: '/blog', // 文章列表
+    nav: '/nav', // 导航页
 
     /*-- 后台 --*/
     admin: '/admin', // 后台首页（概览）
@@ -131,6 +132,7 @@ export interface NavGroup {
 export const PUBLIC_NAV_ITEMS: NavItem[] = [
     { href: APP_ROUTES.home, label: '首页', match: 'exact' },
     { href: APP_ROUTES.blog, label: '文章', match: 'prefix' },
+    { href: APP_ROUTES.nav, label: '导航', match: 'exact' },
 ];
 
 /*== 后台二级菜单：侧边栏分组 + 子项，和真实路由保持一一对应 ==*/
