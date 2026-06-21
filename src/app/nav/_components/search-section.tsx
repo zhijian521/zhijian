@@ -1,3 +1,15 @@
+'use client';
+
+import SearchBar from './search-bar';
+import BookmarkBar from './bookmark-bar';
+
+import styles from './search-section.module.css';
+
 export default function SearchSection() {
-    return <div style={{ textAlign: 'center' }}>搜索 + 书签</div>;
+    return (
+        <div className={styles.section}>
+            <SearchBar />
+            <BookmarkBar />
+        </div>
+    );
 }
