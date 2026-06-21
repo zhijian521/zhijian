@@ -6,3 +6,12 @@
     width: 100%;
     max-width: 48rem;
 }
+
+.brandTitle {
+    font-size: 2rem;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    color: var(--foreground);
+    margin: 0;
+    letter-spacing: 0.05em;
+}

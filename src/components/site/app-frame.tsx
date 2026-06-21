@@ -12,8 +12,9 @@ interface AppFrameProps {
 export default function AppFrame({ children }: AppFrameProps) {
     const pathname = usePathname();
     const isAdminRoute = pathname.startsWith('/admin');
+    const isNavRoute = pathname === '/nav';
 
-    if (isAdminRoute) {
+    if (isAdminRoute || isNavRoute) {
         return children;
     }
 

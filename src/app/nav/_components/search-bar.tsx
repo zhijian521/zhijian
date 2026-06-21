@@ -2,11 +2,20 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-import { SearchIcon, ChevronRightIcon } from '@/components/ui/icons';
+import { SearchIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/nav-config';
 import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine } from '@/lib/nav-storage';
 
 import styles from './search-bar.module.css';
+
+/*-- 搜索引擎 SVG 图标 --*/
+function EngineIcon({ icon, className }: { icon: string; className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+            <path d={icon} />
+        </svg>
+    );
+}
 
 export default function SearchBar() {
     const [query, setQuery] = useState('');
@@ -57,8 +66,7 @@ export default function SearchBar() {
                         onClick={() => setDropdownOpen(v => !v)}
                         type="button"
                     >
-                        {engine.name}
-                        <ChevronRightIcon className={styles.engineArrow} />
+                        <EngineIcon icon={engine.icon} className={styles.engineIcon} />
                     </button>
                     {dropdownOpen && (
                         <div className={styles.engineDropdown}>
@@ -69,6 +77,7 @@ export default function SearchBar() {
                                     onClick={() => handleEngineChange(e.key)}
                                     type="button"
                                 >
+                                    <EngineIcon icon={e.icon} className={styles.engineOptionIcon} />
                                     {e.name}
                                 </button>
                             ))}
