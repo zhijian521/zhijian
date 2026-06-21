@@ -67,7 +67,7 @@ export default function NavShell() {
 
             {/*-- 三屏内容 --*/}
             <div
-                className={styles.section}
+                className={`${styles.section} ${styles.sectionTop}`}
                 ref={(el) => { sectionRefs.current[0] = el; }}
             >
                 <SearchSection />
