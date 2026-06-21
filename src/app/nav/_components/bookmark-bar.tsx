@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 import { ChevronRightIcon } from '@/components/ui/icons';
 import { BOOKMARKS, isBookmarkFolder } from '@/lib/nav-config';
@@ -21,20 +21,42 @@ function faviconUrl(url: string): string {
 /*-- 单个书签 --*/
 function BookmarkLink({ bookmark }: { bookmark: Bookmark }) {
     const [hover, setHover] = useState(false);
+    const [faviconError, setFaviconError] = useState(false);
+    const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
+    const folderRef = useRef<HTMLDivElement>(null);
+
+    const showPopup = useCallback(() => {
+        setHover(true);
+        if (folderRef.current) {
+            const rect = folderRef.current.getBoundingClientRect();
+            setPopupPos({ top: rect.bottom + 4, left: rect.left });
+        }
+    }, []);
+
+    const hidePopup = useCallback(() => {
+        setHover(false);
+        setPopupPos(null);
+    }, []);
 
     if (isBookmarkFolder(bookmark)) {
         return (
             <div
+                ref={folderRef}
                 className={styles.folder}
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
+                onMouseEnter={showPopup}
+                onMouseLeave={hidePopup}
             >
                 <span className={styles.item}>
-                    <ChevronRightIcon style={{ width: '0.75rem', height: '0.75rem' }} />
-                    {bookmark.name}
+                    <ChevronRightIcon style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />
+                    <span className={styles.name}>{bookmark.name}</span>
                 </span>
-                {hover && (
-                    <div className={styles.folderPopup}>
+                {hover && popupPos && (
+                    <div
+                        className={styles.folderPopup}
+                        style={{ position: 'fixed', top: popupPos.top, left: popupPos.left }}
+                        onMouseEnter={showPopup}
+                        onMouseLeave={hidePopup}
+                    >
                         {bookmark.children.map((child) => (
                             <a
                                 key={child.url}
@@ -49,7 +71,7 @@ function BookmarkLink({ bookmark }: { bookmark: Bookmark }) {
                                     loading="lazy"
                                     src={faviconUrl(child.url)}
                                 />
-                                {child.name}
+                                <span className={styles.name}>{child.name}</span>
                             </a>
                         ))}
                     </div>
@@ -65,23 +87,30 @@ function BookmarkLink({ bookmark }: { bookmark: Bookmark }) {
             rel="noopener noreferrer"
             target="_blank"
         >
-            <img
-                alt=""
-                className={styles.favicon}
-                loading="lazy"
-                src={faviconUrl(bookmark.url)}
-            />
-            {bookmark.name}
+            {!faviconError ? (
+                <img
+                    alt=""
+                    className={styles.favicon}
+                    loading="lazy"
+                    src={faviconUrl(bookmark.url)}
+                    onError={() => setFaviconError(true)}
+                />
+            ) : (
+                <span className={styles.faviconFallback}>{bookmark.name[0]}</span>
+            )}
+            <span className={styles.name}>{bookmark.name}</span>
         </a>
     );
 }
 
 export default function BookmarkBar() {
     return (
-        <div className={styles.bar}>
-            {BOOKMARKS.map((bookmark, i) => (
-                <BookmarkLink key={isBookmarkFolder(bookmark) ? `folder-${i}` : bookmark.url} bookmark={bookmark} />
-            ))}
+        <div className={styles.wrapper}>
+            <div className={styles.bar}>
+                {BOOKMARKS.map((bookmark, i) => (
+                    <BookmarkLink key={isBookmarkFolder(bookmark) ? `folder-${i}` : bookmark.url} bookmark={bookmark} />
+                ))}
+            </div>
         </div>
     );
 }

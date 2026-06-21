@@ -20,6 +20,15 @@ export default function NavShell() {
     const [activeIndex, setActiveIndex] = useState(0);
     const shellRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+
+    /*-- 注册 section ref 并观察 --*/
+    const sectionRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
+        sectionRefs.current[index] = el;
+        if (observerRef.current) {
+            if (el) observerRef.current.observe(el);
+        }
+    }, []);
 
     /*-- IntersectionObserver 追踪当前屏 --*/
     useEffect(() => {
@@ -34,7 +43,9 @@ export default function NavShell() {
             },
             { root: shellRef.current, threshold: 0.6 },
         );
+        observerRef.current = observer;
 
+        /*-- 观察已挂载的 section --*/
         sectionRefs.current.forEach((el) => {
             if (el) observer.observe(el);
         });
@@ -66,22 +77,13 @@ export default function NavShell() {
             </div>
 
             {/*-- 三屏内容 --*/}
-            <div
-                className={`${styles.section} ${styles.sectionTop}`}
-                ref={(el) => { sectionRefs.current[0] = el; }}
-            >
+            <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
                 <SearchSection />
             </div>
-            <div
-                className={styles.section}
-                ref={(el) => { sectionRefs.current[1] = el; }}
-            >
+            <div className={styles.section} ref={sectionRef(1)}>
                 <TodoSection />
             </div>
-            <div
-                className={styles.section}
-                ref={(el) => { sectionRefs.current[2] = el; }}
-            >
+            <div className={styles.section} ref={sectionRef(2)}>
                 <NoteSection />
             </div>
         </div>

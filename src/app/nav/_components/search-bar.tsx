@@ -5,27 +5,21 @@ import { useState, useRef, useEffect } from 'react';
 import { SearchIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/nav-config';
 import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine } from '@/lib/nav-storage';
+import type { SearchRecord } from '@/lib/nav-storage';
 
 import styles from './search-bar.module.css';
-
-/*-- 搜索引擎 SVG 图标 --*/
-function EngineIcon({ icon, className }: { icon: string; className?: string }) {
-    return (
-        <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-            <path d={icon} />
-        </svg>
-    );
-}
 
 export default function SearchBar() {
     const [query, setQuery] = useState('');
     const [engineKey, setEngineKey] = useState('google');
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [history, setHistory] = useState<SearchRecord[]>([]);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         setEngineKey(getSearchEngine());
+        setHistory(getSearchHistory());
     }, []);
 
     useEffect(() => {
@@ -44,6 +38,7 @@ export default function SearchBar() {
         const term = (q ?? query).trim();
         if (!term) return;
         addSearchRecord({ query: term, engine: engineKey, time: Date.now() });
+        setHistory(getSearchHistory());
         window.open(engine.url.replace('{query}', encodeURIComponent(term)), '_blank');
         setQuery('');
     }
@@ -55,18 +50,21 @@ export default function SearchBar() {
         inputRef.current?.focus();
     }
 
-    const history = getSearchHistory();
+    function handleClearHistory() {
+        clearSearchHistory();
+        setHistory([]);
+    }
 
     return (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className={styles.outer}>
             <div className={styles.bar}>
-                <div ref={dropdownRef} style={{ position: 'relative' }}>
+                <div ref={dropdownRef} className={styles.engineAnchor}>
                     <button
                         className={styles.engineBtn}
                         onClick={() => setDropdownOpen(v => !v)}
                         type="button"
                     >
-                        <EngineIcon icon={engine.icon} className={styles.engineIcon} />
+                        <img alt={engine.name} className={styles.engineIcon} src={engine.logo} />
                     </button>
                     {dropdownOpen && (
                         <div className={styles.engineDropdown}>
@@ -77,7 +75,7 @@ export default function SearchBar() {
                                     onClick={() => handleEngineChange(e.key)}
                                     type="button"
                                 >
-                                    <EngineIcon icon={e.icon} className={styles.engineOptionIcon} />
+                                    <img alt={e.name} className={styles.engineOptionIcon} src={e.logo} />
                                     {e.name}
                                 </button>
                             ))}
@@ -107,13 +105,13 @@ export default function SearchBar() {
                 <div className={styles.history}>
                     <div className={styles.historyHeader}>
                         <p className={styles.historyTitle}>最近搜索</p>
-                        <button className={styles.historyClear} onClick={clearSearchHistory} type="button">
+                        <button className={styles.historyClear} onClick={handleClearHistory} type="button">
                             清除
                         </button>
                     </div>
                     <ul className={styles.historyList}>
-                        {history.map((h) => (
-                            <li key={h.time}>
+                        {history.map((h, i) => (
+                            <li key={`${h.time}-${i}`}>
                                 <button className={styles.historyTag} onClick={() => handleSearch(h.query)} type="button">
                                     {h.query}
                                 </button>
