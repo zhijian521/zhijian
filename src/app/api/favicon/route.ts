@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
   GET /api/favicon?domain=github.com
 
   逻辑：
-  1. 内存缓存，7 天过期
+  1. 内存缓存，30 天过期
   2. 抓取首页 HTML，解析 <link rel="icon"> 等
   3. 未找到则 fallback /favicon.ico
   4. 代理返回图片二进制 + 浏览器缓存头
@@ -20,7 +20,7 @@ interface CacheEntry {
     expires: number;
 }
 const cache = new Map<string, CacheEntry>();
-const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 天
+const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 天
 const MAX_CACHE = 500;
 
 /*-- 从 HTML 中提取 favicon URL --*/
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
         return new NextResponse(cached.data, {
             headers: {
                 'Content-Type': cached.contentType,
-                'Cache-Control': 'public, max-age=604800',
+                'Cache-Control': 'public, max-age=2592000, immutable',
             },
         });
     }
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
         return new NextResponse(data, {
             headers: {
                 'Content-Type': contentType,
-                'Cache-Control': 'public, max-age=604800',
+                'Cache-Control': 'public, max-age=2592000, immutable',
             },
         });
     } catch {

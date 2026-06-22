@@ -18,8 +18,9 @@ interface FaviconImgProps {
 /*== FaviconImg — 三级回退：自建代理 → Google → 首字母 ==*/
 export default function FaviconImg({ url, className, fallbackChar }: FaviconImgProps) {
     const [src, setSrc] = useState<'primary' | 'secondary' | 'none'>('primary');
+    const domain = getDomain(url);
 
-    if (src === 'none') {
+    if (src === 'none' || !domain) {
         return (
             <span className={`${styles.fallback} ${className}`}>
                 {fallbackChar ?? ''}
@@ -32,7 +33,9 @@ export default function FaviconImg({ url, className, fallbackChar }: FaviconImgP
             alt=""
             className={className}
             loading="lazy"
-            src={src === 'primary' ? `/api/favicon?domain=${getDomain(url)}` : `https://www.google.com/s2/favicons?domain=${getDomain(url)}&sz=32`}
+            src={src === 'primary'
+                ? `/api/favicon?domain=${domain}`
+                : `https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
             onError={() => setSrc(prev => prev === 'primary' ? 'secondary' : 'none')}
         />
     );
