@@ -3,19 +3,13 @@
 .wrapper {
     width: 100%;
     max-width: 42rem;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
 }
 
 .bar {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    width: max-content;
-    min-width: 100%;
-    padding-bottom: 0.25rem;
 }
 
 /*-- 单个书签 --*/
@@ -80,7 +74,6 @@
 
 .folder {
     position: relative;
-    overflow: visible;
 }
 
 .folderPopup {
@@ -91,11 +84,6 @@
     z-index: 50;
     min-width: 10rem;
     padding: 0.25rem 0;
-}
-
-.popupBridge {
-    z-index: 49;
-    pointer-events: auto;
 }
 
 .folderItem {

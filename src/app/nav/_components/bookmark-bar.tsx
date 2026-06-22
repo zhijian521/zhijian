@@ -13,8 +13,18 @@ import type { ContextMenuAction } from './bookmark-context-menu';
 
 import styles from './bookmark-bar.module.css';
 
-/*-- Favicon URL --*/
+/*-- Favicon URL：自建代理优先，Google 兜底 --*/
 function faviconUrl(url: string): string {
+    try {
+        const domain = new URL(url).hostname;
+        return `/api/favicon?domain=${domain}`;
+    } catch {
+        return '';
+    }
+}
+
+/*-- Favicon 加载失败时切换到 Google 兜底 --*/
+function faviconFallback(url: string): string {
     try {
         const domain = new URL(url).hostname;
         return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
@@ -95,23 +105,33 @@ function BookmarkLink({
     onDrop: (e: React.DragEvent, id: string, folderId?: string) => void;
     onDragEnd: () => void;
 }) {
-    const [hover, setHover] = useState(false);
-    const [faviconError, setFaviconError] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [faviconSrc, setFaviconSrc] = useState<'primary' | 'secondary' | 'none'>('primary');
     const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
     const folderRef = useRef<HTMLDivElement>(null);
 
-    const showPopup = useCallback(() => {
-        setHover(true);
-        if (folderRef.current) {
+    /*-- 点击外部关闭文件夹弹出层 --*/
+    useEffect(() => {
+        if (!open) return;
+        function handleClick(e: MouseEvent) {
+            if (folderRef.current && !folderRef.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        }
+        const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 0);
+        return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick); };
+    }, [open]);
+
+    const toggleOpen = useCallback(() => {
+        const next = !open;
+        setOpen(next);
+        if (next && folderRef.current) {
             const rect = folderRef.current.getBoundingClientRect();
             setPopupPos({ top: rect.bottom + 4, left: rect.left });
+        } else {
+            setPopupPos(null);
         }
-    }, []);
-
-    const hidePopup = useCallback(() => {
-        setHover(false);
-        setPopupPos(null);
-    }, []);
+    }, [open]);
 
     const isDragOver = dragState?.overId === bookmark.id && dragState?.position;
 
@@ -127,48 +147,39 @@ function BookmarkLink({
                 onDrop={(e) => onDrop(e, bookmark.id)}
                 onDragEnd={onDragEnd}
             >
-                <span
+                <button
                     className={styles.item}
-                    onMouseEnter={showPopup}
-                    onMouseLeave={hidePopup}
+                    onClick={toggleOpen}
+                    type="button"
                 >
                     <ChevronRightIcon style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />
                     <span className={styles.name}>{bookmark.name}</span>
-                </span>
-                {hover && popupPos && (
-                    <>
-                        <div
-                            className={styles.popupBridge}
-                            style={{ position: 'fixed', top: popupPos.top - 8, left: popupPos.left, width: 160, height: 12 }}
-                            onMouseEnter={showPopup}
-                            onMouseLeave={hidePopup}
-                        />
-                        <div
-                            className={styles.folderPopup}
-                            style={{ position: 'fixed', top: popupPos.top, left: popupPos.left }}
-                            onMouseEnter={showPopup}
-                            onMouseLeave={hidePopup}
-                        >
-                            {bookmark.children.map((child) => (
-                                <a
-                                    key={child.id}
-                                    className={styles.folderItem}
-                                    href={child.url}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                    onContextMenu={(e) => onContextMenu(e, child, bookmark.id)}
-                                >
-                                    <img
-                                        alt=""
-                                        className={styles.favicon}
-                                        loading="lazy"
-                                        src={faviconUrl(child.url)}
-                                    />
-                                    <span className={styles.name}>{child.name}</span>
-                                </a>
-                            ))}
-                        </div>
-                    </>
+                </button>
+                {open && popupPos && (
+                    <div
+                        className={styles.folderPopup}
+                        style={{ position: 'fixed', top: popupPos.top, left: popupPos.left }}
+                    >
+                        {bookmark.children.map((child) => (
+                            <a
+                                key={child.id}
+                                className={styles.folderItem}
+                                href={child.url}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                                onContextMenu={(e) => onContextMenu(e, child, bookmark.id)}
+                            >
+                                <img
+                                    alt=""
+                                    className={styles.favicon}
+                                    loading="lazy"
+                                    src={faviconUrl(child.url)}
+                                    onError={(e) => { const img = e.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = faviconFallback(child.url); } else { img.style.display = 'none'; } }}
+                                />
+                                <span className={styles.name}>{child.name}</span>
+                            </a>
+                        ))}
+                    </div>
                 )}
             </div>
         );
@@ -187,13 +198,13 @@ function BookmarkLink({
             onDrop={(e) => onDrop(e, bookmark.id, folderId)}
             onDragEnd={onDragEnd}
         >
-            {!faviconError ? (
+            {faviconSrc !== 'none' ? (
                 <img
                     alt=""
                     className={styles.favicon}
                     loading="lazy"
-                    src={faviconUrl(bookmark.url)}
-                    onError={() => setFaviconError(true)}
+                    src={faviconSrc === 'primary' ? faviconUrl(bookmark.url) : faviconFallback(bookmark.url)}
+                    onError={() => setFaviconSrc(prev => prev === 'primary' ? 'secondary' : 'none')}
                 />
             ) : (
                 <span className={styles.faviconFallback}>{bookmark.name[0]}</span>
