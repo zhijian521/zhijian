@@ -49,6 +49,9 @@
 }
 
 .folderPopup {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
     background: var(--popover);
     border: 1px solid var(--border);
     border-radius: var(--radius);

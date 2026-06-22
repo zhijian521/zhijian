@@ -93,7 +93,7 @@ export default function TodoSection() {
             ) : (
                 <div className={styles.cardGrid}>
                     {todos.map((t) => {
-                        const p = PRIORITY_CONFIG[t.priority as Priority] ?? PRIORITY_CONFIG.normal;
+                        const p = PRIORITY_CONFIG[t.priority] ?? PRIORITY_CONFIG.normal;
                         return (
                             <div key={t.id} className={`${styles.card} ${t.done ? styles.cardDone : ''}`}>
                                 <div className={styles.cardHeader}>

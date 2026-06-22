@@ -38,7 +38,6 @@ export default function BookmarkLink({
     onDragEnd: () => void;
 }) {
     const [open, setOpen] = useState(false);
-    const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
     const folderRef = useRef<HTMLDivElement>(null);
 
     /*-- 点击外部关闭文件夹弹出层 --*/
@@ -52,17 +51,6 @@ export default function BookmarkLink({
         const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 0);
         return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick); };
     }, [open]);
-
-    function toggleOpen() {
-        const next = !open;
-        setOpen(next);
-        if (next && folderRef.current) {
-            const rect = folderRef.current.getBoundingClientRect();
-            setPopupPos({ top: rect.bottom + 4, left: rect.left });
-        } else {
-            setPopupPos(null);
-        }
-    }
 
     const isDragOver = dragState?.overId === bookmark.id && dragState?.position;
     const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
@@ -81,17 +69,14 @@ export default function BookmarkLink({
             >
                 <button
                     className={styles.item}
-                    onClick={toggleOpen}
+                    onClick={() => setOpen(v => !v)}
                     type="button"
                 >
                     <ChevronRightIcon style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />
                     <span className={styles.name}>{bookmark.name}</span>
                 </button>
-                {open && popupPos && (
-                    <div
-                        className={styles.folderPopup}
-                        style={{ position: 'fixed', top: popupPos.top, left: popupPos.left }}
-                    >
+                {open && (
+                    <div className={styles.folderPopup}>
                         {bookmark.children.map((child) => (
                             <a
                                 key={child.id}

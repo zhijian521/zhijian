@@ -20,27 +20,24 @@ interface BookmarkContextMenuProps {
 export default function BookmarkContextMenu({ x, y, actions, onClose }: BookmarkContextMenuProps) {
     const menuRef = useRef<HTMLDivElement>(null);
 
-    /*-- ESC 关闭 --*/
+    /*-- ESC + 点击外部关闭 --*/
     useEffect(() => {
         function handleKey(e: KeyboardEvent) {
             if (e.key === 'Escape') onClose();
         }
-        document.addEventListener('keydown', handleKey);
-        return () => document.removeEventListener('keydown', handleKey);
-    }, [onClose]);
-
-    /*-- 点击外部关闭 --*/
-    useEffect(() => {
         function handleClick(e: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
                 onClose();
             }
         }
-        /*-- 延迟 150ms 绑定，等右键的 mouseup 事件完全结束再开始监听 --*/
-        const timer = setTimeout(() => {
-            document.addEventListener('mousedown', handleClick);
-        }, 150);
-        return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick); };
+        document.addEventListener('keydown', handleKey);
+        /*-- 延迟绑定 mousedown，等右键的 mouseup 完全结束 --*/
+        const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 150);
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener('keydown', handleKey);
+            document.removeEventListener('mousedown', handleClick);
+        };
     }, [onClose]);
 
     /*-- 边界修正：菜单超出视口时调整位置 --*/
@@ -53,9 +50,9 @@ export default function BookmarkContextMenu({ x, y, actions, onClose }: Bookmark
             className={styles.menu}
             style={{ left: menuX, top: menuY }}
         >
-            {actions.map((action, i) => (
+            {actions.map((action) => (
                 <button
-                    key={i}
+                    key={action.label}
                     className={`${styles.menuItem} ${action.danger ? styles.menuItemDanger : ''}`}
                     onClick={() => { action.onClick(); onClose(); }}
                     type="button"
