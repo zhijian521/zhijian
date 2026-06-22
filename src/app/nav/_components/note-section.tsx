@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
-import Dialog from '@/components/ui/dialog';
-import { getNotes, saveNotes } from '@/lib/nav-storage';
+import { getNotes, saveNotes, genId } from '@/lib/nav-storage';
 import type { NoteItem } from '@/lib/nav-storage';
 
 import styles from './note-section.module.css';
@@ -15,12 +14,18 @@ function formatDate(ts: number): string {
 
 export default function NoteSection() {
     const [notes, setNotes] = useState<NoteItem[]>([]);
-    const [editing, setEditing] = useState<NoteItem | null>(null);
+    const [activeId, setActiveId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
 
     useEffect(() => {
-        setNotes(getNotes());
+        const loaded = getNotes();
+        setNotes(loaded);
+        if (loaded.length > 0) {
+            setActiveId(loaded[0].id);
+            setEditTitle(loaded[0].title);
+            setEditContent(loaded[0].content);
+        }
     }, []);
 
     function persist(updated: NoteItem[]) {
@@ -28,56 +33,84 @@ export default function NoteSection() {
         saveNotes(updated);
     }
 
+    function handleSelect(id: string) {
+        setActiveId(id);
+        const note = notes.find(n => n.id === id);
+        if (note) {
+            setEditTitle(note.title);
+            setEditContent(note.content);
+        }
+    }
+
     function handleCreate() {
         const newItem: NoteItem = {
-            id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            id: genId(),
             title: '',
             content: '',
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };
-        setEditing(newItem);
+        persist([newItem, ...notes]);
+        setActiveId(newItem.id);
         setEditTitle('');
         setEditContent('');
     }
 
-    function handleOpen(note: NoteItem) {
-        setEditing(note);
-        setEditTitle(note.title);
-        setEditContent(note.content);
+    function handleDelete(id: string) {
+        const updated = notes.filter(n => n.id !== id);
+        persist(updated);
+        if (activeId === id) {
+            if (updated.length > 0) {
+                setActiveId(updated[0].id);
+                setEditTitle(updated[0].title);
+                setEditContent(updated[0].content);
+            } else {
+                setActiveId(null);
+                setEditTitle('');
+                setEditContent('');
+            }
+        }
     }
 
     function handleSave() {
-        if (!editing) return;
+        if (!activeId) return;
         const now = Date.now();
-        const updated: NoteItem = {
-            ...editing,
-            title: editTitle.trim() || '无标题',
-            content: editContent,
-            updatedAt: now,
-        };
-        const existing = notes.find(n => n.id === updated.id);
-        if (existing) {
-            persist(notes.map(n => n.id === updated.id ? updated : n));
-        } else {
-            persist([updated, ...notes]);
-        }
-        setEditing(null);
+        persist(notes.map(n =>
+            n.id === activeId
+                ? { ...n, title: editTitle.trim() || '无标题', content: editContent, updatedAt: now }
+                : n
+        ));
     }
 
-    function handleDelete(id: string) {
-        persist(notes.filter(n => n.id !== id));
+    /*-- 失焦自动保存 --*/
+    function handleBlur() {
+        if (!activeId) return;
+        const note = notes.find(n => n.id === activeId);
+        if (!note) return;
+        if (note.title !== (editTitle.trim() || '无标题') || note.content !== editContent) {
+            handleSave();
+        }
     }
+
+    const activeNote = notes.find(n => n.id === activeId);
 
     return (
         <div className={styles.panel}>
-            <h2 className={styles.title}>笔记</h2>
-            {notes.length === 0 ? (
-                <p className={styles.empty}>暂无笔记</p>
-            ) : (
+            {/*-- 左侧列表 --*/}
+            <div className={styles.sidebar}>
+                <div className={styles.sidebarHeader}>
+                    <h2 className={styles.title}>笔记</h2>
+                    <button className={styles.addBtn} onClick={handleCreate} type="button">
+                        <PlusIcon style={{ width: '0.75rem', height: '0.75rem' }} />
+                    </button>
+                </div>
                 <ul className={styles.list}>
                     {notes.map((n) => (
-                        <li key={n.id} className={styles.noteItem} onClick={() => handleOpen(n)}>
+                        <li
+                            key={n.id}
+                            className={`${styles.noteItem} ${n.id === activeId ? styles.noteItemActive : ''}`}
+                            onClick={() => handleSelect(n.id)}
+                        >
                             <div className={styles.noteInfo}>
                                 <p className={styles.noteTitle}>{n.title || '无标题'}</p>
                                 <p className={styles.noteDate}>{formatDate(n.updatedAt)}</p>
@@ -93,41 +126,32 @@ export default function NoteSection() {
                         </li>
                     ))}
                 </ul>
-            )}
-            <button className={styles.addBtn} onClick={handleCreate} type="button">
-                <PlusIcon style={{ width: '0.75rem', height: '0.75rem' }} />
-                新建笔记
-            </button>
+            </div>
 
-            {/*-- 编辑弹窗 --*/}
-            <Dialog
-                onClose={() => setEditing(null)}
-                open={editing !== null}
-                title="编辑笔记"
-                maxWidth="40rem"
-            >
-                <input
-                    className={styles.editorTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    placeholder="标题"
-                    type="text"
-                    value={editTitle}
-                />
-                <textarea
-                    className={styles.editorBody}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    placeholder="开始写作（Markdown）..."
-                    value={editContent}
-                />
-                <div className={styles.editorActions}>
-                    <button className={styles.cancelBtn} onClick={() => setEditing(null)} type="button">
-                        取消
-                    </button>
-                    <button className={styles.saveBtn} onClick={handleSave} type="button">
-                        保存
-                    </button>
-                </div>
-            </Dialog>
+            {/*-- 右侧详情 --*/}
+            <div className={styles.detail}>
+                {activeNote ? (
+                    <>
+                        <input
+                            className={styles.detailTitle}
+                            onBlur={handleBlur}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            placeholder="标题"
+                            type="text"
+                            value={editTitle}
+                        />
+                        <textarea
+                            className={styles.detailBody}
+                            onBlur={handleBlur}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            placeholder="开始写作（Markdown）..."
+                            value={editContent}
+                        />
+                    </>
+                ) : (
+                    <p className={styles.empty}>选择或新建一篇笔记</p>
+                )}
+            </div>
         </div>
     );
 }

@@ -2,41 +2,17 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-import { ChevronRightIcon } from '@/components/ui/icons';
 import Dialog from '@/components/ui/dialog';
 import { isBookmarkFolder } from '@/lib/nav-config';
 import type { Bookmark, BookmarkItem, BookmarkFolder } from '@/lib/nav-config';
-import { getBookmarks, saveBookmarks } from '@/lib/nav-storage';
+import { getBookmarks, saveBookmarks, genId } from '@/lib/nav-storage';
 
 import BookmarkContextMenu from './bookmark-context-menu';
+import BookmarkLink from './bookmark-link';
+import type { DragState } from './bookmark-link';
 import type { ContextMenuAction } from './bookmark-context-menu';
 
 import styles from './bookmark-bar.module.css';
-
-/*-- Favicon URL：自建代理优先，Google 兜底 --*/
-function faviconUrl(url: string): string {
-    try {
-        const domain = new URL(url).hostname;
-        return `/api/favicon?domain=${domain}`;
-    } catch {
-        return '';
-    }
-}
-
-/*-- Favicon 加载失败时切换到 Google 兜底 --*/
-function faviconFallback(url: string): string {
-    try {
-        const domain = new URL(url).hostname;
-        return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-    } catch {
-        return '';
-    }
-}
-
-/*-- 生成唯一 ID --*/
-function uid(): string {
-    return Math.random().toString(36).slice(2, 10);
-}
 
 /*-- 同层重排序 --*/
 function reorder<T extends { id: string }>(list: T[], dragId: string, targetId: string, position: 'before' | 'after'): T[] {
@@ -76,143 +52,6 @@ type EditMode =
     | { type: 'editFolder'; id: string; name: string }
     | { type: 'delete'; id: string; name: string; folderId?: string }
     | null;
-
-/*== 拖拽状态 ==*/
-interface DragState {
-    dragId: string;
-    overId: string | null;
-    position: 'before' | 'after' | null;
-    folderId?: string;
-}
-
-/*-- 单个书签/文件夹 --*/
-function BookmarkLink({
-    bookmark,
-    onContextMenu,
-    dragState,
-    folderId,
-    onDragStart,
-    onDragOver,
-    onDrop,
-    onDragEnd,
-}: {
-    bookmark: Bookmark;
-    onContextMenu: (e: React.MouseEvent, bookmark: Bookmark, folderId?: string) => void;
-    dragState: DragState | null;
-    folderId?: string;
-    onDragStart: (e: React.DragEvent, id: string, folderId?: string) => void;
-    onDragOver: (e: React.DragEvent, id: string) => void;
-    onDrop: (e: React.DragEvent, id: string, folderId?: string) => void;
-    onDragEnd: () => void;
-}) {
-    const [open, setOpen] = useState(false);
-    const [faviconSrc, setFaviconSrc] = useState<'primary' | 'secondary' | 'none'>('primary');
-    const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
-    const folderRef = useRef<HTMLDivElement>(null);
-
-    /*-- 点击外部关闭文件夹弹出层 --*/
-    useEffect(() => {
-        if (!open) return;
-        function handleClick(e: MouseEvent) {
-            if (folderRef.current && !folderRef.current.contains(e.target as Node)) {
-                setOpen(false);
-            }
-        }
-        const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 0);
-        return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick); };
-    }, [open]);
-
-    const toggleOpen = useCallback(() => {
-        const next = !open;
-        setOpen(next);
-        if (next && folderRef.current) {
-            const rect = folderRef.current.getBoundingClientRect();
-            setPopupPos({ top: rect.bottom + 4, left: rect.left });
-        } else {
-            setPopupPos(null);
-        }
-    }, [open]);
-
-    const isDragOver = dragState?.overId === bookmark.id && dragState?.position;
-
-    if (isBookmarkFolder(bookmark)) {
-        return (
-            <div
-                ref={folderRef}
-                className={`${styles.folder} ${isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : ''}`}
-                draggable
-                onContextMenu={(e) => onContextMenu(e, bookmark)}
-                onDragStart={(e) => onDragStart(e, bookmark.id)}
-                onDragOver={(e) => onDragOver(e, bookmark.id)}
-                onDrop={(e) => onDrop(e, bookmark.id)}
-                onDragEnd={onDragEnd}
-            >
-                <button
-                    className={styles.item}
-                    onClick={toggleOpen}
-                    type="button"
-                >
-                    <ChevronRightIcon style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />
-                    <span className={styles.name}>{bookmark.name}</span>
-                </button>
-                {open && popupPos && (
-                    <div
-                        className={styles.folderPopup}
-                        style={{ position: 'fixed', top: popupPos.top, left: popupPos.left }}
-                    >
-                        {bookmark.children.map((child) => (
-                            <a
-                                key={child.id}
-                                className={styles.folderItem}
-                                href={child.url}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                                onContextMenu={(e) => onContextMenu(e, child, bookmark.id)}
-                            >
-                                <img
-                                    alt=""
-                                    className={styles.favicon}
-                                    loading="lazy"
-                                    src={faviconUrl(child.url)}
-                                    onError={(e) => { const img = e.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = faviconFallback(child.url); } else { img.style.display = 'none'; } }}
-                                />
-                                <span className={styles.name}>{child.name}</span>
-                            </a>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
-    }
-
-    return (
-        <a
-            className={`${styles.item} ${isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : ''}`}
-            href={bookmark.url}
-            rel="noopener noreferrer"
-            target="_blank"
-            draggable
-            onContextMenu={(e) => onContextMenu(e, bookmark, folderId)}
-            onDragStart={(e) => onDragStart(e, bookmark.id, folderId)}
-            onDragOver={(e) => onDragOver(e, bookmark.id)}
-            onDrop={(e) => onDrop(e, bookmark.id, folderId)}
-            onDragEnd={onDragEnd}
-        >
-            {faviconSrc !== 'none' ? (
-                <img
-                    alt=""
-                    className={styles.favicon}
-                    loading="lazy"
-                    src={faviconSrc === 'primary' ? faviconUrl(bookmark.url) : faviconFallback(bookmark.url)}
-                    onError={() => setFaviconSrc(prev => prev === 'primary' ? 'secondary' : 'none')}
-                />
-            ) : (
-                <span className={styles.faviconFallback}>{bookmark.name[0]}</span>
-            )}
-            <span className={styles.name}>{bookmark.name}</span>
-        </a>
-    );
-}
 
 export default function BookmarkBar() {
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -268,7 +107,6 @@ export default function BookmarkBar() {
 
     /*-- 书签栏空白区域右键 --*/
     const handleBarContextMenu = useCallback((e: React.MouseEvent) => {
-        /*-- 只处理直接点在 wrapper 上的右键，子元素 stopPropagation 后不会到这里 --*/
         e.preventDefault();
         setMenu({
             x: e.clientX,
@@ -326,22 +164,20 @@ export default function BookmarkBar() {
         if (!editMode) return;
 
         if (editMode.type === 'addBookmark') {
-            const newItem: BookmarkItem = { id: `bm-${uid()}`, name: formName.trim() || '未命名', url: formUrl.trim() || 'https://' };
+            const newItem: BookmarkItem = { id: `bm-${genId()}`, name: formName.trim() || '未命名', url: formUrl.trim() || 'https://' };
             if (editMode.folderId) {
-                /*-- 在文件夹内指定位置插入 --*/
                 persist(bookmarks.map(b =>
                     b.id === editMode.folderId && isBookmarkFolder(b)
                         ? { ...b, children: insertAfter(b.children, newItem, editMode.afterId) }
                         : b
                 ));
             } else if (editMode.afterId) {
-                /*-- 在顶层指定位置插入 --*/
                 persist(insertAfter(bookmarks, newItem, editMode.afterId));
             } else {
                 persist([...bookmarks, newItem]);
             }
         } else if (editMode.type === 'addFolder') {
-            const newFolder: BookmarkFolder = { id: `bf-${uid()}`, name: formName.trim() || '新文件夹', children: [] };
+            const newFolder: BookmarkFolder = { id: `bf-${genId()}`, name: formName.trim() || '新文件夹', children: [] };
             if (editMode.afterId) {
                 persist(insertAfter(bookmarks, newFolder, editMode.afterId));
             } else {

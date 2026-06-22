@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 
 import { SearchIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/nav-config';
-import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine } from '@/lib/nav-storage';
+import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine, genId } from '@/lib/nav-storage';
 import type { SearchRecord } from '@/lib/nav-storage';
 
 import styles from './search-bar.module.css';
@@ -37,7 +37,7 @@ export default function SearchBar() {
     function handleSearch(q?: string) {
         const term = (q ?? query).trim();
         if (!term) return;
-        addSearchRecord({ query: term, engine: engineKey, time: Date.now() });
+        addSearchRecord({ id: genId(), query: term, engine: engineKey, time: Date.now() });
         setHistory(getSearchHistory());
         window.open(engine.url.replace('{query}', encodeURIComponent(term)), '_blank');
         setQuery('');
@@ -110,8 +110,8 @@ export default function SearchBar() {
                         </button>
                     </div>
                     <ul className={styles.historyList}>
-                        {history.map((h, i) => (
-                            <li key={`${h.time}-${i}`}>
+                        {history.map((h) => (
+                            <li key={h.id}>
                                 <button className={styles.historyTag} onClick={() => handleSearch(h.query)} type="button">
                                     {h.query}
                                 </button>

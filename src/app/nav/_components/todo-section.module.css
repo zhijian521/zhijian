@@ -1,8 +1,21 @@
-/*== 备忘录（待办） ==*/
+/*== 备忘录 ==*/
 
 .panel {
     width: 100%;
-    max-width: 28rem;
+    max-width: 72rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 8rem 2.5rem 2rem 5rem;
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
 }
 
 .title {
@@ -10,104 +23,84 @@
     font-family: var(--font-serif);
     font-weight: 500;
     color: var(--foreground);
-    margin: 0 0 1rem;
+    margin: 0;
 }
 
-.addRow {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.addInput {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
+.addBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--card);
     color: var(--foreground);
-    font-size: 0.875rem;
-    font-family: var(--font-sans);
-    outline: none;
-    transition: border-color 0.15s;
-}
-
-.addInput:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--ring-subtle);
-}
-
-.addInput::placeholder {
-    color: var(--muted-foreground);
-}
-
-.addBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--primary);
-    border-radius: var(--radius);
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-family: var(--font-sans);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: border-color 0.15s, color 0.15s;
 }
 
 .addBtn:hover {
-    background: var(--primary-hover);
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
-.list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+/*-- 卡片网格 --*/
+
+.cardGrid {
     display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    overflow-y: auto;
+    flex: 1;
+    align-content: flex-start;
 }
 
-.todoItem {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
+/*-- 单张卡片 --*/
+
+.card {
+    width: 14rem;
+    padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--card);
-    transition: border-color 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.todoItem:hover {
+.card:hover {
     border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.todoCheckbox {
+.cardDone {
+    opacity: 0.45;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.cardCheckbox {
     width: 1rem;
     height: 1rem;
     accent-color: var(--primary);
     cursor: pointer;
+    flex-shrink: 0;
 }
 
-.todoText {
-    flex: 1;
-    font-size: 0.875rem;
-    color: var(--foreground);
-    line-height: 1.4;
-}
-
-.todoTextDone {
-    text-decoration: line-through;
-    color: var(--muted-foreground);
-}
-
-.todoDelete {
+.cardDelete {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0.125rem;
+    margin-left: auto;
     border: none;
     background: none;
     color: var(--muted-foreground);
@@ -115,18 +108,120 @@
     transition: color 0.15s;
 }
 
-.todoDelete:hover {
+.cardDelete:hover {
     color: var(--destructive);
 }
 
-.todoDeleteIcon {
-    width: 0.875rem;
-    height: 0.875rem;
+.cardDeleteIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+/*-- 优先级标签 --*/
+
+.priorityTag {
+    padding: 0.125rem 0.5625rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.priorityTag:hover {
+    opacity: 0.75;
+}
+
+.priorityUrgent {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: var(--destructive);
+}
+
+.priorityImportant {
+    background: var(--primary-subtle);
+    border-color: var(--primary-subtle-medium);
+    color: var(--primary);
+}
+
+.priorityNormal {
+    background: var(--muted);
+    border-color: var(--border);
+    color: var(--muted-foreground);
+}
+
+/*-- 卡片内可编辑字段 --*/
+
+.cardText {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    outline: none;
+    box-sizing: border-box;
+    resize: none;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.cardText::placeholder {
+    color: var(--muted-foreground);
+}
+
+.cardDate {
+    align-self: flex-end;
+    padding: 0.125rem 0.375rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.cardDate:hover {
+    border-color: var(--border);
+}
+
+.cardDate:focus {
+    border-color: var(--primary);
+}
+
+/*-- 弹窗内表单 — 公共样式 composes 引入 --*/
+
+.fieldLabel {
+    composes: fieldLabel from './common-dialog-form.module.css';
+}
+
+.fieldInput {
+    composes: fieldInput from './common-dialog-form.module.css';
+}
+
+.dialogActions {
+    composes: dialogActions from './common-dialog-form.module.css';
+}
+
+.cancelBtn {
+    composes: cancelBtn from './common-dialog-form.module.css';
+}
+
+.confirmBtn {
+    composes: confirmBtn from './common-dialog-form.module.css';
 }
 
 .empty {
     text-align: center;
     color: var(--muted-foreground);
     font-size: 0.875rem;
-    padding: 2rem 0;
+    padding: 3rem 0;
 }

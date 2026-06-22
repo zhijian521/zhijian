@@ -80,10 +80,10 @@ export default function NavShell() {
             <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
                 <SearchSection />
             </div>
-            <div className={styles.section} ref={sectionRef(1)}>
+            <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(1)}>
                 <TodoSection />
             </div>
-            <div className={styles.section} ref={sectionRef(2)}>
+            <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(2)}>
                 <NoteSection />
             </div>
         </div>

@@ -15,7 +15,7 @@
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(251, 249, 249, 0.72); /* var(--background) 72% 不透明度 */
+    background: rgba(251, 249, 249, 0.5); /* var(--background) 72% 不透明度 */
     z-index: 0;
     pointer-events: none;
 }
@@ -43,6 +43,13 @@
 .sectionTop {
     justify-content: flex-start;
     padding-top: 18vh;
+}
+
+/*-- 备忘录和笔记屏：内容占满全高 --*/
+
+.sectionStretch {
+    justify-content: stretch;
+    align-items: stretch;
 }
 
 /*-- Dock 指示器 --*/

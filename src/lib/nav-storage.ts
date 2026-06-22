@@ -8,6 +8,11 @@ import { BOOKMARKS } from '@/lib/nav-config';
   上层组件通过此模块读写，不直接操作 localStorage。
 ============================================================================*/
 
+/*-- 生成唯一 ID --*/
+export function genId(): string {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+}
+
 /*-- 存储键 --*/
 const KEYS = {
     searchHistory: 'zhijian_nav_search_history',
@@ -20,6 +25,7 @@ const KEYS = {
 /*== 搜索记录 ==*/
 
 export interface SearchRecord {
+    id: string;
     query: string;
     engine: string;
     time: number; // timestamp
@@ -66,6 +72,8 @@ export interface TodoItem {
     id: string;
     text: string;
     done: boolean;
+    priority: 'urgent' | 'important' | 'normal';
+    date: string | null;
     createdAt: number;
 }
 
