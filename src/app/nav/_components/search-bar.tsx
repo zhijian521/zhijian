@@ -34,12 +34,26 @@ export default function SearchBar() {
 
     const engine = SEARCH_ENGINES.find(e => e.key === engineKey) ?? SEARCH_ENGINES[0];
 
+    /*-- 判断是否为 URL --*/
+    function isUrl(s: string): boolean {
+        if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(s)) return true;
+        if (/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+/.test(s)) return true;
+        return false;
+    }
+
     function handleSearch(q?: string) {
         const term = (q ?? query).trim();
         if (!term) return;
-        addSearchRecord({ id: genId(), query: term, engine: engineKey, time: Date.now() });
-        setHistory(getSearchHistory());
-        window.open(engine.url.replace('{query}', encodeURIComponent(term)), '_blank');
+        if (isUrl(term)) {
+            const href = term.includes('://') ? term : `https://${term}`;
+            addSearchRecord({ id: genId(), query: term, engine: 'direct', time: Date.now() });
+            setHistory(getSearchHistory());
+            window.open(href, '_blank');
+        } else {
+            addSearchRecord({ id: genId(), query: term, engine: engineKey, time: Date.now() });
+            setHistory(getSearchHistory());
+            window.open(engine.url.replace('{query}', encodeURIComponent(term)), '_blank');
+        }
         setQuery('');
     }
 
@@ -87,7 +101,7 @@ export default function SearchBar() {
                     className={styles.input}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                    placeholder="搜索..."
+                    placeholder="搜索或输入网址..."
                     type="text"
                     value={query}
                 />
