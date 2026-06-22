@@ -1,22 +1,15 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
 import { getTagById, updateTag, deleteTag } from '@/lib/tags';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*==
   单个标签操作：PUT / DELETE。均需管理员权限。
 ==*/
 
 /*-- PUT: 编辑标签 --*/
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const PUT = withAdmin(async (request, _admin, { params }) => {
     const { id } = await params;
     const tagId = Number(id);
     if (!Number.isFinite(tagId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的标签 ID。'), { status: 400 });
@@ -51,16 +44,10 @@ export async function PUT(
         console.error('更新标签失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新标签失败。'), { status: 500 });
     }
-}
+});
 
 /*-- DELETE: 删除标签 --*/
-export async function DELETE(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const DELETE = withAdmin(async (_request, _admin, { params }) => {
     const { id } = await params;
     const tagId = Number(id);
     if (!Number.isFinite(tagId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的标签 ID。'), { status: 400 });
@@ -73,4 +60,4 @@ export async function DELETE(
         console.error('删除标签失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '删除标签失败。'), { status: 500 });
     }
-}
+});

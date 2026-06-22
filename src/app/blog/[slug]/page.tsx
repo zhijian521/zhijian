@@ -4,7 +4,7 @@ import { cache } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
 import { getPostBySlug } from '@/lib/posts';
-import { toPostIsoDateTime } from '@/lib/post-shared';
+import { toPostIsoDateTime } from '@/lib/posts';
 import { SITE_METADATA } from '@/lib/site';
 import { toAbsoluteUrl } from '@/lib/utils';
 

@@ -2,26 +2,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { ZipArchive } from 'archiver';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { BizCode, fail } from '@/lib/api-response';
-import { requireAdminFromRequest } from '@/lib/auth';
+import { withAdmin } from '@/lib/with-admin';
 import { extractImagePaths, getAllPosts } from '@/lib/posts';
 
 /*== 文章一键导出 API — 将所有文章 + 引用图片打包为 ZIP 流式下载
     支持 ?id= 参数：指定时只导出该文章；省略时导出全部。 ==*/
 
-export async function GET(request: NextRequest) {
-    /*-- 鉴权 --*/
-    const session = requireAdminFromRequest(request);
-    if (!session) {
-        return NextResponse.json(
-            fail(BizCode.UNAUTHORIZED, '请先登录'),
-            { status: 401 },
-        );
-    }
-
+export const GET = withAdmin(async (request) => {
     const allPosts = await getAllPosts();
 
     /*-- 支持单篇导出（?id=） --*/
@@ -150,7 +138,7 @@ export async function GET(request: NextRequest) {
             'Content-Disposition': `attachment; filename="zhijian-export-${dateStr}.zip"`,
         },
     });
-}
+});
 
 /*== YAML 值转义：含 : # 引号等特殊字符时用双引号包裹。 ==*/
 function escapeYaml(value: string): string {

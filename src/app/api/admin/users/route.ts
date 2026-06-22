@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { createUser, hashPassword, listUsers, requireAdminFromRequest, validateUserFields } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { createUser, hashPassword, listUsers, validateUserFields } from '@/lib/auth';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*==
   用户列表（GET） / 创建用户（POST）
@@ -10,12 +10,7 @@ import { BizCode, fail, success } from '@/lib/api-response';
 ==*/
 
 /*-- GET: 分页用户列表 --*/
-export async function GET(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const GET = withAdmin(async (request) => {
     const { searchParams } = request.nextUrl;
     const page = Math.max(1, Number(searchParams.get('page')) || 1);
     const pageSize = Math.min(100, Math.max(1, Number(searchParams.get('pageSize')) || 20));
@@ -28,15 +23,10 @@ export async function GET(request: NextRequest) {
         console.error('获取用户列表失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '获取用户列表失败。'), { status: 500 });
     }
-}
+});
 
 /*-- POST: 创建用户 --*/
-export async function POST(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const POST = withAdmin(async (request) => {
     let body: { username?: string; email?: string; password?: string; role?: string };
     try {
         body = await request.json();
@@ -71,4 +61,4 @@ export async function POST(request: NextRequest) {
         console.error('创建用户失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '创建用户失败。'), { status: 500 });
     }
-}
+});

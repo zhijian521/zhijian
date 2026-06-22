@@ -6,7 +6,6 @@ import {
     UsersIcon,
     SettingsIcon,
     WrenchIcon,
-    CodeIcon,
     ActivityIcon,
     ImageIcon,
     type IconComponent,
@@ -90,7 +89,6 @@ export const APP_ROUTES = {
     adminSettings: '/admin/settings', // 系统设置
     adminTaxonomy: '/admin/taxonomy', // 分类与标签
     adminUploads: '/admin/uploads', // 图片管理
-    adminComponents: '/admin/components', // 组件列表（开发调试用）
     adminAnalytics: '/admin/analytics', // 数据概览（观澜）
     adminAnalyticsSites: '/admin/analytics/sites', // 站点管理
 
@@ -157,7 +155,6 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
         icon: SettingsIcon,
         items: [
             { href: APP_ROUTES.adminUsers, label: '用户管理', icon: UsersIcon, match: 'prefix' },
-            { href: APP_ROUTES.adminComponents, label: '组件列表', icon: CodeIcon, match: 'exact' },
             { href: APP_ROUTES.adminSettings, label: '系统设置', icon: WrenchIcon, match: 'exact' },
         ],
     },

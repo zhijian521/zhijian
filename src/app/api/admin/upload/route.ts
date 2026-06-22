@@ -1,15 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 import { validateImageFile, saveUpload } from '@/lib/uploads';
 
 /*== 单图上传接口（POST）。 ==*/
-export async function POST(request: NextRequest) {
-    if (!requireAdminFromRequest(request)) {
-        return NextResponse.json(fail(BizCode.UNAUTHORIZED, '未登录或登录已失效。'), { status: 401 });
-    }
-
+export const POST = withAdmin(async (request) => {
     let formData: FormData;
     try {
         formData = await request.formData();
@@ -41,4 +37,4 @@ export async function POST(request: NextRequest) {
         console.error('上传图片失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '上传失败，请稍后重试。'), { status: 500 });
     }
-}
+});

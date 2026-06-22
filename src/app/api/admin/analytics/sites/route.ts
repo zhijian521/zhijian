@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
 import { listTrackSites, createTrackSite, updateTrackSite, deleteTrackSite } from '@/lib/track-sites';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*==
   站点管理 API
@@ -14,12 +13,7 @@ import { BizCode, fail, success } from '@/lib/api-response';
 ==*/
 
 /*-- GET: 站点列表 --*/
-export async function GET(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const GET = withAdmin(async () => {
     try {
         const sites = await listTrackSites();
         return NextResponse.json(success({ data: sites, total: sites.length }));
@@ -27,15 +21,10 @@ export async function GET(request: NextRequest) {
         console.error('获取站点列表失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '获取站点列表失败。'), { status: 500 });
     }
-}
+});
 
 /*-- POST: 创建站点 --*/
-export async function POST(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const POST = withAdmin(async (request) => {
     let body: { name?: string; domain?: string };
     try {
         body = await request.json();
@@ -63,15 +52,10 @@ export async function POST(request: NextRequest) {
         console.error('创建站点失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '创建站点失败。'), { status: 500 });
     }
-}
+});
 
 /*-- PUT: 更新站点 --*/
-export async function PUT(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const PUT = withAdmin(async (request) => {
     let body: { id?: string; name?: string; domain?: string; status?: string };
     try {
         body = await request.json();
@@ -104,15 +88,10 @@ export async function PUT(request: NextRequest) {
         console.error('更新站点失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新站点失败。'), { status: 500 });
     }
-}
+});
 
 /*-- DELETE: 删除站点（软删除，id 从 query 参数读取） --*/
-export async function DELETE(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const DELETE = withAdmin(async (request) => {
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
     if (!id) {
@@ -129,4 +108,4 @@ export async function DELETE(request: NextRequest) {
         console.error('删除站点失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '删除站点失败。'), { status: 500 });
     }
-}
+});

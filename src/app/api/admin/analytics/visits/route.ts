@@ -1,19 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
+import { fail, BizCode, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 import { getVisits } from '@/lib/analytics';
-import { success, fail, BizCode } from '@/lib/api-response';
 import type { DateRange } from '@/lib/analytics';
 
 const VALID_RANGES = new Set<DateRange>(['7d', '30d', '90d']);
 
 /*== GET /admin/analytics/visits — 访问记录分页列表 ==*/
-export async function GET(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const GET = withAdmin(async (request) => {
     const { searchParams } = request.nextUrl;
     const siteId = searchParams.get('siteId');
     const rangeParam = searchParams.get('range') || '7d';
@@ -31,4 +26,4 @@ export async function GET(request: NextRequest) {
     const result = await getVisits(siteId, rangeParam as DateRange, page, pageSize);
 
     return NextResponse.json(success(result));
-}
+});

@@ -1,24 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 import { createPost, getAllPosts } from '@/lib/posts';
 
 /*== 后台文章列表接口：GET 返回全部文章，POST 创建草稿。 ==*/
-export async function GET(request: NextRequest) {
-    if (!requireAdminFromRequest(request)) {
-        return NextResponse.json(fail(BizCode.UNAUTHORIZED, '未登录或登录已失效。'), { status: 401 });
-    }
-
+export const GET = withAdmin(async () => {
     const posts = await getAllPosts();
     return NextResponse.json(success(posts));
-}
+});
 
-export async function POST(request: NextRequest) {
-    if (!requireAdminFromRequest(request)) {
-        return NextResponse.json(fail(BizCode.UNAUTHORIZED, '未登录或登录已失效。'), { status: 401 });
-    }
-
+export const POST = withAdmin(async (request) => {
     let body: { title?: string };
     try {
         body = await request.json();
@@ -42,4 +34,4 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(success(post, '新建文章成功。'));
-}
+});

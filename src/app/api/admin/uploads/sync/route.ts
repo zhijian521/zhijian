@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*== 图片同步清单接口 — 扫描服务器 public/uploads/ 目录，返回所有图片的路径和大小，供本地同步脚本使用。 ==*/
 
@@ -39,14 +39,10 @@ function scanUploadsDir(dir: string, base: string, results: SyncFileItem[]): voi
     }
 }
 
-export async function GET(request: NextRequest) {
-    if (!requireAdminFromRequest(request)) {
-        return NextResponse.json(fail(BizCode.UNAUTHORIZED, '未登录或登录已失效。'), { status: 401 });
-    }
-
+export const GET = withAdmin(async () => {
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     const files: SyncFileItem[] = [];
     scanUploadsDir(uploadsDir, path.join(process.cwd(), 'public'), files);
 
     return NextResponse.json(success({ files, total: files.length }));
-}
+});

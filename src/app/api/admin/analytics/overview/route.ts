@@ -1,18 +1,12 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 import { getOverview, getTrend, getPageRank, getSources, getDevices, getLanguages, getBrowsers, getOS, getCountries, getRegions, getEntryPages, getExitPages, ensureAggregated } from '@/lib/analytics';
 import type { DateRange } from '@/lib/analytics';
 
 /*== 仪表盘概览数据 API ==*/
-export async function GET(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const GET = withAdmin(async (request) => {
     const url = new URL(request.url);
     const siteId = url.searchParams.get('siteId') || '';
     const range = (url.searchParams.get('range') || '7d') as DateRange;
@@ -63,4 +57,4 @@ export async function GET(request: NextRequest) {
         console.error('获取分析数据失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '获取分析数据失败。'), { status: 500 });
     }
-}
+});

@@ -1,5 +1,5 @@
 import { getPublishedPosts } from '@/lib/posts';
-import { parsePostDate } from '@/lib/post-shared';
+import { parsePostDate } from '@/lib/posts';
 import { SITE_METADATA } from '@/lib/site';
 
 /*== RSS 2.0 Feed — 输出全站已发布文章供 RSS 阅读器订阅 ==*/

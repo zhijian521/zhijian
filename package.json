@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "archiver": "^8.0.0",
-    "axios": "^1.16.1",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "highlight.js": "^11.11.1",
@@ -30,7 +29,6 @@
   "devDependencies": {
     "@types/archiver": "^8.0.0",
     "@types/bcryptjs": "^2.4.6",
-    "@types/geoip-lite": "^1.4.4",
     "@types/node": "22.15.30",
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5",

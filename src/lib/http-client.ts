@@ -1,5 +1,5 @@
 /*============================================================================
-  HTTP 客户端封装（基于 axios）
+  HTTP 客户端封装（基于原生 fetch）
 
   所有前端 API 调用统一入口。
 
@@ -14,48 +14,65 @@
     const res = await api.post<{ user: User }>('/auth/login', { username, password });
     if (res.code === 0) { ...res.data.user }
     else { showError(res.message) }
-============================================================================*/
 
-import axios from 'axios';
-import type { AxiosInstance } from 'axios';
+  ponytail: 原生 fetch 替代 axios — 无拦截器/retry/取消需求，axios 多余。
+============================================================================*/
 
 import type { ApiResponse } from '@/lib/api-response';
 import { BizCode, fail } from '@/lib/api-response';
 
-/*== axios 实例 —— 同源 API，401/403/404/409/500 不抛异常，由调用方判断 code。 ==*/
-const instance: AxiosInstance = axios.create({
-    baseURL: '/api',
-    timeout: 15000,
-    headers: { 'Content-Type': 'application/json' },
-    validateStatus: () => true, // 所有 HTTP 状态码都视为成功，不抛异常
-});
+const BASE_URL = '/api';
+const TIMEOUT_MS = 15000;
 
-/*== 从 axios response 提取标准 ApiResponse。 ==*/
-function extractApiResponse<T>(axiosResponse: any): ApiResponse<T> {
-    const body = axiosResponse.data;
+/*== 从 Response 提取标准 ApiResponse ==*/
+async function extractApiResponse<T>(response: Response): Promise<ApiResponse<T>> {
+    let body: any;
+    try {
+        body = await response.json();
+    } catch {
+        body = null;
+    }
+
     // 服务端返回了标准格式
     if (body && typeof body.code === 'number' && typeof body.message === 'string') {
         return body as ApiResponse<T>;
     }
+
     // 兜底：非标准格式
-    if (axiosResponse.status >= 200 && axiosResponse.status < 300) {
+    if (response.ok) {
         return { code: BizCode.SUCCESS, data: body as T, message: 'OK' } as ApiResponse<T>;
     }
+
     return fail(
-        axiosResponse.status === 401 ? BizCode.UNAUTHORIZED :
-        axiosResponse.status === 403 ? BizCode.FORBIDDEN :
-        axiosResponse.status === 404 ? BizCode.NOT_FOUND :
-        axiosResponse.status === 409 ? BizCode.CONFLICT :
+        response.status === 401 ? BizCode.UNAUTHORIZED :
+        response.status === 403 ? BizCode.FORBIDDEN :
+        response.status === 404 ? BizCode.NOT_FOUND :
+        response.status === 409 ? BizCode.CONFLICT :
         BizCode.INTERNAL,
-        body?.message || `请求失败 (${axiosResponse.status})`,
+        body?.message || `请求失败 (${response.status})`,
     ) as ApiResponse<T>;
 }
 
-/*== 公开 API 方法。 ==*/
+/*== 带超时的 fetch 封装 ==*/
+async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+        return await fetch(url, { ...init, signal: controller.signal });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+/*== 公开 API 方法 ==*/
 export const api = {
     async get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
         try {
-            return extractApiResponse<T>(await instance.get(url, { params }));
+            const qs = params ? '?' + new URLSearchParams(
+                Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
+            ).toString() : '';
+            const res = await fetchWithTimeout(`${BASE_URL}${url}${qs}`, { method: 'GET' });
+            return extractApiResponse<T>(res);
         } catch {
             return fail(BizCode.INTERNAL, '网络错误，请检查连接后重试。') as ApiResponse<T>;
         }
@@ -63,7 +80,12 @@ export const api = {
 
     async post<T = unknown>(url: string, body?: unknown): Promise<ApiResponse<T>> {
         try {
-            return extractApiResponse<T>(await instance.post(url, body));
+            const res = await fetchWithTimeout(`${BASE_URL}${url}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: body !== undefined ? JSON.stringify(body) : undefined,
+            });
+            return extractApiResponse<T>(res);
         } catch {
             return fail(BizCode.INTERNAL, '网络错误，请检查连接后重试。') as ApiResponse<T>;
         }
@@ -71,7 +93,12 @@ export const api = {
 
     async put<T = unknown>(url: string, body?: unknown): Promise<ApiResponse<T>> {
         try {
-            return extractApiResponse<T>(await instance.put(url, body));
+            const res = await fetchWithTimeout(`${BASE_URL}${url}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: body !== undefined ? JSON.stringify(body) : undefined,
+            });
+            return extractApiResponse<T>(res);
         } catch {
             return fail(BizCode.INTERNAL, '网络错误，请检查连接后重试。') as ApiResponse<T>;
         }
@@ -79,7 +106,12 @@ export const api = {
 
     async patch<T = unknown>(url: string, body?: unknown): Promise<ApiResponse<T>> {
         try {
-            return extractApiResponse<T>(await instance.patch(url, body));
+            const res = await fetchWithTimeout(`${BASE_URL}${url}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: body !== undefined ? JSON.stringify(body) : undefined,
+            });
+            return extractApiResponse<T>(res);
         } catch {
             return fail(BizCode.INTERNAL, '网络错误，请检查连接后重试。') as ApiResponse<T>;
         }
@@ -87,7 +119,8 @@ export const api = {
 
     async delete<T = unknown>(url: string): Promise<ApiResponse<T>> {
         try {
-            return extractApiResponse<T>(await instance.delete(url));
+            const res = await fetchWithTimeout(`${BASE_URL}${url}`, { method: 'DELETE' });
+            return extractApiResponse<T>(res);
         } catch {
             return fail(BizCode.INTERNAL, '网络错误，请检查连接后重试。') as ApiResponse<T>;
         }

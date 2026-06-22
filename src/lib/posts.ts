@@ -2,7 +2,11 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { getDb } from '@/lib/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-import type { Post, PostStatus } from '@/lib/post-shared';
+export type { PostStatus } from './post-shared';
+export type { Post } from './post-shared';
+export { parsePostDate, toPostIsoDateTime, formatPostDate, formatPostDateTime, toDateTimeLocalValue, splitPostContent } from './post-shared';
+
+import type { Post, PostStatus } from './post-shared';
 
 /*== 类型定义 ==*/
 
@@ -349,42 +353,11 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     }
 }
 
-/*== 单篇文章详情补齐标签名称。详情页只处理当前文章的标签，避免复用列表批量补全路径。 ==*/
+/*== 单篇文章详情补齐标签名称。复用批量补全函数，避免重复查询逻辑。 ==*/
 async function enrichPostWithTagNames(post: Post | undefined): Promise<Post | null> {
-    if (!post) {
-        return null;
-    }
-
-    if (post.tags.length === 0) {
-        return post;
-    }
-
-    const db = getDb();
-    if (!db) {
-        return post;
-    }
-
-    try {
-        const [tagRows] = await db.execute<RowDataPacket[]>(
-            `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${post.tags.map(() => '?').join(', ')})`,
-            post.tags,
-        );
-
-        const tagMap = new Map<number, { id: number; name: string; slug: string }>();
-        for (const row of tagRows) {
-            tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
-        }
-
-        return {
-            ...post,
-            tagNames: post.tags
-                .map((id) => tagMap.get(id))
-                .filter(Boolean) as { id: number; name: string; slug: string }[],
-        };
-    } catch (error) {
-        console.error('Failed to enrich single post with tag names.', { postId: post.id, error });
-        return post;
-    }
+    if (!post) return null;
+    if (post.tags.length === 0) return post;
+    return (await enrichPostsWithTagNames([post]))[0];
 }
 
 /*== 内部工具 ==*/

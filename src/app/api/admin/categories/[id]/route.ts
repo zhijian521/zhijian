@@ -1,22 +1,15 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
 import { getCategoryById, updateCategory, deleteCategory } from '@/lib/categories';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*==
   单个分类操作：PUT / DELETE。均需管理员权限。
 ==*/
 
 /*-- PUT: 编辑分类 --*/
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const PUT = withAdmin(async (request, _admin, { params }) => {
     const { id } = await params;
     const categoryId = Number(id);
     if (!Number.isFinite(categoryId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的分类 ID。'), { status: 400 });
@@ -54,16 +47,10 @@ export async function PUT(
         console.error('更新分类失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新分类失败。'), { status: 500 });
     }
-}
+});
 
 /*-- DELETE: 删除分类 --*/
-export async function DELETE(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const DELETE = withAdmin(async (_request, _admin, { params }) => {
     const { id } = await params;
     const categoryId = Number(id);
     if (!Number.isFinite(categoryId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的分类 ID。'), { status: 400 });
@@ -76,4 +63,4 @@ export async function DELETE(
         console.error('删除分类失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '删除分类失败。'), { status: 500 });
     }
-}
+});

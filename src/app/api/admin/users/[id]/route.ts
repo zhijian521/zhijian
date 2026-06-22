@@ -1,21 +1,15 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { getUserById, hashPassword, requireAdminFromRequest, updateUser, deleteUser } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { getUserById, hashPassword, updateUser, deleteUser } from '@/lib/auth';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*==
   单个用户操作：GET / PUT / DELETE。均需管理员权限。
 ==*/
 
 /*-- GET: 用户详情 --*/
-export async function GET(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const GET = withAdmin(async (_request, _admin, { params }) => {
     const { id } = await params;
     const userId = Number(id);
     if (!Number.isFinite(userId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
@@ -24,16 +18,10 @@ export async function GET(
     if (!user) return NextResponse.json(fail(BizCode.USER_NOT_FOUND, '用户不存在。'), { status: 404 });
 
     return NextResponse.json(success({ user }));
-}
+});
 
 /*-- PUT: 编辑用户 --*/
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const PUT = withAdmin(async (request, _admin, { params }) => {
     const { id } = await params;
     const userId = Number(id);
     if (!Number.isFinite(userId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
@@ -88,16 +76,10 @@ export async function PUT(
         console.error('更新用户失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新用户失败。'), { status: 500 });
     }
-}
+});
 
 /*-- DELETE: 删除用户 --*/
-export async function DELETE(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-
+export const DELETE = withAdmin(async (_request, admin, { params }) => {
     const { id } = await params;
     const userId = Number(id);
     if (!Number.isFinite(userId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
@@ -111,4 +93,4 @@ export async function DELETE(
         console.error('删除用户失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '删除用户失败。'), { status: 500 });
     }
-}
+});

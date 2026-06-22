@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-import { requireAdminFromRequest } from '@/lib/auth';
 import { listCategories, createCategory } from '@/lib/categories';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { BizCode, fail, success } from '@/lib/api-response'
+import { withAdmin } from '@/lib/with-admin';
 
 /*==
   分类列表（GET） / 创建分类（POST）
@@ -11,12 +10,7 @@ import { BizCode, fail, success } from '@/lib/api-response';
 ==*/
 
 /*-- GET: 全部分类列表 --*/
-export async function GET(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const GET = withAdmin(async () => {
     try {
         const categories = await listCategories();
         return NextResponse.json(success({ data: categories, total: categories.length }));
@@ -24,15 +18,10 @@ export async function GET(request: NextRequest) {
         console.error('获取分类列表失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '获取分类列表失败。'), { status: 500 });
     }
-}
+});
 
 /*-- POST: 创建分类 --*/
-export async function POST(request: NextRequest) {
-    const admin = requireAdminFromRequest(request);
-    if (!admin) {
-        return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
-    }
-
+export const POST = withAdmin(async (request) => {
     let body: { name?: string; slug?: string; sort_order?: number };
     try {
         body = await request.json();
@@ -61,4 +50,4 @@ export async function POST(request: NextRequest) {
         console.error('创建分类失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '创建分类失败。'), { status: 500 });
     }
-}
+});

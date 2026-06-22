@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/icons';
 import { TextLink } from '@/components/ui/text-link';
 import { getPublishedPosts } from '@/lib/posts';
-import { formatPostDate } from '@/lib/post-shared';
+import { formatPostDate } from '@/lib/posts';
 import { SITE_METADATA } from '@/lib/site';
 
 import { RssCopyButton } from '@/components/site/rss-copy-button';

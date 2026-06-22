@@ -1,5 +1,5 @@
 import { getPublishedPosts } from '@/lib/posts';
-import { toPostIsoDateTime } from '@/lib/post-shared';
+import { toPostIsoDateTime } from '@/lib/posts';
 import { SITE_METADATA } from '@/lib/site';
 
 export default async function sitemap() {
