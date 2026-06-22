@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { ChevronRightIcon } from '@/components/ui/icons';
 import { isBookmarkFolder } from '@/lib/nav-config';
@@ -53,7 +53,7 @@ export default function BookmarkLink({
         return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick); };
     }, [open]);
 
-    const toggleOpen = useCallback(() => {
+    function toggleOpen() {
         const next = !open;
         setOpen(next);
         if (next && folderRef.current) {
@@ -62,15 +62,16 @@ export default function BookmarkLink({
         } else {
             setPopupPos(null);
         }
-    }, [open]);
+    }
 
     const isDragOver = dragState?.overId === bookmark.id && dragState?.position;
+    const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
 
     if (isBookmarkFolder(bookmark)) {
         return (
             <div
                 ref={folderRef}
-                className={`${styles.folder} ${isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : ''}`}
+                className={`${styles.folder} ${dragCls}`}
                 draggable
                 onContextMenu={(e) => onContextMenu(e, bookmark)}
                 onDragStart={(e) => onDragStart(e, bookmark.id)}
@@ -112,7 +113,7 @@ export default function BookmarkLink({
 
     return (
         <a
-            className={`${styles.item} ${isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : ''}`}
+            className={`${styles.item} ${dragCls}`}
             href={bookmark.url}
             rel="noopener noreferrer"
             target="_blank"

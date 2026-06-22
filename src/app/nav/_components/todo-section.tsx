@@ -12,10 +12,10 @@ import styles from './todo-section.module.css';
 /*-- 优先级 --*/
 type Priority = 'urgent' | 'important' | 'normal';
 
-const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; className: string }> = {
-    urgent: { label: '紧急', color: 'var(--destructive)', className: styles.priorityUrgent },
-    important: { label: '重要', color: 'var(--primary)', className: styles.priorityImportant },
-    normal: { label: '一般', color: 'var(--muted-foreground)', className: styles.priorityNormal },
+const PRIORITY_CONFIG: Record<Priority, { label: string; className: string }> = {
+    urgent: { label: '紧急', className: styles.priorityUrgent },
+    important: { label: '重要', className: styles.priorityImportant },
+    normal: { label: '一般', className: styles.priorityNormal },
 };
 
 /*-- textarea 自适应高度 --*/
