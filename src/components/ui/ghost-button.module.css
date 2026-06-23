@@ -45,7 +45,7 @@
 
 .primary:hover {
     background: var(--primary);
-    color: #ffffff;
+    color: var(--primary-foreground);
 }
 
 .icon {

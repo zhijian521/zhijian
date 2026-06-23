@@ -1,5 +1,3 @@
-'use client';
-
 import styles from './loading.module.css';
 
 /*== 全局加载态：全屏居中，无其他组件干扰 ==*/

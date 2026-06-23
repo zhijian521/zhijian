@@ -44,7 +44,7 @@
 .confirmBtnDanger {
     border-color: var(--destructive);
     background: var(--destructive);
-    color: #fff;
+    color: var(--primary-foreground);
 }
 
 .confirmBtnDanger:hover {
