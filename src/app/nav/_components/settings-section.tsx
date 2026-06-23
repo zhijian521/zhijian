@@ -28,20 +28,25 @@ interface SettingsSectionProps {
 
 export default function SettingsSection({ user, isLoggedIn, loading, onLogin, onRegister, onLogout, onAuthChange }: SettingsSectionProps) {
     const [showAuthModal, setShowAuthModal] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
 
     async function handleAuthSuccess() {
         setShowAuthModal(false);
-        /*-- 登录成功后同步本地数据到数据库 --*/
         try {
             await syncLocalToServer();
-        } catch { /* sync 失败不阻塞，数据库有数据时会被 409 拒绝 */ }
+        } catch { /* sync 失败不阻塞 */ }
         onAuthChange?.();
     }
 
     async function handleLogout() {
-        await onLogout();
-        clearLocalNavData();
-        onAuthChange?.();
+        setLoggingOut(true);
+        try {
+            await onLogout();
+            clearLocalNavData();
+            onAuthChange?.();
+        } finally {
+            setLoggingOut(false);
+        }
     }
 
     return (
@@ -51,27 +56,101 @@ export default function SettingsSection({ user, isLoggedIn, loading, onLogin, on
                 <h2 className={styles.title}>设置</h2>
             </div>
 
-            {loading ? (
-                <p className={styles.hint}>加载中…</p>
-            ) : isLoggedIn && user ? (
-                <div className={styles.userInfo}>
-                    <p className={styles.username}>{user.username}</p>
-                    <p className={styles.email}>{user.email}</p>
-                    <button className={styles.logoutBtn} onClick={handleLogout} type="button">
-                        退出登录
-                    </button>
+            <div className={styles.cards}>
+                {/*-- 账号卡片 --*/}
+                <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>账号</h3>
+                    {loading ? (
+                        <p className={styles.cardHint}>加载中…</p>
+                    ) : isLoggedIn && user ? (
+                        <div className={styles.profile}>
+                            <div className={styles.profileRow}>
+                                <span className={styles.profileLabel}>用户名：</span>
+                                <span className={styles.profileName}>{user.username}</span>
+                            </div>
+                            <div className={styles.profileRow}>
+                                <span className={styles.profileLabel}>邮箱：</span>
+                                <span className={styles.profileEmail}>{user.email}</span>
+                            </div>
+                            <button
+                                className={styles.logoutBtn}
+                                disabled={loggingOut}
+                                onClick={handleLogout}
+                                type="button"
+                            >
+                                {loggingOut ? '退出中…' : '退出登录'}
+                            </button>
+                        </div>
+                    ) : (
+                        <div className={styles.authActions}>
+                            <p className={styles.cardHint}>登录后数据自动同步到云端</p>
+                            <div className={styles.authBtns}>
+                                <button className={styles.loginBtn} onClick={() => setShowAuthModal(true)} type="button">
+                                    登录
+                                </button>
+                                <button className={styles.registerBtn} onClick={() => setShowAuthModal(true)} type="button">
+                                    注册
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div className={styles.authActions}>
-                    <p className={styles.hint}>登录后数据自动同步到云端</p>
-                    <button className={styles.loginBtn} onClick={() => setShowAuthModal(true)} type="button">
-                        登录
-                    </button>
-                    <button className={styles.registerBtn} onClick={() => setShowAuthModal(true)} type="button">
-                        注册
-                    </button>
+
+                {/*-- 数据同步卡片 --*/}
+                <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>数据同步</h3>
+                    {isLoggedIn ? (
+                        <div className={styles.syncInfo}>
+                            <div className={styles.syncRow}>
+                                <span className={styles.syncDot}>●</span>
+                                <span className={styles.syncLabel}>书签</span>
+                                <span className={styles.syncStatusOn}>已同步</span>
+                            </div>
+                            <div className={styles.syncRow}>
+                                <span className={styles.syncDot}>●</span>
+                                <span className={styles.syncLabel}>备忘录</span>
+                                <span className={styles.syncStatusOn}>已同步</span>
+                            </div>
+                            <div className={styles.syncRow}>
+                                <span className={styles.syncDot}>●</span>
+                                <span className={styles.syncLabel}>笔记</span>
+                                <span className={styles.syncStatusOn}>已同步</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.syncInfo}>
+                            <div className={styles.syncRow}>
+                                <span className={styles.syncDotOff}>○</span>
+                                <span className={styles.syncLabel}>书签</span>
+                                <span className={styles.syncStatusOff}>仅本地</span>
+                            </div>
+                            <div className={styles.syncRow}>
+                                <span className={styles.syncDotOff}>○</span>
+                                <span className={styles.syncLabel}>备忘录</span>
+                                <span className={styles.syncStatusOff}>仅本地</span>
+                            </div>
+                            <div className={styles.syncRow}>
+                                <span className={styles.syncDotOff}>○</span>
+                                <span className={styles.syncLabel}>笔记</span>
+                                <span className={styles.syncStatusOff}>仅本地</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
+
+                {/*-- 帮助卡片 --*/}
+                <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>使用帮助</h3>
+                    <ul className={styles.helpList}>
+                        <li><strong>导航</strong> — 上下滚动或点击左侧 Dock 图标切换页面</li>
+                        <li><strong>搜索</strong> — 支持多个搜索引擎，点击切换</li>
+                        <li><strong>书签</strong> — 右键可新增、编辑、删除书签和文件夹</li>
+                        <li><strong>备忘录</strong> — 支持紧急/重要/一般三种优先级</li>
+                        <li><strong>笔记</strong> — 支持 Markdown，失焦自动保存</li>
+                        <li><strong>数据</strong> — 未登录数据保存在浏览器本地，登录后自动同步到云端</li>
+                    </ul>
+                </div>
+            </div>
 
             <AuthModal
                 open={showAuthModal}
