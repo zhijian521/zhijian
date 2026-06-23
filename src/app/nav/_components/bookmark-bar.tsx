@@ -55,9 +55,10 @@ type EditMode =
 
 interface BookmarkBarProps {
     isLoggedIn?: boolean;
+    dataVersion?: number;
 }
 
-export default function BookmarkBar({ isLoggedIn }: BookmarkBarProps) {
+export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProps) {
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
     const [editMode, setEditMode] = useState<EditMode>(null);
@@ -75,7 +76,7 @@ export default function BookmarkBar({ isLoggedIn }: BookmarkBarProps) {
 
     useEffect(() => {
         getBookmarks(isLoggedIn).then(setBookmarks);
-    }, [isLoggedIn]);
+    }, [isLoggedIn, dataVersion]);
 
     function persist(updated: Bookmark[]) {
         setBookmarks(updated);

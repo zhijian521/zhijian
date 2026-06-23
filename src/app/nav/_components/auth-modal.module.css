@@ -36,6 +36,7 @@
 }
 
 .fieldInput {
+    width: 100%;
     padding: 0.5rem 0.625rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);

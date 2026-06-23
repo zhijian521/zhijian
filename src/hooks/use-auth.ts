@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-interface AuthUser {
+export interface AuthUser {
     id: number;
     username: string;
     email: string;

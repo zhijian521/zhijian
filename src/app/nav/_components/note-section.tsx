@@ -12,7 +12,7 @@ function formatDate(ts: number): string {
     return new Date(ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-export default function NoteSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
+export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: boolean; dataVersion?: number }) {
     const [notes, setNotes] = useState<NoteItem[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState('');
@@ -27,7 +27,7 @@ export default function NoteSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
                 setEditContent(loaded[0].content);
             }
         });
-    }, [isLoggedIn]);
+    }, [isLoggedIn, dataVersion]);
 
     function persist(updated: NoteItem[]) {
         setNotes(updated);

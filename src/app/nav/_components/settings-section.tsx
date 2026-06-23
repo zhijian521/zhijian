@@ -4,17 +4,11 @@ import { useState } from 'react';
 
 import { SettingsIcon } from '@/components/ui/icons';
 import { syncLocalToServer, clearLocalNavData } from '@/lib/nav-storage';
+import type { AuthUser } from '@/hooks/use-auth';
 
 import AuthModal from './auth-modal';
 
 import styles from './settings-section.module.css';
-
-interface AuthUser {
-    id: number;
-    username: string;
-    email: string;
-    role: string;
-}
 
 interface SettingsSectionProps {
     user: AuthUser | null;
@@ -27,7 +21,7 @@ interface SettingsSectionProps {
 }
 
 export default function SettingsSection({ user, isLoggedIn, loading, onLogin, onRegister, onLogout, onAuthChange }: SettingsSectionProps) {
-    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState<'login' | 'register' | false>(false);
     const [loggingOut, setLoggingOut] = useState(false);
 
     async function handleAuthSuccess() {
@@ -85,10 +79,10 @@ export default function SettingsSection({ user, isLoggedIn, loading, onLogin, on
                         <div className={styles.authActions}>
                             <p className={styles.cardHint}>登录后数据自动同步到云端</p>
                             <div className={styles.authBtns}>
-                                <button className={styles.loginBtn} onClick={() => setShowAuthModal(true)} type="button">
+                                <button className={styles.loginBtn} onClick={() => setShowAuthModal('login')} type="button">
                                     登录
                                 </button>
-                                <button className={styles.registerBtn} onClick={() => setShowAuthModal(true)} type="button">
+                                <button className={styles.registerBtn} onClick={() => setShowAuthModal('register')} type="button">
                                     注册
                                 </button>
                             </div>
@@ -153,8 +147,10 @@ export default function SettingsSection({ user, isLoggedIn, loading, onLogin, on
             </div>
 
             <AuthModal
-                open={showAuthModal}
-                onClose={handleAuthSuccess}
+                open={showAuthModal !== false}
+                initialTab={showAuthModal === 'register' ? 'register' : 'login'}
+                onSuccess={handleAuthSuccess}
+                onCancel={() => setShowAuthModal(false)}
                 onLogin={onLogin}
                 onRegister={onRegister}
             />

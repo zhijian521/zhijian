@@ -72,20 +72,31 @@ let navDataCache: {
     notes: NoteItem[] | null;
 } | null = null;
 
+/*-- 401 / 网络错误时短时间去重，避免 3 个组件各拉一次 --*/
+let fetchPromise: Promise<void> | null = null;
+
 async function fetchNavData(): Promise<void> {
     if (navDataCache) return;
-    try {
-        const res = await fetch('/api/nav/data');
-        if (res.ok) {
-            const json = await res.json();
-            const data = json.data ?? { bookmarks: null, todos: null, notes: null };
-            navDataCache = data;
-            /*-- 同时写入 localStorage 当缓存 --*/
-            if (data.bookmarks) localStorage.setItem(KEYS.bookmarks, JSON.stringify(data.bookmarks));
-            if (data.todos) localStorage.setItem(KEYS.todos, JSON.stringify(data.todos));
-            if (data.notes) localStorage.setItem(KEYS.notes, JSON.stringify(data.notes));
-        }
-    } catch { /* fall through */ }
+    /*-- 复用进行中的请求 --*/
+    if (fetchPromise) return fetchPromise;
+    fetchPromise = (async () => {
+        try {
+            const res = await fetch('/api/nav/data');
+            if (res.ok) {
+                const json = await res.json();
+                const data = json.data ?? { bookmarks: null, todos: null, notes: null };
+                /*-- 全空时不缓存，等 sync 完成后重拉 --*/
+                if (data.bookmarks || data.todos || data.notes) {
+                    navDataCache = data;
+                    if (data.bookmarks) localStorage.setItem(KEYS.bookmarks, JSON.stringify(data.bookmarks));
+                    if (data.todos) localStorage.setItem(KEYS.todos, JSON.stringify(data.todos));
+                    if (data.notes) localStorage.setItem(KEYS.notes, JSON.stringify(data.notes));
+                }
+            }
+        } catch { /* fall through */ }
+        finally { fetchPromise = null; }
+    })();
+    return fetchPromise;
 }
 
 export function clearNavDataCache(): void {
@@ -120,12 +131,13 @@ export async function getTodos(isLoggedIn?: boolean): Promise<TodoItem[]> {
 export async function saveTodos(todos: TodoItem[], isLoggedIn?: boolean): Promise<void> {
     if (isLoggedIn) {
         try {
-            await fetch('/api/nav/todos', {
+            const res = await fetch('/api/nav/todos', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: todos }),
             });
-        } catch { /* fall through */ }
+            if (!res.ok) console.warn('[nav] saveTodos API failed:', res.status);
+        } catch (e) { console.warn('[nav] saveTodos network error:', e); }
     }
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.todos, JSON.stringify(todos));
@@ -159,12 +171,13 @@ export async function getNotes(isLoggedIn?: boolean): Promise<NoteItem[]> {
 export async function saveNotes(notes: NoteItem[], isLoggedIn?: boolean): Promise<void> {
     if (isLoggedIn) {
         try {
-            await fetch('/api/nav/notes', {
+            const res = await fetch('/api/nav/notes', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: notes }),
             });
-        } catch { /* fall through */ }
+            if (!res.ok) console.warn('[nav] saveNotes API failed:', res.status);
+        } catch (e) { console.warn('[nav] saveNotes network error:', e); }
     }
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.notes, JSON.stringify(notes));
@@ -199,12 +212,13 @@ export async function getBookmarks(isLoggedIn?: boolean): Promise<Bookmark[]> {
 export async function saveBookmarks(bookmarks: Bookmark[], isLoggedIn?: boolean): Promise<void> {
     if (isLoggedIn) {
         try {
-            await fetch('/api/nav/bookmarks', {
+            const res = await fetch('/api/nav/bookmarks', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: bookmarks }),
             });
-        } catch { /* fall through */ }
+            if (!res.ok) console.warn('[nav] saveBookmarks API failed:', res.status);
+        } catch (e) { console.warn('[nav] saveBookmarks network error:', e); }
     }
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.bookmarks, JSON.stringify(bookmarks));

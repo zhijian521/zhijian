@@ -1,19 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dialog from '@/components/ui/dialog';
 
 import styles from './auth-modal.module.css';
 
 interface AuthModalProps {
     open: boolean;
-    onClose: () => void;
+    initialTab?: 'login' | 'register';
+    onSuccess: () => void;
+    onCancel: () => void;
     onLogin: (username: string, password: string) => Promise<void>;
     onRegister: (username: string, email: string, password: string) => Promise<void>;
 }
 
-export default function AuthModal({ open, onClose, onLogin, onRegister }: AuthModalProps) {
-    const [tab, setTab] = useState<'login' | 'register'>('login');
+export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLogin, onRegister }: AuthModalProps) {
+    const [tab, setTab] = useState<'login' | 'register'>(initialTab ?? 'login');
+
+    /*-- 弹窗打开时同步 tab --*/
+    useEffect(() => {
+        if (open && initialTab) setTab(initialTab);
+    }, [open, initialTab]);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -39,7 +46,7 @@ export default function AuthModal({ open, onClose, onLogin, onRegister }: AuthMo
         setLoading(true);
         try {
             await onLogin(username, password);
-            onClose();
+            onSuccess();
             reset();
         } catch (err: any) {
             setError(err.message || '登录失败');
@@ -55,7 +62,7 @@ export default function AuthModal({ open, onClose, onLogin, onRegister }: AuthMo
         try {
             await onRegister(username, email, password);
             await onLogin(username, password);
-            onClose();
+            onSuccess();
             reset();
         } catch (err: any) {
             setError(err.message || '注册失败');
@@ -67,7 +74,7 @@ export default function AuthModal({ open, onClose, onLogin, onRegister }: AuthMo
     return (
         <Dialog
             open={open}
-            onClose={() => { onClose(); reset(); }}
+            onClose={() => { onCancel(); reset(); }}
             title={tab === 'login' ? '登录' : '注册'}
         >
             <div className={styles.tabs}>

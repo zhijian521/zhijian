@@ -3,8 +3,6 @@ import { NextResponse } from 'next/server';
 import { withUser } from '@/lib/with-user';
 import { hasNavData, saveBookmarksDb, saveTodosDb, saveNotesDb } from '@/lib/nav-db';
 import { BizCode, fail, success } from '@/lib/api-response';
-import type { Bookmark } from '@/lib/nav-config';
-import type { TodoItem, NoteItem } from '@/lib/nav-storage';
 
 /*== 首次登录同步：把本地数据推到数据库
   数据库已有数据则拒绝（以数据库为准）。
@@ -16,17 +14,33 @@ export const POST = withUser(async (request, user) => {
         return NextResponse.json(fail(BizCode.CONFLICT, '数据已存在，以数据库为准。'), { status: 409 });
     }
 
-    let body: { bookmarks?: Bookmark[]; todos?: TodoItem[]; notes?: NoteItem[] };
+    let body: { bookmarks?: unknown; todos?: unknown; notes?: unknown };
     try {
         body = await request.json();
     } catch {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请求体格式不正确。'), { status: 400 });
     }
 
+    /*-- 校验：每项必须是数组，单条 JSON 不超过 1MB --*/
+    const MAX_SIZE = 1024 * 1024;
+    const fields: [string, unknown, (userId: number, data: any[]) => Promise<void>][] = [
+        ['bookmarks', body.bookmarks, saveBookmarksDb],
+        ['todos', body.todos, saveTodosDb],
+        ['notes', body.notes, saveNotesDb],
+    ];
+
     const tasks: Promise<void>[] = [];
-    if (body.bookmarks) tasks.push(saveBookmarksDb(user.userId, body.bookmarks));
-    if (body.todos) tasks.push(saveTodosDb(user.userId, body.todos));
-    if (body.notes) tasks.push(saveNotesDb(user.userId, body.notes));
+    for (const [name, value, saveFn] of fields) {
+        if (value == null) continue;
+        if (!Array.isArray(value)) {
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, `${name} 必须是数组。`), { status: 400 });
+        }
+        const raw = JSON.stringify(value);
+        if (raw.length > MAX_SIZE) {
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, `${name} 数据过大（上限 1MB）。`), { status: 400 });
+        }
+        tasks.push(saveFn(user.userId, value as any[]));
+    }
     await Promise.all(tasks);
 
     return NextResponse.json(success(null, '同步成功。'));

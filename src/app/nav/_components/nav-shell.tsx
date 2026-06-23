@@ -22,6 +22,7 @@ const SECTIONS = [
 
 export default function NavShell() {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [dataVersion, setDataVersion] = useState(0);
     const { user, isLoggedIn, loading, login, register, logout } = useAuth();
     const shellRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -64,9 +65,10 @@ export default function NavShell() {
         if (el) el.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
-    /*-- 登录/退出后清除缓存，触发数据重拉 --*/
+    /*-- 登录/退出后清除缓存，递增版本号触发数据重拉 --*/
     function handleAuthChange() {
         clearNavDataCache();
+        setDataVersion(v => v + 1);
     }
 
     return (
@@ -88,13 +90,13 @@ export default function NavShell() {
 
             {/*-- 四屏内容 --*/}
             <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
-                <SearchSection isLoggedIn={isLoggedIn} />
+                <SearchSection isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(1)}>
-                <TodoSection isLoggedIn={isLoggedIn} />
+                <TodoSection isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(2)}>
-                <NoteSection isLoggedIn={isLoggedIn} />
+                <NoteSection isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(3)}>
                 <SettingsSection

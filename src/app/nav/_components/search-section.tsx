@@ -9,14 +9,15 @@ import styles from './search-section.module.css';
 
 interface SearchSectionProps {
     isLoggedIn?: boolean;
+    dataVersion?: number;
 }
 
-export default function SearchSection({ isLoggedIn }: SearchSectionProps) {
+export default function SearchSection({ isLoggedIn, dataVersion }: SearchSectionProps) {
     return (
         <div className={styles.section}>
             <h1 className={styles.brandTitle}>{SITE_METADATA.name}</h1>
             <SearchBar />
-            <BookmarkBar isLoggedIn={isLoggedIn} />
+            <BookmarkBar isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
         </div>
     );
 }
