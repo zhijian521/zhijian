@@ -64,6 +64,34 @@ export function setSearchEngine(key: string): void {
     localStorage.setItem(KEYS.searchEngine, key);
 }
 
+/*== 缓存：登录时拉一次 /api/nav/data，各 get 函数共享结果 ==*/
+
+let navDataCache: {
+    bookmarks: Bookmark[] | null;
+    todos: TodoItem[] | null;
+    notes: NoteItem[] | null;
+} | null = null;
+
+async function fetchNavData(): Promise<void> {
+    if (navDataCache) return;
+    try {
+        const res = await fetch('/api/nav/data');
+        if (res.ok) {
+            const json = await res.json();
+            const data = json.data ?? { bookmarks: null, todos: null, notes: null };
+            navDataCache = data;
+            /*-- 同时写入 localStorage 当缓存 --*/
+            if (data.bookmarks) localStorage.setItem(KEYS.bookmarks, JSON.stringify(data.bookmarks));
+            if (data.todos) localStorage.setItem(KEYS.todos, JSON.stringify(data.todos));
+            if (data.notes) localStorage.setItem(KEYS.notes, JSON.stringify(data.notes));
+        }
+    } catch { /* fall through */ }
+}
+
+export function clearNavDataCache(): void {
+    navDataCache = null;
+}
+
 /*== 备忘录 ==*/
 
 export interface TodoItem {
@@ -77,17 +105,8 @@ export interface TodoItem {
 
 export async function getTodos(isLoggedIn?: boolean): Promise<TodoItem[]> {
     if (isLoggedIn) {
-        try {
-            const res = await fetch('/api/nav/data');
-            if (res.ok) {
-                const json = await res.json();
-                const todos: TodoItem[] | null = json.data?.todos;
-                if (todos !== null && todos !== undefined) {
-                    localStorage.setItem(KEYS.todos, JSON.stringify(todos));
-                    return todos;
-                }
-            }
-        } catch { /* fall through to localStorage */ }
+        await fetchNavData();
+        if (navDataCache?.todos) return navDataCache.todos;
     }
     if (typeof window === 'undefined') return [];
     try {
@@ -106,7 +125,7 @@ export async function saveTodos(todos: TodoItem[], isLoggedIn?: boolean): Promis
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: todos }),
             });
-        } catch { /* fall through to localStorage */ }
+        } catch { /* fall through */ }
     }
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.todos, JSON.stringify(todos));
@@ -125,17 +144,8 @@ export interface NoteItem {
 
 export async function getNotes(isLoggedIn?: boolean): Promise<NoteItem[]> {
     if (isLoggedIn) {
-        try {
-            const res = await fetch('/api/nav/data');
-            if (res.ok) {
-                const json = await res.json();
-                const notes: NoteItem[] | null = json.data?.notes;
-                if (notes !== null && notes !== undefined) {
-                    localStorage.setItem(KEYS.notes, JSON.stringify(notes));
-                    return notes;
-                }
-            }
-        } catch { /* fall through */ }
+        await fetchNavData();
+        if (navDataCache?.notes) return navDataCache.notes;
     }
     if (typeof window === 'undefined') return [];
     try {
@@ -165,17 +175,8 @@ export async function saveNotes(notes: NoteItem[], isLoggedIn?: boolean): Promis
 
 export async function getBookmarks(isLoggedIn?: boolean): Promise<Bookmark[]> {
     if (isLoggedIn) {
-        try {
-            const res = await fetch('/api/nav/data');
-            if (res.ok) {
-                const json = await res.json();
-                const bookmarks: Bookmark[] | null = json.data?.bookmarks;
-                if (bookmarks !== null && bookmarks !== undefined) {
-                    localStorage.setItem(KEYS.bookmarks, JSON.stringify(bookmarks));
-                    return bookmarks;
-                }
-            }
-        } catch { /* fall through */ }
+        await fetchNavData();
+        if (navDataCache?.bookmarks) return navDataCache.bookmarks;
     }
     if (typeof window === 'undefined') return [];
     try {

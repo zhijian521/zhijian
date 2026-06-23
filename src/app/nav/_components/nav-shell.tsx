@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { SearchIcon, ListIcon, PencilIcon, SettingsIcon } from '@/components/ui/icons';
 import { useAuth } from '@/hooks/use-auth';
+import { clearNavDataCache } from '@/lib/nav-storage';
 
 import SearchSection from './search-section';
 import TodoSection from './todo-section';
@@ -21,8 +22,7 @@ const SECTIONS = [
 
 export default function NavShell() {
     const [activeIndex, setActiveIndex] = useState(0);
-    const { isLoggedIn } = useAuth();
-    const [refreshKey, setRefreshKey] = useState(0);
+    const { user, isLoggedIn, loading, login, register, logout } = useAuth();
     const shellRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
     const observerRef = useRef<IntersectionObserver | null>(null);
@@ -64,9 +64,9 @@ export default function NavShell() {
         if (el) el.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
-    /*-- 登录/退出后刷新数据 --*/
+    /*-- 登录/退出后清除缓存，触发数据重拉 --*/
     function handleAuthChange() {
-        setRefreshKey(k => k + 1);
+        clearNavDataCache();
     }
 
     return (
@@ -88,16 +88,24 @@ export default function NavShell() {
 
             {/*-- 四屏内容 --*/}
             <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
-                <SearchSection key={`search-${refreshKey}`} isLoggedIn={isLoggedIn} />
+                <SearchSection isLoggedIn={isLoggedIn} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(1)}>
-                <TodoSection key={`todo-${refreshKey}`} isLoggedIn={isLoggedIn} />
+                <TodoSection isLoggedIn={isLoggedIn} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(2)}>
-                <NoteSection key={`note-${refreshKey}`} isLoggedIn={isLoggedIn} />
+                <NoteSection isLoggedIn={isLoggedIn} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(3)}>
-                <SettingsSection onAuthChange={handleAuthChange} />
+                <SettingsSection
+                    user={user}
+                    isLoggedIn={isLoggedIn}
+                    loading={loading}
+                    onLogin={login}
+                    onRegister={register}
+                    onLogout={logout}
+                    onAuthChange={handleAuthChange}
+                />
             </div>
         </div>
     );

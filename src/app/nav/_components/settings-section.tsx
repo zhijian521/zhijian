@@ -3,19 +3,30 @@
 import { useState } from 'react';
 
 import { SettingsIcon } from '@/components/ui/icons';
-import { useAuth } from '@/hooks/use-auth';
 import { syncLocalToServer, clearLocalNavData } from '@/lib/nav-storage';
 
 import AuthModal from './auth-modal';
 
 import styles from './settings-section.module.css';
 
+interface AuthUser {
+    id: number;
+    username: string;
+    email: string;
+    role: string;
+}
+
 interface SettingsSectionProps {
+    user: AuthUser | null;
+    isLoggedIn: boolean;
+    loading: boolean;
+    onLogin: (username: string, password: string) => Promise<void>;
+    onRegister: (username: string, email: string, password: string) => Promise<void>;
+    onLogout: () => Promise<void>;
     onAuthChange?: () => void;
 }
 
-export default function SettingsSection({ onAuthChange }: SettingsSectionProps) {
-    const { user, isLoggedIn, loading, logout } = useAuth();
+export default function SettingsSection({ user, isLoggedIn, loading, onLogin, onRegister, onLogout, onAuthChange }: SettingsSectionProps) {
     const [showAuthModal, setShowAuthModal] = useState(false);
 
     async function handleAuthSuccess() {
@@ -28,7 +39,7 @@ export default function SettingsSection({ onAuthChange }: SettingsSectionProps) 
     }
 
     async function handleLogout() {
-        await logout();
+        await onLogout();
         clearLocalNavData();
         onAuthChange?.();
     }
@@ -62,7 +73,12 @@ export default function SettingsSection({ onAuthChange }: SettingsSectionProps) 
                 </div>
             )}
 
-            <AuthModal open={showAuthModal} onClose={handleAuthSuccess} />
+            <AuthModal
+                open={showAuthModal}
+                onClose={handleAuthSuccess}
+                onLogin={onLogin}
+                onRegister={onRegister}
+            />
         </div>
     );
 }

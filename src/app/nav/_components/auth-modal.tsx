@@ -2,24 +2,23 @@
 
 import { useState } from 'react';
 import Dialog from '@/components/ui/dialog';
-import { useAuth } from '@/hooks/use-auth';
 
 import styles from './auth-modal.module.css';
 
 interface AuthModalProps {
     open: boolean;
     onClose: () => void;
+    onLogin: (username: string, password: string) => Promise<void>;
+    onRegister: (username: string, email: string, password: string) => Promise<void>;
 }
 
-export default function AuthModal({ open, onClose }: AuthModalProps) {
+export default function AuthModal({ open, onClose, onLogin, onRegister }: AuthModalProps) {
     const [tab, setTab] = useState<'login' | 'register'>('login');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const { login, register } = useAuth();
 
     function reset() {
         setUsername('');
@@ -39,7 +38,7 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
         setError('');
         setLoading(true);
         try {
-            await login(username, password);
+            await onLogin(username, password);
             onClose();
             reset();
         } catch (err: any) {
@@ -54,9 +53,8 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
         setError('');
         setLoading(true);
         try {
-            await register(username, email, password);
-            /*-- 注册成功后自动登录 --*/
-            await login(username, password);
+            await onRegister(username, email, password);
+            await onLogin(username, password);
             onClose();
             reset();
         } catch (err: any) {
