@@ -46,26 +46,14 @@ export const BOOKMARKS: Bookmark[] = [
     { id: 'bm-gmail', name: 'Gmail', url: 'https://mail.google.com' },
     { id: 'bm-chatgpt', name: 'ChatGPT', url: 'https://chat.openai.com' },
     { id: 'bm-claude', name: 'Claude', url: 'https://claude.ai' },
-    /*-- 工具 --*/
-    {
-        id: 'bf-tools',
-        name: '工具',
-        children: [
-            { id: 'bm-notion', name: 'Notion', url: 'https://notion.so' },
-            { id: 'bm-figma', name: 'Figma', url: 'https://figma.com' },
-            { id: 'bm-vercel', name: 'Vercel', url: 'https://vercel.com' },
-            { id: 'bm-canva', name: 'Canva', url: 'https://canva.com' },
-        ],
-    },
     /*-- 开发 --*/
     {
         id: 'bf-dev',
         name: '开发',
         children: [
-            { id: 'bm-stackoverflow', name: 'Stack Overflow', url: 'https://stackoverflow.com' },
+            { id: 'bm-vercel', name: 'Vercel', url: 'https://vercel.com' },
             { id: 'bm-mdn', name: 'MDN', url: 'https://developer.mozilla.org' },
-            { id: 'bm-npm', name: 'npm', url: 'https://npmjs.com' },
-            { id: 'bm-codesandbox', name: 'CodeSandbox', url: 'https://codesandbox.io' },
+            { id: 'bm-stackoverflow', name: 'Stack Overflow', url: 'https://stackoverflow.com' },
         ],
     },
     /*-- AI --*/
@@ -75,8 +63,6 @@ export const BOOKMARKS: Bookmark[] = [
         children: [
             { id: 'bm-gemini', name: 'Gemini', url: 'https://gemini.google.com' },
             { id: 'bm-coze', name: 'Coze', url: 'https://coze.com' },
-            { id: 'bm-huggingface', name: 'HuggingFace', url: 'https://huggingface.co' },
-            { id: 'bm-replicate', name: 'Replicate', url: 'https://replicate.com' },
         ],
     },
     /*-- 设计 --*/
@@ -84,10 +70,8 @@ export const BOOKMARKS: Bookmark[] = [
         id: 'bf-design',
         name: '设计',
         children: [
-            { id: 'bm-dribbble', name: 'Dribbble', url: 'https://dribbble.com' },
-            { id: 'bm-behance', name: 'Behance', url: 'https://behance.net' },
-            { id: 'bm-pinterest', name: 'Pinterest', url: 'https://pinterest.com' },
-            { id: 'bm-unsplash', name: 'Unsplash', url: 'https://unsplash.com' },
+            { id: 'bm-figma', name: 'Figma', url: 'https://figma.com' },
+            { id: 'bm-dribbble', name: 'Stitch', url: 'https://stitch.withgoogle.com' },
         ],
     },
     /*-- 社交 --*/
@@ -95,10 +79,11 @@ export const BOOKMARKS: Bookmark[] = [
         id: 'bf-social',
         name: '社交',
         children: [
+            { id: 'bm-x', name: 'X', url: 'https://x.com' },
+            { id: 'bm-reddit', name: 'Instagram', url: 'https://instagram.com' },
+            { id: 'bm-reddit', name: 'Reddit', url: 'https://reddit.com' },
             { id: 'bm-weibo', name: '微博', url: 'https://weibo.com' },
             { id: 'bm-zhihu', name: '知乎', url: 'https://zhihu.com' },
-            { id: 'bm-x', name: 'X', url: 'https://x.com' },
-            { id: 'bm-reddit', name: 'Reddit', url: 'https://reddit.com' },
         ],
     },
     /*-- 影音 --*/
@@ -106,9 +91,10 @@ export const BOOKMARKS: Bookmark[] = [
         id: 'bf-media',
         name: '影音',
         children: [
+            { id: 'bm-douyin', name: '抖音', url: 'https://douyin.com' },
             { id: 'bm-youtube', name: 'YouTube', url: 'https://youtube.com' },
-            { id: 'bm-bilibili', name: 'B站', url: 'https://bilibili.com' },
-            { id: 'bm-spotify', name: 'Spotify', url: 'https://open.spotify.com' },
+            { id: 'bm-bilibili', name: 'Bilibili', url: 'https://bilibili.com' },
+            { id: 'bm-spotify', name: 'Apple Music', url: 'https://music.apple.com' },
             { id: 'bm-netease-music', name: '网易云', url: 'https://music.163.com' },
         ],
     },
