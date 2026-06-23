@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-import { SearchIcon, ListIcon, PencilIcon } from '@/components/ui/icons';
+import { SearchIcon, ListIcon, PencilIcon, SettingsIcon } from '@/components/ui/icons';
+import { useAuth } from '@/hooks/use-auth';
 
 import SearchSection from './search-section';
 import TodoSection from './todo-section';
 import NoteSection from './note-section';
+import SettingsSection from './settings-section';
 import styles from './nav-shell.module.css';
 
 /*-- Dock 配置 --*/
@@ -14,10 +16,13 @@ const SECTIONS = [
     { id: 'search', icon: SearchIcon, label: '搜索' },
     { id: 'todo', icon: ListIcon, label: '备忘录' },
     { id: 'note', icon: PencilIcon, label: '笔记' },
+    { id: 'settings', icon: SettingsIcon, label: '设置' },
 ] as const;
 
 export default function NavShell() {
     const [activeIndex, setActiveIndex] = useState(0);
+    const { isLoggedIn } = useAuth();
+    const [refreshKey, setRefreshKey] = useState(0);
     const shellRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
     const observerRef = useRef<IntersectionObserver | null>(null);
@@ -59,6 +64,11 @@ export default function NavShell() {
         if (el) el.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
+    /*-- 登录/退出后刷新数据 --*/
+    function handleAuthChange() {
+        setRefreshKey(k => k + 1);
+    }
+
     return (
         <div className={styles.shell} ref={shellRef}>
             {/*-- Dock 指示器 --*/}
@@ -76,15 +86,18 @@ export default function NavShell() {
                 ))}
             </div>
 
-            {/*-- 三屏内容 --*/}
+            {/*-- 四屏内容 --*/}
             <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
-                <SearchSection />
+                <SearchSection key={`search-${refreshKey}`} isLoggedIn={isLoggedIn} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(1)}>
-                <TodoSection />
+                <TodoSection key={`todo-${refreshKey}`} isLoggedIn={isLoggedIn} />
             </div>
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(2)}>
-                <NoteSection />
+                <NoteSection key={`note-${refreshKey}`} isLoggedIn={isLoggedIn} />
+            </div>
+            <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(3)}>
+                <SettingsSection onAuthChange={handleAuthChange} />
             </div>
         </div>
     );
