@@ -7,6 +7,8 @@ export const metadata: Metadata = {
     description: '浏览器导航页 — 搜索、书签、备忘录、笔记。',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function NavPage() {
     return <NavShell />;
 }
