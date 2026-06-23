@@ -40,6 +40,9 @@ export function isBookmarkFolder(b: Bookmark): b is BookmarkFolder {
     return 'children' in b;
 }
 
+/*-- 默认书签版本，改了 BOOKMARKS 就 +1，自动覆盖用户旧缓存 --*/
+export const BOOKMARKS_VERSION = 2;
+
 export const BOOKMARKS: Bookmark[] = [
     /*-- 常用 --*/
     { id: 'bm-github', name: 'GitHub', url: 'https://github.com' },
@@ -80,7 +83,7 @@ export const BOOKMARKS: Bookmark[] = [
         name: '社交',
         children: [
             { id: 'bm-x', name: 'X', url: 'https://x.com' },
-            { id: 'bm-reddit', name: 'Instagram', url: 'https://instagram.com' },
+            { id: 'bm-instagram', name: 'Instagram', url: 'https://instagram.com' },
             { id: 'bm-reddit', name: 'Reddit', url: 'https://reddit.com' },
             { id: 'bm-weibo', name: '微博', url: 'https://weibo.com' },
             { id: 'bm-zhihu', name: '知乎', url: 'https://zhihu.com' },

@@ -1,5 +1,5 @@
 import type { Bookmark } from '@/lib/nav-config';
-import { BOOKMARKS } from '@/lib/nav-config';
+import { BOOKMARKS, BOOKMARKS_VERSION } from '@/lib/nav-config';
 
 /*============================================================================
   导航页本地存储 — 搜索记录、备忘录、笔记、书签
@@ -20,6 +20,7 @@ const KEYS = {
     todos: 'zhijian_nav_todos',
     notes: 'zhijian_nav_notes',
     bookmarks: 'zhijian_nav_bookmarks',
+    bookmarksVersion: 'zhijian_nav_bookmarks_version',
 } as const;
 
 /*== 搜索记录 ==*/
@@ -120,10 +121,18 @@ export function saveNotes(notes: NoteItem[]): void {
 export function getBookmarks(): Bookmark[] {
     if (typeof window === 'undefined') return [];
     try {
+        const savedVersion = localStorage.getItem(KEYS.bookmarksVersion);
+        /*-- 版本不匹配 → 直接用新默认值覆盖 --*/
+        if (savedVersion !== String(BOOKMARKS_VERSION)) {
+            localStorage.setItem(KEYS.bookmarks, JSON.stringify(BOOKMARKS));
+            localStorage.setItem(KEYS.bookmarksVersion, String(BOOKMARKS_VERSION));
+            return BOOKMARKS;
+        }
         const raw = localStorage.getItem(KEYS.bookmarks);
         if (raw) return JSON.parse(raw);
         /*-- 首次加载用静态默认值 --*/
         localStorage.setItem(KEYS.bookmarks, JSON.stringify(BOOKMARKS));
+        localStorage.setItem(KEYS.bookmarksVersion, String(BOOKMARKS_VERSION));
         return BOOKMARKS;
     } catch {
         return BOOKMARKS;
