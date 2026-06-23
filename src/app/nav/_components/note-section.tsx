@@ -12,25 +12,26 @@ function formatDate(ts: number): string {
     return new Date(ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-export default function NoteSection() {
+export default function NoteSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
     const [notes, setNotes] = useState<NoteItem[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
 
     useEffect(() => {
-        const loaded = getNotes();
-        setNotes(loaded);
-        if (loaded.length > 0) {
-            setActiveId(loaded[0].id);
-            setEditTitle(loaded[0].title);
-            setEditContent(loaded[0].content);
-        }
-    }, []);
+        getNotes(isLoggedIn).then(loaded => {
+            setNotes(loaded);
+            if (loaded.length > 0) {
+                setActiveId(loaded[0].id);
+                setEditTitle(loaded[0].title);
+                setEditContent(loaded[0].content);
+            }
+        });
+    }, [isLoggedIn]);
 
     function persist(updated: NoteItem[]) {
         setNotes(updated);
-        saveNotes(updated);
+        saveNotes(updated, isLoggedIn);
     }
 
     function handleSelect(id: string) {

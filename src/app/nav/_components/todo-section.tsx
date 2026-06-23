@@ -25,7 +25,7 @@ function autoResize(el: HTMLTextAreaElement | null) {
     el.style.height = el.scrollHeight + 'px';
 }
 
-export default function TodoSection() {
+export default function TodoSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
     const [todos, setTodos] = useState<TodoItem[]>([]);
     const [showAdd, setShowAdd] = useState(false);
     /*-- 新增表单 --*/
@@ -34,12 +34,12 @@ export default function TodoSection() {
     const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
 
     useEffect(() => {
-        setTodos(getTodos());
-    }, []);
+        getTodos(isLoggedIn).then(setTodos);
+    }, [isLoggedIn]);
 
     function persist(updated: TodoItem[]) {
         setTodos(updated);
-        saveTodos(updated);
+        saveTodos(updated, isLoggedIn);
     }
 
     function handleAdd() {

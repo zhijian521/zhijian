@@ -53,7 +53,11 @@ type EditMode =
     | { type: 'delete'; id: string; name: string; folderId?: string }
     | null;
 
-export default function BookmarkBar() {
+interface BookmarkBarProps {
+    isLoggedIn?: boolean;
+}
+
+export default function BookmarkBar({ isLoggedIn }: BookmarkBarProps) {
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
     const [editMode, setEditMode] = useState<EditMode>(null);
@@ -70,12 +74,12 @@ export default function BookmarkBar() {
     dragStateRef.current = dragState;
 
     useEffect(() => {
-        setBookmarks(getBookmarks());
-    }, []);
+        getBookmarks(isLoggedIn).then(setBookmarks);
+    }, [isLoggedIn]);
 
     function persist(updated: Bookmark[]) {
         setBookmarks(updated);
-        saveBookmarks(updated);
+        saveBookmarks(updated, isLoggedIn);
     }
 
     /*== 右键菜单 ==*/
