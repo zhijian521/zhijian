@@ -169,3 +169,45 @@ CREATE TABLE IF NOT EXISTS zhijian_track_daily (
   KEY idx_zhijian_track_daily_site_date (site_id, date),
   KEY idx_zhijian_track_daily_dim (site_id, date, dim_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------------------------
+--  导航页模块 - 书签表（每用户一条 JSON 记录）
+-- --------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS zhijian_nav_bookmarks (
+  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id     BIGINT UNSIGNED NOT NULL                COMMENT '用户ID',
+  data        JSON            NOT NULL                COMMENT '整棵书签树',
+  version     INT             NOT NULL DEFAULT 1      COMMENT '乐观锁版本号',
+  updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_zhijian_nav_bookmarks_user (user_id),
+  CONSTRAINT fk_zhijian_nav_bookmarks_user FOREIGN KEY (user_id) REFERENCES zhijian_users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------------------------
+--  导航页模块 - 备忘录表（每用户一条 JSON 记录）
+-- --------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS zhijian_nav_todos (
+  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id     BIGINT UNSIGNED NOT NULL                COMMENT '用户ID',
+  data        JSON            NOT NULL                COMMENT '备忘录数组',
+  version     INT             NOT NULL DEFAULT 1      COMMENT '乐观锁版本号',
+  updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_zhijian_nav_todos_user (user_id),
+  CONSTRAINT fk_zhijian_nav_todos_user FOREIGN KEY (user_id) REFERENCES zhijian_users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------------------------
+--  导航页模块 - 笔记表（每用户一条 JSON 记录）
+-- --------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS zhijian_nav_notes (
+  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id     BIGINT UNSIGNED NOT NULL                COMMENT '用户ID',
+  data        JSON            NOT NULL                COMMENT '笔记数组',
+  version     INT             NOT NULL DEFAULT 1      COMMENT '乐观锁版本号',
+  updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_zhijian_nav_notes_user (user_id),
+  CONSTRAINT fk_zhijian_nav_notes_user FOREIGN KEY (user_id) REFERENCES zhijian_users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
