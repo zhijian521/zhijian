@@ -48,8 +48,8 @@ export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLog
             await onLogin(username, password);
             onSuccess();
             reset();
-        } catch (err: any) {
-            setError(err.message || '登录失败');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : '登录失败');
         } finally {
             setLoading(false);
         }
@@ -64,8 +64,8 @@ export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLog
             await onLogin(username, password);
             onSuccess();
             reset();
-        } catch (err: any) {
-            setError(err.message || '注册失败');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : '注册失败');
         } finally {
             setLoading(false);
         }

@@ -34,10 +34,10 @@ export default function SearchBar() {
 
     const engine = SEARCH_ENGINES.find(e => e.key === engineKey) ?? SEARCH_ENGINES[0];
 
-    /*-- 判断是否为 URL --*/
+    /*-- 判断是否为 URL — 需要协议头或 www 前缀，避免误判普通搜索词 --*/
     function isUrl(s: string): boolean {
         if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(s)) return true;
-        if (/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+/.test(s)) return true;
+        if (/^www\./.test(s) && /\.[a-zA-Z]{2,}/.test(s)) return true;
         return false;
     }
 

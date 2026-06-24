@@ -15,7 +15,7 @@
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(251, 249, 249, 0.5); /* var(--background) 72% 不透明度 */
+    background: color-mix(in srgb, var(--background) 50%, transparent);
     z-index: 0;
     pointer-events: none;
 }

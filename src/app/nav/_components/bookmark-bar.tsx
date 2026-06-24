@@ -6,36 +6,13 @@ import Dialog from '@/components/ui/dialog';
 import { isBookmarkFolder } from '@/lib/nav-config';
 import type { Bookmark, BookmarkItem, BookmarkFolder } from '@/lib/nav-config';
 import { getBookmarks, saveBookmarks, genId } from '@/lib/nav-storage';
+import { reorder, insertAfter, type DragState } from './drag-utils';
 
 import BookmarkContextMenu from './bookmark-context-menu';
 import BookmarkLink from './bookmark-link';
-import type { DragState } from './bookmark-link';
 import type { ContextMenuAction } from './bookmark-context-menu';
 
 import styles from './bookmark-bar.module.css';
-
-/*-- 同层重排序 --*/
-function reorder<T extends { id: string }>(list: T[], dragId: string, targetId: string, position: 'before' | 'after'): T[] {
-    const fromIdx = list.findIndex(b => b.id === dragId);
-    const toIdx = list.findIndex(b => b.id === targetId);
-    if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return list;
-    const updated = [...list];
-    const [moved] = updated.splice(fromIdx, 1);
-    const adjustedTo = toIdx > fromIdx ? toIdx - 1 : toIdx;
-    const insertIdx = position === 'before' ? adjustedTo : adjustedTo + 1;
-    updated.splice(insertIdx, 0, moved);
-    return updated;
-}
-
-/*-- 在指定项后面插入新项 --*/
-function insertAfter<T extends { id: string }>(list: T[], item: T, afterId?: string): T[] {
-    if (!afterId) return [...list, item];
-    const idx = list.findIndex(b => b.id === afterId);
-    if (idx === -1) return [...list, item];
-    const updated = [...list];
-    updated.splice(idx + 1, 0, item);
-    return updated;
-}
 
 /*== 右键菜单状态 ==*/
 interface MenuState {
@@ -289,7 +266,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                     {config.showDelete && (
                         <p className={styles.deleteText}>
                             确定删除「{editMode.type === 'delete' ? editMode.name : ''}」？
-                            {bookmarks.find(b => b.id === (editMode as { id: string }).id && isBookmarkFolder(b)) && '文件夹内的书签也会一起删除。'}
+                            {editMode.type === 'delete' && bookmarks.find(b => b.id === editMode.id && isBookmarkFolder(b)) && '文件夹内的书签也会一起删除。'}
                         </p>
                     )}
                     {config.showForm && (

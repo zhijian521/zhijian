@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { SettingsIcon } from '@/components/ui/icons';
-import { syncLocalToServer, clearLocalNavData } from '@/lib/nav-storage';
+import { syncLocalToServer, clearLocalNavData, getSaveStatus, onSaveStatusChange } from '@/lib/nav-storage';
 import type { AuthUser } from '@/hooks/use-auth';
 
 import AuthModal from './auth-modal';
@@ -23,6 +23,12 @@ interface SettingsSectionProps {
 export default function SettingsSection({ user, isLoggedIn, loading, onLogin, onRegister, onLogout, onAuthChange }: SettingsSectionProps) {
     const [showAuthModal, setShowAuthModal] = useState<'login' | 'register' | false>(false);
     const [loggingOut, setLoggingOut] = useState(false);
+    const [saveStatus, setSaveStatus] = useState(getSaveStatus);
+
+    useEffect(() => {
+        if (!isLoggedIn) return;
+        return onSaveStatusChange(() => setSaveStatus(getSaveStatus()));
+    }, [isLoggedIn]);
 
     async function handleAuthSuccess() {
         setShowAuthModal(false);
@@ -95,21 +101,19 @@ export default function SettingsSection({ user, isLoggedIn, loading, onLogin, on
                     <h3 className={styles.cardTitle}>数据同步</h3>
                     {isLoggedIn ? (
                         <div className={styles.syncInfo}>
-                            <div className={styles.syncRow}>
-                                <span className={styles.syncDot}>●</span>
-                                <span className={styles.syncLabel}>书签</span>
-                                <span className={styles.syncStatusOn}>已同步</span>
-                            </div>
-                            <div className={styles.syncRow}>
-                                <span className={styles.syncDot}>●</span>
-                                <span className={styles.syncLabel}>备忘录</span>
-                                <span className={styles.syncStatusOn}>已同步</span>
-                            </div>
-                            <div className={styles.syncRow}>
-                                <span className={styles.syncDot}>●</span>
-                                <span className={styles.syncLabel}>笔记</span>
-                                <span className={styles.syncStatusOn}>已同步</span>
-                            </div>
+                            {(['bookmarks', 'todos', 'notes'] as const).map(key => {
+                                const labels = { bookmarks: '书签', todos: '备忘录', notes: '笔记' };
+                                const status = saveStatus[key];
+                                return (
+                                    <div key={key} className={styles.syncRow}>
+                                        <span className={status === 'ok' ? styles.syncDot : status === 'error' ? styles.syncDotError : styles.syncDotPending}>●</span>
+                                        <span className={styles.syncLabel}>{labels[key]}</span>
+                                        {status === 'ok' && <span className={styles.syncStatusOn}>已同步</span>}
+                                        {status === 'pending' && <span className={styles.syncStatusPending}>同步中…</span>}
+                                        {status === 'error' && <span className={styles.syncStatusError}>同步失败</span>}
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className={styles.syncInfo}>

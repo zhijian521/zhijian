@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import { getNotes, saveNotes, genId } from '@/lib/nav-storage';
 import type { NoteItem } from '@/lib/nav-storage';
+import { reorder, type DragState } from './drag-utils';
 
 import styles from './note-section.module.css';
 
@@ -17,6 +18,14 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
     const [activeId, setActiveId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
+    const [dragState, setDragState] = useState<DragState | null>(null);
+
+    /*-- 用 ref 持有最新值，避免闭包陷阱 --*/
+    const notesRef = useRef(notes);
+    notesRef.current = notes;
+    const dragStateRef = useRef(dragState);
+    dragStateRef.current = dragState;
+    const justDraggedRef = useRef(false);
 
     useEffect(() => {
         getNotes(isLoggedIn).then(loaded => {
@@ -34,7 +43,38 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         saveNotes(updated, isLoggedIn);
     }
 
+    /*== 拖拽 — 用 ref 读取最新值，回调稳定不重建 ==*/
+    const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', id);
+        setDragState({ dragId: id, overId: null, position: null });
+    }, []);
+
+    const handleDragOver = useCallback((e: React.DragEvent, id: string) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        const position = e.clientY < midY ? 'before' : 'after';
+        setDragState(prev => prev ? { ...prev, overId: id, position } : prev);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent, id: string) => {
+        e.preventDefault();
+        const ds = dragStateRef.current;
+        if (!ds || ds.dragId === id || !ds.position) return;
+        persist(reorder(notesRef.current, ds.dragId, id, ds.position));
+        setDragState(null);
+        justDraggedRef.current = true;
+        setTimeout(() => { justDraggedRef.current = false; }, 0);
+    }, []);
+
+    const handleDragEnd = useCallback(() => {
+        setDragState(null);
+    }, []);
+
     function handleSelect(id: string) {
+        if (justDraggedRef.current) return;
         setActiveId(id);
         const note = notes.find(n => n.id === id);
         if (note) {
@@ -106,12 +146,20 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                     </button>
                 </div>
                 <ul className={styles.list}>
-                    {notes.map((n) => (
-                        <li
-                            key={n.id}
-                            className={`${styles.noteItem} ${n.id === activeId ? styles.noteItemActive : ''}`}
-                            onClick={() => handleSelect(n.id)}
-                        >
+                    {notes.map((n) => {
+                        const isDragOver = dragState?.overId === n.id && dragState?.position;
+                        const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
+                        return (
+                            <li
+                                key={n.id}
+                                className={`${styles.noteItem} ${n.id === activeId ? styles.noteItemActive : ''} ${dragCls}`}
+                                draggable
+                                onClick={() => handleSelect(n.id)}
+                                onDragStart={(e) => handleDragStart(e, n.id)}
+                                onDragOver={(e) => handleDragOver(e, n.id)}
+                                onDrop={(e) => handleDrop(e, n.id)}
+                                onDragEnd={handleDragEnd}
+                            >
                             <div className={styles.noteInfo}>
                                 <p className={styles.noteTitle}>{n.title || '无标题'}</p>
                                 <p className={styles.noteDate}>{formatDate(n.updatedAt)}</p>
@@ -125,7 +173,8 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                 <Trash2Icon className={styles.noteDeleteIcon} />
                             </button>
                         </li>
-                    ))}
+                        );
+                    })}
                 </ul>
             </div>
 

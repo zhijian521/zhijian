@@ -197,3 +197,35 @@
     font-size: 0.875rem;
     padding: 3rem 0;
 }
+
+/*-- 拖拽指示线 --*/
+
+.dragOverBefore {
+    position: relative;
+}
+
+.dragOverBefore::before {
+    content: '';
+    position: absolute;
+    top: -0.125rem;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 1px;
+}
+
+.dragOverAfter {
+    position: relative;
+}
+
+.dragOverAfter::after {
+    content: '';
+    position: absolute;
+    bottom: -0.125rem;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 1px;
+}

@@ -33,5 +33,5 @@
 }
 
 .menuItemDanger:hover {
-    background: var(--destructive-subtle, rgba(239, 68, 68, 0.08));
+    background: var(--destructive-subtle);
 }

@@ -11,6 +11,15 @@ export function genId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
+/*-- debounce：快速连续操作（拖拽排序、快速打字）时合并 API 请求 --*/
+function debounce<T extends (...args: any[]) => void>(fn: T, ms: number): T {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    return ((...args: any[]) => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => { timer = null; fn(...args); }, ms);
+    }) as T;
+}
+
 /*-- 存储键 --*/
 const KEYS = {
     searchHistory: 'zhijian_nav_search_history',
@@ -103,6 +112,15 @@ export function clearNavDataCache(): void {
     navDataCache = null;
 }
 
+/*-- 监听其他标签页的 localStorage 写入，自动清缓存避免读到过期数据 --*/
+if (typeof window !== 'undefined') {
+    window.addEventListener('storage', (e) => {
+        if (e.key && (e.key as string).startsWith('zhijian_nav_')) {
+            navDataCache = null;
+        }
+    });
+}
+
 /*== 备忘录 ==*/
 
 export interface TodoItem {
@@ -128,17 +146,45 @@ export async function getTodos(isLoggedIn?: boolean): Promise<TodoItem[]> {
     }
 }
 
+/*-- API 写入 debounce 300ms，localStorage 立即写入 --*/
+const DEBOUNCE_MS = 300;
+
+/*-- 同步状态追踪：settings 页面读取 --*/
+type SaveStatus = 'ok' | 'error' | 'pending';
+const saveStatus: Record<'bookmarks' | 'todos' | 'notes', SaveStatus> = {
+    bookmarks: 'ok', todos: 'ok', notes: 'ok',
+};
+const saveStatusListeners = new Set<() => void>();
+
+export function getSaveStatus() { return { ...saveStatus }; }
+export function onSaveStatusChange(fn: () => void) {
+    saveStatusListeners.add(fn);
+    return () => { saveStatusListeners.delete(fn); };
+}
+function emitSaveStatus() { saveStatusListeners.forEach(fn => fn()); }
+
+function markPending(key: keyof typeof saveStatus) {
+    if (saveStatus[key] !== 'pending') { saveStatus[key] = 'pending'; emitSaveStatus(); }
+}
+function markOk(key: keyof typeof saveStatus) {
+    if (saveStatus[key] !== 'ok') { saveStatus[key] = 'ok'; emitSaveStatus(); }
+}
+function markError(key: keyof typeof saveStatus) {
+    if (saveStatus[key] !== 'error') { saveStatus[key] = 'error'; emitSaveStatus(); }
+}
+
+const debouncedSaveTodos = debounce((todos: TodoItem[]) => {
+    markPending('todos');
+    fetch('/api/nav/todos', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: todos }),
+    }).then(res => { if (res.ok) markOk('todos'); else { markError('todos'); console.warn('[nav] saveTodos API failed:', res.status); } })
+      .catch(e => { markError('todos'); console.warn('[nav] saveTodos network error:', e); });
+}, DEBOUNCE_MS);
+
 export async function saveTodos(todos: TodoItem[], isLoggedIn?: boolean): Promise<void> {
-    if (isLoggedIn) {
-        try {
-            const res = await fetch('/api/nav/todos', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: todos }),
-            });
-            if (!res.ok) console.warn('[nav] saveTodos API failed:', res.status);
-        } catch (e) { console.warn('[nav] saveTodos network error:', e); }
-    }
+    if (isLoggedIn) debouncedSaveTodos(todos);
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.todos, JSON.stringify(todos));
     }
@@ -168,17 +214,18 @@ export async function getNotes(isLoggedIn?: boolean): Promise<NoteItem[]> {
     }
 }
 
+const debouncedSaveNotes = debounce((notes: NoteItem[]) => {
+    markPending('notes');
+    fetch('/api/nav/notes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: notes }),
+    }).then(res => { if (res.ok) markOk('notes'); else { markError('notes'); console.warn('[nav] saveNotes API failed:', res.status); } })
+      .catch(e => { markError('notes'); console.warn('[nav] saveNotes network error:', e); });
+}, DEBOUNCE_MS);
+
 export async function saveNotes(notes: NoteItem[], isLoggedIn?: boolean): Promise<void> {
-    if (isLoggedIn) {
-        try {
-            const res = await fetch('/api/nav/notes', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: notes }),
-            });
-            if (!res.ok) console.warn('[nav] saveNotes API failed:', res.status);
-        } catch (e) { console.warn('[nav] saveNotes network error:', e); }
-    }
+    if (isLoggedIn) debouncedSaveNotes(notes);
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.notes, JSON.stringify(notes));
     }
@@ -209,17 +256,18 @@ export async function getBookmarks(isLoggedIn?: boolean): Promise<Bookmark[]> {
     }
 }
 
+const debouncedSaveBookmarks = debounce((bookmarks: Bookmark[]) => {
+    markPending('bookmarks');
+    fetch('/api/nav/bookmarks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: bookmarks }),
+    }).then(res => { if (res.ok) markOk('bookmarks'); else { markError('bookmarks'); console.warn('[nav] saveBookmarks API failed:', res.status); } })
+      .catch(e => { markError('bookmarks'); console.warn('[nav] saveBookmarks network error:', e); });
+}, DEBOUNCE_MS);
+
 export async function saveBookmarks(bookmarks: Bookmark[], isLoggedIn?: boolean): Promise<void> {
-    if (isLoggedIn) {
-        try {
-            const res = await fetch('/api/nav/bookmarks', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: bookmarks }),
-            });
-            if (!res.ok) console.warn('[nav] saveBookmarks API failed:', res.status);
-        } catch (e) { console.warn('[nav] saveBookmarks network error:', e); }
-    }
+    if (isLoggedIn) debouncedSaveBookmarks(bookmarks);
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.bookmarks, JSON.stringify(bookmarks));
     }
@@ -228,9 +276,12 @@ export async function saveBookmarks(bookmarks: Bookmark[], isLoggedIn?: boolean)
 /*== 首次登录同步 ==*/
 
 export async function syncLocalToServer(): Promise<void> {
-    const bookmarks = JSON.parse(localStorage.getItem(KEYS.bookmarks) || 'null');
-    const todos = JSON.parse(localStorage.getItem(KEYS.todos) || 'null');
-    const notes = JSON.parse(localStorage.getItem(KEYS.notes) || 'null');
+    function safeParse(key: string): unknown {
+        try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; }
+    }
+    const bookmarks = safeParse(KEYS.bookmarks);
+    const todos = safeParse(KEYS.todos);
+    const notes = safeParse(KEYS.notes);
 
     if (!bookmarks && !todos && !notes) return;
 

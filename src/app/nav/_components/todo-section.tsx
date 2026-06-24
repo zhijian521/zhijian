@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import Dialog from '@/components/ui/dialog';
 import { getTodos, saveTodos, genId } from '@/lib/nav-storage';
 import type { TodoItem } from '@/lib/nav-storage';
+import { reorder, type DragState } from './drag-utils';
 
 import styles from './todo-section.module.css';
 
@@ -28,10 +29,17 @@ function autoResize(el: HTMLTextAreaElement | null) {
 export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: boolean; dataVersion?: number }) {
     const [todos, setTodos] = useState<TodoItem[]>([]);
     const [showAdd, setShowAdd] = useState(false);
+    const [dragState, setDragState] = useState<DragState | null>(null);
     /*-- 新增表单 --*/
     const [formText, setFormText] = useState('');
     const [formPriority, setFormPriority] = useState<Priority>('normal');
     const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
+
+    /*-- 用 ref 持有最新值，避免闭包陷阱 --*/
+    const todosRef = useRef(todos);
+    todosRef.current = todos;
+    const dragStateRef = useRef(dragState);
+    dragStateRef.current = dragState;
 
     useEffect(() => {
         getTodos(isLoggedIn).then(setTodos);
@@ -41,6 +49,34 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         setTodos(updated);
         saveTodos(updated, isLoggedIn);
     }
+
+    /*== 拖拽 — 用 ref 读取最新值，回调稳定不重建 ==*/
+    const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', id);
+        setDragState({ dragId: id, overId: null, position: null });
+    }, []);
+
+    const handleDragOver = useCallback((e: React.DragEvent, id: string) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        const position = e.clientY < midY ? 'before' : 'after';
+        setDragState(prev => prev ? { ...prev, overId: id, position } : prev);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent, id: string) => {
+        e.preventDefault();
+        const ds = dragStateRef.current;
+        if (!ds || ds.dragId === id || !ds.position) return;
+        persist(reorder(todosRef.current, ds.dragId, id, ds.position));
+        setDragState(null);
+    }, []);
+
+    const handleDragEnd = useCallback(() => {
+        setDragState(null);
+    }, []);
 
     function handleAdd() {
         const text = formText.trim();
@@ -94,8 +130,18 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                 <div className={styles.cardGrid}>
                     {todos.map((t) => {
                         const p = PRIORITY_CONFIG[t.priority] ?? PRIORITY_CONFIG.normal;
+                        const isDragOver = dragState?.overId === t.id && dragState?.position;
+                        const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
                         return (
-                            <div key={t.id} className={`${styles.card} ${t.done ? styles.cardDone : ''}`}>
+                            <div
+                                key={t.id}
+                                className={`${styles.card} ${t.done ? styles.cardDone : ''} ${dragCls}`}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, t.id)}
+                                onDragOver={(e) => handleDragOver(e, t.id)}
+                                onDrop={(e) => handleDrop(e, t.id)}
+                                onDragEnd={handleDragEnd}
+                            >
                                 <div className={styles.cardHeader}>
                                     <input
                                         checked={t.done}

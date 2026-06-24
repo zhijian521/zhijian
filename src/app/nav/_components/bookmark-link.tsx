@@ -4,17 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 
 import { isBookmarkFolder } from '@/lib/nav-config';
 import type { Bookmark } from '@/lib/nav-config';
+import type { DragState } from './drag-utils';
 
 import FaviconImg from './favicon-img';
 import styles from './bookmark-link.module.css';
-
-/*== 拖拽状态 ==*/
-export interface DragState {
-    dragId: string;
-    overId: string | null;
-    position: 'before' | 'after' | null;
-    folderId?: string;
-}
 
 /*-- 单个书签/文件夹 --*/
 export default function BookmarkLink({

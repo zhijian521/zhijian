@@ -198,6 +198,24 @@
     line-height: 1;
 }
 
+.syncDotPending {
+    color: var(--muted-foreground);
+    font-size: 0.5rem;
+    line-height: 1;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.syncDotError {
+    color: var(--destructive);
+    font-size: 0.5rem;
+    line-height: 1;
+}
+
 .syncDotOff {
     color: var(--muted-foreground);
     font-size: 0.5rem;
@@ -208,6 +226,16 @@
     color: var(--primary);
     font-size: 0.75rem;
     font-weight: 500;
+}
+
+.syncStatusPending {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+}
+
+.syncStatusError {
+    color: var(--destructive);
+    font-size: 0.75rem;
 }
 
 .syncStatusOff {

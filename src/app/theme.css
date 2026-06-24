@@ -13,6 +13,7 @@
     /* 危险色 */
     --destructive: #ba1a1a;
     --destructive-subtle: color-mix(in srgb, var(--destructive) 8%, transparent);
+    --destructive-subtle-medium: color-mix(in srgb, var(--destructive) 16%, transparent);
 
     /* 文字（两级，不引入第三级） */
     --foreground: #1d1b20;
