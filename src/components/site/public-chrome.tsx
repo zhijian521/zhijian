@@ -166,6 +166,15 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                 data-site-id='y7dbsplr'
                 strategy='afterInteractive'
             />
+            <Script src="https://www.googletagmanager.com/gtag/js?id=G-6HHPGL2HBM" strategy="afterInteractive" />
+            <Script id="google-analytics" strategy="afterInteractive">
+                {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'G-6HHPGL2HBM');
+                `}
+            </Script>
         </div>
     );
 }
