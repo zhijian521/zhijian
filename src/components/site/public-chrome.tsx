@@ -159,10 +159,10 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                 </p>
             </footer>
 
-            {/* 网站统计脚本 — 仅前台加载，后台不触发 */}
+        {/* 网站统计脚本 — 仅前台加载，后台不触发 */}
             <Script
                 async
-                src='https://zhijian.yuwb.cn/script.js'
+                src='https://yuwb.dev/script.js'
                 data-site-id='y7dbsplr'
                 strategy='afterInteractive'
             />
