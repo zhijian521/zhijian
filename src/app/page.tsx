@@ -53,12 +53,12 @@ export const dynamic = 'force-dynamic';
 const PROJECTS: { icon: React.ReactNode; title: string; description: string; tags: string[]; actions: ProjectAction[] }[] = [
     {
         icon: <CodeIcon />,
-        title: 'simple-blog',
-        description: '基于 Next.js 的极简个人博客，支持 Markdown 写作与后台管理。',
+        title: 'zhijian',
+        description: '知简 — 极简个人站点，博客写作、导航书签与后台管理，追求简洁与实用。',
         tags: ['Next.js', 'TypeScript'],
         actions: [
-            { label: '访问站点', href: 'https://www.yuwb.dev/', icon: <ExternalLinkIcon /> },
-            { label: 'GitHub', href: 'https://github.com/zhijian521/simple-blog', icon: <GitHubIcon /> },
+            { label: '访问站点', href: 'https://yuwb.dev/', icon: <ExternalLinkIcon /> },
+            { label: 'GitHub', href: 'https://github.com/zhijian521/zhijian', icon: <GitHubIcon /> },
         ],
     },
     {
@@ -67,7 +67,7 @@ const PROJECTS: { icon: React.ReactNode; title: string; description: string; tag
         description: 'Cesium 三维地球示例集，涵盖地图加载、模型渲染与空间数据可视化。',
         tags: ['Cesium', 'GIS'],
         actions: [
-            { label: '访问站点', href: 'https://cesium.yuwb.dev/', icon: <ExternalLinkIcon /> },
+            { label: '访问站点', href: 'https://yuwb.dev/cesium', icon: <ExternalLinkIcon /> },
             { label: 'GitHub', href: 'https://github.com/zhijian521/cesium-example', icon: <GitHubIcon /> },
         ],
     },

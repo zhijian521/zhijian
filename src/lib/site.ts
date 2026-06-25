@@ -130,7 +130,6 @@ export interface NavGroup {
 export const PUBLIC_NAV_ITEMS: NavItem[] = [
     { href: APP_ROUTES.home, label: '首页', match: 'exact' },
     { href: APP_ROUTES.blog, label: '文章', match: 'prefix' },
-    { href: APP_ROUTES.nav, label: '导航', match: 'exact' },
 ];
 
 /*== 后台二级菜单：侧边栏分组 + 子项，和真实路由保持一一对应 ==*/
