@@ -47,11 +47,80 @@
     gap: 1rem;
 }
 
+.headerLeft {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
 .headerTitle {
     margin: 0;
     font-family: var(--font-serif);
     font-size: 2.25rem;
     color: var(--foreground);
+}
+
+/*== 当前筛选标签 ==*/
+
+.activeFilters {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+
+.activeFilterChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--primary);
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--primary);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.activeFilterChip:hover {
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.activeFilterClose {
+    width: 0.625rem;
+    height: 0.625rem;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.activeFilterChip:hover .activeFilterClose {
+    opacity: 1;
+}
+
+/*== 加载遮罩 ==*/
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.loadingBar {
+    height: 2px;
+    background: var(--primary);
+    animation: loadingSlide 1s ease-in-out infinite;
+}
+
+@keyframes loadingSlide {
+    0% { width: 0; margin-left: 0; }
+    50% { width: 40%; margin-left: 30%; }
+    100% { width: 0; margin-left: 100%; }
 }
 
 /* 筛选按钮：仅手机端可见 */
@@ -136,7 +205,7 @@
 .sidebarCard {
     padding: 1.375rem;
     border: 1px solid var(--primary);
-    background: var(--background);
+    background: transparent;
 }
 
 .sidebarTitle {

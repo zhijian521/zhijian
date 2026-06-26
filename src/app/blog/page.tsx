@@ -362,7 +362,9 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <BlogListClient
-                activeCategorySlug={activeCategorySlug ?? ALL_CATEGORY_SLUG}
+                activeCategoryLabel={activeCategoryLabel}
+                activeCategorySlug={activeCategorySlug || undefined}
+                activeTagNames={activeTagNames}
                 activeTagSlugs={activeTagSlugs}
                 categoryOptions={categoryOptions}
                 currentPage={currentPage}

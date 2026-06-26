@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { ContentImage } from '@/components/site/content-image';
 import Dialog from '@/components/ui/dialog';
+import { XIcon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
 import { Tag } from '@/components/ui/tag';
 import { formatPostDate } from '@/lib/post-shared';
@@ -19,8 +21,10 @@ interface FilterOption {
 }
 
 interface BlogListClientProps {
-    activeCategorySlug: string;
+    activeCategorySlug?: string;
+    activeCategoryLabel?: string;
     activeTagSlugs: string[];
+    activeTagNames: string[];
     categoryOptions: FilterOption[];
     currentPage: number;
     paginationHrefs: Record<number, string>;
@@ -31,7 +35,9 @@ interface BlogListClientProps {
 
 export default function BlogListClient({
     activeCategorySlug,
+    activeCategoryLabel,
     activeTagSlugs,
+    activeTagNames,
     categoryOptions,
     currentPage,
     paginationHrefs,
@@ -41,14 +47,68 @@ export default function BlogListClient({
 }: BlogListClientProps) {
     const activeTagSet = new Set(activeTagSlugs);
     const [filterOpen, setFilterOpen] = useState(false);
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
     const hasFilters = categoryOptions.length > 1 || tagOptions.length > 0;
+    const hasActiveFilters = Boolean(activeCategorySlug) || activeTagSlugs.length > 0;
+
+    /* 分类是否激活：activeCategorySlug 为空/undefined 时，空字符串 slug（全部）激活 */
+    function isCategoryActive(slug: string) {
+        if (!activeCategorySlug) return !slug;
+        return activeCategorySlug === slug;
+    }
+
+    /* 导航到新筛选 URL，带 transition 追踪 */
+    function navigateTo(url: string) {
+        startTransition(() => {
+            router.push(url);
+        });
+    }
+
+    /* 构建移除某个筛选项后的 URL（移除筛选后回到第1页，避免空页） */
+    function buildRemoveUrl(options: { removeCategory?: boolean; removeTag?: string }): string {
+        const nextCategory = options.removeCategory ? undefined : activeCategorySlug || undefined;
+        const nextTags = options.removeTag
+            ? activeTagSlugs.filter((s) => s !== options.removeTag)
+            : activeTagSlugs;
+        const params = new URLSearchParams();
+        if (nextCategory) params.set('category', nextCategory);
+        if (nextTags.length > 0) params.set('tags', nextTags.join(','));
+        const q = params.toString();
+        return q ? `/blog?${q}` : '/blog';
+    }
 
     return (
         <main className={styles.page}>
+            {/* 导航加载遮罩 */}
+            {isPending ? (
+                <div className={styles.loadingOverlay}>
+                    <div className={styles.loadingBar} />
+                </div>
+            ) : null}
+
             <div className={styles.pageContent}>
                 <header className={styles.pageHeader}>
                     <div className={styles.headerRow}>
-                        <h1 className={styles.headerTitle}>文章</h1>
+                        <div className={styles.headerLeft}>
+                            <h1 className={styles.headerTitle}>文章</h1>
+                            {hasActiveFilters ? (
+                                <div className={styles.activeFilters}>
+                                    {activeCategorySlug ? (
+                                        <button className={styles.activeFilterChip} onClick={() => navigateTo(buildRemoveUrl({ removeCategory: true }))} type="button">
+                                            {activeCategoryLabel}
+                                            <XIcon className={styles.activeFilterClose} />
+                                        </button>
+                                    ) : null}
+                                    {activeTagSlugs.map((slug, i) => (
+                                        <button className={styles.activeFilterChip} onClick={() => navigateTo(buildRemoveUrl({ removeTag: slug }))} key={slug} type="button">
+                                            {activeTagNames[i]}
+                                            <XIcon className={styles.activeFilterClose} />
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
                     {hasFilters ? (
                         <button
                             className={styles.filterBtn}
@@ -71,14 +131,14 @@ export default function BlogListClient({
                                 <h3 className={styles.filterBlockTitle}>分类</h3>
                                 <div className={styles.categories}>
                                     {categoryOptions.map((category) => (
-                                        <Link
-                                            className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
-                                            href={category.href}
+                                        <button
+                                            className={`${styles.catBtn} ${isCategoryActive(category.slug) ? styles.catActive : ''}`}
                                             key={category.slug || 'all'}
-                                            onClick={() => setFilterOpen(false)}
+                                            onClick={() => { setFilterOpen(false); navigateTo(category.href); }}
+                                            type="button"
                                         >
                                             {category.label}
-                                        </Link>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -89,14 +149,14 @@ export default function BlogListClient({
                                 <h3 className={styles.filterBlockTitle}>标签</h3>
                                 <div className={styles.tagFilter}>
                                     {tagOptions.map((tag) => (
-                                        <Link
+                                        <button
                                             className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
-                                            href={tag.href}
                                             key={tag.slug}
-                                            onClick={() => setFilterOpen(false)}
+                                            onClick={() => { setFilterOpen(false); navigateTo(tag.href); }}
+                                            type="button"
                                         >
                                             {tag.label}
-                                        </Link>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -156,13 +216,14 @@ export default function BlogListClient({
                                 <h3 className={styles.sidebarTitle}>分类</h3>
                                 <div className={styles.categories}>
                                     {categoryOptions.map((category) => (
-                                        <Link
-                                            className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
-                                            href={category.href}
+                                        <button
+                                            className={`${styles.catBtn} ${isCategoryActive(category.slug) ? styles.catActive : ''}`}
                                             key={category.slug || 'all'}
+                                            onClick={() => navigateTo(category.href)}
+                                            type="button"
                                         >
                                             {category.label}
-                                        </Link>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -173,13 +234,14 @@ export default function BlogListClient({
                                 <h3 className={styles.sidebarTitle}>标签</h3>
                                 <div className={styles.tagFilter}>
                                     {tagOptions.map((tag) => (
-                                        <Link
+                                        <button
                                             className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
-                                            href={tag.href}
                                             key={tag.slug}
+                                            onClick={() => navigateTo(tag.href)}
+                                            type="button"
                                         >
                                             {tag.label}
-                                        </Link>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
