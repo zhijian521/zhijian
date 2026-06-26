@@ -1,15 +1,37 @@
 /*== 页面容器 ==*/
 .page {
-    margin: 0 auto;
+    position: relative;
     width: 100%;
+    min-height: 100vh;
+    background: url('/images/blog-bg.png') center / cover no-repeat fixed;
+}
+
+/*== 背景叠层（全屏吸附，不随滚动） ==*/
+.page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--background) 30%, transparent) 0%,
+        var(--background) 60%
+    );
+    pointer-events: none;
+}
+
+/*== 页面内容区 ==*/
+.pageContent {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
     max-width: 72rem;
-    padding: 3.5rem 2rem 6rem;
-    background: var(--background);
+    padding: 7rem 2rem;
 }
 
 @media (min-width: 768px) {
-    .page {
-        padding: 5rem 3rem 7rem;
+    .pageContent {
+        padding: 8rem 3rem;
     }
 }
 

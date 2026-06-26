@@ -18,7 +18,8 @@ interface PublicChromeProps {
 /*== 前台公共壳层：统一提供头部导航和页脚，并根据当前路由实时更新导航高亮。 ==*/
 export default function PublicChrome({ children }: PublicChromeProps) {
     const pathname = usePathname();
-    const isHomePage = pathname === APP_ROUTES.home;
+    const hasTransparentNav = pathname === APP_ROUTES.home || pathname.startsWith(APP_ROUTES.blog);
+    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
     const mobileNavRef = useRef<HTMLDivElement>(null);
     const mobileTriggerRef = useRef<HTMLButtonElement>(null);
@@ -26,6 +27,16 @@ export default function PublicChrome({ children }: PublicChromeProps) {
     useEffect(() => {
         setIsMobileNavOpen(false);
     }, [pathname]);
+
+    useEffect(() => {
+        if (!hasTransparentNav) return;
+        function onScroll() {
+            setIsScrolled(window.scrollY > 10);
+        }
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, [hasTransparentNav]);
 
     useEffect(() => {
         if (!isMobileNavOpen) return;
@@ -66,9 +77,9 @@ export default function PublicChrome({ children }: PublicChromeProps) {
     }
 
     return (
-        <div className={styles.root}>
+        <div className={`${styles.root} ${hasTransparentNav ? styles.rootTransparent : ''}`}>
             {/* 头部导航 */}
-            <header className={isHomePage ? styles.headerHome : styles.headerInner}>
+            <header className={`${hasTransparentNav ? styles.headerHome : styles.headerInner} ${isScrolled ? styles.headerScrolled : ''}`}>
                 <div className={styles.headerContainer}>
                     {/* 左侧：品牌 */}
                     <Link className={styles.brand} href={APP_ROUTES.home}>

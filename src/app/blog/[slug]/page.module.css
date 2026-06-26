@@ -1,19 +1,39 @@
 /*== 页面容器 ==*/
 .page {
+    position: relative;
     width: 100%;
-    background: var(--background);
+    min-height: 100vh;
+    background: url('/images/blog-bg.png') center / cover no-repeat fixed;
+}
+
+/*== 背景叠层（全屏吸附，不随滚动） ==*/
+.page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--background) 30%, transparent) 0%,
+        var(--background) 60%
+    );
+    pointer-events: none;
 }
 
 /*== 文章容器 ==*/
 .article {
+    position: relative;
+    z-index: 1;
     max-width: 56rem;
     margin: 0 auto;
-    padding: 4rem 1.5rem 4rem;
-    background: var(--highlight);
+    padding: 8rem 1.5rem 4rem;
+    background: color-mix(in srgb, var(--highlight) 85%, transparent);
 }
 
 /*== 文章底部 ==*/
 .footer {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;

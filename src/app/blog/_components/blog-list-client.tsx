@@ -45,9 +45,10 @@ export default function BlogListClient({
 
     return (
         <main className={styles.page}>
-            <header className={styles.pageHeader}>
-                <div className={styles.headerRow}>
-                    <h1 className={styles.headerTitle}>文章</h1>
+            <div className={styles.pageContent}>
+                <header className={styles.pageHeader}>
+                    <div className={styles.headerRow}>
+                        <h1 className={styles.headerTitle}>文章</h1>
                     {hasFilters ? (
                         <button
                             className={styles.filterBtn}
@@ -102,88 +103,89 @@ export default function BlogListClient({
                         ) : null}
                     </div>
                 </Dialog>
-            </header>
+                </header>
 
-            <div className={styles.layout}>
-                <section className={styles.main}>
-                    <div className={styles.list}>
-                        {posts.length > 0 ? posts.map((post) => (
-                            <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id}>
-                                <div className={styles.itemBody}>
-                                    <h2 className={styles.itemTitle}>{post.title}</h2>
-                                    <p className={styles.itemSummary}>{post.summary}</p>
-                                    <div className={styles.itemMeta}>
-                                        {post.categoryName ? (
-                                            <span className={styles.itemCategory}>{post.categoryName}</span>
-                                        ) : null}
-                                        {post.tagNames && post.tagNames.length > 0 ? (
-                                            <div className={styles.itemTags}>
-                                                {post.tagNames.map((tag) => (
-                                                    <Tag key={tag.id} size='mini' variant='outlined'>{tag.name}</Tag>
-                                                ))}
-                                            </div>
-                                        ) : null}
-                                        <span className={styles.itemDate}>{formatPostDate(post.publishedAt)}</span>
+                <div className={styles.layout}>
+                    <section className={styles.main}>
+                        <div className={styles.list}>
+                            {posts.length > 0 ? posts.map((post) => (
+                                <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id}>
+                                    <div className={styles.itemBody}>
+                                        <h2 className={styles.itemTitle}>{post.title}</h2>
+                                        <p className={styles.itemSummary}>{post.summary}</p>
+                                        <div className={styles.itemMeta}>
+                                            {post.categoryName ? (
+                                                <span className={styles.itemCategory}>{post.categoryName}</span>
+                                            ) : null}
+                                            {post.tagNames && post.tagNames.length > 0 ? (
+                                                <div className={styles.itemTags}>
+                                                    {post.tagNames.map((tag) => (
+                                                        <Tag key={tag.id} size='mini' variant='outlined'>{tag.name}</Tag>
+                                                    ))}
+                                                </div>
+                                            ) : null}
+                                            <span className={styles.itemDate}>{formatPostDate(post.publishedAt)}</span>
+                                        </div>
                                     </div>
+                                    {post.coverImage ? (
+                                        <div className={styles.itemCover}>
+                                            <ContentImage
+                                                alt={post.altText || post.title}
+                                                sizes="(max-width: 640px) 100vw, 180px"
+                                                src={post.coverImage}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        </div>
+                                    ) : null}
+                                </Link>
+                            )) : (
+                                <p style={{ color: 'var(--muted-foreground)', padding: '2rem 0', fontSize: '0.9375rem' }}>
+                                    没有匹配的文章。
+                                </p>
+                            )}
+                        </div>
+
+                        {totalPages > 1 ? (
+                            <Pagination current={currentPage} getHref={(page) => paginationHrefs[page] ?? '/blog'} total={totalPages} />
+                        ) : null}
+                    </section>
+
+                    <aside className={styles.sidebar}>
+                        {categoryOptions.length > 1 ? (
+                            <div className={styles.sidebarCard}>
+                                <h3 className={styles.sidebarTitle}>分类</h3>
+                                <div className={styles.categories}>
+                                    {categoryOptions.map((category) => (
+                                        <Link
+                                            className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
+                                            href={category.href}
+                                            key={category.slug || 'all'}
+                                        >
+                                            {category.label}
+                                        </Link>
+                                    ))}
                                 </div>
-                                {post.coverImage ? (
-                                    <div className={styles.itemCover}>
-                                        <ContentImage
-                                            alt={post.altText || post.title}
-                                            sizes="(max-width: 640px) 100vw, 180px"
-                                            src={post.coverImage}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                ) : null}
-                            </Link>
-                        )) : (
-                            <p style={{ color: 'var(--muted-foreground)', padding: '2rem 0', fontSize: '0.9375rem' }}>
-                                没有匹配的文章。
-                            </p>
-                        )}
-                    </div>
-
-                    {totalPages > 1 ? (
-                        <Pagination current={currentPage} getHref={(page) => paginationHrefs[page] ?? '/blog'} total={totalPages} />
-                    ) : null}
-                </section>
-
-                <aside className={styles.sidebar}>
-                    {categoryOptions.length > 1 ? (
-                        <div className={styles.sidebarCard}>
-                            <h3 className={styles.sidebarTitle}>分类</h3>
-                            <div className={styles.categories}>
-                                {categoryOptions.map((category) => (
-                                    <Link
-                                        className={`${styles.catBtn} ${activeCategorySlug === category.slug ? styles.catActive : ''}`}
-                                        href={category.href}
-                                        key={category.slug || 'all'}
-                                    >
-                                        {category.label}
-                                    </Link>
-                                ))}
                             </div>
-                        </div>
-                    ) : null}
+                        ) : null}
 
-                    {tagOptions.length > 0 ? (
-                        <div className={styles.sidebarCard}>
-                            <h3 className={styles.sidebarTitle}>标签</h3>
-                            <div className={styles.tagFilter}>
-                                {tagOptions.map((tag) => (
-                                    <Link
-                                        className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
-                                        href={tag.href}
-                                        key={tag.slug}
-                                    >
-                                        {tag.label}
-                                    </Link>
-                                ))}
+                        {tagOptions.length > 0 ? (
+                            <div className={styles.sidebarCard}>
+                                <h3 className={styles.sidebarTitle}>标签</h3>
+                                <div className={styles.tagFilter}>
+                                    {tagOptions.map((tag) => (
+                                        <Link
+                                            className={`${styles.tagBtn} ${activeTagSet.has(tag.slug) ? styles.tagActive : ''}`}
+                                            href={tag.href}
+                                            key={tag.slug}
+                                        >
+                                            {tag.label}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ) : null}
-                </aside>
+                        ) : null}
+                    </aside>
+                </div>
             </div>
         </main>
     );
