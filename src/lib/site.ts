@@ -45,7 +45,7 @@ export const SITE_METADATA = {
     /*-- OG / Twitter 区域标识 --*/
     locale: 'zh_CN',
     /*-- OG 默认分享图（相对路径，metadataBase 自动补全绝对 URL） --*/
-    ogImage: '/images/main.png',
+    ogImage: '/images/og-default.png',
     /*-- 作者名，metadata.authors / JSON-LD Person --*/
     author: 'Zhi Jian',
     /*-- 文章列表页标题前缀，拼接：blogTitle - [分类] - [标签] - brandTitle --*/

@@ -46,8 +46,8 @@
 |------|------|
 | 渲染策略 | `export const dynamic = 'force-dynamic'`，禁用 ISR |
 | 文章为空 | 显示「暂无文章，去后台写一篇吧。」 |
-| Hero 背景 | `/images/home-hero-bg.png`，`object-fit: cover` |
-| 头像 | `/images/logo.png`，7.5rem 方形带边框阴影 |
+| Hero 背景 | `/images/bg-landscape.webp`，`object-fit: cover` |
+| 头像 | `/images/logo.webp`，7.5rem 方形带边框阴影 |
 | PostCard 封面 | 有 `coverImage` 时渲染 `<ContentImage>`，无则纯文字卡片 |
 | 联系方式 | GhostButton 组件（`size="small"`），统一按钮风格 |
 | RSS 订阅 | `RssCopyButton` 客户端组件，点击复制 `/feed.xml` 地址，1.5s 反馈 |

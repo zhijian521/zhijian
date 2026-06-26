@@ -132,7 +132,7 @@ export default async function HomePage() {
                     fill
                     priority
                     sizes='100vw'
-                    src='/images/home-hero-bg.png'
+                    src='/images/bg-landscape.webp'
                 />
                 <div className={styles.heroOverlay} />
                 <div className={styles.heroContent}>
@@ -158,7 +158,7 @@ export default async function HomePage() {
                     <div className={styles.profileCard}>
                         <div className={styles.avatarWrap}>
                             <div className={styles.avatarFrame}>
-                                <Image alt='Lin Zhi' className={styles.avatar} fill sizes='160px' src='/images/logo.png' />
+                                <Image alt='Lin Zhi' className={styles.avatar} fill sizes='160px' src='/images/logo.webp' />
                             </div>
                         </div>
 

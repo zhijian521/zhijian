@@ -119,7 +119,7 @@ export default function AdminLoginCard() {
                         className={styles.logo}
                         decoding='async'
                         height='56'
-                        src='/images/logo.png'
+                        src='/images/logo.webp'
                         width='56'
                     />
                     <h1 className={styles.title}>Zhijian Admin</h1>

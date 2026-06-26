@@ -3,7 +3,7 @@
     position: relative;
     width: 100%;
     min-height: 100vh;
-    background: url('/images/blog-bg.png') center / cover no-repeat fixed;
+    background: url('/images/bg-ink.webp') center / cover no-repeat fixed;
 }
 
 /*== 背景叠层（全屏吸附，不随滚动） ==*/

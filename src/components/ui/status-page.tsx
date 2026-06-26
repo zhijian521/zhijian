@@ -31,7 +31,7 @@ export function StatusPage({ code, title, subtitle }: StatusPageProps) {
             <div className={styles.card}>
                 <div className={styles.cardBody}>
                     <Image
-                        src='/images/logo.png'
+                        src='/images/logo.webp'
                         alt='纸笺'
                         width={80}
                         height={80}

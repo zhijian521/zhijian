@@ -83,7 +83,7 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                 <div className={styles.headerContainer}>
                     {/* 左侧：品牌 */}
                     <Link className={styles.brand} href={APP_ROUTES.home}>
-                        <Image alt={SITE_METADATA.name} height={32} src='/images/logo.png' width={32} />
+                        <Image alt={SITE_METADATA.name} height={32} src='/images/logo.webp' width={32} />
                         <span className={styles.brandText}>{SITE_METADATA.name}</span>
                     </Link>
 

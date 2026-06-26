@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     },
     description: SITE_METADATA.description,
     icons: {
+        /* logo.png 保留 PNG 格式：favicon + JSON-LD Organization logo 兼容性，勿删 */
         icon: '/images/logo.png',
     },
     openGraph: {

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/images/main.png" alt="知简" width="100%" />
+<img src="public/images/og-default.png" alt="知简" width="100%" />
 
 简静造物，以代码与文字记录所思所学。
 
