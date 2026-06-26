@@ -8,10 +8,10 @@
 
 ```env
 # 站点地址，用于 OG 标签、sitemap、绝对 URL 生成
-NEXT_PUBLIC_SITE_URL=https://zhijian.yuwb.cn
+NEXT_PUBLIC_SITE_URL=https://yuwb.dev
 
 # 监控脚本分发地址（不配置时回退到 NEXT_PUBLIC_SITE_URL）
-NEXT_PUBLIC_SCRIPT_URL=https://zhijian.yuwb.cn
+NEXT_PUBLIC_SCRIPT_URL=https://yuwb.dev
 
 # MySQL 连接串
 DATABASE_URL=mysql://username:password@host:3306/zhijian

@@ -16,7 +16,7 @@ node src/scripts/sync-uploads.mjs
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `--server <url>` | 服务器地址 | `NEXT_PUBLIC_SITE_URL` 环境变量，或 `https://zhijian.yuwb.cn` |
+| `--server <url>` | 服务器地址 | `NEXT_PUBLIC_SITE_URL` 环境变量，或 `https://yuwb.dev` |
 | `--username <name>` | 登录用户名（跳过交互输入） | 交互式提示 |
 | `--password <pass>` | 登录密码（跳过交互输入） | 交互式提示 |
 
@@ -27,10 +27,10 @@ node src/scripts/sync-uploads.mjs
 node src/scripts/sync-uploads.mjs
 
 # 指定服务器
-node src/scripts/sync-uploads.mjs --server https://zhijian.yuwb.cn
+node src/scripts/sync-uploads.mjs --server https://yuwb.dev
 
 # 完整参数（CI 场景）
-node src/scripts/sync-uploads.mjs --server https://zhijian.yuwb.cn --username admin --password xxx
+node src/scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --password xxx
 ```
 
 ## 同步规则
@@ -46,7 +46,7 @@ node src/scripts/sync-uploads.mjs --server https://zhijian.yuwb.cn --username ad
 $ node src/scripts/sync-uploads.mjs
 
 知简图片同步工具
-服务器: https://zhijian.yuwb.cn
+服务器: https://yuwb.dev
 
 ? 用户名: admin
 ? 密码: ********

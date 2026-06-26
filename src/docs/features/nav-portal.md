@@ -1,8 +1,19 @@
-# 导航页设计规格
+# 导航页
 
-## 概述
+知简导航页是一个浏览器导航功能，路径 `/nav`，全屏三屏分页布局，上下滑动切换内容。已登录用户数据存数据库，未登录用户数据存 localStorage。
 
-为 zhijian 项目新增浏览器导航页功能，路径 `/nav`，全屏分页布局，上下滑动切换三屏内容。前期数据使用配置文件 + localStorage，后期接入数据库 + API 支持多用户。
+---
+
+## 目录
+
+- [页面结构](#页面结构)
+- [模块设计](#模块设计)
+- [数据策略](#数据策略)
+- [API 端点](#api-端点)
+- [文件结构](#文件结构)
+- [技术方案](#技术方案)
+
+---
 
 ## 页面结构
 
@@ -44,55 +55,130 @@
 └─────────────────────────────────┘
 ```
 
+---
+
 ## 模块设计
 
 ### 搜索栏
 
 - 居中显示，输入关键词后跳转到搜索引擎结果页
 - 可切换搜索引擎：Google / 百度 / Bing / DuckDuckGo
-- 下方显示最近搜索记录（最多 10 条），点击可快速搜索
-- 前期：搜索引擎列表写死，搜索记录存 localStorage
+- 搜索引擎列表配置在 `src/lib/nav-config.ts`
 
 ### 书签栏
 
 - 横向排列，每个书签显示 favicon + 名称，点击跳转
 - 支持文件夹：hover 文件夹弹出浮层，展示文件夹内书签
-- 前期：书签数据写死在 `src/lib/nav-config.ts`
+- **右键菜单**：添加书签 / 编辑 / 删除
+- **拖拽排序**：书签间可拖拽调整顺序（`drag-utils.ts`）
+- Favicon 通过 `/api/favicon` 代理获取
 
 ### 备忘录（待办）
 
-- 待办列表，支持添加/勾选/删除
-- 前期数据存 localStorage
+- 待办列表，支持添加 / 勾选 / 删除
+- **拖拽排序**：待办项可拖拽调整顺序
+- 数据策略：已登录存数据库，未登录存 localStorage
 
 ### 笔记（知识库）
 
 - 笔记列表，点击进入 Markdown 编辑
 - 复用项目已有的 react-markdown + rehype-highlight
-- 前期数据存 localStorage
+- **拖拽排序**：笔记项可拖拽调整顺序
+- 数据策略：已登录存数据库，未登录存 localStorage
 
-### Dock 指示器
+### 设置区
 
-- 左侧贴边，3 个圆点对应三屏
-- 当前屏高亮，点击跳转对应屏
-- 始终可见，不遮挡内容
+- 导航页使用说明
+- 登录 / 注册入口（`auth-modal.tsx`）
+
+### 认证弹窗
+
+- 登录 / 注册表单切换
+- 登录后数据自动同步到数据库
+- 认证逻辑由 `src/hooks/use-auth.ts` 管理
+
+---
 
 ## 数据策略
 
-| 数据 | 前期 | 后期 |
-|------|------|------|
-| 书签 | 配置文件写死 | 数据库 + API |
-| 搜索记录 | localStorage | 数据库 + API |
-| 备忘录 | localStorage | 数据库 + API |
-| 笔记 | localStorage | 数据库 + API |
+| 数据 | 已登录 | 未登录 |
+|------|--------|--------|
+| 书签 | 数据库 + API | localStorage |
+| 搜索记录 | — | localStorage |
+| 备忘录 | 数据库 + API | localStorage |
+| 笔记 | 数据库 + API | localStorage |
 
-数据层抽离为独立模块，后期只需替换数据源，上层代码不变。
+数据层抽离为独立模块（`src/lib/nav-storage.ts`），登录状态切换时自动切换数据源，上层代码不变。
+
+### 双端数据层
+
+- `src/lib/nav-storage.ts` — 统一数据层入口，登录走 API，未登录走 localStorage
+- `src/lib/nav-db.ts` — 数据库层，操作 `zhijian_nav_bookmarks/todos/notes` 表
+- 每用户一条 JSON 记录，整体读写（非逐条 CRUD）
+
+---
+
+## API 端点
+
+| 方法 | 路径 | 说明 | 鉴权 |
+|------|------|------|------|
+| `GET` | `/api/nav/data` | 获取导航数据（书签+备忘录+笔记） | 用户鉴权 |
+| `PUT` | `/api/nav/data` | 更新导航数据 | 用户鉴权 |
+| `POST` | `/api/nav/sync` | 同步导航数据（合并本地到远端） | 用户鉴权 |
+| `GET` | `/api/nav/bookmarks` | 获取书签 | 用户鉴权 |
+| `PUT` | `/api/nav/bookmarks` | 更新书签 | 用户鉴权 |
+| `GET` | `/api/nav/todos` | 获取备忘录 | 用户鉴权 |
+| `PUT` | `/api/nav/todos` | 更新备忘录 | 用户鉴权 |
+| `GET` | `/api/nav/notes` | 获取笔记 | 用户鉴权 |
+| `PUT` | `/api/nav/notes` | 更新笔记 | 用户鉴权 |
+| `GET` | `/api/favicon?url=xxx` | 代理获取网站 favicon | 无 |
+
+---
+
+## 文件结构
+
+```
+src/app/nav/
+  page.tsx                            # 导航页入口
+  _components/
+    nav-shell.tsx + .module.css       # 全屏分页容器（scroll-snap + Dock）
+    search-section.tsx + .module.css  # 第一屏：搜索栏 + 书签
+    search-bar.tsx + .module.css      # 搜索栏 + 搜索引擎切换
+    bookmark-bar.tsx + .module.css    # 书签栏
+    bookmark-link.tsx + .module.css   # 单个书签链接
+    bookmark-context-menu.tsx + .module.css  # 书签右键菜单
+    favicon-img.tsx + .module.css     # Favicon 图片
+    todo-section.tsx + .module.css    # 第二屏：备忘录
+    note-section.tsx + .module.css    # 第三屏：笔记
+    settings-section.tsx + .module.css # 设置区
+    auth-modal.tsx + .module.css      # 认证弹窗（登录/注册）
+    drag-utils.ts                     # 拖拽排序工具
+    common-dialog-form.module.css     # 通用弹窗表单样式
+src/app/api/
+  favicon/route.ts                    # Favicon 代理 API
+  nav/
+    data/route.ts                     # 导航数据查询/更新
+    sync/route.ts                     # 导航数据同步
+    bookmarks/route.ts                # 书签 CRUD
+    todos/route.ts                    # 备忘录 CRUD
+    notes/route.ts                    # 笔记 CRUD
+src/lib/
+  nav-config.ts                       # 书签配置、搜索引擎列表
+  nav-db.ts                           # 导航页数据库层
+  nav-storage.ts                      # 导航页存储层（API + localStorage 双端）
+src/hooks/
+  use-auth.ts                         # 导航页认证 Hook
+```
+
+---
 
 ## 技术方案
 
 - 全屏分页：CSS `scroll-snap-type: y mandatory`，每屏 `height: 100vh; scroll-snap-align: start`
 - Dock 指示器：`position: fixed; left`，监听 `IntersectionObserver` 追踪当前屏
 - 搜索引擎跳转：`window.open(url + encodeURIComponent(query))`
-- favicon 获取：Google Favicon API `https://www.google.com/s2/favicons?domain=xxx&sz=32`，或本地默认图标
+- Favicon 获取：`/api/favicon?url=xxx` 代理（避免跨域），或本地默认图标
+- 拖拽排序：原生 HTML5 Drag & Drop（`drag-utils.ts`），无额外依赖
 - 笔记编辑：复用 react-markdown + rehype-highlight（项目已安装）
 - 无额外 npm 依赖
 
@@ -102,35 +188,17 @@
 
 ## 路由
 
-- `/nav` — 导航页入口，独立 layout（无后台侧边栏）
-- 后期可拆分独立部署
+- `/nav` — 导航页入口，使用 `PublicChrome` 包裹
+- 顶部导航栏已移除「导航」入口，需直接访问 `/nav` URL
 
-## 文件结构
+---
 
-```
-src/app/nav/
-  page.tsx                    # 导航页入口
-  layout.tsx                  # 导航页独立布局
-  _components/
-    nav-shell.tsx             # 全屏分页容器（scroll-snap + Dock）
-    search-section.tsx        # 第一屏：搜索栏 + 书签
-    search-bar.tsx            # 搜索栏 + 搜索引擎切换
-    bookmark-bar.tsx          # 书签栏
-    bookmark-item.tsx         # 单个书签
-    bookmark-folder.tsx       # 书签文件夹
-    todo-section.tsx          # 第二屏：备忘录
-    note-section.tsx          # 第三屏：笔记
-    dock-indicator.tsx        # Dock 指示器
-    *.module.css              # 各组件样式
-src/lib/
-  nav-config.ts               # 书签配置（前期写死数据）
-  nav-storage.ts              # localStorage 读写封装
-```
+## 涉及的数据库表
 
-## 实施顺序
+| 表 | 用途 |
+|----|------|
+| `zhijian_nav_bookmarks` | 书签数据（每用户一条 JSON） |
+| `zhijian_nav_todos` | 备忘录数据（每用户一条 JSON） |
+| `zhijian_nav_notes` | 笔记数据（每用户一条 JSON） |
 
-1. 导航页骨架：layout + nav-shell（scroll-snap） + Dock 指示器
-2. 第一屏：搜索栏 + 书签栏
-3. 第二屏：备忘录（待办）
-4. 第三屏：笔记（知识库）
-5. 后期：数据库 + API + 多用户
+三张表结构相同：`id` / `user_id`（FK → zhijian_users）/ `data`（JSON）/ `created_at` / `updated_at`，通过 `UNIQUE KEY` 约束每用户一条记录。

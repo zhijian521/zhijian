@@ -6,7 +6,7 @@
 
 ## 项目概述
 
-**知简** —— 个人博客网站 + 站点监控平台（观澜），包含公开博客、管理后台和网站分析三部分。
+**知简** —— 个人博客网站 + 导航页 + 站点监控平台（观澜），包含公开博客、导航页、管理后台和网站分析四部分。
 
 - **技术栈**: Next.js 15 + React 19 + TypeScript + CSS Modules + MySQL
 - **架构**: 单体全栈应用，App Router 模式，前后端代码在同一仓库
@@ -26,8 +26,8 @@
 | 数据库 | MySQL (mysql2/promise) | 3.15.3 | ✅ 使用中 |
 | 密码 | bcryptjs | 3.0.3 | ✅ 使用中 |
 | HTTP | axios | 1.16.1 | ✅ 使用中 |
-| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons/`（40 个图标） |
-| UI 组件 | 自建 CSS Module 组件 | — | ✅ 13 个组件 |
+| 图标 | 自建 SVG 图标库 | — | ✅ `src/components/ui/icons.tsx`（50 个图标） |
+| UI 组件 | 自建 CSS Module 组件 | — | ✅ 14 个组件 |
 | 图表 | Recharts | ^3.8.1 | ✅ 观澜仪表盘 |
 | Markdown | react-markdown + remark-gfm | ^10.1.0 | ✅ 使用中 |
 | GeoIP | ip2region | ^2.3.0 | ✅ IP 地理定位（替代 geoip-lite） |
@@ -106,12 +106,35 @@ src/
 │   │   │   ├── logout/           # 登出
 │   │   │   └── me/               # 当前用户
 │   │   ├── collect/              # 数据收集（无鉴权，供 script.js 上报）
+│   │   ├── nav/                  # 导航页 API（需用户鉴权）
+│   │   │   ├── data/             # 导航数据查询/更新
+│   │   │   ├── sync/             # 导航数据同步
+│   │   │   ├── bookmarks/        # 书签 CRUD
+│   │   │   ├── todos/            # 备忘录 CRUD
+│   │   │   └── notes/            # 笔记 CRUD
+│   │   ├── favicon/              # Favicon 代理
 │   │   └── posts/                # 公开文章列表
 │   ├── blog/                     # 公开博客 (/blog/*)
 │   │   ├── [slug]/               # 文章详情页（CSS Modules）
 │   │   ├── _components/          # 博客私有组件
 │   │   │   └── blog-list-client.tsx # 博客列表（客户端）
 │   │   └── page.tsx              # 博客列表页
+│   ├── nav/                      # 导航页 (/nav)
+│   │   ├── _components/          # 导航页私有组件
+│   │   │   ├── nav-shell.tsx + .module.css         # 全屏分页容器（scroll-snap + Dock）
+│   │   │   ├── search-section.tsx + .module.css     # 第一屏：搜索栏 + 书签
+│   │   │   ├── search-bar.tsx + .module.css         # 搜索栏 + 搜索引擎切换
+│   │   │   ├── bookmark-bar.tsx + .module.css       # 书签栏
+│   │   │   ├── bookmark-link.tsx + .module.css      # 单个书签链接
+│   │   │   ├── bookmark-context-menu.tsx + .module.css # 书签右键菜单
+│   │   │   ├── favicon-img.tsx + .module.css        # Favicon 图片
+│   │   │   ├── todo-section.tsx + .module.css       # 第二屏：备忘录
+│   │   │   ├── note-section.tsx + .module.css       # 第三屏：笔记
+│   │   │   ├── settings-section.tsx + .module.css   # 设置区
+│   │   │   ├── auth-modal.tsx + .module.css         # 认证弹窗
+│   │   │   ├── drag-utils.ts                        # 拖拽排序工具
+│   │   │   └── common-dialog-form.module.css        # 通用弹窗表单样式
+│   │   └── page.tsx              # 导航页入口
 │   ├── forbidden/                # 403 页面
 │   ├── theme.css                 # 全站统一主题变量
 │   ├── globals.css               # 全局样式 + 工具类
@@ -124,8 +147,7 @@ src/
 │   │   ├── post-card.tsx         # 博客文章卡片
 │   │   └── project-card.tsx      # 项目展示卡片
 │   └── ui/                       # 自建 UI 组件库（全部 CSS Modules）
-│       ├── icons/                # 自建 SVG 图标库（40 个图标）
-│       │   └── index.ts          # IconProps + 桶导出
+│       ├── icons.tsx             # 自建 SVG 图标库（50 个图标，单文件）
 │       ├── confirm-dialog.tsx + .module.css   # 确认弹窗
 │       ├── data-table.tsx + .module.css       # 数据表格
 │       ├── dialog.tsx + .module.css           # 弹窗
@@ -148,7 +170,6 @@ src/
 │   ├── http-client.ts            # axios 封装
 │   ├── post-shared.ts            # 文章共享类型/工具
 │   ├── posts.ts                  # 文章数据层（数据库）
-│   ├── static-posts.ts           # 静态文章数据层（MD 文件）
 │   ├── tags.ts                   # 标签数据层
 │   ├── uploads.ts                # 图片上传数据层（CRUD + 文件系统操作）
 │   ├── site.ts                   # 路由/导航配置（NavGroup 二级菜单）
@@ -156,7 +177,12 @@ src/
 │   ├── geo.ts                    # IP 地理定位（ip2region 离线库）
 │   ├── ua.ts                     # User-Agent 解析（浏览器/OS 提取）
 │   ├── track-sites.ts            # 站点数据层（CRUD）
+│   ├── nav-config.ts             # 导航页配置（书签、搜索引擎）
+│   ├── nav-db.ts                 # 导航页数据库层（bookmarks/todos/notes）
+│   ├── nav-storage.ts            # 导航页存储层（登录走 API，未登录走 localStorage）
 │   └── utils.ts                  # 工具函数 (cn + isNavItemActive)
+├── hooks/
+│   └── use-auth.ts               # 导航页认证 Hook（登录/注册/会话管理）
 └── middleware.ts                 # 中间件（注入路径头）
 
 sql/
@@ -325,10 +351,9 @@ const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM zhijian_blog_pos
 | `zhijian_track_sites` | 站点注册表（监控模块） |
 | `zhijian_track_events` | 原始事件表（监控模块，写入密集） |
 | `zhijian_track_daily` | 日聚合统计表（监控模块，查询加速） |
-
-**双数据源**（博客文章）:
-- `src/lib/posts.ts` — 数据库驱动的文章数据层
-- `src/lib/static-posts.ts` — 静态 MD 文件驱动的文章数据层（当前博客详情页使用此数据源）
+| `zhijian_nav_bookmarks` | 导航页书签表（导航模块，每用户一条 JSON） |
+| `zhijian_nav_todos` | 导航页备忘录表（导航模块，每用户一条 JSON） |
+| `zhijian_nav_notes` | 导航页笔记表（导航模块，每用户一条 JSON） |
 
 ### 6. HTTP 客户端
 
@@ -371,6 +396,7 @@ if (res.code === 0 && res.data) {
 | 区域 | 路由前缀 | 布局 |
 |------|----------|------|
 | 公开博客 | `/`, `/blog`, `/blog/[slug]` | `PublicChrome` (头部+底部) |
+| 导航页 | `/nav` | `PublicChrome` (头部+底部) |
 | 管理后台 | `/admin/*` | `AdminShell` (侧边栏+内容区) |
 | 文章编辑器 | `/admin/posts/[id]` | 无壳（独立全屏页面，脱离 AdminShell） |
 | 图片管理 | `/admin/uploads` | `AdminShell` |
@@ -387,7 +413,7 @@ RootLayout
             ├── pathname.startsWith('/admin/login') → AdminLoginLayout
             ├── pathname.match(/^\/admin\/posts\/\d+/) → 无壳（编辑器独立全屏页面）
             ├── pathname.startsWith('/admin')       → AdminShell
-            └── 其他                                 → PublicChrome
+            └── 其他（/ /blog/* /nav）              → PublicChrome
 ```
 
 ### 主题系统
@@ -721,12 +747,11 @@ fix(api): handle null response from database
 | 分类数据层 | `src/lib/categories.ts` |
 | 标签数据层 | `src/lib/tags.ts` |
 | 文章数据层（数据库） | `src/lib/posts.ts` |
-| 文章数据层（静态 MD） | `src/lib/static-posts.ts` |
 | 图片上传数据层 | `src/lib/uploads.ts` |
 | 数据库连接 | `src/lib/db.ts` |
 | HTTP 客户端 | `src/lib/http-client.ts` |
 | 全局样式 | `src/app/globals.css` |
-| 自建图标库 | `src/components/ui/icons/` |
+| 自建图标库 | `src/components/ui/icons.tsx` |
 | Toast 提示 | `src/components/ui/toast.tsx` + `use-toast.ts` |
 | 站点监控嵌入脚本 | `public/script.js` |
 | 站点监控数据层 | `src/lib/analytics.ts` + `track-sites.ts` |
@@ -741,6 +766,11 @@ fix(api): handle null response from database
 | 后台共享样式 | `src/app/admin/_components/admin-shared.module.css` |
 | 后台壳组件 | `src/app/admin/_components/admin-shell.tsx` |
 | 公开站点壳 | `src/components/site/public-chrome.tsx` |
+| 导航页入口 | `src/app/nav/page.tsx` |
+| 导航页配置 | `src/lib/nav-config.ts` |
+| 导航页数据库层 | `src/lib/nav-db.ts` |
+| 导航页存储层 | `src/lib/nav-storage.ts` |
+| 导航页认证 Hook | `src/hooks/use-auth.ts` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
 | 路由分发 | `src/components/site/app-frame.tsx` |
 | 数据库 Schema | `sql/init.sql` |
@@ -816,4 +846,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-11（编辑器元数据面板移至左侧 260px，PillSelect 替换状态选择器，修复图片上传闭包 bug）*
+*最后更新: 2026-06-26（补充导航页模块、nav 数据库表、nav API；移除已废弃的 static-posts.ts；更新图标数量 50、UI 组件 14）*

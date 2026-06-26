@@ -28,7 +28,7 @@
 ### 接入方式
 
 ```html
-<script async src="https://yuwb.cn/script.js" data-site-id="YOUR_SITE_ID"></script>
+<script async src="https://yuwb.dev/script.js" data-site-id="YOUR_SITE_ID"></script>
 ```
 
 可选属性：

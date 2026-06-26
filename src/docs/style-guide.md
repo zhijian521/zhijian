@@ -229,7 +229,7 @@
 | 工具栏按钮 | `height: 1.75rem`, `padding: 0 0.5rem`, `bg: var(--muted)` |
 | 编辑区 | 等宽字体，`font-family: 'SF Mono', 'Menlo', monospace` |
 | 预览区 | 同文章详情排版规格（H2 红线、衬线标题等） |
-| 侧边元数据面板 | `width: 320px`, `border-left: 1px solid var(--border)`, `bg: var(--background)`, `overflow-y: auto` |
+| 侧边元数据面板 | `width: 260px`, `border-left: 1px solid var(--border)`, `bg: var(--background)`, `overflow-y: auto` |
 | 分栏视图 | 左编辑 + 右预览，中间可拖拽分割线 |
 
 ### 页面标题区

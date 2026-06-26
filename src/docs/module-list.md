@@ -46,7 +46,7 @@
 | 序号 | 名称 | 路径 |
 |------|------|------|
 | 4.1 | 导航主页 | `src/app/nav/page.tsx` |
-| 4.2 | 导航外壳（四屏滚动） | `src/app/nav/_components/nav-shell.tsx` / `.module.css` |
+| 4.2 | 导航外壳（三屏滚动） | `src/app/nav/_components/nav-shell.tsx` / `.module.css` |
 | 4.3 | 搜索区 | `src/app/nav/_components/search-section.tsx` / `.module.css` |
 | 4.4 | 搜索栏 | `src/app/nav/_components/search-bar.tsx` / `.module.css` |
 | 4.5 | 书签栏 | `src/app/nav/_components/bookmark-bar.tsx` / `.module.css` |
@@ -58,16 +58,17 @@
 | 4.11 | 笔记区 | `src/app/nav/_components/note-section.tsx` / `.module.css` |
 | 4.12 | 设置区 | `src/app/nav/_components/settings-section.tsx` / `.module.css` |
 | 4.13 | 认证弹窗 | `src/app/nav/_components/auth-modal.tsx` / `.module.css` |
-| 4.14 | Nav 数据 API | `src/app/api/nav/data/route.ts` |
-| 4.15 | Nav 同步 API | `src/app/api/nav/sync/route.ts` |
-| 4.16 | 书签 API | `src/app/api/nav/bookmarks/route.ts` |
-| 4.17 | 备忘录 API | `src/app/api/nav/todos/route.ts` |
-| 4.18 | 笔记 API | `src/app/api/nav/notes/route.ts` |
-| 4.19 | Favicon 代理 API | `src/app/api/favicon/route.ts` |
-| 4.20 | Nav 配置 | `src/lib/nav-config.ts` |
-| 4.21 | Nav 数据库层 | `src/lib/nav-db.ts` |
-| 4.22 | Nav 存储层 | `src/lib/nav-storage.ts` |
-| 4.23 | Nav 认证 Hook | `src/hooks/use-auth.ts` |
+| 4.14 | 拖拽工具 | `src/app/nav/_components/drag-utils.ts` |
+| 4.15 | Nav 数据 API | `src/app/api/nav/data/route.ts` |
+| 4.16 | Nav 同步 API | `src/app/api/nav/sync/route.ts` |
+| 4.17 | 书签 API | `src/app/api/nav/bookmarks/route.ts` |
+| 4.18 | 备忘录 API | `src/app/api/nav/todos/route.ts` |
+| 4.19 | 笔记 API | `src/app/api/nav/notes/route.ts` |
+| 4.20 | Favicon 代理 API | `src/app/api/favicon/route.ts` |
+| 4.21 | Nav 配置 | `src/lib/nav-config.ts` |
+| 4.22 | Nav 数据库层 | `src/lib/nav-db.ts` |
+| 4.23 | Nav 存储层 | `src/lib/nav-storage.ts` |
+| 4.24 | Nav 认证 Hook | `src/hooks/use-auth.ts` |
 
 ---
 
@@ -224,6 +225,10 @@
 | 8.14 | UA 解析 | `src/lib/ua.ts` |
 | 8.15 | 旧链接重定向 | `src/lib/legacy-redirects.ts` |
 | 8.16 | 采集 API | `src/app/api/collect/route.ts` |
+| 8.17 | Nav 配置 | `src/lib/nav-config.ts` |
+| 8.18 | Nav 数据库层 | `src/lib/nav-db.ts` |
+| 8.19 | Nav 存储层 | `src/lib/nav-storage.ts` |
+| 8.20 | Nav 认证 Hook | `src/hooks/use-auth.ts` |
 
 ---
 
@@ -235,4 +240,4 @@
 
 ---
 
-**总计：约 110 个文件，8 大模块。** 审查建议从全局基础开始，依次首页 → 博客 → 导航页 → 认证 → 后台管理 → 公共组件 → 数据层。
+**总计：约 120 个文件，8 大模块。** 审查建议从全局基础开始，依次首页 → 博客 → 导航页 → 认证 → 后台管理 → 公共组件 → 数据层。

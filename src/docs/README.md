@@ -9,6 +9,7 @@
 ## 功能模块
 
 - [博客前台](features/home-blog.md) — 首页、文章列表、文章详情
+- [导航页](features/nav-portal.md) — 搜索、书签、备忘录、笔记
 - [网站统计（观澜）](features/admin-analytics.md) — 数据采集、仪表盘、站点管理
 - [文章导出](features/admin-export.md) — ZIP 打包导出文章与图片
 - [图片同步](features/sync-uploads.md) — 服务器图片增量同步到本地
