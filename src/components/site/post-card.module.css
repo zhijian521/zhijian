@@ -56,7 +56,7 @@
     position: relative;
     z-index: 1;
     margin-top: -2rem;
-    padding: 1rem 1rem 1.25rem;
+    padding: 2rem 1rem 1.25rem;
     background: linear-gradient(
         to bottom,
         transparent 0%,
@@ -78,7 +78,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: 1rem;
+    padding: 2rem 1rem;
 }
 
 /*== 通用元素 ==*/
@@ -87,7 +87,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .date {

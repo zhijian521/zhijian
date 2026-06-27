@@ -40,23 +40,23 @@ export function PostCard({
                     <div className={styles.visualImage}>{visual}</div>
                     <div className={styles.visualGradient} />
                     <div className={styles.visualBody}>
-                        <div className={styles.metaRow}>
-                            {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
-                            {date ? <span className={styles.date}>{date}</span> : null}
+                            <h3 className={styles.title}>{title}</h3>
+                            <div className={styles.metaRow}>
+                                {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
+                                {date ? <span className={styles.date}>{date}</span> : null}
+                            </div>
+                            {summary ? <p className={styles.summary}>{summary}</p> : null}
+                            <TextLink href={href}>阅读更多</TextLink>
                         </div>
-                        <h3 className={styles.title}>{title}</h3>
-                        {summary ? <p className={styles.summary}>{summary}</p> : null}
-                        <TextLink href={href}>阅读更多</TextLink>
-                    </div>
                 </div>
             ) : (
                 /* 纯文字卡片 */
                 <div className={styles.body}>
+                    <h3 className={styles.title}>{title}</h3>
                     <div className={styles.metaRow}>
                         {tag ? <Tag variant={tagVariant} size="mini">{tag}</Tag> : null}
                         {date ? <span className={styles.date}>{date}</span> : null}
                     </div>
-                    <h3 className={styles.title}>{title}</h3>
                     {summary ? <p className={styles.summary}>{summary}</p> : null}
                     <div className={styles.divider} />
                     <TextLink href={href}>阅读更多</TextLink>
