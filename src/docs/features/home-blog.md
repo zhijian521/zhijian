@@ -31,7 +31,7 @@
 <main>
   ├── Hero 区 — 全屏山水背景 + 标题 + 副标题 + 简介 + 锚点按钮
   ├── 个人信息区 — 头像 + 姓名 + 定位语 + 简介 + GhostButton 按钮（联系我 · GitHub · RSS订阅）
-  ├── 最新文章区 — 3 篇文章 PostCard 网格
+  ├── 最新文章区 — 3 篇文章 PostCard 网格（按最后修改时间排序）
   └── 开源项目区 — ProjectCard 网格（静态数据）
 </main>
 ```
@@ -47,6 +47,7 @@
 |------|------|
 | 渲染策略 | `export const dynamic = 'force-dynamic'`，禁用 ISR |
 | 文章为空 | 显示「暂无文章。」 |
+| 日期展示 | 优先展示 `updatedAt`（最后修改），无更新时回退 `publishedAt` |
 | Hero 背景 | `/images/bg-landscape.webp`（WebP 格式，26KB） |
 | 头像 | `/images/logo.webp`（WebP 格式），7.5rem 方形带边框阴影 |
 | PostCard 封面 | 有 `coverImage` 时渲染 `<ContentImage>`，无则纯文字卡片 |
@@ -108,7 +109,7 @@ buildPaginationHrefs()        — 生成每页的 URL
   └── <div layout> — 桌面端左右分栏，移动端上下反转
        ├── <section main> — 文章列表 + 分页
        │    ├── 文章卡片 × N
-       │    │    ├── 标题 + 摘要 + 元数据行（分类 · 标签 · 日期）
+       │    │    ├── 标题 + 摘要 + 元数据行（分类 · 标签 · 日期，日期优先展示最后修改时间）
        │    │    └── 可选封面图（180px 宽，16:9）
        │    └── <Pagination />（totalPages > 1 时显示）
        └── <aside sidebar> — 筛选区（桌面 240px 固定宽度）
@@ -240,12 +241,14 @@ interface PostCardProps {
     visual?: React.ReactNode;    // 封面图或渐变背景
     tag?: string;                // 分类名
     tagVariant?: 'default' | 'primary';
-    date?: string;               // 格式化日期
+    date?: string;               // 格式化日期（updatedAt 优先）
     title: string;
     summary?: string;
     href: string;                // 链接地址
 }
 ```
+
+布局顺序：标题 → 分类+日期（metaRow）→ 摘要。分类和日期在标题下方。
 
 两种渲染模式：
 
@@ -364,7 +367,7 @@ interface Post {
    - `categorySlug` → JOIN 分类表匹配
    - `tagSlugs` → `JSON_CONTAINS` 子查询匹配标签表
    - `limit` → SQL `LIMIT N`（首页传 3，相关文章传 5，列表页不传）
-   - 排序：`published_at DESC, id DESC`（未发布的排最后）
+   - 排序：`updated_at DESC, published_at DESC, id DESC`（优先按最后修改时间，未发布的排最后）
 2. **标签补全**：收集所有文章的 `tags` ID，批量查询 `zhijian_blog_tags`，Map 匹配后附加 `tagNames`
    - 单篇文章查询直接内联 `enrichPostsWithTagNames([post])[0]`，无额外包装函数
 3. 容错：数据库不可用时 `listCategories()` / `listTags()` 返回空数组
