@@ -12,8 +12,12 @@ export const metadata: Metadata = {
     },
     description: SITE_METADATA.description,
     icons: {
-        /* logo.png 保留 PNG 格式：favicon + JSON-LD Organization logo 兼容性，勿删 */
-        icon: '/images/logo.png',
+        icon: [
+            { url: '/favicon.ico', sizes: '32x32' },
+            { url: '/images/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+            { url: '/images/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        ],
+        apple: [{ url: '/images/apple-touch-icon.png', sizes: '180x180' }],
     },
     openGraph: {
         type: 'website',
