@@ -84,6 +84,8 @@
 | 首页内容区 | `max-width: 80rem`, `padding: 4rem 1.5rem 5rem` |
 | 博客列表 | `max-width: 72rem`, 主栏+240px侧栏, `gap: 5rem` |
 | 文章详情 | `max-width: 56rem (4xl)`，正文区 `max-width: 48rem (3xl)` |
+| 文章面包屑 | `font-serif`, `0.875rem`, `color: var(--muted-foreground)`, 当前项 `var(--foreground)` |
+| 相关文章网格 | `grid-template-columns: repeat(3, 1fr)`, `gap: 1rem`, 卡片 `max-width: 56rem` |
 | 文章卡片网格 | `grid-template-columns: repeat(3, 1fr)`, `gap: 1rem` |
 | 项目卡片网格 | `grid-template-columns: repeat(2, 1fr)`, `gap: 1rem` |
 | 后台侧边栏 | `width: 16rem (256px)`, `fixed`, `border-right: 1px solid var(--border)`, `bg: var(--muted)` |
@@ -279,4 +281,4 @@
 
 ---
 
-*最后更新: 2026-06-10（补充编辑器布局、图片卡片、封面上传、标签多选样式）*
+*最后更新: 2026-06-27（补充面包屑、相关文章网格布局；统一 itemCategory/relatedCardMeta 字号为 0.75rem）*

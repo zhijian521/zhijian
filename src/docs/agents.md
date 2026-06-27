@@ -116,8 +116,10 @@ src/
 │   │   └── posts/                # 公开文章列表
 │   ├── blog/                     # 公开博客 (/blog/*)
 │   │   ├── [slug]/               # 文章详情页（CSS Modules）
-│   │   ├── _components/          # 博客私有组件
-│   │   │   └── blog-list-client.tsx # 博客列表（客户端）
+│   │   │   └── _components/      # 详情页私有组件
+│   │   │       └── article-footer-actions.tsx  # 底部操作按钮（返回列表/主页/顶部）
+│   │   ├── _components/          # 列表页私有组件
+│   │   │   └── blog-list-client.tsx # 博客列表（客户端，useTransition+router.push 加载追踪）
 │   │   └── page.tsx              # 博客列表页
 │   ├── nav/                      # 导航页 (/nav)
 │   │   ├── _components/          # 导航页私有组件
@@ -138,7 +140,7 @@ src/
 │   ├── forbidden/                # 403 页面
 │   ├── theme.css                 # 全站统一主题变量
 │   ├── globals.css               # 全局样式 + 工具类
-│   └── layout.tsx                # 根布局
+│   └── layout.tsx                # 根布局（manifest / favicon / OG 配置）
 ├── components/
 │   ├── site/                     # 公开站点共享组件（全部 CSS Modules）
 │   │   ├── app-frame.tsx         # 应用框架（路由分发）
@@ -772,6 +774,7 @@ fix(api): handle null response from database
 | 导航页存储层 | `src/lib/nav-storage.ts` |
 | 导航页认证 Hook | `src/hooks/use-auth.ts` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
+| PWA 清单 | `public/manifest.json` |
 | 路由分发 | `src/components/site/app-frame.tsx` |
 | 数据库 Schema | `sql/init.sql` |
 
@@ -794,6 +797,7 @@ fix(api): handle null response from database
 - 数据库连接池限制 3 连接，避免过度占用
 - 使用 `FALLBACK_POSTS` 兜底数据，数据库不可用时页面仍可渲染
 - 图片使用 Next.js `<Image>` 组件自动优化
+- 博客背景图和 OG 图已转为 WebP 格式，减小文件体积
 - 图片上传存储在 `public/uploads/` 本地文件系统，按日期分目录（如 `/uploads/2026/06/`）
 
 ### 兼容性
@@ -846,4 +850,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-26（补充导航页模块、nav 数据库表、nav API；移除已废弃的 static-posts.ts；更新图标数量 50、UI 组件 14）*
+*最后更新: 2026-06-27（博客前台：面包屑 UI + 相关文章 + 筛选加载条 + filter chip 服务端预计算；PWA manifest；sitemap lastModified；WebP 图片优化；blogTitle 重命名；enrichPostWithTagNames 内联）*

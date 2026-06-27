@@ -14,6 +14,7 @@
 - [共享组件](#共享组件)
 - [数据层](#数据层)
 - [SEO 与结构化数据](#seo-与结构化数据)
+- [PWA 与性能](#pwa-与性能)
 - [样式体系](#样式体系)
 
 ---
@@ -45,9 +46,9 @@
 | 项目 | 说明 |
 |------|------|
 | 渲染策略 | `export const dynamic = 'force-dynamic'`，禁用 ISR |
-| 文章为空 | 显示「暂无文章，去后台写一篇吧。」 |
-| Hero 背景 | `/images/bg-landscape.webp`，`object-fit: cover` |
-| 头像 | `/images/logo.webp`，7.5rem 方形带边框阴影 |
+| 文章为空 | 显示「暂无文章。」 |
+| Hero 背景 | `/images/bg-landscape.webp`（WebP 格式，26KB） |
+| 头像 | `/images/logo.webp`（WebP 格式），7.5rem 方形带边框阴影 |
 | PostCard 封面 | 有 `coverImage` 时渲染 `<ContentImage>`，无则纯文字卡片 |
 | 联系方式 | GhostButton 组件（`size="small"`），统一按钮风格 |
 | RSS 订阅 | `RssCopyButton` 客户端组件，点击复制 `/feed.xml` 地址，1.5s 反馈 |
@@ -59,7 +60,7 @@
 **文件**：`src/app/blog/page.tsx`（服务端逻辑）  
 **展示组件**：`src/app/blog/_components/blog-list-client.tsx`  
 **路由**：`/blog`、`/blog?category=tech`、`/blog?tags=react,nextjs`、`/blog?category=tech&tags=react&page=2`  
-**组件类型**：Server Component（page）+ Server Component（blog-list-client，纯展示）
+**组件类型**：Server Component（page）+ Client Component（blog-list-client，含 `useTransition` + `router.push` 加载追踪）
 
 ### URL 参数
 
@@ -79,7 +80,7 @@ resolveBlogFilters()          — 解析 category / page / tags 参数
   │
   ▼
 resolveFilterState()          — 用数据库分类/标签校验 slug 有效性
-  │
+  │                           — 预计算 activeFilterChips（label + removeHref）
   ▼
 getPublishedPosts({ categorySlug, tagSlugs })
   │                             — SQL 动态 WHERE 过滤
@@ -92,14 +93,18 @@ buildFilterOptions()          — 生成分类/标签筛选链接
 buildPaginationHrefs()        — 生成每页的 URL
   │
   ▼
-<BlogListClient />            — 纯展示，接收预计算数据
+<BlogListClient />            — 客户端交互，接收预计算数据
 ```
 
 ### 页面布局
 
 ```
 <main>
-  ├── <header> — "文章" 标题
+  ├── 加载条（isPending 时显示，2px 朱砂红动画条）
+  ├── <header>
+  │    ├── 标题 "文章" + 激活筛选标签（activeFilterChips）
+  │    │    └── 每个 chip = 标签名 + XIcon，点击移除筛选
+  │    └── 筛选按钮（移动端弹窗入口，桌面端隐藏）
   └── <div layout> — 桌面端左右分栏，移动端上下反转
        ├── <section main> — 文章列表 + 分页
        │    ├── 文章卡片 × N
@@ -112,10 +117,17 @@ buildPaginationHrefs()        — 生成每页的 URL
 </main>
 ```
 
+### 筛选交互
+
+- **所有筛选操作**（侧边栏、弹窗、chip 移除）统一使用 `<button>` + `navigateTo(url)` 模式
+- `navigateTo` 内部用 `startTransition(() => router.push(url))`，`isPending` 驱动顶部加载条
+- **激活筛选标签**：服务端预计算 `activeFilterChips` 数组（`{ label, removeHref }`），客户端零 URL 构建逻辑
+- **移除筛选后回到第 1 页**，避免空页
+
 ### 标签筛选交互
 
 - 点击未选中的标签 → URL 添加该标签 slug
-- 点击已选中的标签 → URL 移除该标签 slug
+- 点击已选中的标签 → URL 积除该标签 slug
 - 多标签以逗号分隔：`?tags=react,nextjs`
 
 ### 分页
@@ -152,27 +164,52 @@ params.slug
   │
   ▼
 getPostBySlug(slug)           — 查询数据库，仅返回 published 文章
-  │                             — enrichPostWithTagNames() 补标签名
+  │                             — enrichPostsWithTagNames([post]) 补标签名
   ▼
 post 为空 → notFound()        — 返回 404
 post 存在 → 渲染页面
+  │
+  ▼
+相关文章查询                    — 同标签文章，排除当前，最多 3 篇
+  getPublishedPosts({ tagSlugs, limit: 5 })
+    .filter(p => p.id !== post.id).slice(0, 3)
 ```
 
 ### 页面布局
 
 ```
 <main>
-  └── <article>
-       ├── <ArticleView />     — 文章头部 + 正文
-       │    ├── 封面图（可选）
-       │    ├── 标题
-       │    ├── 摘要（斜体）
-       │    ├── 元数据行（分类徽章 + 标签 + 日期）
-       │    └── <MarkdownArticle /> — Markdown 渲染
-       └── <footer>
-            ├── 标签列表
-            └── <ArticleFooterActions /> — 返回列表 / 返回主页 / 返回顶部
+  ├── <article>
+  │    ├── <nav breadcrumb> — 面包屑导航（知简 / 文章 / 文章标题）
+  │    ├── <ArticleView />  — 文章头部 + 正文
+  │    │    ├── 封面图（可选）
+  │    │    ├── 标题
+  │    │    ├── 摘要（斜体）
+  │    │    ├── 元数据行（分类徽章 + 标签 + 日期）
+  │    │    └── <MarkdownArticle /> — Markdown 渲染
+  │    └── <footer>
+  │         ├── 标签列表
+  │         └── <ArticleFooterActions /> — 返回列表 / 返回主页 / 返回顶部
+  └── <section related>       — 相关文章推荐（有相关文章时渲染）
+       ├── 标题 "相关文章"
+       └── 3 列卡片网格（响应式：≤640px 单列，641-899px 双列，≥900px 三列）
+            └── 每张卡片：标题（最多2行）+ 标签 + 分类 + 日期
 ```
+
+### 面包屑导航
+
+- 语义结构：`<nav aria-label="面包屑">` + `<ol>` + `<li>`
+- 三级：知简（`<Link href="/">`）/ 文章（`<Link href="/blog">`）/ 当前标题（`<span aria-current="page">`）
+- 当前标题 `max-width: 20rem`，溢出省略，`title` 属性显示完整标题
+- 衬线字体 `var(--font-serif)`，字号 `0.875rem`
+- JSON-LD `BreadcrumbList` 与可见 UI 保持一致
+
+### 相关文章推荐
+
+- 查询逻辑：`getPublishedPosts({ tagSlugs, limit: 5 })`，排除当前文章，取前 3 篇
+- 无相关文章时不渲染该区域
+- 卡片样式：标题衬线体 + 标签（`--secondary` 背景）+ 分类（primary 边框 + `--primary-subtle-soft` 背景，无 font-weight 加粗）+ 日期
+- hover 效果：仅边框变色 + 标题变 primary，无平移/阴影
 
 ### 阅读时间估算
 
@@ -233,11 +270,13 @@ interface ArticleViewProps {
     categoryName?: string | null;
     tagNames?: { id: number; name: string; slug: string }[] | string[];
     publishedAt?: string | null;
+    updatedAt?: string | null;
 }
 ```
 
 - `tagNames` 兼容对象数组和字符串数组
 - 无任何头部字段时，仅渲染正文（编辑器预览场景）
+- 分类徽章无 `font-weight` 加粗，与详情页相关文章卡片风格统一
 
 ### MarkdownArticle
 
@@ -324,9 +363,10 @@ interface Post {
    - `status = 'published'` 必选
    - `categorySlug` → JOIN 分类表匹配
    - `tagSlugs` → `JSON_CONTAINS` 子查询匹配标签表
-   - `limit` → SQL `LIMIT N`（首页传 3，列表页不传）
+   - `limit` → SQL `LIMIT N`（首页传 3，相关文章传 5，列表页不传）
    - 排序：`published_at DESC, id DESC`（未发布的排最后）
 2. **标签补全**：收集所有文章的 `tags` ID，批量查询 `zhijian_blog_tags`，Map 匹配后附加 `tagNames`
+   - 单篇文章查询直接内联 `enrichPostsWithTagNames([post])[0]`，无额外包装函数
 3. 容错：数据库不可用时 `listCategories()` / `listTags()` 返回空数组
 
 ### 涉及的数据库表
@@ -346,7 +386,7 @@ interface Post {
 | 页面 | `<title>` 格式 |
 |------|----------------|
 | 首页 | `Zhijian - 简静造物` |
-| 列表页 | `文章列表 - [分类] - [标签] - Zhijian - 简静造物` |
+| 列表页 | `知简博客 - [分类] - [标签] - 第 N 页` |
 | 详情页 | `文章标题 - Zhijian - 简静造物` |
 
 列表页和详情页通过根布局 `title.template` 自动拼接品牌后缀：
@@ -354,6 +394,8 @@ interface Post {
 template: `%s - ${SITE_METADATA.brandTitle}`
 ```
 `brandTitle` 当前值为 `'Zhijian - 简静造物'`，改此一处全站生效。
+
+`blogTitle` 当前值为 `'知简博客'`（非「文章列表」），H1 UI 仍为「文章」。
 
 ### 元数据
 
@@ -398,7 +440,7 @@ template: `%s - ${SITE_METADATA.brandTitle}`
   WebSite        — 站点身份
   Person         — 作者
   Organization   — 出版者（含 logo）
-  BreadcrumbList — 首页 > 文章 > 文章标题
+  BreadcrumbList — 知简 > 文章 > 文章标题
   BlogPosting    — 完整文章 schema
                    headline / description / image
                    datePublished / dateModified
@@ -409,6 +451,13 @@ template: `%s - ${SITE_METADATA.brandTitle}`
 ]
 ```
 
+### Sitemap
+
+- 首页和 `/blog` 均设置 `lastModified`（取最新文章的 `updatedAt || publishedAt`）
+- 文章详情页 `lastModified` 使用 `toPostIsoDateTime()`
+- `changeFrequency`：首页/列表页 `daily`，详情页 `weekly`
+- `priority`：首页 1.0，列表页 0.9，详情页 0.7
+
 ### RSS Feed
 
 | 项目 | 说明 |
@@ -418,6 +467,42 @@ template: `%s - ${SITE_METADATA.brandTitle}`
 | 内容 | 全部已发布文章（title / link / guid / description / pubDate / category） |
 | 自动发现 | 根布局 `alternates.types` 输出 `<link rel="alternate" type="application/rss+xml">` |
 | 首页入口 | `RssCopyButton` 客户端组件，点击复制 feed 地址到剪贴板 |
+
+---
+
+## PWA 与性能
+
+### Web App Manifest
+
+**文件**：`public/manifest.json`
+
+| 字段 | 值 |
+|------|-----|
+| `name` | 知简 - 简静造物 |
+| `short_name` | 知简 |
+| `theme_color` | `#fbf9f9`（宣纸色，非朱砂红） |
+| `background_color` | `#fbf9f9` |
+| `display` | `standalone` |
+| `icons` | 32×32 + 180×180 |
+
+根布局 `metadata.manifest = '/manifest.json'` 引用。
+
+### 图片优化
+
+所有博客背景图和 OG 图已转为 WebP 格式：
+
+| 原始 PNG | WebP | 用途 |
+|----------|------|------|
+| `home-hero-bg.png` | `bg-landscape.webp`（26KB） | 首页 Hero 背景 |
+| `blog-bg.png` | `bg-ink.webp`（14KB） | 博客列表/详情页背景 |
+| `main.png` | `logo.webp`（23KB） | 头像 |
+| — | `og-default.webp`（79KB） | OG 默认分享图 |
+
+`logo.png` 保留用于 favicon 和 JSON-LD Organization logo。
+
+### Favicon
+
+根布局配置多格式 favicon：`favicon.ico`、16×16/32×32 PNG、`apple-touch-icon.png`（180×180）。
 
 ---
 
@@ -442,7 +527,7 @@ template: `%s - ${SITE_METADATA.brandTitle}`
 | 断点 | 适配 |
 |------|------|
 | `≤ 1024px` | 网格降为 2 列或单列，侧边栏宽度调整 |
-| `≤ 768px` | Hero 区缩减间距，个人卡片竖排 |
+| `≤ 768px` | Hero 区缩减间距，个人卡片竖排，筛选按钮显示 |
 | `≤ 640px` | 所有网格单列，侧边栏移至内容下方 |
 
 ### 文章正文排版
@@ -469,13 +554,14 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/app/page.tsx` | 首页 |
 | `src/app/page.module.css` | 首页样式 |
 | `src/app/blog/page.tsx` | 列表页（服务端逻辑 + metadata） |
-| `src/app/blog/_components/blog-list-client.tsx` | 列表页展示 |
+| `src/app/blog/_components/blog-list-client.tsx` | 列表页展示（useTransition + router.push） |
 | `src/app/blog/page.module.css` | 列表页样式 |
-| `src/app/blog/[slug]/page.tsx` | 详情页 |
+| `src/app/blog/[slug]/page.tsx` | 详情页（面包屑 + 相关文章 + JSON-LD） |
 | `src/app/blog/[slug]/page.module.css` | 详情页样式 |
 | `src/app/blog/[slug]/_components/article-footer-actions.tsx` | 详情页底部操作 |
 | `src/components/site/post-card.tsx` | 文章卡片 |
 | `src/components/site/article-view.tsx` | 文章视图（详情 + 编辑器预览共用） |
+| `src/components/site/article-view.module.css` | 文章视图样式（分类无 font-weight 加粗） |
 | `src/components/site/markdown-article.tsx` | Markdown 渲染器 |
 | `src/components/site/code-block.tsx` | 代码块 + 复制按钮 |
 | `src/components/site/content-image.tsx` | 自适应图片 |
@@ -483,6 +569,8 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/lib/post-shared.ts` | Post 类型 + 日期工具函数 |
 | `src/lib/categories.ts` | 分类数据层 |
 | `src/lib/tags.ts` | 标签数据层 |
-| `src/lib/site.ts` | 站点元数据与路由配置 |
+| `src/lib/site.ts` | 站点元数据与路由配置（blogTitle = '知简博客'） |
+| `src/app/sitemap.ts` | Sitemap（首页/列表页含 lastModified） |
 | `src/app/feed.xml/route.ts` | RSS 2.0 feed 生成 |
 | `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮（复制 feed 地址） |
+| `public/manifest.json` | PWA Web App Manifest（宣纸色主题） |

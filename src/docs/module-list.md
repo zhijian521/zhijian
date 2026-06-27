@@ -15,8 +15,9 @@
 | 1.5 | 403 页 | `src/app/forbidden/page.tsx` |
 | 1.6 | 中间件 | `src/middleware.ts` |
 | 1.7 | SEO — robots | `src/app/robots.ts` |
-| 1.8 | SEO — sitemap | `src/app/sitemap.ts` |
+| 1.8 | SEO — sitemap | `src/app/sitemap.ts`（首页/列表页含 lastModified） |
 | 1.9 | SEO — RSS | `src/app/feed.xml/route.ts` |
+| 1.10 | PWA — manifest | `public/manifest.json`（宣纸色主题） |
 
 ---
 
@@ -33,7 +34,7 @@
 | 序号 | 名称 | 路径 |
 |------|------|------|
 | 3.1 | 博客列表 | `src/app/blog/page.tsx` / `src/app/blog/page.module.css` |
-| 3.2 | 博客列表客户端 | `src/app/blog/_components/blog-list-client.tsx` |
+| 3.2 | 博客列表客户端 | `src/app/blog/_components/blog-list-client.tsx`（useTransition + router.push） |
 | 3.3 | 文章详情 | `src/app/blog/[slug]/page.tsx` / `src/app/blog/[slug]/page.module.css` |
 | 3.4 | 文章详情加载 | `src/app/blog/[slug]/loading.tsx` |
 | 3.5 | 文章底部操作 | `src/app/blog/[slug]/_components/article-footer-actions.tsx` |
