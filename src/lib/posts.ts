@@ -71,9 +71,7 @@ interface PostRow extends RowDataPacket {
     updated_at: string | null;
 }
 
-/*== 数据库摘要字段为空时的占位文案。 ==*/
 const EMPTY_SUMMARY_FALLBACK = '这篇文章还没有摘要，等你补上一段引导文字。';
-/*== 数据库正文字段为空时的占位文案。 ==*/
 const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
 
 /*== 公开查询 ==*/
@@ -102,7 +100,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: false, slug });
     if (posts.length === 0) return null;
-    return enrichPostWithTagNames(posts[0]);
+    if (posts[0].tags.length === 0) return posts[0];
+    return (await enrichPostsWithTagNames([posts[0]]))[0] ?? null;
 }
 
 /*== 按 ID 获取单篇文章（含草稿），供后台编辑页使用。 @param id - 文章主键 ID @returns 匹配的文章，未找到时返回 null ==*/
@@ -110,7 +109,8 @@ export async function getPostById(id: number): Promise<Post | null> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true, id });
     if (posts.length === 0) return null;
-    return enrichPostWithTagNames(posts[0]);
+    if (posts[0].tags.length === 0) return posts[0];
+    return (await enrichPostsWithTagNames([posts[0]]))[0] ?? null;
 }
 
 /*== 写入操作 ==*/
@@ -351,13 +351,6 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
         console.error('Failed to enrich posts with tag names.', { error });
         return posts;
     }
-}
-
-/*== 单篇文章详情补齐标签名称。复用批量补全函数，避免重复查询逻辑。 ==*/
-async function enrichPostWithTagNames(post: Post | undefined): Promise<Post | null> {
-    if (!post) return null;
-    if (post.tags.length === 0) return post;
-    return (await enrichPostsWithTagNames([post]))[0];
 }
 
 /*== 内部工具 ==*/

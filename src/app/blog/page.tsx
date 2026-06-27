@@ -8,9 +8,7 @@ import { listTags } from '@/lib/tags';
 
 import BlogListClient from './_components/blog-list-client';
 
-const BLOG_DESCRIPTION = SITE_METADATA.blogDescription;
 const PAGE_SIZE = 10;
-const ALL_CATEGORY_SLUG = '';
 
 /*== cache 包裹：同一请求内 generateMetadata 与 render 共享查询结果，避免重复查库 ==*/
 const cachedCategories = cache(listCategories);
@@ -104,9 +102,28 @@ function resolveFilterState(
     const activeTagSlugs = filters.tagSlugs.filter((tagSlug) => tagMap.has(tagSlug));
     const activeTagNames = activeTagSlugs.map((tagSlug) => tagMap.get(tagSlug)!.name);
 
+    /* 预计算筛选标签 chip 的移除 URL，避免客户端重建 URL 逻辑 */
+    const activeFilterChips: { label: string; removeHref: string }[] = [];
+    if (activeCategorySlug) {
+        activeFilterChips.push({
+            label: categoryMap.get(activeCategorySlug)!.name,
+            removeHref: buildBlogUrl({ tagSlugs: activeTagSlugs }),
+        });
+    }
+    for (const tagSlug of activeTagSlugs) {
+        activeFilterChips.push({
+            label: tagMap.get(tagSlug)!.name,
+            removeHref: buildBlogUrl({
+                categorySlug: activeCategorySlug,
+                tagSlugs: activeTagSlugs.filter((s) => s !== tagSlug),
+            }),
+        });
+    }
+
     return {
         activeCategoryLabel,
         activeCategorySlug,
+        activeFilterChips,
         activeTagNames,
         activeTagSlugs,
     };
@@ -128,7 +145,7 @@ function buildFilterOptions(options: {
                 tagSlugs: options.activeTagSlugs,
             }),
             label: '全部',
-            slug: ALL_CATEGORY_SLUG,
+            slug: '',
         },
         ...options.categories.map((category) => ({
             href: buildBlogUrl({
@@ -214,7 +231,7 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         ...(activeTagNames.length > 0 ? [activeTagNames.join(' / ')] : []),
         ...(currentPage > 1 ? [`第 ${currentPage} 页`] : []),
     ];
-    const descriptionSegments: string[] = [BLOG_DESCRIPTION];
+    const descriptionSegments: string[] = [SITE_METADATA.blogDescription];
 
     if (activeCategorySlug) {
         descriptionSegments.push(`当前分类：${activeCategoryLabel}。`);
@@ -293,6 +310,7 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
     const {
         activeCategoryLabel,
         activeCategorySlug,
+        activeFilterChips,
         activeTagNames,
         activeTagSlugs,
     } = resolveFilterState(filters, categories, tags);
@@ -335,7 +353,7 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
                 '@id': `${pageUrl}#page`,
                 url: pageUrl,
                 name: pageName,
-                description: BLOG_DESCRIPTION,
+                description: SITE_METADATA.blogDescription,
                 inLanguage: 'zh-CN',
             },
             {
@@ -362,9 +380,8 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <BlogListClient
-                activeCategoryLabel={activeCategoryLabel}
                 activeCategorySlug={activeCategorySlug || undefined}
-                activeTagNames={activeTagNames}
+                activeFilterChips={activeFilterChips}
                 activeTagSlugs={activeTagSlugs}
                 categoryOptions={categoryOptions}
                 currentPage={currentPage}

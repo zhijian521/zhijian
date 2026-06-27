@@ -381,7 +381,7 @@
 }
 
 .itemCategory {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     letter-spacing: 0.1em;
     color: var(--primary);
     white-space: nowrap;

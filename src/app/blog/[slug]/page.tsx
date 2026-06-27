@@ -17,9 +17,6 @@ interface PageProps {
 }
 
 const getBlogPost = cache(async (slug: string) => getPostBySlug(slug));
-const AUTHOR_URL = `${SITE_METADATA.siteUrl}/#about-me`;
-const WEBSITE_ID = `${SITE_METADATA.siteUrl}#website`;
-const PUBLISHER_ID = `${SITE_METADATA.siteUrl}#publisher`;
 
 function estimateReadingMinutes(content: string): number {
     const plainTextLength = content.replace(/\s+/g, '').length;
@@ -90,10 +87,9 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     /* 相关文章：查同标签文章，排除当前文章，最多 3 篇 */
     const tagSlugs = post.tagNames?.map((t) => t.slug) ?? [];
-    const sameTagPosts = tagSlugs.length > 0
-        ? await getPublishedPosts({ tagSlugs, limit: 5 })
+    const relatedPosts = tagSlugs.length > 0
+        ? (await getPublishedPosts({ tagSlugs, limit: 5 })).filter((p) => p.id !== post.id).slice(0, 3)
         : [];
-    const relatedPosts = sameTagPosts.filter((p) => p.id !== post.id).slice(0, 3);
 
     const canonical = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
     const articleImage = toAbsoluteUrl(post.coverImage);
@@ -106,19 +102,19 @@ export default async function BlogPostPage({ params }: PageProps) {
         '@graph': [
             {
                 '@type': 'WebSite',
-                '@id': WEBSITE_ID,
+                '@id': `${SITE_METADATA.siteUrl}#website`,
                 url: SITE_METADATA.siteUrl,
                 name: SITE_METADATA.title,
             },
             {
                 '@type': 'Person',
-                '@id': AUTHOR_URL,
+                '@id': `${SITE_METADATA.siteUrl}/#about-me`,
                 name: SITE_METADATA.author,
-                url: AUTHOR_URL,
+                url: `${SITE_METADATA.siteUrl}/#about-me`,
             },
             {
                 '@type': 'Organization',
-                '@id': PUBLISHER_ID,
+                '@id': `${SITE_METADATA.siteUrl}#publisher`,
                 name: SITE_METADATA.title,
                 url: SITE_METADATA.siteUrl,
                 logo: {
@@ -159,16 +155,16 @@ export default async function BlogPostPage({ params }: PageProps) {
                 datePublished: publishedTime,
                 dateModified: modifiedTime,
                 author: {
-                    '@id': AUTHOR_URL,
+                    '@id': `${SITE_METADATA.siteUrl}/#about-me`,
                 },
                 publisher: {
-                    '@id': PUBLISHER_ID,
+                    '@id': `${SITE_METADATA.siteUrl}#publisher`,
                 },
                 mainEntityOfPage: {
                     '@type': 'WebPage',
                     '@id': canonical,
                     isPartOf: {
-                        '@id': WEBSITE_ID,
+                        '@id': `${SITE_METADATA.siteUrl}#website`,
                     },
                 },
                 articleSection: post.categoryName || undefined,
