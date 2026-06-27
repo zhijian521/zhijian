@@ -205,7 +205,7 @@ export default async function HomePage() {
                                 key={post.id}
                                 tag={post.categoryName ?? undefined}
                                 tagVariant='primary'
-                                date={formatPostDate(post.publishedAt)}
+                                date={formatPostDate(post.updatedAt || post.publishedAt)}
                                 title={post.title}
                                 summary={post.summary}
                                 href={`/blog/${post.slug}`}

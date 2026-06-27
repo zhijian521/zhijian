@@ -167,7 +167,7 @@ export default function BlogListClient({
                                                     ))}
                                                 </div>
                                             ) : null}
-                                            <span className={styles.itemDate}>{formatPostDate(post.publishedAt)}</span>
+                                            <span className={styles.itemDate}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
                                         </div>
                                     </div>
                                     {post.coverImage ? (

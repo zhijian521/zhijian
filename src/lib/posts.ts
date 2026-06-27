@@ -283,7 +283,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                 FROM zhijian_blog_posts p
                 LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
                 ${whereClause}
-                ORDER BY p.published_at IS NULL, p.published_at DESC, p.id DESC
+                ORDER BY p.updated_at IS NULL, p.updated_at DESC, p.published_at IS NULL, p.published_at DESC, p.id DESC
                 ${limitClause}
             `,
             values,
