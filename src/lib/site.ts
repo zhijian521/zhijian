@@ -49,7 +49,7 @@ export const SITE_METADATA = {
     /*-- 作者名，metadata.authors / JSON-LD Person --*/
     author: 'Zhi Jian',
     /*-- 文章列表页标题前缀，拼接：blogTitle - [分类] - [标签] - brandTitle --*/
-    blogTitle: '文章列表',
+    blogTitle: '知简博客',
     /*-- 文章列表页描述，/blog 页 <meta description> / OG / Twitter --*/
     blogDescription:
         '写代码，也写文字；喜欢简洁的设计，追求美好的事物。知简的技术博客，涵盖前端开发、React、Next.js、TypeScript 与全栈实践，安静造物，步履不停。',

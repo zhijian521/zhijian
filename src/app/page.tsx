@@ -24,7 +24,7 @@ import styles from './page.module.css';
 
 export const metadata: Metadata = {
     title: SITE_METADATA.brandTitle,
-    description: SITE_METADATA.blogDescription,
+    description: SITE_METADATA.description,
     keywords: [...SITE_METADATA.keywords],
     authors: [{ name: SITE_METADATA.author }],
     creator: SITE_METADATA.author,
@@ -34,14 +34,14 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: SITE_METADATA.brandTitle,
-        description: SITE_METADATA.blogDescription,
+        description: SITE_METADATA.description,
         url: SITE_METADATA.siteUrl,
         images: [{ url: SITE_METADATA.ogImage, alt: SITE_METADATA.brandTitle }],
     },
     twitter: {
         card: 'summary_large_image',
         title: SITE_METADATA.brandTitle,
-        description: SITE_METADATA.blogDescription,
+        description: SITE_METADATA.description,
         images: [SITE_METADATA.ogImage],
     },
 };
