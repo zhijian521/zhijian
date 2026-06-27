@@ -188,6 +188,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     summary={post.summary}
                     tagNames={post.tagNames}
                     title={post.title}
+                    updatedAt={post.updatedAt}
                 />
 
                 <footer className={styles.footer}>

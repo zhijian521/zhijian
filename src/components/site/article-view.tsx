@@ -13,6 +13,7 @@ export interface ArticleViewProps {
     categoryName?: string | null;
     tagNames?: { id: number; name: string; slug: string }[] | string[];
     publishedAt?: string | null;
+    updatedAt?: string | null;
 }
 
 /*== ArticleView 文章展示组件：编辑器预览与前台详情页共用。 ==*/
@@ -25,6 +26,7 @@ export function ArticleView({
     categoryName,
     tagNames,
     publishedAt,
+    updatedAt,
 }: ArticleViewProps) {
     const hasHeader = title || summary || coverImage || categoryName || (tagNames && tagNames.length > 0) || publishedAt;
     const tagLabels = tagNames?.map((tag) => typeof tag === 'string' ? tag : tag.name) ?? [];
@@ -57,6 +59,11 @@ export function ArticleView({
                 </div>
             ) : null}
             <MarkdownArticle content={content} />
+            {updatedAt && updatedAt !== publishedAt ? (
+                <div className={styles.updatedDate}>
+                    最后更新于： {formatPostDate(updatedAt)}
+                </div>
+            ) : null}
         </div>
     );
 }
