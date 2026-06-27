@@ -850,4 +850,4 @@ fix(api): handle null response from database
 
 ---
 
-*最后更新: 2026-06-27（博客前台：面包屑 UI + 相关文章 + 筛选加载条 + filter chip 服务端预计算；PWA manifest；sitemap lastModified；WebP 图片优化；blogTitle 重命名；enrichPostWithTagNames 内联）*
+*最后更新: 2026-06-27（新增认证系统文档 features/auth.md、后台管理文档 features/admin.md；博客前台排序改为 updated_at 优先；PostCard 布局调整）*
