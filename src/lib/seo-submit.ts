@@ -44,8 +44,14 @@ async function submitToBaidu(urls: string[]): Promise<SubmitResult> {
     if (urls.length === 0) return { success: true, count: 0 };
 
     try {
-        const site = process.env.BAIDU_SITE || SITE_METADATA.siteUrl;
-        const body = urls.join('\n');
+        const siteUrl = process.env.BAIDU_SITE || SITE_METADATA.siteUrl;
+        const site = new URL(siteUrl).host;
+        const baiduOrigin = new URL(siteUrl).origin;
+        const baiduUrls = urls.map(u => {
+            try { return u.replace(new URL(u).origin, baiduOrigin); }
+            catch { return u; }
+        });
+        const body = baiduUrls.join('\n');
         const path = `/urls?site=${site}&token=${token}`;
         const data = await new Promise<string>((resolve, reject) => {
             const req = http.request(
