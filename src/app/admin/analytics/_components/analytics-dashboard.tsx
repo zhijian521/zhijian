@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem, VisitRecord } from '@/lib/analytics';
 
-import { TrendingUpIcon, TrendingDownIcon, CopyIcon } from '@/components/ui/icons';
+import { TrendingUpIcon, TrendingDownIcon, CopyIcon, Trash2Icon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { PillSelect } from '@/components/ui/pill-select';
 import { Select } from '@/components/ui/select';
@@ -16,6 +16,7 @@ import { toast } from '@/components/ui/toast';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { Tag } from '@/components/ui/tag';
 import { Pagination } from '@/components/ui/pagination';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { getEmbedScript } from '@/lib/utils';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import { api } from '@/lib/http-client';
@@ -170,6 +171,8 @@ export default function AnalyticsDashboard() {
     const [visitsPage, setVisitsPage] = useState(1);
     const [visitsPageSize, setVisitsPageSize] = useState(VISITS_DEFAULT_PAGE_SIZE);
     const [visitsLoading, setVisitsLoading] = useState(false);
+    const [clearOpen, setClearOpen] = useState(false);
+    const [clearLoading, setClearLoading] = useState(false);
 
     const fetchSites = useCallback(async () => {
         try {
@@ -210,6 +213,26 @@ export default function AnalyticsDashboard() {
             toast.success('接入代码已复制');
         } catch {
             toast.error('复制失败');
+        }
+    }
+
+    async function handleClearData() {
+        if (!siteId) return;
+        setClearLoading(true);
+        try {
+            const res = await api.delete<{ events: number; daily: number }>(`/admin/analytics/data?siteId=${siteId}`);
+            if (res.code === 0) {
+                toast.success(res.message || '数据已清空');
+                setClearOpen(false);
+                fetchData();
+                if (tab === 'visits') fetchVisits();
+            } else {
+                toast.error(res.message || '清空失败');
+            }
+        } catch {
+            toast.error('清空失败');
+        } finally {
+            setClearLoading(false);
         }
     }
 
@@ -301,6 +324,9 @@ export default function AnalyticsDashboard() {
                     />
                     {siteId && (
                         <GhostButton asButton icon={<CopyIcon />} onClick={copyEmbedCode} size="small" title="复制接入代码">接入代码</GhostButton>
+                    )}
+                    {siteId && (
+                        <GhostButton asButton icon={<Trash2Icon />} onClick={() => setClearOpen(true)} size="small" title="清空该站点全部统计记录">清空记录</GhostButton>
                     )}
                 </div>
                 <div className={styles.rightControls}>
@@ -531,6 +557,16 @@ export default function AnalyticsDashboard() {
                     </>
                 )
             )}
+
+            <ConfirmDialog
+                open={clearOpen}
+                title="清空站点数据"
+                message={`确定清空该站点的全部统计记录？此操作不可恢复。`}
+                confirmLabel="清空"
+                onConfirm={handleClearData}
+                onCancel={() => setClearOpen(false)}
+                loading={clearLoading}
+            />
         </>
     );
 }

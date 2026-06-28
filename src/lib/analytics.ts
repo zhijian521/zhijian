@@ -1,5 +1,5 @@
-import type { RowDataPacket } from 'mysql2';
-import { getDb } from '@/lib/db';
+import type { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { getDb, getDbConnection } from '@/lib/db';
 
 /*============================================================================
   站点监控分析数据层
@@ -877,4 +877,27 @@ export async function getVisits(
     });
 
     return { data, total };
+}
+
+/*== 清空站点全部统计数据 ==*/
+export async function clearSiteData(siteId: string): Promise<{ events: number; daily: number }> {
+    const conn = await getDbConnection();
+    try {
+        await conn.beginTransaction();
+        const [er] = await conn.execute<ResultSetHeader>(
+            'DELETE FROM zhijian_track_events WHERE site_id = ?',
+            [siteId],
+        );
+        const [dr] = await conn.execute<ResultSetHeader>(
+            'DELETE FROM zhijian_track_daily WHERE site_id = ?',
+            [siteId],
+        );
+        await conn.commit();
+        return { events: er.affectedRows, daily: dr.affectedRows };
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
 }
