@@ -127,7 +127,7 @@ export async function saveUpload(file: File): Promise<Upload | null> {
         const [result] = await db.execute<ResultSetHeader>(
             `INSERT INTO zhijian_blog_uploads (filename, original, path, size, mime, alt, created_at)
              VALUES (?, ?, ?, ?, ?, '', NOW())`,
-            [filename, file.name, relativePath, actualSize, outputMime],
+            [filename, shouldConvert ? file.name.replace(/\.[^.]+$/, '.webp') : file.name, relativePath, actualSize, outputMime],
         );
 
         return getUploadById(result.insertId);
