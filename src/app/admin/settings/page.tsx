@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
-import { ShieldIcon, WrenchIcon } from '@/components/ui/icons';
+import { SearchIcon, ShieldIcon, WrenchIcon } from '@/components/ui/icons';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import { SettingsSubmitButton } from './_components/settings-submit-button';
 import styles from './settings.module.css';
 
 export const metadata: Metadata = {
-    title: "系统设置",
+    title: '系统设置',
 };
 
 /*== 后台设置页：匹配博客卡片风格。 ==*/
@@ -43,6 +44,18 @@ export default async function AdminSettingsPage() {
                         <p>前台博客与后台管理台统一视觉风格，使用衬线字体标题和扁平矩形卡片。</p>
                         <p>后续新增模块可继续在 <code className={styles.code}>/admin</code> 下扩展独立菜单与页面。</p>
                         <p>数据库初始化脚本：<code className={styles.code}>sql/init.sql</code>，包含 posts 和 users 两张表。</p>
+                    </div>
+                </div>
+
+                <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>
+                        <SearchIcon className={styles.cardIcon} />
+                        搜索引擎提交
+                    </h3>
+                    <div className={styles.cardBody}>
+                        <p>手动提交站点 URL 到 IndexNow（Bing/Yandex 等）和百度站长平台，加速搜索引擎收录。</p>
+                        <p>提交范围：首页、文章列表页及所有已发布文章。</p>
+                        <SettingsSubmitButton />
                     </div>
                 </div>
             </div>
