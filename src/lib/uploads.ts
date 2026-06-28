@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import sharp from 'sharp';
 
 import { getDb } from '@/lib/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
@@ -69,7 +70,7 @@ export function validateImageFile(file: { type: string; size: number }): string 
 
 /*== 写入操作 ==*/
 
-/*== 上传图片到文件系统 + 数据库。 返回上传记录，失败时返回 null。 ==*/
+/*== 上传图片到文件系统 + 数据库。 非 SVG/GIF 自动转为 WebP。返回上传记录，失败时返回 null。 ==*/
 export async function saveUpload(file: File): Promise<Upload | null> {
     const db = getDb();
     if (!db) return null;
@@ -77,12 +78,18 @@ export async function saveUpload(file: File): Promise<Upload | null> {
     const ext = MIME_TO_EXT[file.type];
     if (!ext) return null;
 
+    /*-- SVG 和 GIF 不转换，其余格式统一转为 WebP --*/
+    const shouldConvert = file.type !== 'image/svg+xml' && file.type !== 'image/gif';
+
+    const outputExt = shouldConvert ? 'webp' : ext;
+    const outputMime = shouldConvert ? 'image/webp' : file.type;
+
     /*-- 生成存储路径：/uploads/YYYY/MM/<hash8>.<ext> --*/
     const now = new Date();
     const year = `${now.getFullYear()}`;
     const month = `${now.getMonth() + 1}`.padStart(2, '0');
     const hash = crypto.randomBytes(4).toString('hex');
-    const filename = `${hash}.${ext}`;
+    const filename = `${hash}.${outputExt}`;
     const relativePath = `/uploads/${year}/${month}/${filename}`;
 
     /*-- 写入文件系统 --*/
@@ -97,10 +104,22 @@ export async function saveUpload(file: File): Promise<Upload | null> {
     const filePath = path.join(publicDir, filename);
     try {
         const buffer = Buffer.from(await file.arrayBuffer());
-        fs.writeFileSync(filePath, buffer);
+        if (shouldConvert) {
+            await sharp(buffer).webp({ quality: 80 }).toFile(filePath);
+        } else {
+            fs.writeFileSync(filePath, buffer);
+        }
     } catch (err) {
         console.error('写入上传文件失败：', err);
         return null;
+    }
+
+    /*-- 转换后获取实际文件大小 --*/
+    let actualSize: number;
+    try {
+        actualSize = fs.statSync(filePath).size;
+    } catch {
+        actualSize = file.size;
     }
 
     /*-- 写入数据库 --*/
@@ -108,7 +127,7 @@ export async function saveUpload(file: File): Promise<Upload | null> {
         const [result] = await db.execute<ResultSetHeader>(
             `INSERT INTO zhijian_blog_uploads (filename, original, path, size, mime, alt, created_at)
              VALUES (?, ?, ?, ?, ?, '', NOW())`,
-            [filename, file.name, relativePath, file.size, file.type],
+            [filename, file.name, relativePath, actualSize, outputMime],
         );
 
         return getUploadById(result.insertId);
