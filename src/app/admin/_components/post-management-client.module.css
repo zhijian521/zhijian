@@ -24,6 +24,12 @@
 .postTitle {
     font-weight: 500;
     margin: 0;
+    max-width: 20rem;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .postSlug {
