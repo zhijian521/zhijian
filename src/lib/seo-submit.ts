@@ -1,3 +1,5 @@
+import http from 'node:http';
+
 import { SITE_METADATA } from '@/lib/site';
 
 /*== 搜索引擎提交结果 ==*/
@@ -35,28 +37,41 @@ async function submitToIndexNow(urls: string[]): Promise<SubmitResult> {
     }
 }
 
-/*== 提交到百度站长平台 ==*/
+/*== 提交到百度站长平台（百度仅支持 HTTP/1.1，Node fetch 会协商 HTTP/2 导致 505） ==*/
 async function submitToBaidu(urls: string[]): Promise<SubmitResult> {
     const token = process.env.BAIDU_SUBMISSION_TOKEN;
     if (!token) return { success: false, message: '未配置 BAIDU_SUBMISSION_TOKEN' };
     if (urls.length === 0) return { success: true, count: 0 };
 
     try {
-        const response = await fetch(
-            `http://data.zz.baidu.com/urls?site=${new URL(SITE_METADATA.siteUrl).host}&token=${token}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: urls.join('\n'),
-            },
-        );
+        const siteUrl = SITE_METADATA.siteUrl;
+        const body = urls.join('\n');
+        const path = `/urls?site=${siteUrl}&token=${token}`;
+        const data = await new Promise<string>((resolve, reject) => {
+            const req = http.request(
+                {
+                    hostname: 'data.zz.baidu.com',
+                    port: 80,
+                    path,
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain', 'Content-Length': Buffer.byteLength(body) },
+                },
+                (res) => {
+                    const chunks: Buffer[] = [];
+                    res.on('data', (chunk: Buffer) => chunks.push(chunk));
+                    res.on('end', () => resolve(Buffer.concat(chunks).toString()));
+                },
+            );
+            req.on('error', reject);
+            req.write(body);
+            req.end();
+        });
 
-        if (response.ok) {
-            const data = await response.json();
-            return { success: true, count: data.success ?? 0 };
+        const result = JSON.parse(data);
+        if (result.success !== undefined) {
+            return { success: true, count: result.success };
         }
-
-        return { success: false, message: `HTTP ${response.status}` };
+        return { success: false, message: `${result.error}: ${result.message ?? ''}`.trim() };
     } catch (err) {
         return { success: false, message: err instanceof Error ? err.message : '未知错误' };
     }
