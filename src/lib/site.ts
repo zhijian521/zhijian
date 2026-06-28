@@ -37,9 +37,9 @@ export const SITE_METADATA = {
     /*-- 中文站名，用于 JSON-LD、siteName 等结构化数据 --*/
     title: '知简',
     /*-- 品牌标题，主页 <title> 直接使用，根布局 template 后缀，改此一处全站生效 --*/
-    brandTitle: 'Zhijian - 简静造物',
+    brandTitle: 'Zhijian博客 - 简静造物',
     /*-- 全局描述，主页 <meta description> / OG / Twitter / JSON-LD --*/
-    description: '简静造物，以代码与文字记录所思所学。知简 — 涵盖前端开发、React、Next.js、TypeScript、全栈实践与简约设计思考的个人技术博客。',
+    description: 'Zhijian的个人技术博客 — 追求简洁设计与美好事物，以代码与文字安静造物。涵盖前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、全栈实践与Agent开发。',
     /*-- 站点 URL，读 NEXT_PUBLIC_SITE_URL，用于 canonical / OG url / sitemap --*/
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
     /*-- OG / Twitter 区域标识 --*/
@@ -49,10 +49,10 @@ export const SITE_METADATA = {
     /*-- 作者名，metadata.authors / JSON-LD Person --*/
     author: 'Zhi Jian',
     /*-- 文章列表页标题前缀，拼接：blogTitle - [分类] - [标签] - brandTitle --*/
-    blogTitle: '知简博客',
+    blogTitle: '文章',
     /*-- 文章列表页描述，/blog 页 <meta description> / OG / Twitter --*/
     blogDescription:
-        '写代码，也写文字；喜欢简洁的设计，追求美好的事物。知简的技术博客，涵盖前端开发、React、Next.js、TypeScript 与全栈实践，安静造物，步履不停。',
+        'Zhijian的技术博客，追求简洁设计与美好事物，安静造物。分享前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、Agent开发与全栈实践。',
     /*-- 全站关键词，详情页自动追加文章标签和分类名 --*/
     keywords: [
         '简静造物',
@@ -69,6 +69,10 @@ export const SITE_METADATA = {
         '简约设计',
         '技术博客',
         '个人博客',
+        'AI编程',
+        'Vibe Coding',
+        'Agent开发',
+        'Claude Code',
     ],
 } as const;
 

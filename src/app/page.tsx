@@ -84,7 +84,7 @@ export default async function HomePage() {
                 '@id': `${SITE_METADATA.siteUrl}#website`,
                 url: SITE_METADATA.siteUrl,
                 name: SITE_METADATA.title,
-                description: SITE_METADATA.blogDescription,
+                description: SITE_METADATA.description,
                 inLanguage: 'zh-CN',
             },
             {
@@ -98,7 +98,7 @@ export default async function HomePage() {
                 '@id': `${SITE_METADATA.siteUrl}#home`,
                 url: SITE_METADATA.siteUrl,
                 name: SITE_METADATA.brandTitle,
-                description: SITE_METADATA.blogDescription,
+                description: SITE_METADATA.description,
                 isPartOf: { '@id': `${SITE_METADATA.siteUrl}#website` },
                 about: { '@id': `${SITE_METADATA.siteUrl}#author` },
             },
