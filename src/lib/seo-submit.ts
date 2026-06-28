@@ -44,9 +44,9 @@ async function submitToBaidu(urls: string[]): Promise<SubmitResult> {
     if (urls.length === 0) return { success: true, count: 0 };
 
     try {
-        const siteUrl = SITE_METADATA.siteUrl;
+        const site = process.env.BAIDU_SITE || SITE_METADATA.siteUrl;
         const body = urls.join('\n');
-        const path = `/urls?site=${siteUrl}&token=${token}`;
+        const path = `/urls?site=${site}&token=${token}`;
         const data = await new Promise<string>((resolve, reject) => {
             const req = http.request(
                 {
