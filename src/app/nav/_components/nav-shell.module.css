@@ -5,7 +5,7 @@
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     scrollbar-width: none; /* Firefox */
-    background-image: url('/images/bg-landscape.webp');
+    background-image: url('/images/bg-nav.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
