@@ -11,14 +11,6 @@
     background-attachment: fixed;
 }
 
-.shell::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: color-mix(in srgb, var(--background) 50%, transparent);
-    z-index: 0;
-    pointer-events: none;
-}
 
 .shell::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
@@ -52,49 +44,3 @@
     align-items: stretch;
 }
 
-/*-- Dock 指示器 --*/
-
-.dock {
-    position: fixed;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    z-index: 10;
-    padding: 0.5rem;
-}
-
-.dockItem {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: none;
-    border-radius: var(--radius);
-    background: var(--muted);
-    color: var(--muted-foreground);
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s, color 0.2s;
-}
-
-.dockItem:hover {
-    transform: scale(1.15);
-}
-
-.dockItem:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-.dockItemActive {
-    background: var(--primary);
-    color: var(--primary-foreground);
-}
-
-.dockIcon {
-    width: 0.875rem;
-    height: 0.875rem;
-}
