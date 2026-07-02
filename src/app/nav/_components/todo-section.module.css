@@ -1,13 +1,11 @@
-/*== 备忘录 ==*/
+/*== 备忘录 — 四象限 ==*/
 
 .panel {
     width: 100%;
-    max-width: 78rem;
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 8rem 2.5rem 2rem 5rem;
-    margin-inline: auto;
+    padding: 2rem 2.5rem 2rem 4rem;
     box-sizing: border-box;
 }
 
@@ -15,7 +13,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .title {
@@ -26,65 +24,157 @@
     margin: 0;
 }
 
-.addBtn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.375rem 0.75rem;
+/*-- 矩阵：宽屏一行四列，窄屏横向滚动 --*/
+
+.matrix {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(15rem, 1fr));
+    gap: 0.75rem;
+    min-height: 0;
+    overflow-x: auto;
+}
+
+/*-- 单个象限 --*/
+
+.quadrant {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--card);
-    color: var(--foreground);
+    overflow: hidden;
+}
+
+.qHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.qDot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.qTitle {
     font-size: 0.8125rem;
     font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.qCount {
+    margin-left: auto;
+    padding: 0.0625rem 0.4375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+}
+
+.qAdd {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--muted-foreground);
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
 }
 
-.addBtn:hover {
+.qAdd:hover {
     border-color: var(--primary);
     color: var(--primary);
 }
 
-/*-- 卡片网格 --*/
+/*-- 象限内卡片列表 --*/
 
-.cardGrid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    overflow-y: auto;
+.qList {
     flex: 1;
-    align-content: flex-start;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    scrollbar-width: thin;
 }
 
-/*-- 单张卡片 --*/
+.qList:empty::after {
+    content: '空';
+    display: block;
+    text-align: center;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    padding: 1.5rem 0;
+    opacity: 0.5;
+}
+
+/*-- 象限色：标题栏淡背景 + 圆点 --*/
+
+.q1 .qDot { background: var(--destructive); }
+.q1 .qHeader { background: color-mix(in srgb, var(--destructive) 6%, transparent); }
+
+.q2 .qDot { background: #d99a6c; }
+.q2 .qHeader { background: color-mix(in srgb, #d99a6c 7%, transparent); }
+
+.q3 .qDot { background: var(--accent-foreground); }
+.q3 .qHeader { background: color-mix(in srgb, var(--accent-foreground) 6%, transparent); }
+
+.q4 .qDot { background: var(--muted-foreground); }
+.q4 .qHeader { background: color-mix(in srgb, var(--muted-foreground) 4%, transparent); }
+
+/*-- 拖拽落点 --*/
+
+.quadrant.dragOver {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+/*-- 单张卡片：复选框 + 内容 + 删除 横向居中 --*/
 
 .card {
-    width: 14rem;
-    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--card);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: border-color 0.15s;
 }
 
 .card:hover {
     border-color: var(--primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .cardDone {
-    opacity: 0.45;
+    opacity: 0.4;
 }
 
-.cardHeader {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
+.cardDragging {
+    opacity: 0.3;
+}
+
+.cardEditing {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
 }
 
 .cardCheckbox {
@@ -99,8 +189,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.125rem;
-    margin-left: auto;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    flex-shrink: 0;
     border: none;
     background: none;
     color: var(--muted-foreground);
@@ -113,147 +205,45 @@
 }
 
 .cardDeleteIcon {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 1rem;
+    height: 1rem;
 }
 
-/*-- 优先级标签 --*/
-
-.priorityTag {
-    padding: 0.125rem 0.5625rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    font-size: 0.75rem;
-    font-family: var(--font-sans);
-    cursor: pointer;
-    transition: opacity 0.15s;
-    white-space: nowrap;
-    line-height: 1.5;
-}
-
-.priorityTag:hover {
-    opacity: 0.75;
-}
-
-.priorityUrgent {
-    background: var(--destructive-subtle);
-    border-color: var(--destructive-subtle-medium);
-    color: var(--destructive);
-}
-
-.priorityImportant {
-    background: var(--primary-subtle);
-    border-color: var(--primary-subtle-medium);
-    color: var(--primary);
-}
-
-.priorityNormal {
-    background: var(--muted);
-    border-color: var(--border);
-    color: var(--muted-foreground);
-}
-
-/*-- 卡片内可编辑字段 --*/
+/*-- 只读展示：固定两行省略，占满剩余宽度 --*/
 
 .cardText {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    color: var(--foreground);
+    word-break: break-word;
+}
+
+.cardTextDone {
+    text-decoration: line-through;
+}
+
+/*-- 编辑态：展开可编辑，占满剩余宽度 --*/
+
+.editArea {
+    flex: 1;
+    min-width: 0;
     padding: 0;
     border: none;
     background: transparent;
     color: var(--foreground);
     font-size: 0.8125rem;
     font-family: var(--font-sans);
-    line-height: 1.5;
+    line-height: 1.7;
     outline: none;
     box-sizing: border-box;
     resize: none;
     overflow: hidden;
     word-break: break-word;
-}
-
-.cardText::placeholder {
-    color: var(--muted-foreground);
-}
-
-.cardDate {
-    align-self: flex-end;
-    padding: 0.125rem 0.375rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    background: transparent;
-    color: var(--muted-foreground);
-    font-size: 0.6875rem;
-    font-family: var(--font-sans);
-    outline: none;
-    box-sizing: border-box;
-    transition: border-color 0.15s;
-}
-
-.cardDate:hover {
-    border-color: var(--border);
-}
-
-.cardDate:focus {
-    border-color: var(--primary);
-}
-
-/*-- 弹窗内表单 — 公共样式 composes 引入 --*/
-
-.fieldLabel {
-    composes: fieldLabel from './common-dialog-form.module.css';
-}
-
-.fieldInput {
-    composes: fieldInput from './common-dialog-form.module.css';
-}
-
-.dialogActions {
-    composes: dialogActions from './common-dialog-form.module.css';
-}
-
-.cancelBtn {
-    composes: cancelBtn from './common-dialog-form.module.css';
-}
-
-.confirmBtn {
-    composes: confirmBtn from './common-dialog-form.module.css';
-}
-
-.empty {
-    text-align: center;
-    color: var(--muted-foreground);
-    font-size: 0.875rem;
-    padding: 3rem 0;
-}
-
-/*-- 拖拽指示线 --*/
-
-.dragOverBefore {
-    position: relative;
-}
-
-.dragOverBefore::before {
-    content: '';
-    position: absolute;
-    top: -0.375rem;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--primary);
-    border-radius: 1px;
-}
-
-.dragOverAfter {
-    position: relative;
-}
-
-.dragOverAfter::after {
-    content: '';
-    position: absolute;
-    bottom: -0.375rem;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--primary);
-    border-radius: 1px;
 }

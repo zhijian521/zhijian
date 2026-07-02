@@ -127,20 +127,38 @@ export interface TodoItem {
     id: string;
     text: string;
     done: boolean;
-    priority: 'urgent' | 'important' | 'normal';
+    important: boolean;    /* 重要维度 */
+    urgent: boolean;       /* 紧急维度 */
     date: string | null;
     createdAt: number;
+}
+
+/*-- 归一化：兼容旧数据（有 priority 无 important/urgent），旧项默认落 Q4 --*/
+function normalizeTodo(raw: any): TodoItem {
+    return {
+        id: String(raw?.id ?? ''),
+        text: String(raw?.text ?? ''),
+        done: Boolean(raw?.done),
+        important: Boolean(raw?.important),
+        urgent: Boolean(raw?.urgent),
+        date: raw?.date ?? null,
+        createdAt: Number(raw?.createdAt) || 0,
+    };
+}
+
+function normalizeTodos(list: any): TodoItem[] {
+    return Array.isArray(list) ? list.map(normalizeTodo) : [];
 }
 
 export async function getTodos(isLoggedIn?: boolean): Promise<TodoItem[]> {
     if (isLoggedIn) {
         await fetchNavData();
-        if (navDataCache?.todos) return navDataCache.todos;
+        if (navDataCache?.todos) return normalizeTodos(navDataCache.todos);
     }
     if (typeof window === 'undefined') return [];
     try {
         const raw = localStorage.getItem(KEYS.todos);
-        return raw ? JSON.parse(raw) : [];
+        return raw ? normalizeTodos(JSON.parse(raw)) : [];
     } catch {
         return [];
     }

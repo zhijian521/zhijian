@@ -3,21 +3,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
-import Dialog from '@/components/ui/dialog';
 import { getTodos, saveTodos, genId } from '@/lib/nav-storage';
 import type { TodoItem } from '@/lib/nav-storage';
-import { reorder, type DragState } from './drag-utils';
 
 import styles from './todo-section.module.css';
 
-/*-- 优先级 --*/
-type Priority = 'urgent' | 'important' | 'normal';
+/*== 四象限配置：important/urgent 两维度组合 ==*/
+interface Quadrant {
+    key: string;
+    important: boolean;
+    urgent: boolean;
+    label: string;
+    cls: string;
+}
 
-const PRIORITY_CONFIG: Record<Priority, { label: string; className: string }> = {
-    urgent: { label: '紧急', className: styles.priorityUrgent },
-    important: { label: '重要', className: styles.priorityImportant },
-    normal: { label: '一般', className: styles.priorityNormal },
-};
+const QUADRANTS: Quadrant[] = [
+    { key: 'q1', important: true,  urgent: true,  label: '重要紧急',   cls: styles.q1 },
+    { key: 'q2', important: false, urgent: true,  label: '不重要紧急', cls: styles.q2 },
+    { key: 'q3', important: true,  urgent: false, label: '重要不紧急', cls: styles.q3 },
+    { key: 'q4', important: false, urgent: false, label: '不重要不紧急', cls: styles.q4 },
+];
 
 /*-- textarea 自适应高度 --*/
 function autoResize(el: HTMLTextAreaElement | null) {
@@ -26,20 +31,22 @@ function autoResize(el: HTMLTextAreaElement | null) {
     el.style.height = el.scrollHeight + 'px';
 }
 
+/*-- 拖拽落点状态 --*/
+interface DropTarget {
+    dragId: string;
+    qKey: string;
+    overCardId: string | null;
+}
+
 export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: boolean; dataVersion?: number }) {
     const [todos, setTodos] = useState<TodoItem[]>([]);
-    const [showAdd, setShowAdd] = useState(false);
-    const [dragState, setDragState] = useState<DragState | null>(null);
-    /*-- 新增表单 --*/
-    const [formText, setFormText] = useState('');
-    const [formPriority, setFormPriority] = useState<Priority>('normal');
-    const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
+    const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
-    /*-- 用 ref 持有最新值，避免闭包陷阱 --*/
     const todosRef = useRef(todos);
     todosRef.current = todos;
-    const dragStateRef = useRef(dragState);
-    dragStateRef.current = dragState;
+    const dropTargetRef = useRef(dropTarget);
+    dropTargetRef.current = dropTarget;
 
     useEffect(() => {
         getTodos(isLoggedIn).then(setTodos);
@@ -50,50 +57,91 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         saveTodos(updated, isLoggedIn);
     }
 
-    /*== 拖拽 — 用 ref 读取最新值，回调稳定不重建 ==*/
+    function todosOf(q: Quadrant): TodoItem[] {
+        return todos.filter(t => t.important === q.important && t.urgent === q.urgent);
+    }
+
+    /*== 拖拽 ==*/
     const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', id);
-        setDragState({ dragId: id, overId: null, position: null });
+        setDropTarget({ dragId: id, qKey: '', overCardId: null });
     }, []);
 
-    const handleDragOver = useCallback((e: React.DragEvent, id: string) => {
+    const handleQDragOver = useCallback((e: React.DragEvent, q: Quadrant) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        const midY = rect.top + rect.height / 2;
-        const position = e.clientY < midY ? 'before' : 'after';
-        setDragState(prev => prev ? { ...prev, overId: id, position } : prev);
+        const dt = dropTargetRef.current;
+        if (!dt) return;
+        if (dt.qKey !== q.key || dt.overCardId !== null) {
+            setDropTarget({ dragId: dt.dragId, qKey: q.key, overCardId: null });
+        }
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent, id: string) => {
+    const handleCardDragOver = useCallback((e: React.DragEvent, id: string, q: Quadrant) => {
         e.preventDefault();
-        const ds = dragStateRef.current;
-        if (!ds || ds.dragId === id || !ds.position) return;
-        persist(reorder(todosRef.current, ds.dragId, id, ds.position));
-        setDragState(null);
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'move';
+        const dt = dropTargetRef.current;
+        if (!dt) return;
+        if (dt.qKey !== q.key || dt.overCardId !== id) {
+            setDropTarget({ dragId: dt.dragId, qKey: q.key, overCardId: id });
+        }
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent, q: Quadrant) => {
+        e.preventDefault();
+        const dt = dropTargetRef.current;
+        if (!dt || !dt.qKey) { setDropTarget(null); return; }
+        if (dt.dragId === dt.overCardId) { setDropTarget(null); return; }
+
+        const list = todosRef.current;
+        const dragged = list.find(t => t.id === dt.dragId);
+        if (!dragged) { setDropTarget(null); return; }
+
+        const moved: TodoItem = { ...dragged, important: q.important, urgent: q.urgent };
+        const without = list.filter(t => t.id !== dt.dragId);
+
+        let insertIdx = without.length;
+        if (dt.overCardId) {
+            const overIdx = without.findIndex(t => t.id === dt.overCardId);
+            if (overIdx !== -1) insertIdx = overIdx;
+        } else {
+            let lastQIdx = -1;
+            for (let i = without.length - 1; i >= 0; i--) {
+                const t = without[i];
+                if (t.important === q.important && t.urgent === q.urgent) { lastQIdx = i; break; }
+            }
+            insertIdx = lastQIdx + 1;
+        }
+
+        const next = [...without];
+        next.splice(insertIdx, 0, moved);
+        persist(next);
+        setDropTarget(null);
     }, []);
 
     const handleDragEnd = useCallback(() => {
-        setDragState(null);
+        setDropTarget(null);
     }, []);
 
-    function handleAdd() {
-        const text = formText.trim();
-        if (!text) return;
+    /*-- 象限标题新增：直接插入默认项并进入编辑 --*/
+    function handleAddInQuadrant(q: Quadrant) {
         const newItem: TodoItem = {
             id: genId(),
-            text,
+            text: '',
             done: false,
-            priority: formPriority,
-            date: formDate || null,
+            important: q.important,
+            urgent: q.urgent,
+            date: null,
             createdAt: Date.now(),
         };
-        persist([newItem, ...todos]);
-        setFormText('');
-        setFormPriority('normal');
-        setFormDate(new Date().toISOString().slice(0, 10));
-        setShowAdd(false);
+        /*-- 插到该象限第一项之前；象限为空则追加末尾 --*/
+        const firstIdx = todos.findIndex(t => t.important === q.important && t.urgent === q.urgent);
+        const next = [...todos];
+        next.splice(firstIdx === -1 ? next.length : firstIdx, 0, newItem);
+        persist(next);
+        setEditingId(newItem.id);
     }
 
     function handleToggle(id: string) {
@@ -102,135 +150,102 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
 
     function handleDelete(id: string) {
         persist(todos.filter(t => t.id !== id));
+        if (editingId === id) setEditingId(null);
     }
 
-    function handleUpdate(id: string, field: 'text' | 'priority' | 'date', value: string) {
-        persist(todos.map(t => {
-            if (t.id !== id) return t;
-            if (field === 'text') return { ...t, text: value };
-            if (field === 'priority') return { ...t, priority: value as Priority };
-            if (field === 'date') return { ...t, date: value || null };
-            return t;
-        }));
+    function handleUpdateText(id: string, value: string) {
+        persist(todos.map(t => t.id === id ? { ...t, text: value } : t));
     }
 
     return (
         <div className={styles.panel}>
             <div className={styles.header}>
                 <h2 className={styles.title}>备忘录</h2>
-                <button className={styles.addBtn} onClick={() => setShowAdd(true)} type="button">
-                    <PlusIcon style={{ width: '0.875rem', height: '0.875rem' }} />
-                    新增
-                </button>
             </div>
 
-            {todos.length === 0 ? (
-                <p className={styles.empty}>暂无待办</p>
-            ) : (
-                <div className={styles.cardGrid}>
-                    {todos.map((t) => {
-                        const p = PRIORITY_CONFIG[t.priority] ?? PRIORITY_CONFIG.normal;
-                        const isDragOver = dragState?.overId === t.id && dragState?.position;
-                        const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
-                        return (
-                            <div
-                                key={t.id}
-                                className={`${styles.card} ${t.done ? styles.cardDone : ''} ${dragCls}`}
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, t.id)}
-                                onDragOver={(e) => handleDragOver(e, t.id)}
-                                onDrop={(e) => handleDrop(e, t.id)}
-                                onDragEnd={handleDragEnd}
-                            >
-                                <div className={styles.cardHeader}>
-                                    <input
-                                        checked={t.done}
-                                        className={styles.cardCheckbox}
-                                        onChange={() => handleToggle(t.id)}
-                                        type="checkbox"
-                                    />
-                                    <button
-                                        className={`${styles.priorityTag} ${p.className}`}
-                                        onClick={() => {
-                                            const next: Priority = t.priority === 'urgent' ? 'important' : t.priority === 'important' ? 'normal' : 'urgent';
-                                            handleUpdate(t.id, 'priority', next);
-                                        }}
-                                        type="button"
-                                    >
-                                        {p.label}
-                                    </button>
-                                    <button
-                                        aria-label="删除"
-                                        className={styles.cardDelete}
-                                        onClick={() => handleDelete(t.id)}
-                                        type="button"
-                                    >
-                                        <Trash2Icon className={styles.cardDeleteIcon} />
-                                    </button>
-                                </div>
-                                <textarea
-                                    className={styles.cardText}
-                                    onChange={(e) => { handleUpdate(t.id, 'text', e.target.value); autoResize(e.currentTarget); }}
-                                    placeholder="待办内容..."
-                                    ref={autoResize}
-                                    rows={1}
-                                    value={t.text}
-                                />
-                                <input
-                                    className={styles.cardDate}
-                                    onChange={(e) => handleUpdate(t.id, 'date', e.target.value)}
-                                    type="date"
-                                    value={t.date ?? ''}
-                                />
+            <div className={styles.matrix}>
+                {QUADRANTS.map((q) => {
+                    const items = todosOf(q);
+                    const isOver = dropTarget?.qKey === q.key;
+                    return (
+                        <div
+                            key={q.key}
+                            className={`${styles.quadrant} ${q.cls} ${isOver ? styles.dragOver : ''}`}
+                            onDragOver={(e) => handleQDragOver(e, q)}
+                            onDrop={(e) => handleDrop(e, q)}
+                        >
+                            <div className={styles.qHeader}>
+                                <span className={styles.qDot} />
+                                <span className={styles.qTitle}>{q.label}</span>
+                                <span className={styles.qCount}>{items.length}</span>
+                                <button
+                                    aria-label="新增"
+                                    className={styles.qAdd}
+                                    onClick={() => handleAddInQuadrant(q)}
+                                    type="button"
+                                >
+                                    <PlusIcon style={{ width: '0.875rem', height: '0.875rem' }} />
+                                </button>
                             </div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/*-- 新增弹窗 --*/}
-            <Dialog onClose={() => setShowAdd(false)} open={showAdd} title="新增备忘录">
-                <label className={styles.fieldLabel}>
-                    内容
-                    <input
-                        className={styles.fieldInput}
-                        onChange={(e) => setFormText(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
-                        placeholder="待办内容..."
-                        type="text"
-                        value={formText}
-                    />
-                </label>
-                <label className={styles.fieldLabel}>
-                    类型
-                    <select
-                        className={styles.fieldInput}
-                        onChange={(e) => setFormPriority(e.target.value as Priority)}
-                        value={formPriority}
-                    >
-                        <option value="urgent">紧急</option>
-                        <option value="important">重要</option>
-                        <option value="normal">一般</option>
-                    </select>
-                </label>
-                <label className={styles.fieldLabel}>
-                    日期
-                    <input
-                        className={styles.fieldInput}
-                        onChange={(e) => setFormDate(e.target.value)}
-                        type="date"
-                        value={formDate}
-                    />
-                </label>
-                <div className={styles.dialogActions}>
-                    <button className={styles.cancelBtn} onClick={() => setShowAdd(false)} type="button">
-                        取消
-                    </button>
-                    <button className={styles.confirmBtn} onClick={handleAdd} type="button">
-                        保存
-                    </button>
-                </div>
-            </Dialog>
+                            <div className={styles.qList}>
+                                {items.map((t) => {
+                                    const isDragging = dropTarget?.dragId === t.id;
+                                    const isEditing = editingId === t.id;
+                                    return (
+                                        <div
+                                            key={t.id}
+                                            className={`${styles.card} ${t.done ? styles.cardDone : ''} ${isDragging ? styles.cardDragging : ''} ${isEditing ? styles.cardEditing : ''}`}
+                                            draggable={!isEditing}
+                                            onDragStart={(e) => handleDragStart(e, t.id)}
+                                            onDragOver={(e) => handleCardDragOver(e, t.id, q)}
+                                            onDrop={(e) => { e.stopPropagation(); handleDrop(e, q); }}
+                                            onDragEnd={handleDragEnd}
+                                            onClick={() => { if (!isEditing) setEditingId(t.id); }}
+                                        >
+                                            <input
+                                                checked={t.done}
+                                                className={styles.cardCheckbox}
+                                                onChange={() => handleToggle(t.id)}
+                                                onClick={(e) => e.stopPropagation()}
+                                                type="checkbox"
+                                            />
+                                            {isEditing ? (
+                                                <textarea
+                                                    autoFocus
+                                                    className={styles.editArea}
+                                                    onChange={(e) => { handleUpdateText(t.id, e.target.value); autoResize(e.currentTarget); }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); setEditingId(null); }
+                                                        if (e.key === 'Escape') setEditingId(null);
+                                                    }}
+                                                    onBlur={() => setEditingId(null)}
+                                                    placeholder="待办内容..."
+                                                    ref={autoResize}
+                                                    rows={1}
+                                                    value={t.text}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                <div className={`${styles.cardText} ${t.done ? styles.cardTextDone : ''}`}>
+                                                    {t.text || '（空）'}
+                                                </div>
+                                            )}
+                                            <button
+                                                aria-label="删除"
+                                                className={styles.cardDelete}
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(t.id); }}
+                                                type="button"
+                                            >
+                                                <Trash2Icon className={styles.cardDeleteIcon} />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }
