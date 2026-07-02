@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 
 import { LogOutIcon, SettingsIcon } from '@/components/ui/icons';
 import type { AuthUser } from '@/hooks/use-auth';
-import { getSaveStatus, onSaveStatusChange, syncLocalToServer } from '@/lib/nav-storage';
+import { getSaveStatus, onSaveStatusChange, syncLocalToServer, clearLocalNavData } from '@/lib/nav-storage';
 
 import AuthModal from './auth-modal';
 
@@ -18,12 +18,15 @@ interface SettingsSectionProps {
     onRegister: (username: string, email: string, password: string) => Promise<void>;
     onLogout: () => Promise<void>;
     onAuthChange?: () => void;
+    /** 递增信号：变化时打开登录弹窗（供 AI 屏等外部触发） */
+    loginSignal?: number;
 }
 
 const SAVE_STATUS_LABELS = {
     bookmarks: '书签',
     todos: '备忘录',
     notes: '笔记',
+    chat: '对话',
 } as const;
 
 /*== Nav 设置面板：首屏右上角触发，承载账号与同步状态 ==*/
@@ -35,6 +38,7 @@ export default function SettingsSection({
     onRegister,
     onLogout,
     onAuthChange,
+    loginSignal = 0,
 }: SettingsSectionProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState<'login' | 'register' | false>(false);
@@ -48,6 +52,14 @@ export default function SettingsSection({
         if (!isLoggedIn) return;
         return onSaveStatusChange(() => setSaveStatus(getSaveStatus()));
     }, [isLoggedIn]);
+
+    /*-- 外部触发打开登录弹窗（如 AI 屏的「登录」按钮） --*/
+    useEffect(() => {
+        if (loginSignal > 0 && !isLoggedIn && !loading) {
+            setIsOpen(true);
+            setShowAuthModal('login');
+        }
+    }, [loginSignal, isLoggedIn, loading]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -91,6 +103,8 @@ export default function SettingsSection({
 
         try {
             await onLogout();
+            /*-- 清除本地导航数据，避免换账号登录时把上一用户数据同步到新账号 --*/
+            clearLocalNavData();
             setIsOpen(false);
             onAuthChange?.();
         } finally {
@@ -181,7 +195,7 @@ export default function SettingsSection({
                         </div>
 
                         <div className={styles.syncList}>
-                            {(['bookmarks', 'todos', 'notes'] as const).map((key) => {
+                            {(['bookmarks', 'todos', 'notes', 'chat'] as const).map((key) => {
                                 const status = isLoggedIn ? saveStatus[key] : 'local';
                                 const dotClassName =
                                     status === 'ok'

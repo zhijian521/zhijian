@@ -211,3 +211,17 @@ CREATE TABLE IF NOT EXISTS zhijian_nav_notes (
   UNIQUE KEY uk_zhijian_nav_notes_user (user_id),
   CONSTRAINT fk_zhijian_nav_notes_user FOREIGN KEY (user_id) REFERENCES zhijian_users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------------------------
+--  导航页模块 - AI 对话表（每用户一条 JSON 记录，存整个会话数组）
+-- --------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS zhijian_nav_chat (
+  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id     BIGINT UNSIGNED NOT NULL                COMMENT '用户ID',
+  data        JSON            NOT NULL                COMMENT '会话数组',
+  version     INT             NOT NULL DEFAULT 1      COMMENT '乐观锁版本号',
+  updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_zhijian_nav_chat_user (user_id),
+  CONSTRAINT fk_zhijian_nav_chat_user FOREIGN KEY (user_id) REFERENCES zhijian_users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

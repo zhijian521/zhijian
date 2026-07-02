@@ -2,14 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-import { SearchIcon } from '@/components/ui/icons';
+import { SparklesIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/nav-config';
 import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine, genId } from '@/lib/nav-storage';
 import type { SearchRecord } from '@/lib/nav-storage';
 
 import styles from './search-bar.module.css';
 
-export default function SearchBar() {
+interface SearchBarProps {
+    onAskAi: (query: string) => void;
+}
+
+export default function SearchBar({ onAskAi }: SearchBarProps) {
     const [query, setQuery] = useState('');
     const [engineKey, setEngineKey] = useState('google');
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -69,6 +73,12 @@ export default function SearchBar() {
         setHistory([]);
     }
 
+    function handleAskAi() {
+        const term = query.trim();
+        onAskAi(term);
+        setQuery('');
+    }
+
     return (
         <div className={styles.outer}>
             <div className={styles.bar}>
@@ -106,12 +116,12 @@ export default function SearchBar() {
                     value={query}
                 />
                 <button
-                    aria-label="搜索"
-                    className={styles.submitBtn}
-                    onClick={() => handleSearch()}
+                    aria-label="AI 对话"
+                    className={styles.aiBtn}
+                    onClick={handleAskAi}
                     type="button"
                 >
-                    <SearchIcon className={styles.submitIcon} />
+                    <SparklesIcon className={styles.aiIcon} />
                 </button>
             </div>
 

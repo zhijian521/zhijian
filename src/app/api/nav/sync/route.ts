@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 
 import { withUser } from '@/lib/with-user';
-import { hasNavData, saveBookmarksDb, saveTodosDb, saveNotesDb } from '@/lib/nav-db';
+import { hasNavData, saveBookmarksDb, saveTodosDb, saveNotesDb, saveChatDb } from '@/lib/nav-db';
 import { BizCode, fail, success } from '@/lib/api-response';
 
 /*== 首次登录同步：把本地数据推到数据库
   数据库已有数据则拒绝（以数据库为准）。
-  POST body: { bookmarks?, todos?, notes? }
+  POST body: { bookmarks?, todos?, notes?, chat? }
 ==*/
 export const POST = withUser(async (request, user) => {
     const exists = await hasNavData(user.userId);
@@ -14,7 +14,7 @@ export const POST = withUser(async (request, user) => {
         return NextResponse.json(fail(BizCode.CONFLICT, '数据已存在，以数据库为准。'), { status: 409 });
     }
 
-    let body: { bookmarks?: unknown; todos?: unknown; notes?: unknown };
+    let body: { bookmarks?: unknown; todos?: unknown; notes?: unknown; chat?: unknown };
     try {
         body = await request.json();
     } catch {
@@ -27,6 +27,7 @@ export const POST = withUser(async (request, user) => {
         ['bookmarks', body.bookmarks, saveBookmarksDb],
         ['todos', body.todos, saveTodosDb],
         ['notes', body.notes, saveNotesDb],
+        ['chat', body.chat, saveChatDb],
     ];
 
     const tasks: Promise<void>[] = [];

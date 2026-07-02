@@ -31,6 +31,9 @@ const KEYS = {
     dirtyTodos: 'zhijian_nav_dirty_todos',
     dirtyNotes: 'zhijian_nav_dirty_notes',
     dirtyBookmarks: 'zhijian_nav_dirty_bookmarks',
+    chat: 'zhijian_nav_chat',
+    dirtyChat: 'zhijian_nav_dirty_chat',
+    aiModel: 'zhijian_nav_ai_model',
 } as const;
 
 /*== 搜索记录（仅 localStorage，不上云） ==*/
@@ -74,6 +77,19 @@ export function getSearchEngine(): string {
 
 export function setSearchEngine(key: string): void {
     localStorage.setItem(KEYS.searchEngine, key);
+}
+
+/*== AI 模型偏好（仅 localStorage，不上云） ==*/
+
+export function getAiModel(): string {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem(KEYS.aiModel) || '';
+}
+
+export function setAiModel(model: string): void {
+    if (typeof window === 'undefined') return;
+    if (model) localStorage.setItem(KEYS.aiModel, model);
+    else localStorage.removeItem(KEYS.aiModel);
 }
 
 /*== 缓存：登录时拉一次 /api/nav/data，各 get 函数共享结果 ==*/
@@ -181,17 +197,18 @@ const DEBOUNCE_MS = 300;
 
 /*-- 同步状态追踪：settings 页面读取 --*/
 type SaveStatus = 'ok' | 'error' | 'pending';
-type SaveResourceKey = 'bookmarks' | 'todos' | 'notes';
-const saveStatus: Record<'bookmarks' | 'todos' | 'notes', SaveStatus> = {
-    bookmarks: 'ok', todos: 'ok', notes: 'ok',
+type SaveResourceKey = 'bookmarks' | 'todos' | 'notes' | 'chat';
+const saveStatus: Record<SaveResourceKey, SaveStatus> = {
+    bookmarks: 'ok', todos: 'ok', notes: 'ok', chat: 'ok',
 };
 const saveStatusListeners = new Set<() => void>();
 const DIRTY_KEYS: Record<SaveResourceKey, string> = {
     bookmarks: KEYS.dirtyBookmarks,
     todos: KEYS.dirtyTodos,
     notes: KEYS.dirtyNotes,
+    chat: KEYS.dirtyChat,
 };
-const SAVE_RESOURCE_KEYS: SaveResourceKey[] = ['bookmarks', 'todos', 'notes'];
+const SAVE_RESOURCE_KEYS: SaveResourceKey[] = ['bookmarks', 'todos', 'notes', 'chat'];
 
 export function getSaveStatus() {
     const snapshot = { ...saveStatus };
@@ -266,6 +283,84 @@ export interface NoteItem {
     content: string;
     createdAt: number;
     updatedAt: number;
+}
+
+/*== AI 对话 ==*/
+
+export interface ChatMessage {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    createdAt: number;
+}
+
+export interface ChatConversation {
+    id: string;
+    title: string;
+    messages: ChatMessage[];
+    createdAt: number;
+    updatedAt: number;
+}
+
+function normalizeChatMessage(raw: any): ChatMessage {
+    return {
+        id: String(raw?.id ?? ''),
+        role: raw?.role === 'assistant' ? 'assistant' : 'user',
+        content: String(raw?.content ?? ''),
+        createdAt: Number(raw?.createdAt) || 0,
+    };
+}
+
+function normalizeChat(list: any): ChatConversation[] {
+    if (!Array.isArray(list)) return [];
+    return list.map((c: any) => ({
+        id: String(c?.id ?? ''),
+        title: String(c?.title ?? ''),
+        messages: Array.isArray(c?.messages) ? c.messages.map(normalizeChatMessage) : [],
+        createdAt: Number(c?.createdAt) || 0,
+        updatedAt: Number(c?.updatedAt) || 0,
+    }));
+}
+
+export async function getChatConversations(isLoggedIn?: boolean): Promise<ChatConversation[]> {
+    if (isLoggedIn) {
+        try {
+            const res = await fetch('/api/nav/chat');
+            if (res.ok) {
+                const json = await res.json();
+                const data = json.data;
+                if (data) {
+                    setDirty('chat', false);
+                    return normalizeChat(data);
+                }
+            }
+        } catch { /* fall through to localStorage */ }
+    }
+    if (typeof window === 'undefined') return [];
+    try {
+        const raw = localStorage.getItem(KEYS.chat);
+        return raw ? normalizeChat(JSON.parse(raw)) : [];
+    } catch {
+        return [];
+    }
+}
+
+const debouncedSaveChat = debounce((conversations: ChatConversation[]) => {
+    markPending('chat');
+    fetch('/api/nav/chat', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: conversations }),
+    }).then(res => { if (res.ok) markOk('chat'); else { markError('chat'); console.warn('[nav] saveChat API failed:', res.status); } })
+      .catch(e => { markError('chat'); console.warn('[nav] saveChat network error:', e); });
+}, DEBOUNCE_MS);
+
+export async function saveChatConversations(conversations: ChatConversation[], isLoggedIn?: boolean): Promise<void> {
+    setDirty('chat', true);
+    if (isLoggedIn) debouncedSaveChat(conversations);
+    if (typeof window !== 'undefined') {
+        localStorage.setItem(KEYS.chat, JSON.stringify(conversations));
+    }
 }
 
 export async function getNotes(isLoggedIn?: boolean): Promise<NoteItem[]> {
@@ -355,6 +450,7 @@ export async function syncLocalToServer(): Promise<void> {
         bookmarks: isDirty('bookmarks') ? safeParse(KEYS.bookmarks) : undefined,
         todos: isDirty('todos') ? safeParse(KEYS.todos) : undefined,
         notes: isDirty('notes') ? safeParse(KEYS.notes) : undefined,
+        chat: isDirty('chat') ? safeParse(KEYS.chat) : undefined,
     };
     const dirtyKeys = SAVE_RESOURCE_KEYS.filter(isDirty);
 
@@ -389,4 +485,6 @@ export function clearLocalNavData(): void {
     localStorage.removeItem(KEYS.dirtyBookmarks);
     localStorage.removeItem(KEYS.dirtyTodos);
     localStorage.removeItem(KEYS.dirtyNotes);
+    localStorage.removeItem(KEYS.chat);
+    localStorage.removeItem(KEYS.dirtyChat);
 }

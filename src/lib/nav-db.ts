@@ -1,6 +1,6 @@
 import { getDb } from '@/lib/db';
 import type { Bookmark } from '@/lib/nav-config';
-import type { TodoItem, NoteItem } from '@/lib/nav-storage';
+import type { TodoItem, NoteItem, ChatConversation } from '@/lib/nav-storage';
 
 /*== Nav 数据库操作 — 每用户每类型一条 JSON 记录，整存整取 ==*/
 
@@ -32,7 +32,7 @@ async function setData<T>(table: string, userId: number, data: T): Promise<void>
 async function hasAnyData(userId: number): Promise<boolean> {
     const db = getDb();
     if (!db) return false;
-    const tables = ['zhijian_nav_bookmarks', 'zhijian_nav_todos', 'zhijian_nav_notes'];
+    const tables = ['zhijian_nav_bookmarks', 'zhijian_nav_todos', 'zhijian_nav_notes', 'zhijian_nav_chat'];
     for (const table of tables) {
         const [rows] = await db.execute(
             `SELECT id FROM ${table} WHERE user_id = ? LIMIT 1`,
@@ -84,4 +84,14 @@ export async function getAllNavData(userId: number): Promise<{
 
 export async function hasNavData(userId: number): Promise<boolean> {
     return hasAnyData(userId);
+}
+
+/*== AI 对话（每用户一条会话数组 JSON，整存整取） ==*/
+
+export async function getChatDb(userId: number): Promise<ChatConversation[] | null> {
+    return getData<ChatConversation[]>('zhijian_nav_chat', userId);
+}
+
+export async function saveChatDb(userId: number, data: ChatConversation[]): Promise<void> {
+    return setData('zhijian_nav_chat', userId, data);
 }
