@@ -180,7 +180,7 @@
     max-width: 10rem;
     padding: 0.25rem 0.5rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--nav-radius-sm);
     background: var(--muted);
     color: var(--foreground);
     font-size: 0.75rem;

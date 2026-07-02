@@ -32,7 +32,7 @@
 .favicon {
     width: 1rem;
     height: 1rem;
-    border-radius: 2px;
+    border-radius: var(--nav-radius-sm);
     flex-shrink: 0;
 }
 
@@ -60,7 +60,7 @@
     left: 0;
     background: var(--popover);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--nav-radius-lg);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     z-index: 50;
     min-width: 10rem;

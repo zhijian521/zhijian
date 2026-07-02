@@ -15,8 +15,10 @@
     min-height: 0;
     padding: 0.875rem;
     border: 1px solid var(--border);
+    border-radius: var(--nav-radius);
     background: var(--card);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
 }
 
 .sidebarHeader {
@@ -44,6 +46,7 @@
     width: 1.875rem;
     height: 1.875rem;
     border: 1px solid var(--border);
+    border-radius: var(--nav-radius-sm);
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
@@ -75,6 +78,7 @@
     gap: 0.75rem;
     padding: 0.625rem 0.75rem;
     border: 1px solid var(--border);
+    border-radius: var(--nav-radius-sm);
     background: var(--card);
     cursor: pointer;
     transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -165,6 +169,7 @@
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
+    border-radius: var(--nav-radius);
     background: var(--card);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     overflow: hidden;
@@ -218,6 +223,7 @@
     align-items: center;
     padding: 0.15625rem;
     border: 1px solid var(--border);
+    border-radius: var(--nav-radius-sm);
     background: color-mix(in srgb, var(--card) 88%, transparent);
     flex-shrink: 0;
 }
@@ -241,6 +247,7 @@
 .viewTabActive {
     background: var(--primary);
     color: var(--primary-foreground);
+    border-radius: var(--nav-radius-sm);
 }
 
 .detailContent {
@@ -277,6 +284,7 @@
     min-width: 7rem;
     padding: 0.625rem 1rem;
     border: 1px solid var(--primary);
+    border-radius: var(--nav-radius);
     background: var(--primary);
     color: var(--primary-foreground);
     font-size: 0.875rem;

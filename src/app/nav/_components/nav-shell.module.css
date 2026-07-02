@@ -1,6 +1,16 @@
 /*== 导航页全屏分页容器 ==*/
 
+/*-- nav 专属圆角：博客/后台仍保持 --radius:0，此处局部覆盖。
+     主圆角 8px（卡片/搜索栏/书签/象限），小元素 4px，弹窗 12px。
+     注意：nav 内 var(--radius) 已被重定义为 --nav-radius（非全局的 0），
+     若有元素特意需要直角，显式写 border-radius: 0 而非 var(--radius)。 --*/
 .shell {
+    --nav-radius: 8px;
+    --nav-radius-sm: 4px;
+    --nav-radius-lg: 12px;
+    /*-- 让 nav 内现存的 var(--radius) 引用统一走主圆角，子组件无需逐个改 --*/
+    --radius: var(--nav-radius);
+
     height: 100vh;
     overflow-y: auto;
     scroll-snap-type: y mandatory;

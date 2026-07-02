@@ -75,7 +75,7 @@
     margin-left: auto;
     padding: 0.0625rem 0.4375rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--nav-radius-sm);
     background: var(--card);
     font-size: 0.6875rem;
     color: var(--muted-foreground);
@@ -91,7 +91,7 @@
     height: 1.5rem;
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--nav-radius-sm);
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
