@@ -1,75 +1,80 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { clearNavDataCache } from '@/lib/nav-storage';
 
-import SearchSection from './search-section';
-import TodoSection from './todo-section';
 import NoteSection from './note-section';
+import SearchSection from './search-section';
 import SettingsSection from './settings-section';
+import TodoSection from './todo-section';
 import styles from './nav-shell.module.css';
 
+/*== Nav 三屏容器：首屏搜索，二屏备忘录，三屏笔记 ==*/
 export default function NavShell() {
     const [dataVersion, setDataVersion] = useState(0);
     const { user, isLoggedIn, loading, login, register, logout } = useAuth();
     const shellRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    /*-- 注册 section ref --*/
-    const sectionRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
-        sectionRefs.current[index] = el;
+    const sectionRef = useCallback((index: number) => (element: HTMLDivElement | null) => {
+        sectionRefs.current[index] = element;
     }, []);
 
-    /*-- 快捷键跳转 --*/
     const scrollToSection = useCallback((index: number) => {
-        const el = sectionRefs.current[index];
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        const element = sectionRefs.current[index];
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
     }, []);
 
-    /*-- Alt+1/2/3/4 快捷键切换 --*/
     useEffect(() => {
-        function handleKeyDown(e: KeyboardEvent) {
-            if (!e.altKey) return;
-            const idx = parseInt(e.key, 10) - 1;
-            if (idx >= 0 && idx < 4) {
-                e.preventDefault();
-                scrollToSection(idx);
+        function handleKeyDown(event: KeyboardEvent) {
+            if (!event.altKey) return;
+
+            const sectionIndex = parseInt(event.key, 10) - 1;
+            if (Number.isNaN(sectionIndex) || sectionIndex < 0 || sectionIndex >= sectionRefs.current.length) {
+                return;
             }
+
+            event.preventDefault();
+            scrollToSection(sectionIndex);
         }
+
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [scrollToSection]);
 
-    /*-- 登录/退出后清除缓存，递增版本号触发数据重拉 --*/
     function handleAuthChange() {
         clearNavDataCache();
-        setDataVersion(v => v + 1);
+        setDataVersion((value) => value + 1);
     }
 
     return (
         <div className={styles.shell} ref={shellRef}>
-            {/*-- 四屏内容 --*/}
             <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
-                <SearchSection isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
+                <div className={styles.sectionActions}>
+                    <SettingsSection
+                        isLoggedIn={isLoggedIn}
+                        loading={loading}
+                        onAuthChange={handleAuthChange}
+                        onLogin={login}
+                        onLogout={logout}
+                        onRegister={register}
+                        user={user}
+                    />
+                </div>
+
+                <SearchSection dataVersion={dataVersion} isLoggedIn={isLoggedIn} />
             </div>
+
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(1)}>
-                <TodoSection isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
+                <TodoSection dataVersion={dataVersion} isLoggedIn={isLoggedIn} />
             </div>
+
             <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(2)}>
-                <NoteSection isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
-            </div>
-            <div className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(3)}>
-                <SettingsSection
-                    user={user}
-                    isLoggedIn={isLoggedIn}
-                    loading={loading}
-                    onLogin={login}
-                    onRegister={register}
-                    onLogout={logout}
-                    onAuthChange={handleAuthChange}
-                />
+                <NoteSection dataVersion={dataVersion} isLoggedIn={isLoggedIn} />
             </div>
         </div>
     );

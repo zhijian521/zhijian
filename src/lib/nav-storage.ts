@@ -28,6 +28,9 @@ const KEYS = {
     notes: 'zhijian_nav_notes',
     bookmarks: 'zhijian_nav_bookmarks',
     bookmarksVersion: 'zhijian_nav_bookmarks_version',
+    dirtyTodos: 'zhijian_nav_dirty_todos',
+    dirtyNotes: 'zhijian_nav_dirty_notes',
+    dirtyBookmarks: 'zhijian_nav_dirty_bookmarks',
 } as const;
 
 /*== 搜索记录（仅 localStorage，不上云） ==*/
@@ -97,9 +100,18 @@ async function fetchNavData(): Promise<void> {
                 /*-- 全空时不缓存，等 sync 完成后重拉 --*/
                 if (data.bookmarks || data.todos || data.notes) {
                     navDataCache = data;
-                    if (data.bookmarks) localStorage.setItem(KEYS.bookmarks, JSON.stringify(data.bookmarks));
-                    if (data.todos) localStorage.setItem(KEYS.todos, JSON.stringify(data.todos));
-                    if (data.notes) localStorage.setItem(KEYS.notes, JSON.stringify(data.notes));
+                    if (data.bookmarks) {
+                        localStorage.setItem(KEYS.bookmarks, JSON.stringify(data.bookmarks));
+                        setDirty('bookmarks', false);
+                    }
+                    if (data.todos) {
+                        localStorage.setItem(KEYS.todos, JSON.stringify(data.todos));
+                        setDirty('todos', false);
+                    }
+                    if (data.notes) {
+                        localStorage.setItem(KEYS.notes, JSON.stringify(data.notes));
+                        setDirty('notes', false);
+                    }
                 }
             }
         } catch { /* fall through */ }
@@ -169,26 +181,63 @@ const DEBOUNCE_MS = 300;
 
 /*-- 同步状态追踪：settings 页面读取 --*/
 type SaveStatus = 'ok' | 'error' | 'pending';
+type SaveResourceKey = 'bookmarks' | 'todos' | 'notes';
 const saveStatus: Record<'bookmarks' | 'todos' | 'notes', SaveStatus> = {
     bookmarks: 'ok', todos: 'ok', notes: 'ok',
 };
 const saveStatusListeners = new Set<() => void>();
+const DIRTY_KEYS: Record<SaveResourceKey, string> = {
+    bookmarks: KEYS.dirtyBookmarks,
+    todos: KEYS.dirtyTodos,
+    notes: KEYS.dirtyNotes,
+};
+const SAVE_RESOURCE_KEYS: SaveResourceKey[] = ['bookmarks', 'todos', 'notes'];
 
-export function getSaveStatus() { return { ...saveStatus }; }
+export function getSaveStatus() {
+    const snapshot = { ...saveStatus };
+
+    SAVE_RESOURCE_KEYS.forEach((key) => {
+        if (snapshot[key] === 'ok' && isDirty(key)) {
+            snapshot[key] = 'error';
+        }
+    });
+
+    return snapshot;
+}
 export function onSaveStatusChange(fn: () => void) {
     saveStatusListeners.add(fn);
     return () => { saveStatusListeners.delete(fn); };
 }
 function emitSaveStatus() { saveStatusListeners.forEach(fn => fn()); }
+function setSaveStatus(key: SaveResourceKey, status: SaveStatus) {
+    if (saveStatus[key] !== status) {
+        saveStatus[key] = status;
+        emitSaveStatus();
+    }
+}
+function setDirty(key: SaveResourceKey, dirty: boolean) {
+    if (typeof window === 'undefined') return;
+    if (dirty) localStorage.setItem(DIRTY_KEYS[key], '1');
+    else localStorage.removeItem(DIRTY_KEYS[key]);
+}
+function isDirty(key: SaveResourceKey): boolean {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(DIRTY_KEYS[key]) === '1';
+}
+function hasDirtyData(): boolean {
+    return SAVE_RESOURCE_KEYS.some(isDirty);
+}
 
 function markPending(key: keyof typeof saveStatus) {
-    if (saveStatus[key] !== 'pending') { saveStatus[key] = 'pending'; emitSaveStatus(); }
+    setSaveStatus(key, 'pending');
 }
 function markOk(key: keyof typeof saveStatus) {
-    if (saveStatus[key] !== 'ok') { saveStatus[key] = 'ok'; emitSaveStatus(); }
+    setDirty(key, false);
+    setSaveStatus(key, 'ok');
 }
 function markError(key: keyof typeof saveStatus) {
-    if (saveStatus[key] !== 'error') { saveStatus[key] = 'error'; emitSaveStatus(); }
+    setDirty(key, true);
+    setSaveStatus(key, 'error');
 }
 
 const debouncedSaveTodos = debounce((todos: TodoItem[]) => {
@@ -202,6 +251,7 @@ const debouncedSaveTodos = debounce((todos: TodoItem[]) => {
 }, DEBOUNCE_MS);
 
 export async function saveTodos(todos: TodoItem[], isLoggedIn?: boolean): Promise<void> {
+    setDirty('todos', true);
     if (isLoggedIn) debouncedSaveTodos(todos);
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.todos, JSON.stringify(todos));
@@ -243,6 +293,7 @@ const debouncedSaveNotes = debounce((notes: NoteItem[]) => {
 }, DEBOUNCE_MS);
 
 export async function saveNotes(notes: NoteItem[], isLoggedIn?: boolean): Promise<void> {
+    setDirty('notes', true);
     if (isLoggedIn) debouncedSaveNotes(notes);
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.notes, JSON.stringify(notes));
@@ -285,6 +336,7 @@ const debouncedSaveBookmarks = debounce((bookmarks: Bookmark[]) => {
 }, DEBOUNCE_MS);
 
 export async function saveBookmarks(bookmarks: Bookmark[], isLoggedIn?: boolean): Promise<void> {
+    setDirty('bookmarks', true);
     if (isLoggedIn) debouncedSaveBookmarks(bookmarks);
     if (typeof window !== 'undefined') {
         localStorage.setItem(KEYS.bookmarks, JSON.stringify(bookmarks));
@@ -297,17 +349,34 @@ export async function syncLocalToServer(): Promise<void> {
     function safeParse(key: string): unknown {
         try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; }
     }
-    const bookmarks = safeParse(KEYS.bookmarks);
-    const todos = safeParse(KEYS.todos);
-    const notes = safeParse(KEYS.notes);
+    if (!hasDirtyData()) return;
 
-    if (!bookmarks && !todos && !notes) return;
+    const payload = {
+        bookmarks: isDirty('bookmarks') ? safeParse(KEYS.bookmarks) : undefined,
+        todos: isDirty('todos') ? safeParse(KEYS.todos) : undefined,
+        notes: isDirty('notes') ? safeParse(KEYS.notes) : undefined,
+    };
+    const dirtyKeys = SAVE_RESOURCE_KEYS.filter(isDirty);
 
-    await fetch('/api/nav/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookmarks, todos, notes }),
-    });
+    dirtyKeys.forEach(markPending);
+
+    try {
+        const res = await fetch('/api/nav/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+            dirtyKeys.forEach(markError);
+            throw new Error(`sync failed: ${res.status}`);
+        }
+
+        dirtyKeys.forEach(markOk);
+    } catch (error) {
+        dirtyKeys.forEach(markError);
+        throw error;
+    }
 }
 
 /*== 退出登录：清除本地用户数据，回到默认值 ==*/
@@ -317,4 +386,7 @@ export function clearLocalNavData(): void {
     localStorage.removeItem(KEYS.bookmarksVersion);
     localStorage.removeItem(KEYS.todos);
     localStorage.removeItem(KEYS.notes);
+    localStorage.removeItem(KEYS.dirtyBookmarks);
+    localStorage.removeItem(KEYS.dirtyTodos);
+    localStorage.removeItem(KEYS.dirtyNotes);
 }

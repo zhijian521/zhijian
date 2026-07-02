@@ -37,10 +37,24 @@
     padding-top: 25vh;
 }
 
+.sectionActions {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 2;
+}
+
 /*-- 备忘录和笔记屏：内容占满全高 --*/
 
 .sectionStretch {
     justify-content: stretch;
     align-items: stretch;
+}
+
+@media (max-width: 767px) {
+    .sectionActions {
+        top: 1rem;
+        right: 1rem;
+    }
 }
 
