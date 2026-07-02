@@ -10,6 +10,12 @@ import FaviconImg from './favicon-img';
 import styles from './bookmark-link.module.css';
 
 /*-- 单个书签/文件夹 --*/
+const DRAG_CLS: Record<'before' | 'after' | 'inside', string> = {
+    before: 'dragOverBefore',
+    after: 'dragOverAfter',
+    inside: 'dragOverInside',
+};
+
 export default function BookmarkLink({
     bookmark,
     onContextMenu,
@@ -25,8 +31,8 @@ export default function BookmarkLink({
     dragState: DragState | null;
     folderId?: string;
     onDragStart: (e: React.DragEvent, id: string, folderId?: string) => void;
-    onDragOver: (e: React.DragEvent, id: string) => void;
-    onDrop: (e: React.DragEvent, id: string, folderId?: string) => void;
+    onDragOver: (e: React.DragEvent, id: string, isFolder?: boolean) => void;
+    onDrop: (e: React.DragEvent, id: string, targetFolderId?: string) => void;
     onDragEnd: () => void;
 }) {
     const [open, setOpen] = useState(false);
@@ -44,8 +50,9 @@ export default function BookmarkLink({
         return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick); };
     }, [open]);
 
-    const isDragOver = dragState?.overId === bookmark.id && dragState?.position;
-    const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
+    /*-- 当前项的拖拽高亮类（position 命中时） --*/
+    const pos = dragState?.overId === bookmark.id ? dragState?.position : null;
+    const dragCls = pos ? styles[DRAG_CLS[pos]] : '';
 
     if (isBookmarkFolder(bookmark)) {
         return (
@@ -55,7 +62,7 @@ export default function BookmarkLink({
                 draggable
                 onContextMenu={(e) => onContextMenu(e, bookmark)}
                 onDragStart={(e) => onDragStart(e, bookmark.id)}
-                onDragOver={(e) => onDragOver(e, bookmark.id)}
+                onDragOver={(e) => onDragOver(e, bookmark.id, true)}
                 onDrop={(e) => onDrop(e, bookmark.id)}
                 onDragEnd={onDragEnd}
             >
@@ -72,19 +79,28 @@ export default function BookmarkLink({
                 </button>
                 {open && (
                     <div className={styles.folderPopup}>
-                        {bookmark.children.map((child) => (
-                            <a
-                                key={child.id}
-                                className={styles.folderItem}
-                                href={child.url}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                                onContextMenu={(e) => onContextMenu(e, child, bookmark.id)}
-                            >
-                                <FaviconImg className={styles.favicon} fallbackChar={child.name[0]} url={child.url} />
-                                <span className={styles.name}>{child.name}</span>
-                            </a>
-                        ))}
+                        {bookmark.children.map((child) => {
+                            const cpos = dragState?.overId === child.id ? dragState?.position : null;
+                            const childCls = cpos && cpos !== 'inside' ? styles[DRAG_CLS[cpos]] : '';
+                            return (
+                                <a
+                                    key={child.id}
+                                    className={`${styles.folderItem} ${childCls}`}
+                                    href={child.url}
+                                    rel="noopener noreferrer"
+                                    target="_blank"
+                                    draggable
+                                    onContextMenu={(e) => onContextMenu(e, child, bookmark.id)}
+                                    onDragStart={(e) => { e.stopPropagation(); onDragStart(e, child.id, bookmark.id); }}
+                                    onDragOver={(e) => { e.stopPropagation(); onDragOver(e, child.id); }}
+                                    onDrop={(e) => { e.stopPropagation(); onDrop(e, child.id, bookmark.id); }}
+                                    onDragEnd={onDragEnd}
+                                >
+                                    <FaviconImg className={styles.favicon} fallbackChar={child.name[0]} url={child.url} />
+                                    <span className={styles.name}>{child.name}</span>
+                                </a>
+                            );
+                        })}
                     </div>
                 )}
             </div>

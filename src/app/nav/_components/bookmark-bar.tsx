@@ -6,7 +6,7 @@ import Dialog from '@/components/ui/dialog';
 import { isBookmarkFolder } from '@/lib/nav-config';
 import type { Bookmark, BookmarkItem, BookmarkFolder } from '@/lib/nav-config';
 import { getBookmarks, saveBookmarks, genId } from '@/lib/nav-storage';
-import { reorder, insertAfter, type DragState } from './drag-utils';
+import { insertAfter, removeFromTree, insertIntoTree, type DragState } from './drag-utils';
 
 import BookmarkContextMenu from './bookmark-context-menu';
 import BookmarkLink from './bookmark-link';
@@ -107,33 +107,49 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         setDragState({ dragId: id, overId: null, position: null, folderId });
     }, []);
 
-    const handleDragOver = useCallback((e: React.DragEvent, id: string) => {
+    /*-- 拖过文件夹：中央区=放入(inside)，两侧=排序(before/after) --*/
+    /*-- 拖过普通书签：左/右=排序 --*/
+    const handleDragOver = useCallback((e: React.DragEvent, id: string, isFolder?: boolean) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        const midX = rect.left + rect.width / 2;
-        const position = e.clientX < midX ? 'before' : 'after';
+        let position: 'before' | 'after' | 'inside';
+        if (isFolder) {
+            const edge = rect.width * 0.25;
+            /*-- 中央 50% = 放入文件夹；左右各 25% = 排序 --*/
+            if (e.clientX < rect.left + edge) position = 'before';
+            else if (e.clientX > rect.right - edge) position = 'after';
+            else position = 'inside';
+        } else {
+            position = e.clientX < rect.left + rect.width / 2 ? 'before' : 'after';
+        }
         setDragState(prev => prev ? { ...prev, overId: id, position } : prev);
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent, id: string, folderId?: string) => {
+    const handleDrop = useCallback((e: React.DragEvent, targetId: string, targetFolderId?: string) => {
         e.preventDefault();
         const ds = dragStateRef.current;
-        if (!ds || ds.dragId === id || !ds.position) return;
-
-        /*-- 同层拖拽：folderId 必须一致 --*/
-        if (ds.folderId !== folderId) return;
+        if (!ds || ds.dragId === targetId || !ds.position) return;
 
         const bm = bookmarksRef.current;
-        if (folderId) {
-            persist(bm.map(b => {
-                if (!isBookmarkFolder(b) || b.id !== folderId) return b;
-                return { ...b, children: reorder(b.children, ds.dragId, id, ds.position!) };
-            }));
-        } else {
-            persist(reorder(bm, ds.dragId, id, ds.position!));
-        }
+        const target = bm.find(b => b.id === targetId);
+        const targetIsFolder = target ? isBookmarkFolder(target) : false;
+        const position = ds.position;
 
+        /*-- 先从原位置移除 --*/
+        const { tree, removed } = removeFromTree(bm, ds.dragId);
+        if (!removed) { setDragState(null); return; }
+
+        /*-- 规格守卫：文件夹不能进入任何文件夹（inside 或跨层进 children） --*/
+        if (isBookmarkFolder(removed) && (targetIsFolder ? position === 'inside' : Boolean(targetFolderId))) {
+            setDragState(null);
+            return;
+        }
+        /*-- 不能拖进自己 --*/
+        if (removed.id === targetId) { setDragState(null); return; }
+
+        /*-- 统一插入：inside=追加进文件夹末尾，before/after=插到目标项旁 --*/
+        persist(insertIntoTree(tree, removed, targetId, position, targetFolderId));
         setDragState(null);
     }, []);
 

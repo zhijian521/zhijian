@@ -63,7 +63,7 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         e.preventDefault();
         const ds = dragStateRef.current;
         if (!ds || ds.dragId === id || !ds.position) return;
-        persist(reorder(notesRef.current, ds.dragId, id, ds.position));
+        persist(reorder(notesRef.current, ds.dragId, id, ds.position as 'before' | 'after'));
         setDragState(null);
         justDraggedRef.current = true;
         setTimeout(() => { justDraggedRef.current = false; }, 0);

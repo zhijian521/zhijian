@@ -92,3 +92,20 @@
 .dragOverAfter {
     box-shadow: 2px 0 0 0 var(--primary);
 }
+
+/*-- 拖到文件夹中央 = 放入（柔和高亮，非虚线） --*/
+
+.dragOverInside .item {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+/*-- 文件夹浮层内子书签：垂直排列，插入线改上下 --*/
+
+.folderItem.dragOverBefore {
+    box-shadow: 0 -2px 0 0 var(--primary);
+}
+
+.folderItem.dragOverAfter {
+    box-shadow: 0 2px 0 0 var(--primary);
+}
