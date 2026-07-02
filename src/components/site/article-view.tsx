@@ -6,6 +6,7 @@ import styles from './article-view.module.css';
 
 export interface ArticleViewProps {
     content: string;
+    fullWidth?: boolean;
     title?: string;
     summary?: string;
     coverImage?: string | null;
@@ -19,6 +20,7 @@ export interface ArticleViewProps {
 /*== ArticleView 文章展示组件：编辑器预览与前台详情页共用。 ==*/
 export function ArticleView({
     content,
+    fullWidth = false,
     title,
     summary,
     coverImage,
@@ -30,9 +32,10 @@ export function ArticleView({
 }: ArticleViewProps) {
     const hasHeader = title || summary || coverImage || categoryName || (tagNames && tagNames.length > 0) || publishedAt;
     const tagLabels = tagNames?.map((tag) => typeof tag === 'string' ? tag : tag.name) ?? [];
+    const articleClassName = fullWidth ? `${styles.article} ${styles.articleWide}` : styles.article;
 
     return (
-        <div className={styles.article}>
+        <div className={articleClassName}>
             {hasHeader ? (
                 <div className={styles.header}>
                     {coverImage ? (
@@ -58,7 +61,7 @@ export function ArticleView({
                     </div>
                 </div>
             ) : null}
-            <MarkdownArticle content={content} />
+            <MarkdownArticle content={content} fullWidth={fullWidth} />
             {updatedAt && updatedAt !== publishedAt ? (
                 <div className={styles.updatedDate}>
                     最后更新于： {formatPostDate(updatedAt)}

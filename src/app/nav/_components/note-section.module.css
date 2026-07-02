@@ -1,27 +1,21 @@
-/*== 笔记（左右结构） ==*/
-
 .panel {
-    width: 100%;
-    max-width: 78rem;
-    height: 100%;
     display: flex;
-    padding: 8rem 2.5rem 2rem 5rem;
-    margin-inline: auto;
+    width: 100%;
+    height: 100%;
+    gap: 0.75rem;
+    padding: 2rem 2.5rem 2rem 4rem;
     box-sizing: border-box;
-    gap: 1rem;
 }
 
-/*-- 左侧列表 --*/
-
 .sidebar {
-    width: 15rem;
+    width: 18rem;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    min-height: 0;
     padding: 0.875rem;
+    border: 1px solid var(--border);
+    background: var(--card);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
@@ -29,31 +23,31 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
     margin-bottom: 0.75rem;
-    padding-bottom: 0.625rem;
     border-bottom: 1px solid var(--border);
 }
 
 .title {
-    font-size: 1.25rem;
-    font-family: var(--font-serif);
-    font-weight: 500;
-    color: var(--foreground);
     margin: 0;
+    color: var(--foreground);
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 500;
 }
 
 .addBtn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.875rem;
+    height: 1.875rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .addBtn:hover {
@@ -62,34 +56,38 @@
 }
 
 .list {
-    list-style: none;
+    flex: 1;
+    min-height: 0;
     margin: 0;
     padding: 0;
+    list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.75rem;
     overflow-y: auto;
-    flex: 1;
 }
 
 .noteItem {
+    position: relative;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 0.5rem 0.625rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--card);
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .noteItem:hover {
-    background: var(--accent);
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--card) 88%, var(--accent) 12%);
 }
 
 .noteItemActive {
-    background: var(--primary-subtle);
     border-color: var(--primary);
+    background: color-mix(in srgb, var(--card) 72%, var(--primary-subtle) 28%);
 }
 
 .noteInfo {
@@ -98,35 +96,38 @@
 }
 
 .noteTitle {
-    font-size: 0.8125rem;
-    font-weight: 500;
+    margin: 0 0 0.1875rem;
     color: var(--foreground);
-    margin: 0 0 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .noteDate {
-    font-size: 0.625rem;
-    color: var(--muted-foreground);
     margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
 }
 
 .noteDelete {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
     border: none;
-    background: none;
+    background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: color 0.15s;
     opacity: 0;
+    transition: color 0.15s ease, opacity 0.15s ease;
 }
 
-.noteItem:hover .noteDelete {
+.noteItem:hover .noteDelete,
+.noteItemActive .noteDelete {
     opacity: 1;
 }
 
@@ -135,97 +136,154 @@
 }
 
 .noteDeleteIcon {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.875rem;
+    height: 0.875rem;
 }
 
-/*-- 右侧详情 --*/
+.dragOverBefore::before,
+.dragOverAfter::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+}
+
+.dragOverBefore::before {
+    top: -1px;
+}
+
+.dragOverAfter::after {
+    bottom: -1px;
+}
 
 .detail {
     flex: 1;
     min-width: 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1.5rem;
+    background: var(--card);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.detailHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.125rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 82%, var(--muted) 18%);
+}
+
+.detailHeaderMain {
+    flex: 1;
+    min-width: 0;
 }
 
 .detailTitle {
+    display: block;
     width: 100%;
-    padding: 0.5rem 0;
+    padding: 0;
     border: none;
-    border-bottom: 1px solid var(--border);
     background: transparent;
     color: var(--foreground);
-    font-size: 1.125rem;
     font-family: var(--font-serif);
+    font-size: 1.5rem;
     font-weight: 600;
+    line-height: 1.3;
     outline: none;
-    margin-bottom: 1rem;
-    box-sizing: border-box;
 }
 
 .detailTitle::placeholder {
     color: var(--muted-foreground);
 }
 
-.detailBody {
-    flex: 1;
-    width: 100%;
-    padding: 0;
+.detailMeta {
+    margin: 0.375rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+}
+
+.detailMetaPreview {
+    margin-top: 0;
+}
+
+.viewTabs {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15625rem;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 88%, transparent);
+    flex-shrink: 0;
+}
+
+.viewTab {
+    min-width: 3.875rem;
+    padding: 0.375rem 0.6875rem;
     border: none;
     background: transparent;
+    color: var(--muted-foreground);
+    font-size: 0.78125rem;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.viewTab:hover {
     color: var(--foreground);
-    font-size: 0.875rem;
-    font-family: var(--font-sans);
-    line-height: 1.75;
-    outline: none;
-    resize: none;
+}
+
+.viewTabActive {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.detailContent {
+    flex: 1;
+    min-height: 0;
+}
+
+.previewPane {
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.5rem 1.75rem 2rem;
+    background: transparent;
     box-sizing: border-box;
 }
 
-.detailBody::placeholder {
-    color: var(--muted-foreground);
-}
-
-.empty {
+.emptyState {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
     text-align: center;
+}
+
+.emptyText {
+    margin: 0;
     color: var(--muted-foreground);
+    font-size: 0.9375rem;
+}
+
+.emptyAction {
+    min-width: 7rem;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
     font-size: 0.875rem;
-    padding: 3rem 0;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
 }
 
-/*-- 拖拽指示线 --*/
-
-.dragOverBefore {
-    position: relative;
-}
-
-.dragOverBefore::before {
-    content: '';
-    position: absolute;
-    top: -0.125rem;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--primary);
-    border-radius: 1px;
-}
-
-.dragOverAfter {
-    position: relative;
-}
-
-.dragOverAfter::after {
-    content: '';
-    position: absolute;
-    bottom: -0.125rem;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--primary);
-    border-radius: 1px;
+.emptyAction:hover {
+    opacity: 0.92;
 }

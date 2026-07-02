@@ -1,16 +1,30 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { ArticleView } from '@/components/site/article-view';
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
-import { getNotes, saveNotes, genId } from '@/lib/nav-storage';
 import type { NoteItem } from '@/lib/nav-storage';
+import { genId, getNotes, saveNotes } from '@/lib/nav-storage';
+
 import { reorder, type DragState } from './drag-utils';
+import NoteMarkdownEditor from './note-markdown-editor';
 
 import styles from './note-section.module.css';
 
+type ViewMode = 'edit' | 'preview';
+
 function formatDate(ts: number): string {
-    return new Date(ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return new Date(ts).toLocaleDateString('zh-CN', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
+function getDisplayTitle(title: string): string {
+    return title.trim() || '无标题';
 }
 
 export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: boolean; dataVersion?: number }) {
@@ -18,32 +32,85 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
     const [activeId, setActiveId] = useState<string | null>(null);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
+    const [viewMode, setViewMode] = useState<ViewMode>('edit');
     const [dragState, setDragState] = useState<DragState | null>(null);
 
-    /*-- 用 ref 持有最新值，避免闭包陷阱 --*/
     const notesRef = useRef(notes);
     notesRef.current = notes;
+
+    const activeIdRef = useRef(activeId);
+    activeIdRef.current = activeId;
+
+    const editTitleRef = useRef(editTitle);
+    editTitleRef.current = editTitle;
+
+    const editContentRef = useRef(editContent);
+    editContentRef.current = editContent;
+
     const dragStateRef = useRef(dragState);
     dragStateRef.current = dragState;
+
     const justDraggedRef = useRef(false);
 
     useEffect(() => {
-        getNotes(isLoggedIn).then(loaded => {
+        getNotes(isLoggedIn).then((loaded) => {
             setNotes(loaded);
-            if (loaded.length > 0) {
-                setActiveId(loaded[0].id);
-                setEditTitle(loaded[0].title);
-                setEditContent(loaded[0].content);
+            if (loaded.length === 0) {
+                setActiveId(null);
+                setEditTitle('');
+                setEditContent('');
+                setViewMode('edit');
+                return;
             }
+
+            const firstNote = loaded[0];
+            setActiveId(firstNote.id);
+            setEditTitle(firstNote.title);
+            setEditContent(firstNote.content);
+            setViewMode('edit');
         });
     }, [isLoggedIn, dataVersion]);
 
-    function persist(updated: NoteItem[]) {
-        setNotes(updated);
-        saveNotes(updated, isLoggedIn);
-    }
+    const persist = useCallback(
+        (updated: NoteItem[]) => {
+            setNotes(updated);
+            saveNotes(updated, isLoggedIn);
+        },
+        [isLoggedIn],
+    );
 
-    /*== 拖拽 — 用 ref 读取最新值，回调稳定不重建 ==*/
+    const persistActiveDraft = useCallback(
+        (sourceNotes: NoteItem[] = notesRef.current): NoteItem[] => {
+            const currentActiveId = activeIdRef.current;
+            if (!currentActiveId) return sourceNotes;
+
+            const currentTitle = getDisplayTitle(editTitleRef.current);
+            const currentContent = editContentRef.current;
+            let hasChanged = false;
+
+            const updated = sourceNotes.map((note) => {
+                if (note.id !== currentActiveId) return note;
+                if (note.title === currentTitle && note.content === currentContent) return note;
+
+                hasChanged = true;
+                return {
+                    ...note,
+                    title: currentTitle,
+                    content: currentContent,
+                    updatedAt: Date.now(),
+                };
+            });
+
+            if (hasChanged) {
+                persist(updated);
+                return updated;
+            }
+
+            return sourceNotes;
+        },
+        [persist],
+    );
+
     const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', id);
@@ -54,20 +121,32 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        const midY = rect.top + rect.height / 2;
-        const position = e.clientY < midY ? 'before' : 'after';
-        setDragState(prev => prev ? { ...prev, overId: id, position } : prev);
+        const position = e.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
+        setDragState((prev) => (prev ? { ...prev, overId: id, position } : prev));
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent, id: string) => {
-        e.preventDefault();
-        const ds = dragStateRef.current;
-        if (!ds || ds.dragId === id || !ds.position) return;
-        persist(reorder(notesRef.current, ds.dragId, id, ds.position as 'before' | 'after'));
-        setDragState(null);
-        justDraggedRef.current = true;
-        setTimeout(() => { justDraggedRef.current = false; }, 0);
-    }, []);
+    const handleDrop = useCallback(
+        (e: React.DragEvent, id: string) => {
+            e.preventDefault();
+            const currentDragState = dragStateRef.current;
+            if (!currentDragState || currentDragState.dragId === id || !currentDragState.position) return;
+
+            persist(
+                reorder(
+                    notesRef.current,
+                    currentDragState.dragId,
+                    id,
+                    currentDragState.position as 'before' | 'after',
+                ),
+            );
+            setDragState(null);
+            justDraggedRef.current = true;
+            setTimeout(() => {
+                justDraggedRef.current = false;
+            }, 0);
+        },
+        [persist],
+    );
 
     const handleDragEnd = useCallback(() => {
         setDragState(null);
@@ -75,15 +154,18 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
 
     function handleSelect(id: string) {
         if (justDraggedRef.current) return;
+
+        const updatedNotes = persistActiveDraft();
+        const nextNote = updatedNotes.find((note) => note.id === id);
+        if (!nextNote) return;
+
         setActiveId(id);
-        const note = notes.find(n => n.id === id);
-        if (note) {
-            setEditTitle(note.title);
-            setEditContent(note.content);
-        }
+        setEditTitle(nextNote.title);
+        setEditContent(nextNote.content);
     }
 
     function handleCreate() {
+        const updatedNotes = persistActiveDraft();
         const newItem: NoteItem = {
             id: genId(),
             title: '',
@@ -91,117 +173,171 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
             createdAt: Date.now(),
             updatedAt: Date.now(),
         };
-        persist([newItem, ...notes]);
+        const nextNotes = [newItem, ...updatedNotes];
+
+        persist(nextNotes);
         setActiveId(newItem.id);
         setEditTitle('');
         setEditContent('');
+        setViewMode('edit');
     }
 
     function handleDelete(id: string) {
-        const updated = notes.filter(n => n.id !== id);
-        persist(updated);
-        if (activeId === id) {
-            if (updated.length > 0) {
-                setActiveId(updated[0].id);
-                setEditTitle(updated[0].title);
-                setEditContent(updated[0].content);
-            } else {
-                setActiveId(null);
-                setEditTitle('');
-                setEditContent('');
-            }
+        const updatedNotes = persistActiveDraft();
+        const nextNotes = updatedNotes.filter((note) => note.id !== id);
+        persist(nextNotes);
+
+        if (activeIdRef.current !== id) return;
+
+        const nextActive = nextNotes[0];
+        if (!nextActive) {
+            setActiveId(null);
+            setEditTitle('');
+            setEditContent('');
+            setViewMode('edit');
+            return;
         }
+
+        setActiveId(nextActive.id);
+        setEditTitle(nextActive.title);
+        setEditContent(nextActive.content);
     }
 
-    function handleSave() {
-        if (!activeId) return;
-        const now = Date.now();
-        persist(notes.map(n =>
-            n.id === activeId
-                ? { ...n, title: editTitle.trim() || '无标题', content: editContent, updatedAt: now }
-                : n
-        ));
+    function handleViewModeChange(mode: ViewMode) {
+        persistActiveDraft();
+        setViewMode(mode);
     }
 
-    /*-- 失焦自动保存 --*/
-    function handleBlur() {
-        if (!activeId) return;
-        const note = notes.find(n => n.id === activeId);
-        if (!note) return;
-        if (note.title !== (editTitle.trim() || '无标题') || note.content !== editContent) {
-            handleSave();
-        }
+    function handleDraftBlur() {
+        persistActiveDraft();
     }
 
-    const activeNote = notes.find(n => n.id === activeId);
+    const activeNote = notes.find((note) => note.id === activeId);
+    const updatedLabel = activeNote ? formatDate(activeNote.updatedAt) : '';
 
     return (
         <div className={styles.panel}>
-            {/*-- 左侧列表 --*/}
-            <div className={styles.sidebar}>
+            <aside className={styles.sidebar}>
                 <div className={styles.sidebarHeader}>
                     <h2 className={styles.title}>笔记</h2>
                     <button className={styles.addBtn} onClick={handleCreate} type="button">
                         <PlusIcon style={{ width: '0.75rem', height: '0.75rem' }} />
                     </button>
                 </div>
+
                 <ul className={styles.list}>
-                    {notes.map((n) => {
-                        const isDragOver = dragState?.overId === n.id && dragState?.position;
-                        const dragCls = isDragOver === 'before' ? styles.dragOverBefore : isDragOver === 'after' ? styles.dragOverAfter : '';
+                    {notes.map((note) => {
+                        const dragPosition = dragState?.overId === note.id ? dragState.position : null;
+                        const dragClass =
+                            dragPosition === 'before'
+                                ? styles.dragOverBefore
+                                : dragPosition === 'after'
+                                  ? styles.dragOverAfter
+                                  : '';
+
                         return (
                             <li
-                                key={n.id}
-                                className={`${styles.noteItem} ${n.id === activeId ? styles.noteItemActive : ''} ${dragCls}`}
+                                key={note.id}
+                                className={`${styles.noteItem} ${
+                                    note.id === activeId ? styles.noteItemActive : ''
+                                } ${dragClass}`}
                                 draggable
-                                onClick={() => handleSelect(n.id)}
-                                onDragStart={(e) => handleDragStart(e, n.id)}
-                                onDragOver={(e) => handleDragOver(e, n.id)}
-                                onDrop={(e) => handleDrop(e, n.id)}
+                                onClick={() => handleSelect(note.id)}
                                 onDragEnd={handleDragEnd}
+                                onDragOver={(e) => handleDragOver(e, note.id)}
+                                onDragStart={(e) => handleDragStart(e, note.id)}
+                                onDrop={(e) => handleDrop(e, note.id)}
                             >
-                            <div className={styles.noteInfo}>
-                                <p className={styles.noteTitle}>{n.title || '无标题'}</p>
-                                <p className={styles.noteDate}>{formatDate(n.updatedAt)}</p>
-                            </div>
-                            <button
-                                aria-label="删除"
-                                className={styles.noteDelete}
-                                onClick={(e) => { e.stopPropagation(); handleDelete(n.id); }}
-                                type="button"
-                            >
-                                <Trash2Icon className={styles.noteDeleteIcon} />
-                            </button>
-                        </li>
+                                <div className={styles.noteInfo}>
+                                    <p className={styles.noteTitle}>{getDisplayTitle(note.title)}</p>
+                                    <p className={styles.noteDate}>{formatDate(note.updatedAt)}</p>
+                                </div>
+                                <button
+                                    aria-label="删除笔记"
+                                    className={styles.noteDelete}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(note.id);
+                                    }}
+                                    type="button"
+                                >
+                                    <Trash2Icon className={styles.noteDeleteIcon} />
+                                </button>
+                            </li>
                         );
                     })}
                 </ul>
-            </div>
+            </aside>
 
-            {/*-- 右侧详情 --*/}
-            <div className={styles.detail}>
+            <section className={styles.detail}>
                 {activeNote ? (
                     <>
-                        <input
-                            className={styles.detailTitle}
-                            onBlur={handleBlur}
-                            onChange={(e) => setEditTitle(e.target.value)}
-                            placeholder="标题"
-                            type="text"
-                            value={editTitle}
-                        />
-                        <textarea
-                            className={styles.detailBody}
-                            onBlur={handleBlur}
-                            onChange={(e) => setEditContent(e.target.value)}
-                            placeholder="开始写作（Markdown）..."
-                            value={editContent}
-                        />
+                        <div className={styles.detailHeader}>
+                            <div className={styles.detailHeaderMain}>
+                                {viewMode === 'edit' ? (
+                                    <input
+                                        className={styles.detailTitle}
+                                        onBlur={handleDraftBlur}
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                        placeholder="笔记标题"
+                                        type="text"
+                                        value={editTitle}
+                                    />
+                                ) : null}
+                                <p
+                                    className={`${styles.detailMeta} ${
+                                        viewMode === 'preview' ? styles.detailMetaPreview : ''
+                                    }`}
+                                >
+                                    上次更新 {updatedLabel}
+                                </p>
+                            </div>
+
+                            <div className={styles.viewTabs}>
+                                <button
+                                    className={`${styles.viewTab} ${
+                                        viewMode === 'edit' ? styles.viewTabActive : ''
+                                    }`}
+                                    onClick={() => handleViewModeChange('edit')}
+                                    type="button"
+                                >
+                                    编辑
+                                </button>
+                                <button
+                                    className={`${styles.viewTab} ${
+                                        viewMode === 'preview' ? styles.viewTabActive : ''
+                                    }`}
+                                    onClick={() => handleViewModeChange('preview')}
+                                    type="button"
+                                >
+                                    预览
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className={styles.detailContent}>
+                            {viewMode === 'edit' ? (
+                                <NoteMarkdownEditor
+                                    content={editContent}
+                                    onBlur={handleDraftBlur}
+                                    onContentChange={setEditContent}
+                                />
+                            ) : (
+                                <div className={styles.previewPane}>
+                                    <ArticleView content={editContent} fullWidth />
+                                </div>
+                            )}
+                        </div>
                     </>
                 ) : (
-                    <p className={styles.empty}>选择或新建一篇笔记</p>
+                    <div className={styles.emptyState}>
+                        <p className={styles.emptyText}>还没有笔记，先新建一篇开始写。</p>
+                        <button className={styles.emptyAction} onClick={handleCreate} type="button">
+                            新建笔记
+                        </button>
+                    </div>
                 )}
-            </div>
+            </section>
         </div>
     );
 }

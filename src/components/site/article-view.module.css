@@ -3,6 +3,10 @@
     margin: 0 auto;
 }
 
+.articleWide {
+    max-width: none;
+}
+
 /* 文章头部 — 封面图+标题+摘要+元信息 */
 .header {
     margin: 0 auto 2.5rem;
