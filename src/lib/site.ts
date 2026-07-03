@@ -8,6 +8,7 @@ import {
     WrenchIcon,
     ActivityIcon,
     ImageIcon,
+    CodeIcon,
     type IconComponent,
 } from '@/components/ui/icons';
 
@@ -95,6 +96,9 @@ export const APP_ROUTES = {
     adminUploads: '/admin/uploads', // 图片管理
     adminAnalytics: '/admin/analytics', // 数据概览（观澜）
     adminAnalyticsSites: '/admin/analytics/sites', // 站点管理
+    adminShowcase: '/admin/showcase', // 组件展示
+    adminShowcaseComponents: '/admin/showcase/components', // 组件预览
+    adminShowcaseIcons: '/admin/showcase/icons', // 图标预览
 
     /*-- 错误 --*/
     forbidden: '/forbidden', // 403 无权限
@@ -168,6 +172,15 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
         items: [
             { href: APP_ROUTES.adminAnalytics, label: '数据概览', icon: ActivityIcon, match: 'exact' },
             { href: APP_ROUTES.adminAnalyticsSites, label: '站点管理', icon: FolderTreeIcon, match: 'prefix' },
+        ],
+    },
+    {
+        key: 'devtools',
+        label: '开发工具',
+        icon: CodeIcon,
+        items: [
+            { href: APP_ROUTES.adminShowcaseComponents, label: '组件预览', icon: LayoutDashboardIcon, match: 'exact' },
+            { href: APP_ROUTES.adminShowcaseIcons, label: '图标预览', icon: ImageIcon, match: 'exact' },
         ],
     },
 ];

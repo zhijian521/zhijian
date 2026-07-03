@@ -1,0 +1,51 @@
+/* 顶部样式见 ../shared.module.css */
+
+.section {
+    margin-bottom: var(--space-7);
+}
+
+.sectionTitle {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+}
+
+.iconCell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-1);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.iconCell:hover {
+    background: var(--primary-subtle-soft);
+}
+
+.icon {
+    width: var(--space-5);
+    height: var(--space-5);
+    color: var(--foreground);
+}
+
+.iconName {
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    word-break: break-all;
+    text-align: center;
+    line-height: 1.2;
+}
