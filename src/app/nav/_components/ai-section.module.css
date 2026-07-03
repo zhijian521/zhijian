@@ -17,7 +17,6 @@
     min-height: 0;
     padding: 0.875rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius);
     background: var(--card);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     overflow: hidden;
@@ -48,7 +47,6 @@
     width: 1.875rem;
     height: 1.875rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius-sm);
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
@@ -80,7 +78,6 @@
     gap: 0.5rem;
     padding: 0.5rem 0.625rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius-sm);
     background: var(--card);
     cursor: pointer;
     transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -155,7 +152,6 @@
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius);
     background: var(--card);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     overflow: hidden;
@@ -206,7 +202,6 @@
     align-items: center;
     padding: 0.25rem 0.5rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius-sm);
     background: var(--card);
     color: var(--foreground);
     font-size: 0.6875rem;
@@ -231,7 +226,6 @@
     min-width: 10rem;
     background: var(--popover);
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     z-index: 50;
     padding: 0.25rem 0;
@@ -293,7 +287,6 @@
     max-width: 80%;
     padding: 0.625rem 0.9375rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius);
     font-size: 0.875rem;
     line-height: 1.7;
     word-break: break-word;
@@ -303,13 +296,11 @@
     background: var(--primary-subtle);
     border-color: color-mix(in srgb, var(--primary) 25%, transparent);
     color: var(--foreground);
-    border-bottom-right-radius: var(--nav-radius-sm);
 }
 
 .bubbleAssistant {
     background: var(--highlight);
     color: var(--foreground);
-    border-bottom-left-radius: var(--nav-radius-sm);
 }
 
 /*-- Markdown 渲染：复用 MarkdownArticle 的 body 样式，气泡内收窄 --*/
@@ -365,7 +356,6 @@
 .inputWrap {
     flex: 1;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius);
     background: var(--background);
     transition: border-color 0.15s ease;
 }
@@ -403,7 +393,6 @@
     height: 2.25rem;
     padding: 0;
     border: 1px solid var(--primary);
-    border-radius: var(--nav-radius);
     background: var(--primary);
     color: var(--primary-foreground);
     cursor: pointer;
@@ -448,7 +437,6 @@
     min-width: 7rem;
     padding: 0.625rem 1rem;
     border: 1px solid var(--primary);
-    border-radius: var(--nav-radius);
     background: var(--primary);
     color: var(--primary-foreground);
     font-size: 0.875rem;

@@ -13,7 +13,6 @@
     width: 100%;
     max-width: 42rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     background: var(--card);
     overflow: visible;
     transition: border-color 0.15s;
@@ -56,7 +55,6 @@
     left: 0;
     background: var(--popover);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     z-index: 50;
     min-width: 10rem;
@@ -180,7 +178,6 @@
     max-width: 10rem;
     padding: 0.25rem 0.5rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius-sm);
     background: var(--muted);
     color: var(--foreground);
     font-size: 0.75rem;

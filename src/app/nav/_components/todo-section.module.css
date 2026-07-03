@@ -43,7 +43,6 @@
     min-height: 0;
     min-width: 0;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     background: var(--card);
     overflow: hidden;
 }
@@ -75,7 +74,6 @@
     margin-left: auto;
     padding: 0.0625rem 0.4375rem;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius-sm);
     background: var(--card);
     font-size: 0.6875rem;
     color: var(--muted-foreground);
@@ -91,7 +89,6 @@
     height: 1.5rem;
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: var(--nav-radius-sm);
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
@@ -154,7 +151,6 @@
     gap: 0.5rem;
     padding: 0.625rem 0.75rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     background: var(--card);
     cursor: pointer;
     transition: border-color 0.15s;
