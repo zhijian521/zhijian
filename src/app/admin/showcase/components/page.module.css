@@ -5,18 +5,17 @@
 }
 
 .moduleTitle {
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--muted-foreground);
     margin-bottom: var(--space-3);
-    padding-bottom: var(--space-2);
-    border-bottom: 1px solid var(--border);
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    grid-template-columns: 1fr;
     gap: var(--space-4);
 }
 
