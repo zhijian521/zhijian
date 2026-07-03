@@ -1,49 +1,141 @@
-/* 知简 · 全站主题变量 — 文人书斋 · 水墨宣纸 · 温润雅致 */
+/* 知简 · 全站主题变量 — 文人书斋 · 水墨宣纸 · 温润雅致
+   主色朱砂、宣纸米白、衬线标题。颜色/字体族只在此文件,token 层不碰颜色。
+   暗色主题随系统 prefers-color-scheme,不增依赖。 */
 
 :root {
     /* 主色 · 朱砂 */
     --primary: #9f000f;
     --primary-foreground: #ffffff;
     --primary-hover: #c41e3a;
+    --primary-active: #7a000b;
     --primary-subtle: color-mix(in srgb, var(--primary) 8%, transparent);
     --primary-subtle-soft: color-mix(in srgb, var(--primary) 4%, transparent);
     --primary-subtle-medium: color-mix(in srgb, var(--primary) 6%, transparent);
     --ring-subtle: color-mix(in srgb, var(--primary) 10%, transparent);
 
+    /* 语义色 · 印章/竹青/靛蓝,呼应书斋意象 */
+    --success: #2f6b3e;
+    --success-foreground: #ffffff;
+    --success-subtle: color-mix(in srgb, var(--success) 10%, transparent);
+    --warning: #b87333;
+    --warning-foreground: #ffffff;
+    --warning-subtle: color-mix(in srgb, var(--warning) 10%, transparent);
+    --info: #345b8a;
+    --info-subtle: color-mix(in srgb, var(--info) 10%, transparent);
+
     /* 危险色 */
     --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
     --destructive-subtle: color-mix(in srgb, var(--destructive) 8%, transparent);
     --destructive-subtle-medium: color-mix(in srgb, var(--destructive) 16%, transparent);
 
-    /* 文字（两级，不引入第三级） */
+    /* 文字（两级,不引入第三级） */
     --foreground: #1d1b20;
     --muted-foreground: #6f655c;
+
+    /* 链接色 · 比朱砂柔和的赭,正文内联链接用,不抢标题 */
+    --link: #8a3b1c;
+    --link-hover: #a84a22;
 
     /* 背景（浅→深） */
     --background: #fbf9f9;
     --highlight: #faf7f4;
     --muted: #f6efe7;
     --secondary: #f3ece4;
+    --secondary-foreground: #1d1b20;
 
     /* 点缀 */
     --accent: #e6efe5;
     --accent-foreground: #31483f;
     --accent-warm: #f5e6e6;
     --border: #e7ddd1;
+    --border-strong: #d4c5b3;
     --input: #d9cbbc;
 
     /* 卡片与弹窗 */
     --card: rgba(255, 255, 255, 0.8);
+    --card-foreground: #1d1b20;
     --popover: #ffffff;
+    --popover-foreground: #1d1b20;
+    --overlay: rgba(29, 27, 32, 0.48);
 
-    /* 圆角（全站零圆角，矩形是品牌语言） */
-    --radius: 0;
+    /* 阴影 · 矩形语言,阴影极克制,主要给浮层定锚 */
+    --shadow-sm: 0 1px 2px rgba(29, 27, 32, 0.04);
+    --shadow: 0 4px 12px rgba(29, 27, 32, 0.06);
+    --shadow-lg: 0 12px 32px rgba(29, 27, 32, 0.1);
+    --ring: 0 0 0 3px var(--ring-subtle);
+
+    /* 过渡 · 全站统一节奏,避免各组件自定 */
+    --transition-fast: 120ms ease;
+    --transition: 180ms ease;
+    --transition-slow: 280ms ease;
+
+    /* 焦点轮廓 · 代替浏览器默认蓝,用朱砂 ring */
+    --focus-outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
+    --focus-offset: 2px;
 
     /* 字体 */
     --font-serif: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
     --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
     --font-mono: 'SF Mono', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace;
 
-    /* 选中色（赭色，不用默认蓝） */
+    /* 选中色（赭色,不用默认蓝） */
     --selection: rgba(182, 72, 43, 0.18);
 }
+
+/*== 暗色主题 · 墨色底,朱砂留,宣纸换成冷墨 ==*/
+/*@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #d63341;
+        --primary-hover: #e64a58;
+        --primary-active: #b8283a;
+        --primary-foreground: #1d1b20;
+        --primary-subtle: color-mix(in srgb, var(--primary) 14%, transparent);
+        --primary-subtle-soft: color-mix(in srgb, var(--primary) 8%, transparent);
+        --primary-subtle-medium: color-mix(in srgb, var(--primary) 11%, transparent);
+        --ring-subtle: color-mix(in srgb, var(--primary) 18%, transparent);
+
+        --success: #5ba370;
+        --success-subtle: color-mix(in srgb, var(--success) 14%, transparent);
+        --warning: #d49060;
+        --warning-subtle: color-mix(in srgb, var(--warning) 16%, transparent);
+        --info: #7ba3d4;
+        --info-subtle: color-mix(in srgb, var(--info) 14%, transparent);
+
+        --destructive: #e5484d;
+        --destructive-foreground: #1d1b20;
+        --destructive-subtle: color-mix(in srgb, var(--destructive) 14%, transparent);
+        --destructive-subtle-medium: color-mix(in srgb, var(--destructive) 22%, transparent);
+
+        --foreground: #ede8e0;
+        --muted-foreground: #a89e90;
+
+        --link: #d4906a;
+        --link-hover: #e0a482;
+
+        --background: #16140f;
+        --highlight: #1d1b15;
+        --muted: #25221b;
+        --secondary: #2c2820;
+        --secondary-foreground: #ede8e0;
+
+        --accent: #1f2a22;
+        --accent-foreground: #b8d4b0;
+        --accent-warm: #2a1f1d;
+        --border: #3a352a;
+        --border-strong: #4d4636;
+        --input: #443d2f;
+
+        --card: rgba(37, 34, 27, 0.72);
+        --card-foreground: #ede8e0;
+        --popover: #25221b;
+        --popover-foreground: #ede8e0;
+        --overlay: rgba(0, 0, 0, 0.6);
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+        --selection: rgba(214, 51, 65, 0.26);
+    }
+}*/
