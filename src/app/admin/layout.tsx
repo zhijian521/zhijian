@@ -4,6 +4,7 @@ import AdminShell from '@/app/admin/_components/admin-shell';
 import { ToastContainer } from '@/components/ui/toast';
 import { requireAdmin } from '@/lib/auth';
 import { APP_ROUTES } from '@/lib/site';
+import './globals.css';
 
 interface AdminLayoutProps {
     children: React.ReactNode;

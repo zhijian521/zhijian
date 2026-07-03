@@ -1,0 +1,33 @@
+/* 知简 · 设计 token — 间距 / 字号 / 行高 / 圆角阶梯
+   全站基础刻度。组件内引用 var(--space-*) / var(--text-*)，不写死值。
+   theme.css 的颜色/字体族在此之后引入。
+*/
+
+:root {
+    /* 间距阶梯（4px / 0.25rem 基准） */
+    --space-1: 0.25rem;   /* 4px  */
+    --space-2: 0.5rem;    /* 8px  */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.5rem;    /* 24px */
+    --space-6: 2rem;      /* 32px */
+    --space-7: 3rem;      /* 48px */
+    --space-8: 4rem;      /* 64px */
+
+    /* 字号阶梯 */
+    --text-xs: 0.75rem;   /* 12px */
+    --text-sm: 0.875rem;  /* 14px */
+    --text-base: 1rem;    /* 16px */
+    --text-lg: 1.125rem;  /* 18px */
+    --text-xl: 1.25rem;   /* 20px */
+    --text-2xl: 1.5rem;   /* 24px */
+    --text-3xl: 2rem;     /* 32px */
+
+    /* 行高 */
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+
+    /* 圆角（全站零圆角，矩形是品牌语言） */
+    --radius: 0;
+}
