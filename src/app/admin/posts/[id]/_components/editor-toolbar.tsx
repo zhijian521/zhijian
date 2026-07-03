@@ -31,16 +31,7 @@ const SAVE_STATUS_TEXT: Record<EditorToolbarProps['saveStatus'], string> = {
 };
 
 /*== EditorToolbar 编辑器顶部工具栏 ==*/
-export function EditorToolbar({
-    isSaving,
-    onBack,
-    onManualSave,
-    onTogglePublish,
-    onViewModeChange,
-    saveStatus,
-    status,
-    viewMode,
-}: EditorToolbarProps) {
+export function EditorToolbar({ isSaving, onBack, onManualSave, onTogglePublish, onViewModeChange, saveStatus, status, viewMode }: EditorToolbarProps) {
     return (
         <div className={styles.toolbar}>
             {/* 左侧：返回 + 保存状态 */}
@@ -49,15 +40,7 @@ export function EditorToolbar({
                     <ArrowLeftIcon className={styles.backIcon} />
                     返回
                 </button>
-                <span
-                    className={`${styles.saveStatus}${
-                        saveStatus === 'saving'
-                            ? ` ${styles.saveStatusSaving}`
-                            : saveStatus === 'unsaved'
-                              ? ` ${styles.saveStatusUnsaved}`
-                              : ''
-                    }`}
-                >
+                <span className={`${styles.saveStatus}${saveStatus === 'saving' ? ` ${styles.saveStatusSaving}` : saveStatus === 'unsaved' ? ` ${styles.saveStatusUnsaved}` : ''}`}>
                     {SAVE_STATUS_TEXT[saveStatus]}
                 </span>
             </div>
@@ -65,12 +48,7 @@ export function EditorToolbar({
             {/* 中间：视图模式切换 */}
             <div className={styles.center}>
                 {VIEW_MODES.map((mode) => (
-                    <button
-                        className={`${styles.viewBtn}${viewMode === mode.value ? ` ${styles.viewBtnActive}` : ''}`}
-                        key={mode.value}
-                        onClick={() => onViewModeChange(mode.value)}
-                        type="button"
-                    >
+                    <button className={`${styles.viewBtn}${viewMode === mode.value ? ` ${styles.viewBtnActive}` : ''}`} key={mode.value} onClick={() => onViewModeChange(mode.value)} type="button">
                         {mode.label}
                     </button>
                 ))}
@@ -78,22 +56,11 @@ export function EditorToolbar({
 
             {/* 右侧：保存 + 发布 */}
             <div className={styles.right}>
-                <button
-                    className={styles.saveBtn}
-                    disabled={isSaving}
-                    onClick={onManualSave}
-                    type="button"
-                >
+                <button className={styles.saveBtn} disabled={isSaving} onClick={onManualSave} type="button">
                     <SaveIcon className={styles.saveIcon} />
                     保存
                 </button>
-                <button
-                    className={`${styles.publishBtn}${
-                        status === 'published' ? ` ${styles.publishBtnPublished}` : ''
-                    }`}
-                    onClick={onTogglePublish}
-                    type="button"
-                >
+                <button className={`${styles.publishBtn}${status === 'published' ? ` ${styles.publishBtnPublished}` : ''}`} onClick={onTogglePublish} type="button">
                     {status === 'published' ? '取消发布' : '发布'}
                 </button>
             </div>

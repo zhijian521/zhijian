@@ -18,7 +18,7 @@ export async function listTags(): Promise<Tag[]> {
     const [rows] = await db.execute<RowDataPacket[]>(
         `SELECT t.*
          FROM zhijian_blog_tags t
-         ORDER BY t.id ASC`,
+         ORDER BY t.id ASC`
     );
     return rows as Tag[];
 }
@@ -28,10 +28,7 @@ export async function getTagById(id: number): Promise<Tag | null> {
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute<RowDataPacket[]>(
-        'SELECT t.* FROM zhijian_blog_tags t WHERE t.id = ?',
-        [id],
-    );
+    const [rows] = await db.execute<RowDataPacket[]>('SELECT t.* FROM zhijian_blog_tags t WHERE t.id = ?', [id]);
     return (rows[0] as Tag) ?? null;
 }
 
@@ -40,10 +37,7 @@ export async function createTag(data: { name: string; slug: string }): Promise<T
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute(
-        'INSERT INTO zhijian_blog_tags (name, slug) VALUES (?, ?)',
-        [data.name, data.slug],
-    );
+    const [result] = await db.execute('INSERT INTO zhijian_blog_tags (name, slug) VALUES (?, ?)', [data.name, data.slug]);
 
     const id = (result as any).insertId;
     const created = await getTagById(id);
@@ -51,18 +45,21 @@ export async function createTag(data: { name: string; slug: string }): Promise<T
 }
 
 /*== 更新标签 ==*/
-export async function updateTag(
-    id: number,
-    fields: Partial<Pick<Tag, 'name' | 'slug'>>,
-): Promise<Tag> {
+export async function updateTag(id: number, fields: Partial<Pick<Tag, 'name' | 'slug'>>): Promise<Tag> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
     const sets: string[] = [];
     const values: unknown[] = [];
 
-    if (fields.name !== undefined) { sets.push('name = ?'); values.push(fields.name); }
-    if (fields.slug !== undefined) { sets.push('slug = ?'); values.push(fields.slug); }
+    if (fields.name !== undefined) {
+        sets.push('name = ?');
+        values.push(fields.name);
+    }
+    if (fields.slug !== undefined) {
+        sets.push('slug = ?');
+        values.push(fields.slug);
+    }
 
     if (sets.length === 0) {
         const existing = await getTagById(id);

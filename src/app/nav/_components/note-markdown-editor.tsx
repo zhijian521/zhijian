@@ -12,12 +12,7 @@ export interface NoteMarkdownEditorProps {
 }
 
 /*== NoteMarkdownEditor 导航页专用 Markdown 编辑器 ==*/
-export default function NoteMarkdownEditor({
-    content,
-    onContentChange,
-    onBlur,
-    placeholder = '开始编写 Markdown 笔记...',
-}: NoteMarkdownEditorProps) {
+export default function NoteMarkdownEditor({ content, onContentChange, onBlur, placeholder = '开始编写 Markdown 笔记...' }: NoteMarkdownEditorProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleKeyDown = useCallback(
@@ -65,7 +60,7 @@ export default function NoteMarkdownEditor({
                 textarea.selectionEnd = start + 4;
             });
         },
-        [content, onContentChange],
+        [content, onContentChange]
     );
 
     return (

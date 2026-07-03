@@ -10,7 +10,9 @@
     background: var(--muted);
     cursor: pointer;
     color: var(--muted-foreground);
-    transition: color 0.15s, background-color 0.15s;
+    transition:
+        color 0.15s,
+        background-color 0.15s;
 }
 
 .button > svg {

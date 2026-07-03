@@ -71,35 +71,41 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
     }, [formData]);
 
     /* 自动保存 */
-    const saveDraft = useCallback(async (data: FormData) => {
-        setIsSaving(true);
-        setSaveStatus('saving');
-        try {
-            const res = await api.patch<{ post: Post }>(`/admin/posts/${post.id}`, {
-                ...data,
-                publishedAt: data.publishedAt || null,
-            });
-            if (res.code === 0) {
-                lastSavedRef.current = JSON.stringify(data);
-                setSaveStatus('saved');
-            } else {
+    const saveDraft = useCallback(
+        async (data: FormData) => {
+            setIsSaving(true);
+            setSaveStatus('saving');
+            try {
+                const res = await api.patch<{ post: Post }>(`/admin/posts/${post.id}`, {
+                    ...data,
+                    publishedAt: data.publishedAt || null,
+                });
+                if (res.code === 0) {
+                    lastSavedRef.current = JSON.stringify(data);
+                    setSaveStatus('saved');
+                } else {
+                    setSaveStatus('unsaved');
+                    toast.error(res.message || '自动保存失败');
+                }
+            } catch {
                 setSaveStatus('unsaved');
-                toast.error(res.message || '自动保存失败');
+            } finally {
+                setIsSaving(false);
             }
-        } catch {
-            setSaveStatus('unsaved');
-        } finally {
-            setIsSaving(false);
-        }
-    }, [post.id]);
+        },
+        [post.id]
+    );
 
-    const scheduleSave = useCallback((newData: FormData) => {
-        setSaveStatus('unsaved');
-        if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-        saveTimerRef.current = setTimeout(() => {
-            saveDraft(newData);
-        }, 3000);
-    }, [saveDraft]);
+    const scheduleSave = useCallback(
+        (newData: FormData) => {
+            setSaveStatus('unsaved');
+            if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+            saveTimerRef.current = setTimeout(() => {
+                saveDraft(newData);
+            }, 3000);
+        },
+        [saveDraft]
+    );
 
     function updateField<K extends keyof FormData>(key: K, value: FormData[K]) {
         let newData = { ...formData, [key]: value };
@@ -175,12 +181,8 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
     }, []);
 
     /* 获取当前分类名称和标签名称，供预览使用 */
-    const categoryName = formData.categoryId
-        ? categories.find((c) => c.id === formData.categoryId)?.name ?? null
-        : null;
-    const tagNames = formData.tags
-        .map((id) => tags.find((t) => t.id === id)?.name)
-        .filter(Boolean) as string[];
+    const categoryName = formData.categoryId ? (categories.find((c) => c.id === formData.categoryId)?.name ?? null) : null;
+    const tagNames = formData.tags.map((id) => tags.find((t) => t.id === id)?.name).filter(Boolean) as string[];
 
     return (
         <div className={styles.editor}>
@@ -225,13 +227,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                             {/* 编辑区 */}
                             <div className={styles.editPane}>
                                 <div className={styles.headerArea}>
-                                    <input
-                                        className={styles.titleInput}
-                                        onChange={(e) => updateField('title', e.target.value)}
-                                        placeholder="文章标题"
-                                        type="text"
-                                        value={formData.title}
-                                    />
+                                    <input className={styles.titleInput} onChange={(e) => updateField('title', e.target.value)} placeholder="文章标题" type="text" value={formData.title} />
                                     <textarea
                                         className={styles.summaryInput}
                                         onChange={(e) => updateField('summary', e.target.value)}
@@ -241,12 +237,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                     />
                                 </div>
                                 <div className={styles.contentEdit}>
-                                    <MarkdownEditor
-                                        content={formData.content}
-                                        fullWidth={false}
-                                        onContentChange={(v: string) => updateField('content', v)}
-                                        onInsertImage={handleInsertImage}
-                                    />
+                                    <MarkdownEditor content={formData.content} fullWidth={false} onContentChange={(v: string) => updateField('content', v)} onInsertImage={handleInsertImage} />
                                 </div>
                             </div>
 
@@ -294,13 +285,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
 
                         <div className={styles.editPane}>
                             <div className={styles.headerArea}>
-                                <input
-                                    className={styles.titleInput}
-                                    onChange={(e) => updateField('title', e.target.value)}
-                                    placeholder="文章标题"
-                                    type="text"
-                                    value={formData.title}
-                                />
+                                <input className={styles.titleInput} onChange={(e) => updateField('title', e.target.value)} placeholder="文章标题" type="text" value={formData.title} />
                                 <textarea
                                     className={styles.summaryInput}
                                     onChange={(e) => updateField('summary', e.target.value)}
@@ -310,12 +295,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                 />
                             </div>
                             <div className={styles.contentEdit}>
-                                <MarkdownEditor
-                                    content={formData.content}
-                                    fullWidth
-                                    onContentChange={(v: string) => updateField('content', v)}
-                                    onInsertImage={handleInsertImage}
-                                />
+                                <MarkdownEditor content={formData.content} fullWidth onContentChange={(v: string) => updateField('content', v)} onInsertImage={handleInsertImage} />
                             </div>
                         </div>
                     </>

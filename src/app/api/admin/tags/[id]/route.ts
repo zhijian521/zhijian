@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { getTagById, updateTag, deleteTag } from '@/lib/tags';
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 
 /*==
@@ -18,7 +18,9 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
     if (!existing) return NextResponse.json(fail(BizCode.TAG_NOT_FOUND, '标签不存在。'), { status: 404 });
 
     let body: { name?: string; slug?: string };
-    try { body = await request.json(); } catch {
+    try {
+        body = await request.json();
+    } catch {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请求体格式不正确。'), { status: 400 });
     }
 
@@ -39,8 +41,7 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
         const updated = await updateTag(tagId, fields);
         return NextResponse.json(success({ tag: updated }, '标签更新成功。'));
     } catch (err: any) {
-        if (err.code === 'ER_DUP_ENTRY')
-            return NextResponse.json(fail(BizCode.TAG_EXISTS, 'Slug 已被占用。'), { status: 409 });
+        if (err.code === 'ER_DUP_ENTRY') return NextResponse.json(fail(BizCode.TAG_EXISTS, 'Slug 已被占用。'), { status: 409 });
         console.error('更新标签失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新标签失败。'), { status: 500 });
     }

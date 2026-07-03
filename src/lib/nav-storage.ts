@@ -16,7 +16,10 @@ function debounce<T extends (...args: any[]) => void>(fn: T, ms: number): T {
     let timer: ReturnType<typeof setTimeout> | null = null;
     return ((...args: any[]) => {
         if (timer) clearTimeout(timer);
-        timer = setTimeout(() => { timer = null; fn(...args); }, ms);
+        timer = setTimeout(() => {
+            timer = null;
+            fn(...args);
+        }, ms);
     }) as T;
 }
 
@@ -59,7 +62,7 @@ export function getSearchHistory(): SearchRecord[] {
 
 export function addSearchRecord(record: SearchRecord): void {
     const history = getSearchHistory();
-    const filtered = history.filter(h => h.query !== record.query);
+    const filtered = history.filter((h) => h.query !== record.query);
     filtered.unshift(record);
     localStorage.setItem(KEYS.searchHistory, JSON.stringify(filtered.slice(0, MAX_SEARCH_HISTORY)));
 }
@@ -130,8 +133,11 @@ async function fetchNavData(): Promise<void> {
                     }
                 }
             }
-        } catch { /* fall through */ }
-        finally { fetchPromise = null; }
+        } catch {
+            /* fall through */
+        } finally {
+            fetchPromise = null;
+        }
     })();
     return fetchPromise;
 }
@@ -155,8 +161,8 @@ export interface TodoItem {
     id: string;
     text: string;
     done: boolean;
-    important: boolean;    /* 重要维度 */
-    urgent: boolean;       /* 紧急维度 */
+    important: boolean; /* 重要维度 */
+    urgent: boolean; /* 紧急维度 */
     date: string | null;
     createdAt: number;
 }
@@ -199,7 +205,10 @@ const DEBOUNCE_MS = 300;
 type SaveStatus = 'ok' | 'error' | 'pending';
 type SaveResourceKey = 'bookmarks' | 'todos' | 'notes' | 'chat';
 const saveStatus: Record<SaveResourceKey, SaveStatus> = {
-    bookmarks: 'ok', todos: 'ok', notes: 'ok', chat: 'ok',
+    bookmarks: 'ok',
+    todos: 'ok',
+    notes: 'ok',
+    chat: 'ok',
 };
 const saveStatusListeners = new Set<() => void>();
 const DIRTY_KEYS: Record<SaveResourceKey, string> = {
@@ -223,9 +232,13 @@ export function getSaveStatus() {
 }
 export function onSaveStatusChange(fn: () => void) {
     saveStatusListeners.add(fn);
-    return () => { saveStatusListeners.delete(fn); };
+    return () => {
+        saveStatusListeners.delete(fn);
+    };
 }
-function emitSaveStatus() { saveStatusListeners.forEach(fn => fn()); }
+function emitSaveStatus() {
+    saveStatusListeners.forEach((fn) => fn());
+}
 function setSaveStatus(key: SaveResourceKey, status: SaveStatus) {
     if (saveStatus[key] !== status) {
         saveStatus[key] = status;
@@ -263,8 +276,18 @@ const debouncedSaveTodos = debounce((todos: TodoItem[]) => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: todos }),
-    }).then(res => { if (res.ok) markOk('todos'); else { markError('todos'); console.warn('[nav] saveTodos API failed:', res.status); } })
-      .catch(e => { markError('todos'); console.warn('[nav] saveTodos network error:', e); });
+    })
+        .then((res) => {
+            if (res.ok) markOk('todos');
+            else {
+                markError('todos');
+                console.warn('[nav] saveTodos API failed:', res.status);
+            }
+        })
+        .catch((e) => {
+            markError('todos');
+            console.warn('[nav] saveTodos network error:', e);
+        });
 }, DEBOUNCE_MS);
 
 export async function saveTodos(todos: TodoItem[], isLoggedIn?: boolean): Promise<void> {
@@ -334,7 +357,9 @@ export async function getChatConversations(isLoggedIn?: boolean): Promise<ChatCo
                     return normalizeChat(data);
                 }
             }
-        } catch { /* fall through to localStorage */ }
+        } catch {
+            /* fall through to localStorage */
+        }
     }
     if (typeof window === 'undefined') return [];
     try {
@@ -351,8 +376,18 @@ const debouncedSaveChat = debounce((conversations: ChatConversation[]) => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: conversations }),
-    }).then(res => { if (res.ok) markOk('chat'); else { markError('chat'); console.warn('[nav] saveChat API failed:', res.status); } })
-      .catch(e => { markError('chat'); console.warn('[nav] saveChat network error:', e); });
+    })
+        .then((res) => {
+            if (res.ok) markOk('chat');
+            else {
+                markError('chat');
+                console.warn('[nav] saveChat API failed:', res.status);
+            }
+        })
+        .catch((e) => {
+            markError('chat');
+            console.warn('[nav] saveChat network error:', e);
+        });
 }, DEBOUNCE_MS);
 
 export async function saveChatConversations(conversations: ChatConversation[], isLoggedIn?: boolean): Promise<void> {
@@ -383,8 +418,18 @@ const debouncedSaveNotes = debounce((notes: NoteItem[]) => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: notes }),
-    }).then(res => { if (res.ok) markOk('notes'); else { markError('notes'); console.warn('[nav] saveNotes API failed:', res.status); } })
-      .catch(e => { markError('notes'); console.warn('[nav] saveNotes network error:', e); });
+    })
+        .then((res) => {
+            if (res.ok) markOk('notes');
+            else {
+                markError('notes');
+                console.warn('[nav] saveNotes API failed:', res.status);
+            }
+        })
+        .catch((e) => {
+            markError('notes');
+            console.warn('[nav] saveNotes network error:', e);
+        });
 }, DEBOUNCE_MS);
 
 export async function saveNotes(notes: NoteItem[], isLoggedIn?: boolean): Promise<void> {
@@ -426,8 +471,18 @@ const debouncedSaveBookmarks = debounce((bookmarks: Bookmark[]) => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: bookmarks }),
-    }).then(res => { if (res.ok) markOk('bookmarks'); else { markError('bookmarks'); console.warn('[nav] saveBookmarks API failed:', res.status); } })
-      .catch(e => { markError('bookmarks'); console.warn('[nav] saveBookmarks network error:', e); });
+    })
+        .then((res) => {
+            if (res.ok) markOk('bookmarks');
+            else {
+                markError('bookmarks');
+                console.warn('[nav] saveBookmarks API failed:', res.status);
+            }
+        })
+        .catch((e) => {
+            markError('bookmarks');
+            console.warn('[nav] saveBookmarks network error:', e);
+        });
 }, DEBOUNCE_MS);
 
 export async function saveBookmarks(bookmarks: Bookmark[], isLoggedIn?: boolean): Promise<void> {
@@ -442,7 +497,11 @@ export async function saveBookmarks(bookmarks: Bookmark[], isLoggedIn?: boolean)
 
 export async function syncLocalToServer(): Promise<void> {
     function safeParse(key: string): unknown {
-        try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; }
+        try {
+            return JSON.parse(localStorage.getItem(key) || 'null');
+        } catch {
+            return null;
+        }
     }
     if (!hasDirtyData()) return;
 

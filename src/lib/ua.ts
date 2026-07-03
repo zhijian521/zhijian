@@ -8,8 +8,8 @@
 ============================================================================*/
 
 export interface UAInfo {
-    browser: string;  // 如 'Chrome', 'Safari', 'Firefox'
-    os: string;       // 如 'Windows', 'macOS', 'Android', 'iOS'
+    browser: string; // 如 'Chrome', 'Safari', 'Firefox'
+    os: string; // 如 'Windows', 'macOS', 'Android', 'iOS'
 }
 
 /*== 从 UA 字符串提取浏览器 + OS ==*/

@@ -36,7 +36,7 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const engine = SEARCH_ENGINES.find(e => e.key === engineKey) ?? SEARCH_ENGINES[0];
+    const engine = SEARCH_ENGINES.find((e) => e.key === engineKey) ?? SEARCH_ENGINES[0];
 
     /*-- 判断是否为 URL — 需要协议头或 www 前缀，避免误判普通搜索词 --*/
     function isUrl(s: string): boolean {
@@ -83,16 +83,12 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
         <div className={styles.outer}>
             <div className={styles.bar}>
                 <div ref={dropdownRef} className={styles.engineAnchor}>
-                    <button
-                        className={styles.engineBtn}
-                        onClick={() => setDropdownOpen(v => !v)}
-                        type="button"
-                    >
+                    <button className={styles.engineBtn} onClick={() => setDropdownOpen((v) => !v)} type="button">
                         <img alt={engine.name} className={styles.engineIcon} src={engine.logo} />
                     </button>
                     {dropdownOpen && (
                         <div className={styles.engineDropdown}>
-                            {SEARCH_ENGINES.map(e => (
+                            {SEARCH_ENGINES.map((e) => (
                                 <button
                                     key={e.key}
                                     className={`${styles.engineOption} ${e.key === engineKey ? styles.engineOptionActive : ''}`}
@@ -110,17 +106,14 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
                     ref={inputRef}
                     className={styles.input}
                     onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSearch();
+                    }}
                     placeholder="搜索或输入网址..."
                     type="text"
                     value={query}
                 />
-                <button
-                    aria-label="AI 对话"
-                    className={styles.aiBtn}
-                    onClick={handleAskAi}
-                    type="button"
-                >
+                <button aria-label="AI 对话" className={styles.aiBtn} onClick={handleAskAi} type="button">
                     <SparklesIcon className={styles.aiIcon} />
                 </button>
             </div>

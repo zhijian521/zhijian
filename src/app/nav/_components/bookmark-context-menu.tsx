@@ -45,16 +45,15 @@ export default function BookmarkContextMenu({ x, y, actions, onClose }: Bookmark
     const menuY = Math.min(y, window.innerHeight - actions.length * 36 - 16);
 
     return (
-        <div
-            ref={menuRef}
-            className={styles.menu}
-            style={{ left: menuX, top: menuY }}
-        >
+        <div ref={menuRef} className={styles.menu} style={{ left: menuX, top: menuY }}>
             {actions.map((action) => (
                 <button
                     key={action.label}
                     className={`${styles.menuItem} ${action.danger ? styles.menuItemDanger : ''}`}
-                    onClick={() => { action.onClick(); onClose(); }}
+                    onClick={() => {
+                        action.onClick();
+                        onClose();
+                    }}
                     type="button"
                 >
                     {action.label}

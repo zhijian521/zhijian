@@ -1,16 +1,4 @@
-import {
-    LayoutDashboardIcon,
-    BookOpenIcon,
-    FileTextIcon,
-    FolderTreeIcon,
-    UsersIcon,
-    SettingsIcon,
-    WrenchIcon,
-    ActivityIcon,
-    ImageIcon,
-    CodeIcon,
-    type IconComponent,
-} from '@/components/ui/icons';
+import { LayoutDashboardIcon, BookOpenIcon, FileTextIcon, FolderTreeIcon, UsersIcon, SettingsIcon, WrenchIcon, ActivityIcon, ImageIcon, CodeIcon, type IconComponent } from '@/components/ui/icons';
 
 /*============================================================================
   站点全局配置
@@ -52,8 +40,7 @@ export const SITE_METADATA = {
     /*-- 文章列表页标题前缀，拼接：blogTitle - [分类] - [标签] - brandTitle --*/
     blogTitle: '文章',
     /*-- 文章列表页描述，/blog 页 <meta description> / OG / Twitter --*/
-    blogDescription:
-        'Zhijian的技术博客，追求简洁设计与美好事物，安静造物。分享前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、Agent开发与全栈实践。',
+    blogDescription: 'Zhijian的技术博客，追求简洁设计与美好事物，安静造物。分享前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、Agent开发与全栈实践。',
     /*-- 全站关键词，详情页自动追加文章标签和分类名 --*/
     keywords: [
         '简静造物',

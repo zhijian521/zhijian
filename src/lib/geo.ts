@@ -13,9 +13,9 @@ import IP2Region from 'ip2region';
 const searcher = new IP2Region();
 
 export interface GeoInfo {
-    country: string;   // 中文名，如 '中国'
-    region: string;    // 中文名，如 '陕西'
-    city: string;      // 中文名，如 '西安'
+    country: string; // 中文名，如 '中国'
+    region: string; // 中文名，如 '陕西'
+    city: string; // 中文名，如 '西安'
 }
 
 /*== 判断是否为内网/保留 IP ==*/

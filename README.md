@@ -17,17 +17,20 @@
 ## 功能
 
 **博客前台**
+
 - 首页 / 文章列表 / 文章详情，服务端渲染，SEO 友好
 - Markdown 写作，支持代码高亮、GFM 扩展语法
 - RSS 订阅、Open Graph / JSON-LD 结构化数据
 
 **后台管理**
+
 - 文章 CRUD，独立全屏编辑器（Markdown 实时预览 + 元数据面板）
 - 分类 / 标签 / 图片 / 用户管理
 - 系统设置，登录鉴权（bcrypt + 签名 Cookie）
 - SEO 主动推送：IndexNow、百度站长平台 URL 提交，发文即推送
 
 **观澜 · 站点分析**
+
 - PV / UV / 会话 / 跳出率 / 平均停留 / 新访客占比等核心指标
 - 访问记录明细（浏览器、OS、IP 地理位置等）
 - 趋势图、维度分布图（来源、设备、语言、地域、浏览器、OS）
@@ -36,17 +39,17 @@
 
 ## 技术栈
 
-| | |
-|---|---|
-| 框架 | Next.js 15 (App Router) |
-| 前端 | React 19 · TypeScript 5.8 |
-| 样式 | CSS Modules + CSS 变量 |
-| 数据库 | MySQL（mysql2 连接池） |
-| 图表 | Recharts |
+|          |                                                |
+| -------- | ---------------------------------------------- |
+| 框架     | Next.js 15 (App Router)                        |
+| 前端     | React 19 · TypeScript 5.8                      |
+| 样式     | CSS Modules + CSS 变量                         |
+| 数据库   | MySQL（mysql2 连接池）                         |
+| 图表     | Recharts                                       |
 | Markdown | react-markdown + remark-gfm + rehype-highlight |
-| GeoIP | ip2region |
-| 鉴权 | bcryptjs + 签名 Cookie |
-| 部署 | Node.js + Nginx |
+| GeoIP    | ip2region                                      |
+| 鉴权     | bcryptjs + 签名 Cookie                         |
+| 部署     | Node.js + Nginx                                |
 
 ## 目录结构
 
@@ -137,13 +140,13 @@ npm run db:seed
 
 ## 可用脚本
 
-| 命令 | 说明 |
-|------|------|
-| `npm run dev` | 开发服务器 |
-| `npm run build` | 生产构建 |
-| `npm run start` | 启动生产服务 |
+| 命令                | 说明                |
+| ------------------- | ------------------- |
+| `npm run dev`       | 开发服务器          |
+| `npm run build`     | 生产构建            |
+| `npm run start`     | 启动生产服务        |
 | `npm run typecheck` | TypeScript 类型检查 |
-| `npm run db:seed` | 创建管理员账号 |
+| `npm run db:seed`   | 创建管理员账号      |
 
 ## License
 

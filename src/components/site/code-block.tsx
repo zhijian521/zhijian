@@ -32,16 +32,8 @@ export function CodeBlock({ children, className, ...rest }: React.ComponentProps
 
     return (
         <div className={styles.codeBlock}>
-            <button
-                aria-label="复制代码"
-                className={styles.copyBtn}
-                onClick={handleCopy}
-                type="button"
-            >
-                {copied
-                    ? <CheckIcon className={styles.checkIcon} />
-                    : <CopyIcon className={styles.copyIcon} />
-                }
+            <button aria-label="复制代码" className={styles.copyBtn} onClick={handleCopy} type="button">
+                {copied ? <CheckIcon className={styles.checkIcon} /> : <CopyIcon className={styles.copyIcon} />}
             </button>
             <pre className={`${styles.codeArea}${className ? ` ${className}` : ''}`} {...rest}>
                 {children}

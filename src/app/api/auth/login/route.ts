@@ -38,9 +38,14 @@ export async function POST(request: Request) {
 
     const token = createSessionToken({ id: user.id, username: user.username, role: user.role });
 
-    const response = NextResponse.json(success({
-        user: { id: user.id, username: user.username, email: user.email, role: user.role },
-    }, '登录成功。'));
+    const response = NextResponse.json(
+        success(
+            {
+                user: { id: user.id, username: user.username, email: user.email, role: user.role },
+            },
+            '登录成功。'
+        )
+    );
 
     response.cookies.set(SESSION_COOKIE_NAME, token, getSessionCookieOptions());
     return response;

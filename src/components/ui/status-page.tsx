@@ -25,26 +25,18 @@ export function StatusPage({ code, title, subtitle }: StatusPageProps) {
             <div className={styles.overlay} />
 
             {/* 大号水印状态码 */}
-            <span aria-hidden className={styles.watermark}>{code}</span>
+            <span aria-hidden className={styles.watermark}>
+                {code}
+            </span>
 
             {/* 毛玻璃卡片 */}
             <div className={styles.card}>
                 <div className={styles.cardBody}>
-                    <Image
-                        src='/images/logo.webp'
-                        alt='纸笺'
-                        width={80}
-                        height={80}
-                        className={styles.logo}
-                    />
+                    <Image src="/images/logo.webp" alt="纸笺" width={80} height={80} className={styles.logo} />
                     <h1 className={styles.title}>{title}</h1>
                     {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
                 </div>
-                <GhostButton
-                    variant='primary'
-                    icon={<ArrowLeftIcon />}
-                    href='/'
-                >
+                <GhostButton variant="primary" icon={<ArrowLeftIcon />} href="/">
                     返回首页
                 </GhostButton>
             </div>

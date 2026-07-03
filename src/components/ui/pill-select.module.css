@@ -16,7 +16,9 @@
     color: var(--muted-foreground);
     background: transparent;
     cursor: pointer;
-    transition: color 0.15s, background-color 0.15s;
+    transition:
+        color 0.15s,
+        background-color 0.15s;
 }
 
 .pill:hover {

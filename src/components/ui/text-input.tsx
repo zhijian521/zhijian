@@ -34,11 +34,7 @@ export function TextInput({ label, icon, inputSize = 'medium', className, id, ..
             ) : null}
             <div className={styles.inputWrap}>
                 {icon ? <span className={styles.iconSlot}>{icon}</span> : null}
-                <input
-                    className={`${styles.input}${sizeClass ? ` ${sizeClass}` : ''}${iconPadClass ? ` ${styles[iconPadClass]}` : ''}${className ? ` ${className}` : ''}`}
-                    id={id}
-                    {...props}
-                />
+                <input className={`${styles.input}${sizeClass ? ` ${sizeClass}` : ''}${iconPadClass ? ` ${styles[iconPadClass]}` : ''}${className ? ` ${className}` : ''}`} id={id} {...props} />
             </div>
         </div>
     );

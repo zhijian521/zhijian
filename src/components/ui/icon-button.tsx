@@ -19,7 +19,14 @@ const SIZE_CLASS: Record<string, string | undefined> = {
 };
 
 /*== IconButton 图标按钮 — 正方形，纯图标无文字 ==*/
-export function IconButton({ icon, variant = 'default', size = 'medium', href, className, ...props }: IconButtonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'> & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'size'>) {
+export function IconButton({
+    icon,
+    variant = 'default',
+    size = 'medium',
+    href,
+    className,
+    ...props
+}: IconButtonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'> & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'size'>) {
     const variantClass = variant === 'default' ? '' : ` ${styles[variant]}`;
     const sizeClass = SIZE_CLASS[size];
     const cls = `${styles.button}${variantClass}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`;

@@ -72,7 +72,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                 { label: '删除', onClick: () => setEditMode({ type: 'delete', id: bookmark.id, name: bookmark.name }), danger: true },
                 { label: '新增书签', onClick: () => setEditMode({ type: 'addBookmark', afterId: bookmark.id }) },
                 { label: '新增文件夹', onClick: () => setEditMode({ type: 'addFolder', afterId: bookmark.id }) },
-                { label: '新增下级书签', onClick: () => setEditMode({ type: 'addBookmark', folderId: bookmark.id }) },
+                { label: '新增下级书签', onClick: () => setEditMode({ type: 'addBookmark', folderId: bookmark.id }) }
             );
         } else {
             const bm = bookmark as BookmarkItem;
@@ -80,7 +80,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                 { label: '修改', onClick: () => setEditMode({ type: 'editBookmark', id: bm.id, name: bm.name, url: bm.url, folderId: parentFolderId }) },
                 { label: '删除', onClick: () => setEditMode({ type: 'delete', id: bm.id, name: bm.name, folderId: parentFolderId }), danger: true },
                 { label: '新增书签', onClick: () => setEditMode({ type: 'addBookmark', afterId: bm.id, folderId: parentFolderId }) },
-                { label: '新增文件夹', onClick: () => setEditMode({ type: 'addFolder', afterId: bm.id }) },
+                { label: '新增文件夹', onClick: () => setEditMode({ type: 'addFolder', afterId: bm.id }) }
             );
         }
 
@@ -123,7 +123,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         } else {
             position = e.clientX < rect.left + rect.width / 2 ? 'before' : 'after';
         }
-        setDragState(prev => prev ? { ...prev, overId: id, position } : prev);
+        setDragState((prev) => (prev ? { ...prev, overId: id, position } : prev));
     }, []);
 
     const handleDrop = useCallback((e: React.DragEvent, targetId: string, targetFolderId?: string) => {
@@ -132,13 +132,16 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         if (!ds || ds.dragId === targetId || !ds.position) return;
 
         const bm = bookmarksRef.current;
-        const target = bm.find(b => b.id === targetId);
+        const target = bm.find((b) => b.id === targetId);
         const targetIsFolder = target ? isBookmarkFolder(target) : false;
         const position = ds.position;
 
         /*-- 先从原位置移除 --*/
         const { tree, removed } = removeFromTree(bm, ds.dragId);
-        if (!removed) { setDragState(null); return; }
+        if (!removed) {
+            setDragState(null);
+            return;
+        }
 
         /*-- 规格守卫：文件夹不能进入任何文件夹（inside 或跨层进 children） --*/
         if (isBookmarkFolder(removed) && (targetIsFolder ? position === 'inside' : Boolean(targetFolderId))) {
@@ -146,7 +149,10 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
             return;
         }
         /*-- 不能拖进自己 --*/
-        if (removed.id === targetId) { setDragState(null); return; }
+        if (removed.id === targetId) {
+            setDragState(null);
+            return;
+        }
 
         /*-- 统一插入：inside=追加进文件夹末尾，before/after=插到目标项旁 --*/
         persist(insertIntoTree(tree, removed, targetId, position, targetFolderId));
@@ -164,11 +170,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         if (editMode.type === 'addBookmark') {
             const newItem: BookmarkItem = { id: `bm-${genId()}`, name: formName.trim() || '未命名', url: formUrl.trim() || 'https://' };
             if (editMode.folderId) {
-                persist(bookmarks.map(b =>
-                    b.id === editMode.folderId && isBookmarkFolder(b)
-                        ? { ...b, children: insertAfter(b.children, newItem, editMode.afterId) }
-                        : b
-                ));
+                persist(bookmarks.map((b) => (b.id === editMode.folderId && isBookmarkFolder(b) ? { ...b, children: insertAfter(b.children, newItem, editMode.afterId) } : b)));
             } else if (editMode.afterId) {
                 persist(insertAfter(bookmarks, newItem, editMode.afterId));
             } else {
@@ -183,35 +185,23 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
             }
         } else if (editMode.type === 'editBookmark') {
             if (editMode.folderId) {
-                persist(bookmarks.map(b =>
-                    isBookmarkFolder(b) && b.id === editMode.folderId
-                        ? { ...b, children: b.children.map(c =>
-                            c.id === editMode.id ? { ...c, name: formName.trim() || c.name, url: formUrl.trim() || c.url } : c
-                        ) }
-                        : b
-                ));
+                persist(
+                    bookmarks.map((b) =>
+                        isBookmarkFolder(b) && b.id === editMode.folderId
+                            ? { ...b, children: b.children.map((c) => (c.id === editMode.id ? { ...c, name: formName.trim() || c.name, url: formUrl.trim() || c.url } : c)) }
+                            : b
+                    )
+                );
             } else {
-                persist(bookmarks.map(b =>
-                    !isBookmarkFolder(b) && b.id === editMode.id
-                        ? { ...b, name: formName.trim() || b.name, url: formUrl.trim() || b.url }
-                        : b
-                ));
+                persist(bookmarks.map((b) => (!isBookmarkFolder(b) && b.id === editMode.id ? { ...b, name: formName.trim() || b.name, url: formUrl.trim() || b.url } : b)));
             }
         } else if (editMode.type === 'editFolder') {
-            persist(bookmarks.map(b =>
-                isBookmarkFolder(b) && b.id === editMode.id
-                    ? { ...b, name: formName.trim() || b.name }
-                    : b
-            ));
+            persist(bookmarks.map((b) => (isBookmarkFolder(b) && b.id === editMode.id ? { ...b, name: formName.trim() || b.name } : b)));
         } else if (editMode.type === 'delete') {
             if (editMode.folderId) {
-                persist(bookmarks.map(b =>
-                    isBookmarkFolder(b) && b.id === editMode.folderId
-                        ? { ...b, children: b.children.filter(c => c.id !== editMode.id) }
-                        : b
-                ));
+                persist(bookmarks.map((b) => (isBookmarkFolder(b) && b.id === editMode.folderId ? { ...b, children: b.children.filter((c) => c.id !== editMode.id) } : b)));
             } else {
-                persist(bookmarks.filter(b => b.id !== editMode.id));
+                persist(bookmarks.filter((b) => b.id !== editMode.id));
             }
         }
 
@@ -237,11 +227,16 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
     const config = (() => {
         if (!editMode) return { title: '', showForm: false, showUrl: false, showDelete: false };
         switch (editMode.type) {
-            case 'addBookmark': return { title: editMode.folderId ? '文件夹内新增书签' : '新增书签', showForm: true, showUrl: true, showDelete: false };
-            case 'addFolder': return { title: '新增文件夹', showForm: true, showUrl: false, showDelete: false };
-            case 'editBookmark': return { title: '编辑书签', showForm: true, showUrl: true, showDelete: false };
-            case 'editFolder': return { title: '编辑文件夹', showForm: true, showUrl: false, showDelete: false };
-            case 'delete': return { title: '确认删除', showForm: false, showUrl: false, showDelete: true };
+            case 'addBookmark':
+                return { title: editMode.folderId ? '文件夹内新增书签' : '新增书签', showForm: true, showUrl: true, showDelete: false };
+            case 'addFolder':
+                return { title: '新增文件夹', showForm: true, showUrl: false, showDelete: false };
+            case 'editBookmark':
+                return { title: '编辑书签', showForm: true, showUrl: true, showDelete: false };
+            case 'editFolder':
+                return { title: '编辑文件夹', showForm: true, showUrl: false, showDelete: false };
+            case 'delete':
+                return { title: '确认删除', showForm: false, showUrl: false, showDelete: true };
         }
     })();
 
@@ -263,26 +258,15 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
             </div>
 
             {/*-- 右键菜单 --*/}
-            {menu && (
-                <BookmarkContextMenu
-                    actions={menu.actions}
-                    onClose={() => setMenu(null)}
-                    x={menu.x}
-                    y={menu.y}
-                />
-            )}
+            {menu && <BookmarkContextMenu actions={menu.actions} onClose={() => setMenu(null)} x={menu.x} y={menu.y} />}
 
             {/*-- 编辑/新增/删除弹窗 --*/}
             {editMode && (
-                <Dialog
-                    onClose={() => setEditMode(null)}
-                    open
-                    title={config.title}
-                >
+                <Dialog onClose={() => setEditMode(null)} open title={config.title}>
                     {config.showDelete && (
                         <p className={styles.deleteText}>
                             确定删除「{editMode.type === 'delete' ? editMode.name : ''}」？
-                            {editMode.type === 'delete' && bookmarks.find(b => b.id === editMode.id && isBookmarkFolder(b)) && '文件夹内的书签也会一起删除。'}
+                            {editMode.type === 'delete' && bookmarks.find((b) => b.id === editMode.id && isBookmarkFolder(b)) && '文件夹内的书签也会一起删除。'}
                         </p>
                     )}
                     {config.showForm && (
@@ -292,7 +276,9 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                                 <input
                                     className={styles.fieldInput}
                                     onChange={(e) => setFormName(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSave();
+                                    }}
                                     placeholder="名称"
                                     type="text"
                                     value={formName}
@@ -304,7 +290,9 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                                     <input
                                         className={styles.fieldInput}
                                         onChange={(e) => setFormUrl(e.target.value)}
-                                        onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSave();
+                                        }}
                                         placeholder="https://"
                                         type="url"
                                         value={formUrl}
@@ -317,11 +305,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                         <button className={styles.cancelBtn} onClick={() => setEditMode(null)} type="button">
                             取消
                         </button>
-                        <button
-                            className={`${styles.confirmBtn} ${config.showDelete ? styles.confirmBtnDanger : ''}`}
-                            onClick={handleSave}
-                            type="button"
-                        >
+                        <button className={`${styles.confirmBtn} ${config.showDelete ? styles.confirmBtnDanger : ''}`} onClick={handleSave} type="button">
                             {config.showDelete ? '删除' : '保存'}
                         </button>
                     </div>

@@ -1,18 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    BoldIcon,
-    ItalicIcon,
-    LinkIcon,
-    ImageIcon,
-    CodeIcon,
-    CodeBlockIcon,
-    QuoteIcon,
-    ListIcon,
-    ListOrderedIcon,
-    MinusIcon,
-} from '@/components/ui/icons';
+import { BoldIcon, ItalicIcon, LinkIcon, ImageIcon, CodeIcon, CodeBlockIcon, QuoteIcon, ListIcon, ListOrderedIcon, MinusIcon } from '@/components/ui/icons';
 import { toast } from '@/components/ui/toast';
 
 import styles from './markdown-editor.module.css';
@@ -28,12 +17,7 @@ export interface MarkdownEditorProps {
 const UPLOADING_MARKER_PREFIX = '![⏳上传中...](';
 
 /*== MarkdownEditor Markdown 编辑区 ==*/
-export function MarkdownEditor({
-    content,
-    onContentChange,
-    onInsertImage,
-    fullWidth,
-}: MarkdownEditorProps) {
+export function MarkdownEditor({ content, onContentChange, onInsertImage, fullWidth }: MarkdownEditorProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -64,7 +48,7 @@ export function MarkdownEditor({
                 textarea.focus();
             });
         },
-        [content, onContentChange],
+        [content, onContentChange]
     );
 
     /* 包裹选中文本 */
@@ -92,7 +76,7 @@ export function MarkdownEditor({
                 textarea.focus();
             });
         },
-        [content, onContentChange],
+        [content, onContentChange]
     );
 
     /* 上传图片文件 */
@@ -128,7 +112,7 @@ export function MarkdownEditor({
                 toast.error('上传失败');
             }
         },
-        [insertAtCursor, onContentChange, onInsertImage],
+        [insertAtCursor, onContentChange, onInsertImage]
     );
 
     /* 处理粘贴事件 */
@@ -147,7 +131,7 @@ export function MarkdownEditor({
                 }
             }
         },
-        [uploadImage],
+        [uploadImage]
     );
 
     /* 处理拖拽 */
@@ -177,7 +161,7 @@ export function MarkdownEditor({
                 }
             }
         },
-        [uploadImage],
+        [uploadImage]
     );
 
     /* Tab 缩进支持 */
@@ -223,7 +207,7 @@ export function MarkdownEditor({
                 }
             }
         },
-        [content, onContentChange],
+        [content, onContentChange]
     );
 
     /* Mini 工具栏按钮操作 */
@@ -268,7 +252,7 @@ export function MarkdownEditor({
                     break;
             }
         },
-        [insertAtCursor, wrapSelection],
+        [insertAtCursor, wrapSelection]
     );
 
     /* 文件选择回调 */
@@ -281,122 +265,57 @@ export function MarkdownEditor({
             // 重置 input 以便再次选择同一文件
             e.target.value = '';
         },
-        [uploadImage],
+        [uploadImage]
     );
 
     return (
         <div className={`${styles.editor}${fullWidth ? ` ${styles.fullWidth}` : ''}`}>
             {/* Mini 工具栏 */}
             <div className={styles.miniToolbar}>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('bold')}
-                    title="粗体"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('bold')} title="粗体" type="button">
                     <BoldIcon className={styles.miniBtnIcon} />
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('italic')}
-                    title="斜体"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('italic')} title="斜体" type="button">
                     <ItalicIcon className={styles.miniBtnIcon} />
                 </button>
                 <div className={styles.separator} />
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('h2')}
-                    title="二级标题"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('h2')} title="二级标题" type="button">
                     <span className={styles.miniBtnText}>H2</span>
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('h3')}
-                    title="三级标题"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('h3')} title="三级标题" type="button">
                     <span className={styles.miniBtnText}>H3</span>
                 </button>
                 <div className={styles.separator} />
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('quote')}
-                    title="引用"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('quote')} title="引用" type="button">
                     <QuoteIcon className={styles.miniBtnIcon} />
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('ul')}
-                    title="无序列表"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('ul')} title="无序列表" type="button">
                     <ListIcon className={styles.miniBtnIcon} />
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('ol')}
-                    title="有序列表"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('ol')} title="有序列表" type="button">
                     <ListOrderedIcon className={styles.miniBtnIcon} />
                 </button>
                 <div className={styles.separator} />
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('link')}
-                    title="链接"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('link')} title="链接" type="button">
                     <LinkIcon className={styles.miniBtnIcon} />
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('image')}
-                    title="图片"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('image')} title="图片" type="button">
                     <ImageIcon className={styles.miniBtnIcon} />
                 </button>
                 <div className={styles.separator} />
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('code')}
-                    title="行内代码"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('code')} title="行内代码" type="button">
                     <CodeIcon className={styles.miniBtnIcon} />
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('codeblock')}
-                    title="代码块"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('codeblock')} title="代码块" type="button">
                     <CodeBlockIcon className={styles.miniBtnIcon} />
                 </button>
-                <button
-                    className={styles.miniBtn}
-                    onClick={() => handleToolbarAction('hr')}
-                    title="水平线"
-                    type="button"
-                >
+                <button className={styles.miniBtn} onClick={() => handleToolbarAction('hr')} title="水平线" type="button">
                     <MinusIcon className={styles.miniBtnIcon} />
                 </button>
             </div>
 
             {/* 编辑区 */}
-            <div
-                className={styles.editorWrap}
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-            >
+            <div className={styles.editorWrap} onDragLeave={handleDragLeave} onDragOver={handleDragOver} onDrop={handleDrop}>
                 <textarea
                     className={styles.textarea}
                     onChange={(e) => onContentChange(e.target.value)}
@@ -406,19 +325,11 @@ export function MarkdownEditor({
                     ref={textareaRef}
                     value={content}
                 />
-                {isDragging && (
-                    <div className={styles.dropOverlay}>拖放图片到此处上传</div>
-                )}
+                {isDragging && <div className={styles.dropOverlay}>拖放图片到此处上传</div>}
             </div>
 
             {/* 隐藏的文件选择 input */}
-            <input
-                accept="image/*"
-                onChange={handleFileChange}
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                type="file"
-            />
+            <input accept="image/*" onChange={handleFileChange} ref={fileInputRef} style={{ display: 'none' }} type="file" />
         </div>
     );
 }

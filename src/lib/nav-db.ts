@@ -9,10 +9,7 @@ import type { TodoItem, NoteItem, ChatConversation } from '@/lib/nav-storage';
 async function getData<T>(table: string, userId: number): Promise<T | null> {
     const db = getDb();
     if (!db) return null;
-    const [rows] = await db.execute(
-        `SELECT data FROM ${table} WHERE user_id = ?`,
-        [userId],
-    );
+    const [rows] = await db.execute(`SELECT data FROM ${table} WHERE user_id = ?`, [userId]);
     const list = rows as any[];
     return list.length > 0 ? (list[0].data as T) : null;
 }
@@ -24,7 +21,7 @@ async function setData<T>(table: string, userId: number, data: T): Promise<void>
     await db.execute(
         `INSERT INTO ${table} (user_id, data) VALUES (?, ?)
          ON DUPLICATE KEY UPDATE data = VALUES(data), version = version + 1`,
-        [userId, JSON.stringify(data)],
+        [userId, JSON.stringify(data)]
     );
 }
 
@@ -34,10 +31,7 @@ async function hasAnyData(userId: number): Promise<boolean> {
     if (!db) return false;
     const tables = ['zhijian_nav_bookmarks', 'zhijian_nav_todos', 'zhijian_nav_notes', 'zhijian_nav_chat'];
     for (const table of tables) {
-        const [rows] = await db.execute(
-            `SELECT id FROM ${table} WHERE user_id = ? LIMIT 1`,
-            [userId],
-        );
+        const [rows] = await db.execute(`SELECT id FROM ${table} WHERE user_id = ? LIMIT 1`, [userId]);
         if ((rows as any[]).length > 0) return true;
     }
     return false;
@@ -74,11 +68,7 @@ export async function getAllNavData(userId: number): Promise<{
     todos: TodoItem[] | null;
     notes: NoteItem[] | null;
 }> {
-    const [bookmarks, todos, notes] = await Promise.all([
-        getBookmarksDb(userId),
-        getTodosDb(userId),
-        getNotesDb(userId),
-    ]);
+    const [bookmarks, todos, notes] = await Promise.all([getBookmarksDb(userId), getTodosDb(userId), getNotesDb(userId)]);
     return { bookmarks, todos, notes };
 }
 

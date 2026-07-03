@@ -18,12 +18,7 @@ export function RssCopyButton() {
     }
 
     return (
-        <GhostButton
-            asButton
-            icon={<CopyIcon />}
-            onClick={handleClick}
-            size="small"
-        >
+        <GhostButton asButton icon={<CopyIcon />} onClick={handleClick} size="small">
             {copied ? '已复制' : 'RSS 订阅'}
         </GhostButton>
     );

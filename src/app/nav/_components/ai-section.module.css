@@ -50,7 +50,9 @@
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease;
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .addBtn:hover {
@@ -80,7 +82,9 @@
     border: 1px solid var(--border);
     background: var(--card);
     cursor: pointer;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
 }
 
 .convItem:hover {
@@ -125,7 +129,9 @@
     color: var(--muted-foreground);
     cursor: pointer;
     opacity: 0;
-    transition: color 0.15s ease, opacity 0.15s ease;
+    transition:
+        color 0.15s ease,
+        opacity 0.15s ease;
     flex-shrink: 0;
 }
 
@@ -340,7 +346,9 @@
 }
 
 @keyframes blink {
-    50% { opacity: 0; }
+    50% {
+        opacity: 0;
+    }
 }
 
 /*-- 底部输入 --*/

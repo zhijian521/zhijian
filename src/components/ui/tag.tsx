@@ -18,10 +18,5 @@ const SIZE_CLASS: Record<string, string | undefined> = {
 export function Tag({ variant = 'default', size = 'medium', className, ...props }: TagProps) {
     const variantClass = variant === 'default' ? '' : ` ${styles[variant]}`;
     const sizeClass = SIZE_CLASS[size];
-    return (
-        <span
-            className={`${styles.tag}${variantClass}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`}
-            {...props}
-        />
-    );
+    return <span className={`${styles.tag}${variantClass}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`} {...props} />;
 }

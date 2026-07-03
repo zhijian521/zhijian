@@ -26,9 +26,15 @@ export async function POST(request: Request) {
     try {
         const passwordHash = await hashPassword(password);
         const user = await createUser({ username, email, passwordHash, role: 'user' });
-        return NextResponse.json(success({
-            user: { id: user.id, username: user.username, email: user.email, role: user.role },
-        }, '注册成功。'), { status: 201 });
+        return NextResponse.json(
+            success(
+                {
+                    user: { id: user.id, username: user.username, email: user.email, role: user.role },
+                },
+                '注册成功。'
+            ),
+            { status: 201 }
+        );
     } catch (err: any) {
         if (err.code === 'ER_DUP_ENTRY') {
             return NextResponse.json(fail(BizCode.USER_EXISTS, '用户名或邮箱已被占用。'), { status: 409 });

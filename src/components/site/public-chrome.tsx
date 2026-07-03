@@ -43,10 +43,7 @@ export default function PublicChrome({ children }: PublicChromeProps) {
 
         function handleClickOutside(event: MouseEvent) {
             const target = event.target as Node;
-            if (
-                mobileNavRef.current?.contains(target) ||
-                mobileTriggerRef.current?.contains(target)
-            ) {
+            if (mobileNavRef.current?.contains(target) || mobileTriggerRef.current?.contains(target)) {
                 return;
             }
             setIsMobileNavOpen(false);
@@ -83,22 +80,18 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                 <div className={styles.headerContainer}>
                     {/* 左侧：品牌 */}
                     <Link className={styles.brand} href={APP_ROUTES.home}>
-                        <Image alt={SITE_METADATA.name} height={32} src='/images/logo.webp' width={32} />
+                        <Image alt={SITE_METADATA.name} height={32} src="/images/logo.webp" width={32} />
                         <span className={styles.brandText}>{SITE_METADATA.name}</span>
                     </Link>
 
                     {/* 右侧：桌面导航 + 移动菜单按钮 */}
                     <div className={styles.navArea}>
-                        <nav aria-label='站点主导航' className={styles.nav}>
+                        <nav aria-label="站点主导航" className={styles.nav}>
                             {PUBLIC_NAV_ITEMS.map((item) => {
                                 const isActive = isNavItemActive(pathname, item.href, item.match);
 
                                 return (
-                                    <Link
-                                        className={`${styles.navLink} ${isActive ? styles.navLinkActive : styles.navLinkInactive}`}
-                                        href={item.href}
-                                        key={item.label}
-                                    >
+                                    <Link className={`${styles.navLink} ${isActive ? styles.navLinkActive : styles.navLinkInactive}`} href={item.href} key={item.label}>
                                         {item.label}
                                         {isActive ? <span aria-hidden className={styles.navUnderline} /> : null}
                                     </Link>
@@ -108,52 +101,37 @@ export default function PublicChrome({ children }: PublicChromeProps) {
 
                         <div className={styles.mobileNavWrapper}>
                             <button
-                                aria-controls='public-mobile-nav'
+                                aria-controls="public-mobile-nav"
                                 aria-expanded={isMobileNavOpen}
                                 aria-label={isMobileNavOpen ? '关闭导航菜单' : '打开导航菜单'}
                                 className={`${styles.mobileMenu} ${isMobileNavOpen ? styles.mobileMenuOpen : ''}`}
                                 onClick={toggleMobileNav}
                                 ref={mobileTriggerRef}
-                                type='button'
+                                type="button"
                             >
                                 <MenuIcon className={styles.mobileMenuIcon} />
                             </button>
 
                             {isMobileNavOpen ? (
-                                <div
-                                    aria-label='移动端导航菜单'
-                                    className={styles.mobilePanel}
-                                    id='public-mobile-nav'
-                                    ref={mobileNavRef}
-                                    role='dialog'
-                                >
+                                <div aria-label="移动端导航菜单" className={styles.mobilePanel} id="public-mobile-nav" ref={mobileNavRef} role="dialog">
                                     <div className={styles.mobilePanelHeader}>
                                         <span className={styles.mobilePanelTitle}>导航</span>
-                                        <button
-                                            aria-label='关闭导航菜单'
-                                            className={styles.mobileClose}
-                                            onClick={closeMobileNav}
-                                            type='button'
-                                        >
+                                        <button aria-label="关闭导航菜单" className={styles.mobileClose} onClick={closeMobileNav} type="button">
                                             <XIcon className={styles.mobileCloseIcon} />
                                         </button>
                                     </div>
 
-                                    <nav aria-label='移动端站点导航' className={styles.mobileNav}>
+                                    <nav aria-label="移动端站点导航" className={styles.mobileNav}>
                                         {PUBLIC_NAV_ITEMS.map((item) => {
                                             const isActive = isNavItemActive(pathname, item.href, item.match);
 
-                                    return (
-                                        <Link
-                                            className={`${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}
-                                            href={item.href}
-                                            key={item.label}
-                                        >
-                                            <span>{item.label}</span>
-                                        </Link>
-                                    );
-                                })}
-                            </nav>
+                                            return (
+                                                <Link className={`${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`} href={item.href} key={item.label}>
+                                                    <span>{item.label}</span>
+                                                </Link>
+                                            );
+                                        })}
+                                    </nav>
                                 </div>
                             ) : null}
                         </div>
@@ -170,13 +148,8 @@ export default function PublicChrome({ children }: PublicChromeProps) {
                 </p>
             </footer>
 
-        {/* 网站统计脚本 — 仅前台加载，后台不触发 */}
-            <Script
-                async
-                src='https://yuwb.dev/script.js'
-                data-site-id='y7dbsplr'
-                strategy='afterInteractive'
-            />
+            {/* 网站统计脚本 — 仅前台加载，后台不触发 */}
+            <Script async src="https://yuwb.dev/script.js" data-site-id="y7dbsplr" strategy="afterInteractive" />
             <Script src="https://www.googletagmanager.com/gtag/js?id=G-6HHPGL2HBM" strategy="afterInteractive" />
             <Script id="google-analytics" strategy="afterInteractive">
                 {`

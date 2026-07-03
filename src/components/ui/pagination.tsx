@@ -51,12 +51,7 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
 }
 
 /*== Pagination 分页：支持服务端链接模式和客户端回调模式 ==*/
-export function Pagination({
-    current, total, getHref, onPageChange,
-    pageSize, onPageSizeChange,
-    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
-    className, ...props
-}: PaginationProps) {
+export function Pagination({ current, total, getHref, onPageChange, pageSize, onPageSizeChange, pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS, className, ...props }: PaginationProps) {
     const pages = buildPageNumbers(current, total);
 
     function renderPageButton(page: number, isNav = false, label?: string) {
@@ -67,18 +62,14 @@ export function Pagination({
             const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
             if (isDisabled) {
                 return (
-                    <span aria-disabled='true' className={`${buttonClass} ${styles.disabledLink}`}>
+                    <span aria-disabled="true" className={`${buttonClass} ${styles.disabledLink}`}>
                         {text}
                     </span>
                 );
             }
 
             return (
-                <Link
-                    aria-current={page === current && !isNav ? 'page' : undefined}
-                    className={buttonClass}
-                    href={getHref(page)}
-                >
+                <Link aria-current={page === current && !isNav ? 'page' : undefined} className={buttonClass} href={getHref(page)}>
                     {text}
                 </Link>
             );
@@ -91,13 +82,7 @@ export function Pagination({
         const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
 
         return (
-            <button
-                aria-current={page === current && !isNav ? 'page' : undefined}
-                className={buttonClass}
-                disabled={isDisabled}
-                onClick={() => onPageChange(page)}
-                type='button'
-            >
+            <button aria-current={page === current && !isNav ? 'page' : undefined} className={buttonClass} disabled={isDisabled} onClick={() => onPageChange(page)} type="button">
                 {text}
             </button>
         );
@@ -108,16 +93,11 @@ export function Pagination({
     const sizeValue = String(pageSize ?? 10);
 
     return (
-        <nav aria-label='分页导航' className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>
+        <nav aria-label="分页导航" className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>
             {onPageSizeChange && (
                 <div className={styles.sizeSelector}>
                     <span className={styles.sizeLabel}>每页</span>
-                    <Select
-                        options={sizeOptions}
-                        onChange={(v) => onPageSizeChange(Number(v))}
-                        size='small'
-                        value={sizeValue}
-                    />
+                    <Select options={sizeOptions} onChange={(v) => onPageSizeChange(Number(v))} size="small" value={sizeValue} />
                 </div>
             )}
 
@@ -125,14 +105,12 @@ export function Pagination({
 
             {pages.map((page, index) =>
                 page === 'ellipsis' ? (
-                    <span aria-hidden='true' className={styles.ellipsis} key={`ellipsis-${index}`}>
+                    <span aria-hidden="true" className={styles.ellipsis} key={`ellipsis-${index}`}>
                         …
                     </span>
                 ) : (
-                    <span key={page}>
-                        {renderPageButton(page)}
-                    </span>
-                ),
+                    <span key={page}>{renderPageButton(page)}</span>
+                )
             )}
 
             {renderPageButton(current + 1, true, '下一页')}

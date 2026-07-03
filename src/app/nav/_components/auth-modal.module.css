@@ -13,7 +13,9 @@
     color: var(--muted-foreground);
     font-size: 0.875rem;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
+    transition:
+        color 0.2s,
+        border-color 0.2s;
     border-bottom: 2px solid transparent;
 }
 

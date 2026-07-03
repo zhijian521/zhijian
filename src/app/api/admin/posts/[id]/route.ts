@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 import { isPostStatus, updatePostById, deletePostById, getPostById } from '@/lib/posts';
 import type { UpdatePostInput } from '@/lib/posts';
@@ -16,7 +16,9 @@ export const PATCH = withAdmin(async (request, _admin, { params }) => {
     }
 
     let body: Partial<UpdatePostInput>;
-    try { body = await request.json(); } catch {
+    try {
+        body = await request.json();
+    } catch {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请求体格式不正确。'), { status: 400 });
     }
 

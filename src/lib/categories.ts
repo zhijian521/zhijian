@@ -19,7 +19,7 @@ export async function listCategories(): Promise<Category[]> {
     const [rows] = await db.execute<RowDataPacket[]>(
         `SELECT c.*
          FROM zhijian_blog_categories c
-         ORDER BY c.sort_order ASC, c.id ASC`,
+         ORDER BY c.sort_order ASC, c.id ASC`
     );
     return rows as Category[];
 }
@@ -29,10 +29,7 @@ export async function getCategoryById(id: number): Promise<Category | null> {
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute<RowDataPacket[]>(
-        'SELECT c.* FROM zhijian_blog_categories c WHERE c.id = ?',
-        [id],
-    );
+    const [rows] = await db.execute<RowDataPacket[]>('SELECT c.* FROM zhijian_blog_categories c WHERE c.id = ?', [id]);
     return (rows[0] as Category) ?? null;
 }
 
@@ -41,10 +38,7 @@ export async function createCategory(data: { name: string; slug: string; sort_or
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute(
-        'INSERT INTO zhijian_blog_categories (name, slug, sort_order) VALUES (?, ?, ?)',
-        [data.name, data.slug, data.sort_order],
-    );
+    const [result] = await db.execute('INSERT INTO zhijian_blog_categories (name, slug, sort_order) VALUES (?, ?, ?)', [data.name, data.slug, data.sort_order]);
 
     const id = (result as any).insertId;
     const created = await getCategoryById(id);
@@ -52,19 +46,25 @@ export async function createCategory(data: { name: string; slug: string; sort_or
 }
 
 /*== 更新分类 ==*/
-export async function updateCategory(
-    id: number,
-    fields: Partial<Pick<Category, 'name' | 'slug' | 'sort_order'>>,
-): Promise<Category> {
+export async function updateCategory(id: number, fields: Partial<Pick<Category, 'name' | 'slug' | 'sort_order'>>): Promise<Category> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
     const sets: string[] = [];
     const values: unknown[] = [];
 
-    if (fields.name !== undefined) { sets.push('name = ?'); values.push(fields.name); }
-    if (fields.slug !== undefined) { sets.push('slug = ?'); values.push(fields.slug); }
-    if (fields.sort_order !== undefined) { sets.push('sort_order = ?'); values.push(fields.sort_order); }
+    if (fields.name !== undefined) {
+        sets.push('name = ?');
+        values.push(fields.name);
+    }
+    if (fields.slug !== undefined) {
+        sets.push('slug = ?');
+        values.push(fields.slug);
+    }
+    if (fields.sort_order !== undefined) {
+        sets.push('sort_order = ?');
+        values.push(fields.sort_order);
+    }
 
     if (sets.length === 0) {
         const existing = await getCategoryById(id);

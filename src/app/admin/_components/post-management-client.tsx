@@ -165,7 +165,9 @@ export default function PostManagementClient() {
             render: (post) => (
                 <div className={styles.tagList}>
                     {post.tagNames?.map((t) => (
-                        <Tag key={t.id} size="mini">{t.name}</Tag>
+                        <Tag key={t.id} size="mini">
+                            {t.name}
+                        </Tag>
                     ))}
                 </div>
             ),
@@ -180,28 +182,9 @@ export default function PostManagementClient() {
             width: '6rem',
             render: (post) => (
                 <div className={shared.actionGroup}>
-                    <IconButton
-                        href={`${APP_ROUTES.adminPosts}/${post.id}`}
-                        icon={<PencilIcon />}
-                        size="medium"
-                        target="_blank"
-                        title="编辑"
-                    />
-                    <IconButton
-                        disabled={exporting}
-                        icon={<DownloadIcon />}
-                        onClick={() => doExport(post.id)}
-                        size="medium"
-                        title="导出"
-                    />
-                    <IconButton
-                        disabled={deleting === post.id}
-                        icon={<Trash2Icon />}
-                        onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
-                        size="medium"
-                        title="删除"
-                        variant="danger"
-                    />
+                    <IconButton href={`${APP_ROUTES.adminPosts}/${post.id}`} icon={<PencilIcon />} size="medium" target="_blank" title="编辑" />
+                    <IconButton disabled={exporting} icon={<DownloadIcon />} onClick={() => doExport(post.id)} size="medium" title="导出" />
+                    <IconButton disabled={deleting === post.id} icon={<Trash2Icon />} onClick={() => setDeleteTarget({ id: post.id, title: post.title })} size="medium" title="删除" variant="danger" />
                 </div>
             ),
         },
@@ -209,27 +192,28 @@ export default function PostManagementClient() {
 
     return (
         <>
-            <AdminPageHeader
-                description='集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。'
-                eyebrow='Posts'
-                tag={`${total} 篇文章`}
-                title='文章管理'
-            />
+            <AdminPageHeader description="集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。" eyebrow="Posts" tag={`${total} 篇文章`} title="文章管理" />
 
             {/* 搜索 + 筛选 + 新建 */}
             <div className={styles.toolbar}>
                 <div className={styles.searchRow} role="search" aria-label="搜索文章">
                     <TextInput
                         icon={<SearchIcon />}
-                        id='post-search'
-                        inputSize='medium'
-                        onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
-                        placeholder='搜索标题或 Slug'
+                        id="post-search"
+                        inputSize="medium"
+                        onChange={(e) => {
+                            setKeyword(e.target.value);
+                            setPage(1);
+                        }}
+                        placeholder="搜索标题或 Slug"
                         value={keyword}
                     />
                     <PillSelect
-                        name='status'
-                        onChange={(v) => { setStatus(v as 'all' | 'draft' | 'published'); setPage(1); }}
+                        name="status"
+                        onChange={(v) => {
+                            setStatus(v as 'all' | 'draft' | 'published');
+                            setPage(1);
+                        }}
                         options={[
                             { value: 'all', label: '全部' },
                             { value: 'published', label: '已发布' },
@@ -238,13 +222,7 @@ export default function PostManagementClient() {
                         value={status}
                     />
                 </div>
-                <GhostButton
-                    asButton
-                    disabled={exporting}
-                    icon={<DownloadIcon className={shared.btnIcon} />}
-                    onClick={() => doExport(null)}
-                    size='medium'
-                >
+                <GhostButton asButton disabled={exporting} icon={<DownloadIcon className={shared.btnIcon} />} onClick={() => doExport(null)} size="medium">
                     {exporting ? '导出中...' : '全部导出'}
                 </GhostButton>
                 <GhostButton
@@ -267,30 +245,34 @@ export default function PostManagementClient() {
                             setCreating(false);
                         }
                     }}
-                    size='medium'
-                    variant='primary'
+                    size="medium"
+                    variant="primary"
                 >
                     {creating ? '创建中...' : '新建文章'}
                 </GhostButton>
             </div>
 
-            <DataTable
-                columns={columns}
-                emptyText={loading ? '加载中...' : '暂无文章'}
-                rowKey={(post) => post.id}
-                rows={pagedPosts}
+            <DataTable columns={columns} emptyText={loading ? '加载中...' : '暂无文章'} rowKey={(post) => post.id} rows={pagedPosts} />
+
+            <Pagination
+                current={page}
+                onPageChange={setPage}
+                total={totalPages}
+                pageSize={pageSize}
+                onPageSizeChange={(s) => {
+                    setPageSize(s);
+                    setPage(1);
+                }}
             />
 
-            <Pagination current={page} onPageChange={setPage} total={totalPages} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} />
-
             <ConfirmDialog
-                confirmLabel='删除'
+                confirmLabel="删除"
                 loading={deleting !== null}
                 message={`确定要删除文章「${deleteTarget?.title ?? ''}」吗？此操作不可撤销。`}
                 onCancel={() => setDeleteTarget(null)}
                 onConfirm={handleDeleteConfirm}
                 open={!!deleteTarget}
-                title='确认删除'
+                title="确认删除"
             />
         </>
     );

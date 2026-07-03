@@ -126,10 +126,22 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
     const sets: string[] = [];
     const values: unknown[] = [];
 
-    if (input.slug !== undefined) { sets.push('slug = ?'); values.push(input.slug); }
-    if (input.title !== undefined) { sets.push('title = ?'); values.push(input.title); }
-    if (input.summary !== undefined) { sets.push('summary = ?'); values.push(input.summary); }
-    if (input.content !== undefined) { sets.push('content = ?'); values.push(input.content); }
+    if (input.slug !== undefined) {
+        sets.push('slug = ?');
+        values.push(input.slug);
+    }
+    if (input.title !== undefined) {
+        sets.push('title = ?');
+        values.push(input.title);
+    }
+    if (input.summary !== undefined) {
+        sets.push('summary = ?');
+        values.push(input.summary);
+    }
+    if (input.content !== undefined) {
+        sets.push('content = ?');
+        values.push(input.content);
+    }
     if (input.status !== undefined) {
         sets.push('status = ?');
         values.push(input.status);
@@ -140,10 +152,22 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
         sets.push('published_at = ?');
         values.push(input.publishedAt);
     }
-    if (input.coverImage !== undefined) { sets.push('cover_image = ?'); values.push(input.coverImage); }
-    if (input.altText !== undefined) { sets.push('alt_text = ?'); values.push(input.altText); }
-    if (input.categoryId !== undefined) { sets.push('category_id = ?'); values.push(input.categoryId); }
-    if (input.tags !== undefined) { sets.push('tags = ?'); values.push(JSON.stringify(input.tags)); }
+    if (input.coverImage !== undefined) {
+        sets.push('cover_image = ?');
+        values.push(input.coverImage);
+    }
+    if (input.altText !== undefined) {
+        sets.push('alt_text = ?');
+        values.push(input.altText);
+    }
+    if (input.categoryId !== undefined) {
+        sets.push('category_id = ?');
+        values.push(input.categoryId);
+    }
+    if (input.tags !== undefined) {
+        sets.push('tags = ?');
+        values.push(JSON.stringify(input.tags));
+    }
 
     if (sets.length === 0) {
         return getPostById(id);
@@ -153,10 +177,7 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
     values.push(id);
 
     try {
-        const [result] = await db.execute<ResultSetHeader>(
-            `UPDATE zhijian_blog_posts SET ${sets.join(', ')} WHERE id = ?`,
-            values,
-        );
+        const [result] = await db.execute<ResultSetHeader>(`UPDATE zhijian_blog_posts SET ${sets.join(', ')} WHERE id = ?`, values);
 
         if (result.affectedRows === 0) {
             return null;
@@ -184,16 +205,7 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
                     (slug, title, summary, content, cover_image, alt_text, category_id, tags, status, published_at, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', NULL, NOW(), NOW())
             `,
-            [
-                input.slug,
-                input.title,
-                input.summary,
-                input.content,
-                input.coverImage ?? null,
-                input.altText ?? null,
-                input.categoryId ?? null,
-                input.tags ? JSON.stringify(input.tags) : null,
-            ],
+            [input.slug, input.title, input.summary, input.content, input.coverImage ?? null, input.altText ?? null, input.categoryId ?? null, input.tags ? JSON.stringify(input.tags) : null]
         );
 
         return getPostById(result.insertId);
@@ -207,10 +219,7 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
 export async function deletePostById(id: number): Promise<boolean> {
     const db = getDb();
     if (!db) return false;
-    const [result] = await db.execute<ResultSetHeader>(
-        'DELETE FROM zhijian_blog_posts WHERE id = ?',
-        [id],
-    );
+    const [result] = await db.execute<ResultSetHeader>('DELETE FROM zhijian_blog_posts WHERE id = ?', [id]);
     return result.affectedRows > 0;
 }
 
@@ -286,7 +295,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                 ORDER BY p.updated_at IS NULL, p.updated_at DESC, p.published_at IS NULL, p.published_at DESC, p.id DESC
                 ${limitClause}
             `,
-            values,
+            values
         );
 
         return rows.map((row) => {
@@ -333,10 +342,7 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     if (!db) return posts;
 
     try {
-        const [tagRows] = await db.execute<RowDataPacket[]>(
-            `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`,
-            uniqueIds,
-        );
+        const [tagRows] = await db.execute<RowDataPacket[]>(`SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`, uniqueIds);
 
         const tagMap = new Map<number, { id: number; name: string; slug: string }>();
         for (const row of tagRows) {

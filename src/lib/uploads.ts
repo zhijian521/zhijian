@@ -35,13 +35,7 @@ interface UploadRow extends RowDataPacket {
 /*== 常量 ==*/
 
 /*== 允许的图片 MIME 类型。 ==*/
-const ALLOWED_MIME_TYPES = new Set([
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'image/svg+xml',
-]);
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']);
 
 /*== 文件大小上限 5 MB。 ==*/
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -127,14 +121,18 @@ export async function saveUpload(file: File): Promise<Upload | null> {
         const [result] = await db.execute<ResultSetHeader>(
             `INSERT INTO zhijian_blog_uploads (filename, original, path, size, mime, alt, created_at)
              VALUES (?, ?, ?, ?, ?, '', NOW())`,
-            [filename, shouldConvert ? file.name.replace(/\.[^.]+$/, '.webp') : file.name, relativePath, actualSize, outputMime],
+            [filename, shouldConvert ? file.name.replace(/\.[^.]+$/, '.webp') : file.name, relativePath, actualSize, outputMime]
         );
 
         return getUploadById(result.insertId);
     } catch (err) {
         console.error('写入上传记录失败：', err);
         /*-- 数据库写入失败时清理已写入的文件 --*/
-        try { fs.unlinkSync(filePath); } catch { /* 忽略清理失败 */ }
+        try {
+            fs.unlinkSync(filePath);
+        } catch {
+            /* 忽略清理失败 */
+        }
         return null;
     }
 }
@@ -152,7 +150,7 @@ export async function getUploadById(id: number): Promise<Upload | null> {
                     DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as created_at
              FROM zhijian_blog_uploads
              WHERE id = ?`,
-            [id],
+            [id]
         );
 
         if (rows.length === 0) return null;
@@ -164,19 +162,14 @@ export async function getUploadById(id: number): Promise<Upload | null> {
 }
 
 /*== 分页查询上传记录列表。 ==*/
-export async function listUploads(
-    page: number,
-    pageSize: number,
-): Promise<{ data: Upload[]; total: number }> {
+export async function listUploads(page: number, pageSize: number): Promise<{ data: Upload[]; total: number }> {
     const db = getDb();
     if (!db) return { data: [], total: 0 };
 
     const offset = (page - 1) * pageSize;
 
     try {
-        const [countRows] = await db.execute<RowDataPacket[]>(
-            'SELECT COUNT(*) AS total FROM zhijian_blog_uploads',
-        );
+        const [countRows] = await db.execute<RowDataPacket[]>('SELECT COUNT(*) AS total FROM zhijian_blog_uploads');
         const total = (countRows[0] as RowDataPacket).total as number;
 
         const [rows] = await db.execute<UploadRow[]>(
@@ -185,7 +178,7 @@ export async function listUploads(
              FROM zhijian_blog_uploads
              ORDER BY created_at DESC
              LIMIT ? OFFSET ?`,
-            [pageSize, offset],
+            [pageSize, offset]
         );
 
         return { data: rows.map(toUpload), total };
@@ -198,10 +191,7 @@ export async function listUploads(
 /*== 更新 ==*/
 
 /*== 更新上传记录的名称和/或 alt。 返回更新后的记录，失败返回 null。 ==*/
-export async function updateUploadById(
-    id: number,
-    fields: { original?: string; alt?: string },
-): Promise<Upload | null> {
+export async function updateUploadById(id: number, fields: { original?: string; alt?: string }): Promise<Upload | null> {
     const db = getDb();
     if (!db) return null;
 
@@ -222,10 +212,7 @@ export async function updateUploadById(
     values.push(id);
 
     try {
-        const [result] = await db.execute<ResultSetHeader>(
-            `UPDATE zhijian_blog_uploads SET ${sets.join(', ')} WHERE id = ?`,
-            values,
-        );
+        const [result] = await db.execute<ResultSetHeader>(`UPDATE zhijian_blog_uploads SET ${sets.join(', ')} WHERE id = ?`, values);
         if (result.affectedRows === 0) return null;
         return getUploadById(id);
     } catch (err) {
@@ -247,10 +234,7 @@ export async function deleteUploadById(id: number): Promise<boolean> {
 
     /*-- 删除数据库记录 --*/
     try {
-        const [result] = await db.execute<ResultSetHeader>(
-            'DELETE FROM zhijian_blog_uploads WHERE id = ?',
-            [id],
-        );
+        const [result] = await db.execute<ResultSetHeader>('DELETE FROM zhijian_blog_uploads WHERE id = ?', [id]);
 
         if (result.affectedRows === 0) return false;
     } catch (err) {

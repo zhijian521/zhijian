@@ -1,11 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import {
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-    PieChart, Pie, Cell,
-    ResponsiveContainer,
-} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem, VisitRecord } from '@/lib/analytics';
 
 import { TrendingUpIcon, TrendingDownIcon, CopyIcon, Trash2Icon } from '@/components/ui/icons';
@@ -40,7 +36,10 @@ interface AnalyticsData {
     exitPages: EntryExitItem[];
 }
 
-interface SiteOption { id: string; name: string; }
+interface SiteOption {
+    id: string;
+    name: string;
+}
 
 /*== 工具函数 ==*/
 
@@ -91,14 +90,19 @@ function ChangeIndicator({ value }: { value: number }) {
     return (
         <span className={`${styles.change} ${isUp ? styles.changeUp : styles.changeDown}`}>
             {isUp ? <TrendingUpIcon className={styles.changeIcon} /> : <TrendingDownIcon className={styles.changeIcon} />}
-            {isUp ? '+' : ''}{value}%
+            {isUp ? '+' : ''}
+            {value}%
         </span>
     );
 }
 
 /*== 环形图组件 ==*/
 
-interface DonutEntry { name: string; value: number; percent: number; }
+interface DonutEntry {
+    name: string;
+    value: number;
+    percent: number;
+}
 
 function DonutChart({ data, palette }: { data: DonutEntry[]; palette: string[] }) {
     return (
@@ -106,17 +110,7 @@ function DonutChart({ data, palette }: { data: DonutEntry[]; palette: string[] }
             <div className={styles.donutSvg}>
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius="52%"
-                            outerRadius="78%"
-                            dataKey="value"
-                            nameKey="name"
-                            stroke="none"
-                            paddingAngle={1}
-                        >
+                        <Pie data={data} cx="50%" cy="50%" innerRadius="52%" outerRadius="78%" dataKey="value" nameKey="name" stroke="none" paddingAngle={1}>
                             {data.map((_, i) => (
                                 <Cell key={i} fill={palette[i % palette.length]} />
                             ))}
@@ -203,8 +197,12 @@ export default function AnalyticsDashboard() {
         }
     }, [siteId, range]);
 
-    useEffect(() => { fetchSites(); }, [fetchSites]);
-    useEffect(() => { fetchData(); }, [fetchData]);
+    useEffect(() => {
+        fetchSites();
+    }, [fetchSites]);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     async function copyEmbedCode() {
         if (!siteId) return;
@@ -241,7 +239,10 @@ export default function AnalyticsDashboard() {
         setVisitsLoading(true);
         try {
             const res = await api.get<{ data: VisitRecord[]; total: number }>('/admin/analytics/visits', {
-                siteId, range, page: visitsPage, pageSize: visitsPageSize,
+                siteId,
+                range,
+                page: visitsPage,
+                pageSize: visitsPageSize,
             });
             if (res.code === 0 && res.data) setVisits(res.data);
         } catch (err) {
@@ -251,13 +252,17 @@ export default function AnalyticsDashboard() {
         }
     }, [siteId, range, visitsPage, visitsPageSize]);
 
-    useEffect(() => { if (tab === 'visits') fetchVisits(); }, [tab, fetchVisits]);
+    useEffect(() => {
+        if (tab === 'visits') fetchVisits();
+    }, [tab, fetchVisits]);
 
     function formatVisitTime(isoStr: string): string {
         try {
             const d = new Date(isoStr);
             return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-        } catch { return isoStr; }
+        } catch {
+            return isoStr;
+        }
     }
 
     const deviceTagVariant = (d: string): 'primary' | 'default' | 'outlined' => {
@@ -267,14 +272,57 @@ export default function AnalyticsDashboard() {
     };
 
     const visitColumns: DataColumn<VisitRecord>[] = [
-        { header: '页面', width: '200px', render: (v) => <div className={styles.visitPageCell}><span className={styles.visitPath}>{v.path}</span>{v.title && <span className={styles.visitTitle}>{v.title}</span>}</div> },
+        {
+            header: '页面',
+            width: '200px',
+            render: (v) => (
+                <div className={styles.visitPageCell}>
+                    <span className={styles.visitPath}>{v.path}</span>
+                    {v.title && <span className={styles.visitTitle}>{v.title}</span>}
+                </div>
+            ),
+        },
         { header: '来源', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.referrer}</span> },
-        { header: '设备', width: '120px', render: (v) => <Tag size="mini" variant={deviceTagVariant(v.device)}>{v.device}</Tag> },
+        {
+            header: '设备',
+            width: '120px',
+            render: (v) => (
+                <Tag size="mini" variant={deviceTagVariant(v.device)}>
+                    {v.device}
+                </Tag>
+            ),
+        },
         { header: '浏览器', width: '120px', render: (v) => <span className={styles.visitMuted}>{v.browser}</span> },
         { header: '操作系统', width: '120px', render: (v) => <span className={styles.visitMuted}>{v.os}</span> },
         { header: '语言', width: '100px', render: (v) => <span className={styles.visitMuted}>{v.lang}</span> },
-        { header: '访客', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.visitorId}{v.isNew && <Tag size="mini" variant="primary" className={styles.newTag}>新</Tag>}</span> },
-        { header: '会话', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.sessionId}{v.isSession && <Tag size="mini" variant="outlined" className={styles.newTag}>入口</Tag>}</span> },
+        {
+            header: '访客',
+            width: '150px',
+            render: (v) => (
+                <span className={styles.visitMuted}>
+                    {v.visitorId}
+                    {v.isNew && (
+                        <Tag size="mini" variant="primary" className={styles.newTag}>
+                            新
+                        </Tag>
+                    )}
+                </span>
+            ),
+        },
+        {
+            header: '会话',
+            width: '150px',
+            render: (v) => (
+                <span className={styles.visitMuted}>
+                    {v.sessionId}
+                    {v.isSession && (
+                        <Tag size="mini" variant="outlined" className={styles.newTag}>
+                            入口
+                        </Tag>
+                    )}
+                </span>
+            ),
+        },
         { header: '位置', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.location}</span> },
         { header: 'IP', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.ip}</span> },
         { header: '停留', width: '100px', render: (v) => <span className={styles.visitMuted}>{v.duration != null ? `${v.duration}s` : '-'}</span> },
@@ -301,52 +349,70 @@ export default function AnalyticsDashboard() {
     const osList = data?.os || [];
     const entryPages = data?.entryPages || [];
     const exitPages = data?.exitPages || [];
-    const maxPagePv = pages.length > 0 ? Math.max(...pages.map(p => p.pv)) : 1;
+    const maxPagePv = pages.length > 0 ? Math.max(...pages.map((p) => p.pv)) : 1;
 
     return (
         <>
-            <AdminPageHeader
-                description="查看站点访问数据，了解流量趋势和用户行为。"
-                eyebrow="Analytics"
-                tag={sites.length > 0 ? `${sites.length} 个站点` : undefined}
-                title="网站统计"
-            />
+            <AdminPageHeader description="查看站点访问数据，了解流量趋势和用户行为。" eyebrow="Analytics" tag={sites.length > 0 ? `${sites.length} 个站点` : undefined} title="网站统计" />
 
             {/* 控制栏 */}
             <div className={styles.controls}>
                 <div className={styles.siteSelect}>
-                    <Select
-                        options={sites.map((s) => ({ value: s.id, label: `${s.name} (${s.id})` }))}
-                        value={siteId}
-                        onChange={setSiteId}
-                        placeholder="暂无站点"
-                        size="medium"
-                    />
+                    <Select options={sites.map((s) => ({ value: s.id, label: `${s.name} (${s.id})` }))} value={siteId} onChange={setSiteId} placeholder="暂无站点" size="medium" />
                     {siteId && (
-                        <GhostButton asButton icon={<CopyIcon />} onClick={copyEmbedCode} size="small" title="复制接入代码">接入代码</GhostButton>
+                        <GhostButton asButton icon={<CopyIcon />} onClick={copyEmbedCode} size="small" title="复制接入代码">
+                            接入代码
+                        </GhostButton>
                     )}
                     {siteId && (
-                        <GhostButton asButton icon={<Trash2Icon />} onClick={() => setClearOpen(true)} size="small" title="清空该站点全部统计记录">清空记录</GhostButton>
+                        <GhostButton asButton icon={<Trash2Icon />} onClick={() => setClearOpen(true)} size="small" title="清空该站点全部统计记录">
+                            清空记录
+                        </GhostButton>
                     )}
                 </div>
                 <div className={styles.rightControls}>
-                    <PillSelect name="range" onChange={(v) => setRange(v as DateRange)} options={[{ value: '7d', label: '7 天' }, { value: '30d', label: '30 天' }, { value: '90d', label: '90 天' }]} value={range} />
-                    <PillSelect name="analytics-tab" onChange={(v) => { setTab(v as 'overview' | 'visits'); setVisitsPage(1); setVisitsPageSize(VISITS_DEFAULT_PAGE_SIZE); }} options={[{ value: 'overview', label: '统计概览' }, { value: 'visits', label: '访问记录' }]} value={tab} />
+                    <PillSelect
+                        name="range"
+                        onChange={(v) => setRange(v as DateRange)}
+                        options={[
+                            { value: '7d', label: '7 天' },
+                            { value: '30d', label: '30 天' },
+                            { value: '90d', label: '90 天' },
+                        ]}
+                        value={range}
+                    />
+                    <PillSelect
+                        name="analytics-tab"
+                        onChange={(v) => {
+                            setTab(v as 'overview' | 'visits');
+                            setVisitsPage(1);
+                            setVisitsPageSize(VISITS_DEFAULT_PAGE_SIZE);
+                        }}
+                        options={[
+                            { value: 'overview', label: '统计概览' },
+                            { value: 'visits', label: '访问记录' },
+                        ]}
+                        value={tab}
+                    />
                 </div>
             </div>
 
-            {tab === 'overview' && (
-                error ? (
+            {tab === 'overview' &&
+                (error ? (
                     <div className={styles.errorBanner}>
                         <p className={styles.errorText}>{error}</p>
-                        <GhostButton asButton onClick={fetchData} size="small" variant="primary">重试</GhostButton>
+                        <GhostButton asButton onClick={fetchData} size="small" variant="primary">
+                            重试
+                        </GhostButton>
                     </div>
                 ) : loading && !data ? (
                     <div className={styles.loading}>加载中...</div>
                 ) : !siteId ? (
                     <div className={styles.empty}>
                         <p>请先在「站点管理」中创建站点，获取接入代码嵌入目标网站。</p>
-                        <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">前往站点管理</GhostButton>
+                        <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">
+                            前往站点管理
+                        </GhostButton>
                     </div>
                 ) : (
                     <div className={styles.grid}>
@@ -381,8 +447,12 @@ export default function AnalyticsDashboard() {
                             <div className={styles.cardHeader}>
                                 <h3 className={styles.cardTitle}>流量趋势</h3>
                                 <div className={styles.legend}>
-                                    <span className={styles.legendItem}><span className={styles.legendLine} style={{ background: CHART_COLORS.primary }} /> 浏览量</span>
-                                    <span className={styles.legendItem}><span className={`${styles.legendLine} ${styles.legendLineDashed}`} style={{ background: CHART_COLORS.muted }} /> 访客数</span>
+                                    <span className={styles.legendItem}>
+                                        <span className={styles.legendLine} style={{ background: CHART_COLORS.primary }} /> 浏览量
+                                    </span>
+                                    <span className={styles.legendItem}>
+                                        <span className={`${styles.legendLine} ${styles.legendLineDashed}`} style={{ background: CHART_COLORS.muted }} /> 访客数
+                                    </span>
                                 </div>
                             </div>
                             <div className={styles.chartArea}>
@@ -390,7 +460,13 @@ export default function AnalyticsDashboard() {
                                     <ResponsiveContainer width="100%" height={260}>
                                         <AreaChart data={trend} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.mutedSubtle} />
-                                            <XAxis dataKey="date" tickFormatter={formatDateShort} tick={{ fontSize: 12, fill: CHART_COLORS.muted }} axisLine={{ stroke: CHART_COLORS.mutedSubtle }} tickLine={false} />
+                                            <XAxis
+                                                dataKey="date"
+                                                tickFormatter={formatDateShort}
+                                                tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
+                                                axisLine={{ stroke: CHART_COLORS.mutedSubtle }}
+                                                tickLine={false}
+                                            />
                                             <YAxis tick={{ fontSize: 12, fill: CHART_COLORS.muted }} axisLine={false} tickLine={false} tickFormatter={formatNum} />
                                             <Tooltip content={<ChartTooltip />} />
                                             <Area type="monotone" dataKey="pv" name="pv" stroke={CHART_COLORS.primary} fill={CHART_COLORS.primarySubtle} strokeWidth={2} />
@@ -417,13 +493,17 @@ export default function AnalyticsDashboard() {
                                                     <div className={styles.barTrack}>
                                                         <div className={styles.barFill} style={{ width: `${(page.pv / maxPagePv) * 100}%` }} />
                                                     </div>
-                                                    <span className={styles.rankMeta}>跳出 {page.bounceRate}% · 停留 {formatDuration(page.avgDuration)}</span>
+                                                    <span className={styles.rankMeta}>
+                                                        跳出 {page.bounceRate}% · 停留 {formatDuration(page.avgDuration)}
+                                                    </span>
                                                 </div>
                                                 <span className={styles.rankNum}>{formatNum(page.pv)}</span>
                                             </div>
                                         ))}
                                     </div>
-                                ) : <div className={styles.chartEmpty}>暂无数据</div>}
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无数据</div>
+                                )}
                             </div>
 
                             <div className={styles.pairCard}>
@@ -440,7 +520,9 @@ export default function AnalyticsDashboard() {
                                             </div>
                                         ))}
                                     </div>
-                                ) : <div className={styles.chartEmpty}>暂无数据</div>}
+                                ) : (
+                                    <div className={styles.chartEmpty}>暂无数据</div>
+                                )}
                             </div>
                         </div>
 
@@ -449,21 +531,27 @@ export default function AnalyticsDashboard() {
                             <h3 className={styles.cardTitle}>设备分布</h3>
                             {devices.length > 0 ? (
                                 <DonutChart data={devices.map((d) => ({ name: d.device, value: d.count, percent: d.percent }))} palette={DEVICE_PALETTE} />
-                            ) : <div className={styles.chartEmpty}>暂无数据</div>}
+                            ) : (
+                                <div className={styles.chartEmpty}>暂无数据</div>
+                            )}
                         </div>
 
                         <div className={styles.cardThird}>
                             <h3 className={styles.cardTitle}>浏览器</h3>
                             {browsers.length > 0 ? (
                                 <DonutChart data={browsers.map((b) => ({ name: b.browser, value: b.count, percent: b.percent }))} palette={BROWSER_PALETTE} />
-                            ) : <div className={styles.chartEmpty}>暂无数据</div>}
+                            ) : (
+                                <div className={styles.chartEmpty}>暂无数据</div>
+                            )}
                         </div>
 
                         <div className={styles.cardThird}>
                             <h3 className={styles.cardTitle}>操作系统</h3>
                             {osList.length > 0 ? (
                                 <DonutChart data={osList.map((o) => ({ name: o.os, value: o.count, percent: o.percent }))} palette={OS_PALETTE} />
-                            ) : <div className={styles.chartEmpty}>暂无数据</div>}
+                            ) : (
+                                <div className={styles.chartEmpty}>暂无数据</div>
+                            )}
                         </div>
 
                         {/* == 5. 地理 + 语言分布 — 全宽三栏 == */}
@@ -515,48 +603,49 @@ export default function AnalyticsDashboard() {
                                         </div>
                                     )}
                                 </div>
-                            ) : <div className={styles.chartEmpty}>暂无数据</div>}
+                            ) : (
+                                <div className={styles.chartEmpty}>暂无数据</div>
+                            )}
                         </div>
 
                         {/* == 6. 入口/出口页面 — 一行各半，DataTable == */}
                         <div className={styles.rowPair}>
                             <div className={styles.pairCard}>
                                 <h3 className={styles.cardTitle}>入口页面 TOP 10</h3>
-                                <DataTable
-                                    columns={entryExitColumns}
-                                    emptyText="暂无数据"
-                                    rowKey={(r) => r.path}
-                                    rows={entryPages}
-                                />
+                                <DataTable columns={entryExitColumns} emptyText="暂无数据" rowKey={(r) => r.path} rows={entryPages} />
                             </div>
 
                             <div className={styles.pairCard}>
                                 <h3 className={styles.cardTitle}>出口页面 TOP 10</h3>
-                                <DataTable
-                                    columns={entryExitColumns}
-                                    emptyText="暂无数据"
-                                    rowKey={(r) => r.path}
-                                    rows={exitPages}
-                                />
+                                <DataTable columns={entryExitColumns} emptyText="暂无数据" rowKey={(r) => r.path} rows={exitPages} />
                             </div>
                         </div>
                     </div>
-                )
-            )}
+                ))}
 
-            {tab === 'visits' && (
-                !siteId ? (
+            {tab === 'visits' &&
+                (!siteId ? (
                     <div className={styles.empty}>
                         <p>请先在「站点管理」中创建站点，获取接入代码嵌入目标网站。</p>
-                        <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">前往站点管理</GhostButton>
+                        <GhostButton asButton href="/admin/analytics/sites" size="medium" variant="primary">
+                            前往站点管理
+                        </GhostButton>
                     </div>
                 ) : (
                     <>
                         <DataTable scrollable columns={visitColumns} emptyText={visitsLoading ? '加载中...' : '暂无访问记录'} rowKey={(v) => v.id} rows={visits.data} />
-                        <Pagination current={visitsPage} onPageChange={setVisitsPage} total={Math.max(1, Math.ceil(visits.total / visitsPageSize))} pageSize={visitsPageSize} onPageSizeChange={(s) => { setVisitsPageSize(s); setVisitsPage(1); }} />
+                        <Pagination
+                            current={visitsPage}
+                            onPageChange={setVisitsPage}
+                            total={Math.max(1, Math.ceil(visits.total / visitsPageSize))}
+                            pageSize={visitsPageSize}
+                            onPageSizeChange={(s) => {
+                                setVisitsPageSize(s);
+                                setVisitsPage(1);
+                            }}
+                        />
                     </>
-                )
-            )}
+                ))}
 
             <ConfirmDialog
                 open={clearOpen}

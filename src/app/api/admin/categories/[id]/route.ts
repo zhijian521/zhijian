@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { getCategoryById, updateCategory, deleteCategory } from '@/lib/categories';
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 
 /*==
@@ -18,7 +18,9 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
     if (!existing) return NextResponse.json(fail(BizCode.CATEGORY_NOT_FOUND, '分类不存在。'), { status: 404 });
 
     let body: { name?: string; slug?: string; sort_order?: number };
-    try { body = await request.json(); } catch {
+    try {
+        body = await request.json();
+    } catch {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请求体格式不正确。'), { status: 400 });
     }
 
@@ -42,8 +44,7 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
         const updated = await updateCategory(categoryId, fields);
         return NextResponse.json(success({ category: updated }, '分类更新成功。'));
     } catch (err: any) {
-        if (err.code === 'ER_DUP_ENTRY')
-            return NextResponse.json(fail(BizCode.CATEGORY_EXISTS, 'Slug 已被占用。'), { status: 409 });
+        if (err.code === 'ER_DUP_ENTRY') return NextResponse.json(fail(BizCode.CATEGORY_EXISTS, 'Slug 已被占用。'), { status: 409 });
         console.error('更新分类失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新分类失败。'), { status: 500 });
     }

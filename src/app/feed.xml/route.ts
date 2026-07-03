@@ -7,24 +7,26 @@ import { SITE_METADATA } from '@/lib/site';
 export async function GET() {
     const posts = await getPublishedPosts();
 
-    const items = posts.map((post) => {
-        const link = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
-        const pubDate = parsePostDate(post.publishedAt)?.toUTCString();
-        const categoryXml = (post.tagNames ?? [])
-            .map((tag) => `      <category>${escapeXml(tag.name)}</category>`)
-            .join('\n');
+    const items = posts
+        .map((post) => {
+            const link = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
+            const pubDate = parsePostDate(post.publishedAt)?.toUTCString();
+            const categoryXml = (post.tagNames ?? []).map((tag) => `      <category>${escapeXml(tag.name)}</category>`).join('\n');
 
-        return [
-            `    <item>`,
-            `      <title><![CDATA[${post.title}]]></title>`,
-            `      <link>${link}</link>`,
-            `      <guid isPermaLink="true">${link}</guid>`,
-            `      <description><![CDATA[${post.summary}]]></description>`,
-            pubDate ? `      <pubDate>${pubDate}</pubDate>` : '',
-            categoryXml,
-            `    </item>`,
-        ].filter(Boolean).join('\n');
-    }).join('\n');
+            return [
+                `    <item>`,
+                `      <title><![CDATA[${post.title}]]></title>`,
+                `      <link>${link}</link>`,
+                `      <guid isPermaLink="true">${link}</guid>`,
+                `      <description><![CDATA[${post.summary}]]></description>`,
+                pubDate ? `      <pubDate>${pubDate}</pubDate>` : '',
+                categoryXml,
+                `    </item>`,
+            ]
+                .filter(Boolean)
+                .join('\n');
+        })
+        .join('\n');
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -48,9 +50,5 @@ ${items}
 
 /*== XML 特殊字符转义，用于 channel 级 title/description 等非 CDATA 区域 ==*/
 function escapeXml(str: string): string {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

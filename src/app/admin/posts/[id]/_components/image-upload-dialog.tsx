@@ -14,11 +14,7 @@ export interface ImageUploadDialogProps {
 }
 
 /*== ImageUploadDialog 图片上传弹窗 ==*/
-export function ImageUploadDialog({
-    open,
-    onClose,
-    onInsert,
-}: ImageUploadDialogProps) {
+export function ImageUploadDialog({ open, onClose, onInsert }: ImageUploadDialogProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -77,7 +73,7 @@ export function ImageUploadDialog({
                 selectFile(file);
             }
         },
-        [selectFile],
+        [selectFile]
     );
 
     /* 点击上传 */
@@ -93,7 +89,7 @@ export function ImageUploadDialog({
             }
             e.target.value = '';
         },
-        [selectFile],
+        [selectFile]
     );
 
     /* 上传并插入 */
@@ -129,31 +125,15 @@ export function ImageUploadDialog({
             {previewUrl ? (
                 <>
                     <div className={styles.previewWrap}>
-                        <img
-                            alt="预览"
-                            className={styles.previewImage}
-                            src={previewUrl}
-                        />
+                        <img alt="预览" className={styles.previewImage} src={previewUrl} />
                     </div>
                     <div className={styles.altField}>
                         <label className={styles.altLabel} htmlFor="image-alt">
                             替代文本
                         </label>
-                        <input
-                            className={styles.altInput}
-                            id="image-alt"
-                            onChange={(e) => setAltText(e.target.value)}
-                            placeholder="描述图片内容"
-                            type="text"
-                            value={altText}
-                        />
+                        <input className={styles.altInput} id="image-alt" onChange={(e) => setAltText(e.target.value)} placeholder="描述图片内容" type="text" value={altText} />
                     </div>
-                    <button
-                        className={styles.submitBtn}
-                        disabled={isUploading}
-                        onClick={handleSubmit}
-                        type="button"
-                    >
+                    <button className={styles.submitBtn} disabled={isUploading} onClick={handleSubmit} type="button">
                         {isUploading ? '上传中...' : '上传并插入'}
                     </button>
                 </>
@@ -178,13 +158,7 @@ export function ImageUploadDialog({
                 </div>
             )}
 
-            <input
-                accept="image/*"
-                onChange={handleFileChange}
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                type="file"
-            />
+            <input accept="image/*" onChange={handleFileChange} ref={fileInputRef} style={{ display: 'none' }} type="file" />
         </Dialog>
     );
 }

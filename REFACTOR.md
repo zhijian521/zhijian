@@ -5,14 +5,14 @@
 
 ## 一、现状与问题
 
-| 维度 | 现状 | 问题 |
-|---|---|---|
-| 样式 | `theme.css` 有完整颜色/字体变量，`--radius:0` 全站零圆角 | 缺间距/字号阶梯 token；无模块级变量分层；组件内偶有硬编码值 |
-| 组件 | `components/ui`(30) + `components/site`(15) + `app/nav/_components`(28) + `app/admin/_components`(38) | 四处散落，无统一注册表，复用靠记忆，无法快速预览 |
-| 图标 | `components/ui/icons.tsx` 单文件 | 无预览页，不知道有哪些图标可用 |
-| 文档 | `docs/features/*.md` 功能文档已有 | 纯离线，后台看不到；改代码不强制同步文档；**无接口文档** |
-| 接口 | 33 个 API route，统一用 `withAdmin`/`withUser` 鉴权 + `success/fail/BizCode` 响应 | 无文档，参数/响应/鉴权要靠读代码 |
-| 数据层 | `lib/` 21 文件平铺 | 基础设施(db/auth/api-response)与业务(posts/nav)混在一起 |
+| 维度   | 现状                                                                                                  | 问题                                                        |
+| ------ | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 样式   | `theme.css` 有完整颜色/字体变量，`--radius:0` 全站零圆角                                              | 缺间距/字号阶梯 token；无模块级变量分层；组件内偶有硬编码值 |
+| 组件   | `components/ui`(30) + `components/site`(15) + `app/nav/_components`(28) + `app/admin/_components`(38) | 四处散落，无统一注册表，复用靠记忆，无法快速预览            |
+| 图标   | `components/ui/icons.tsx` 单文件                                                                      | 无预览页，不知道有哪些图标可用                              |
+| 文档   | `docs/features/*.md` 功能文档已有                                                                     | 纯离线，后台看不到；改代码不强制同步文档；**无接口文档**    |
+| 接口   | 33 个 API route，统一用 `withAdmin`/`withUser` 鉴权 + `success/fail/BizCode` 响应                     | 无文档，参数/响应/鉴权要靠读代码                            |
+| 数据层 | `lib/` 21 文件平铺                                                                                    | 基础设施(db/auth/api-response)与业务(posts/nav)混在一起     |
 
 ## 二、目标
 
@@ -25,13 +25,14 @@
 
 三层，从上到下覆盖。组件内一律 `var(--xxx)`，不写死值。
 
-| 层 | 文件 | 内容 |
-|---|---|---|
-| 全局 token | `src/app/tokens.css`（新建） | 间距 `--space-*`、字号 `--text-*`、行高、圆角 `--radius` |
-| 主题 | `src/app/theme.css`（已存在） | 颜色、字体族 |
-| 模块覆盖 | 各模块根容器引入 | 仅该模块差异变量，如 `--nav-bg` |
+| 层         | 文件                          | 内容                                                     |
+| ---------- | ----------------------------- | -------------------------------------------------------- |
+| 全局 token | `src/app/tokens.css`（新建）  | 间距 `--space-*`、字号 `--text-*`、行高、圆角 `--radius` |
+| 主题       | `src/app/theme.css`（已存在） | 颜色、字体族                                             |
+| 模块覆盖   | 各模块根容器引入              | 仅该模块差异变量，如 `--nav-bg`                          |
 
 **落地**：
+
 - 新建 `tokens.css` 定义阶梯（4px 基准间距、rem 字号）。
 - `globals.css` 顶部 `@import './tokens.css'`（在 theme 之前）。
 - 模块需要差异变量时，在模块根组件的 CSS Module 里 `:root` 或容器选择器内声明，不建全局 `modules/` 目录——避免空壳文件。
@@ -49,13 +50,13 @@
 ```ts
 // src/showcase/registry.ts
 export interface ShowcaseEntry {
-  name: string;
-  description: string;
-  module: 'ui' | 'site' | 'nav' | 'blog' | 'admin';
-  source: string;        // 源码路径，仅展示
-  examples: { label: string; Component: ComponentType; props?: Record<string, unknown> }[];
+    name: string;
+    description: string;
+    module: 'ui' | 'site' | 'nav' | 'blog' | 'admin';
+    source: string; // 源码路径，仅展示
+    examples: { label: string; Component: ComponentType; props?: Record<string, unknown> }[];
 }
-export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [ /* ... */ ];
+export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [/* ... */];
 ```
 
 ## 五、接口文档模块
@@ -85,13 +86,13 @@ export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [ /* ... */ ];
 
 ```ts
 export interface ApiEntry {
-  path: string;          // /api/admin/posts
-  name: string;          // 文章列表
-  group: string;         // posts / nav / auth / admin / ai / collect
-  auth: 'none' | 'user' | 'admin';
-  methods: { method: string; desc: string }[];
+    path: string; // /api/admin/posts
+    name: string; // 文章列表
+    group: string; // posts / nav / auth / admin / ai / collect
+    auth: 'none' | 'user' | 'admin';
+    methods: { method: string; desc: string }[];
 }
-export const API_REGISTRY: ApiEntry[] = [ /* ... */ ];
+export const API_REGISTRY: ApiEntry[] = [/* ... */];
 ```
 
 33 个接口分 6 组：`posts`(公开)、`admin/*`(后台，含 posts/categories/tags/uploads/users/analytics/seo)、`nav/*`、`auth/*`、`ai/*`、`collect`(统计采集)。
@@ -99,6 +100,7 @@ export const API_REGISTRY: ApiEntry[] = [ /* ... */ ];
 ### 5.3 后台接口文档页
 
 `/admin/docs` 改造为文档中心，含两个 tab：
+
 - **功能文档**：现有 `docs/features/*.md`，用 react-markdown 渲染（已在依赖中）。
 - **接口文档**：渲染 `API_REGISTRY`，按 group 分组列表，每条显示路径/鉴权/方法/说明。
 
@@ -111,6 +113,7 @@ export const API_REGISTRY: ApiEntry[] = [ /* ... */ ];
 ### 6.2 docs:check 校验
 
 新增 `scripts/docs-check.mjs` + `npm run docs:check`，校验：
+
 - `API_REGISTRY` 列的每个接口路径对应 `app/api/**/route.ts` 存在
 - `DOC_REGISTRY`（功能文档索引）列的 `.md` 文件存在
 - 磁盘上的 `docs/features/*.md` 都已在 registry 登记（防漏登）
@@ -149,16 +152,16 @@ src/
 
 每步结束：`npm run typecheck` + `npm run docs:check` + 手动验证。
 
-| 步 | 内容 | 改动范围 |
-|---|---|---|
-| 1 | 样式分层：建 `tokens.css` + `globals.css` 引入 | 新建 1 文件，改 1 行 |
-| 2 | 搭 showcase 骨架：`/admin/showcase` + `registry.ts` + 登记现有 ui 组件 | 新建路由 + registry |
-| 3 | 搭后台文档中心：`/admin/docs` 双 tab（功能 + 接口）+ `API_REGISTRY` + `docs:check` | 新建路由 + 脚本 |
-| 4 | 补接口文档：33 个 route 顶部加 JSDoc + 登记 registry | 33 文件注释 + 1 registry |
-| 5 | 补齐功能文档：核对 `docs/features/*.md` 与现状，补缺失 | 文档 |
-| 6 | 数据层分层：`lib/core` + `lib/domain` + re-export 过渡 | lib 重组 |
-| 7 | 组件去模块化：`nav`/`admin` 通用组件上移到 `components/modules/` | 组件迁移 |
-| 8 | 消除硬编码：组件内 `padding`/`font-size`/颜色换 `var(--*)` | 逐文件清理 |
+| 步  | 内容                                                                               | 改动范围                 |
+| --- | ---------------------------------------------------------------------------------- | ------------------------ |
+| 1   | 样式分层：建 `tokens.css` + `globals.css` 引入                                     | 新建 1 文件，改 1 行     |
+| 2   | 搭 showcase 骨架：`/admin/showcase` + `registry.ts` + 登记现有 ui 组件             | 新建路由 + registry      |
+| 3   | 搭后台文档中心：`/admin/docs` 双 tab（功能 + 接口）+ `API_REGISTRY` + `docs:check` | 新建路由 + 脚本          |
+| 4   | 补接口文档：33 个 route 顶部加 JSDoc + 登记 registry                               | 33 文件注释 + 1 registry |
+| 5   | 补齐功能文档：核对 `docs/features/*.md` 与现状，补缺失                             | 文档                     |
+| 6   | 数据层分层：`lib/core` + `lib/domain` + re-export 过渡                             | lib 重组                 |
+| 7   | 组件去模块化：`nav`/`admin` 通用组件上移到 `components/modules/`                   | 组件迁移                 |
+| 8   | 消除硬编码：组件内 `padding`/`font-size`/颜色换 `var(--*)`                         | 逐文件清理               |
 
 ## 九、当前进度
 

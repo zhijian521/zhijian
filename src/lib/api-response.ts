@@ -61,4 +61,3 @@ export function success<T>(data: T, message = '操作成功'): ApiResponse<T> {
 export function fail(code: BizCodeValue, message: string): ApiResponse<null> {
     return { code, data: null, message };
 }
-

@@ -23,7 +23,7 @@ export default function ShowcaseComponentsPage() {
                 <section key={module} className={styles.section}>
                     <h2 className={styles.moduleTitle}>{module}</h2>
                     <div className={styles.grid}>
-                        {entries.map(entry => (
+                        {entries.map((entry) => (
                             <article key={entry.name} className={styles.card}>
                                 <header className={styles.cardHeader}>
                                     <h3 className={styles.cardTitle}>{entry.name}</h3>
@@ -31,7 +31,7 @@ export default function ShowcaseComponentsPage() {
                                 </header>
                                 <p className={styles.cardDesc}>{entry.description}</p>
                                 <div className={styles.examples}>
-                                    {entry.examples.map(ex => {
+                                    {entry.examples.map((ex) => {
                                         const Example = ex.Component;
                                         return (
                                             <div key={ex.label} className={styles.example}>

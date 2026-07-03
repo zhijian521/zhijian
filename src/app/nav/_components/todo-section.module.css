@@ -92,7 +92,9 @@
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition:
+        border-color 0.15s,
+        color 0.15s;
 }
 
 .qAdd:hover {
@@ -124,17 +126,33 @@
 
 /*-- 象限色：标题栏淡背景 + 圆点 --*/
 
-.q1 .qDot { background: var(--destructive); }
-.q1 .qHeader { background: color-mix(in srgb, var(--destructive) 6%, transparent); }
+.q1 .qDot {
+    background: var(--destructive);
+}
+.q1 .qHeader {
+    background: color-mix(in srgb, var(--destructive) 6%, transparent);
+}
 
-.q2 .qDot { background: #d99a6c; }
-.q2 .qHeader { background: color-mix(in srgb, #d99a6c 7%, transparent); }
+.q2 .qDot {
+    background: #d99a6c;
+}
+.q2 .qHeader {
+    background: color-mix(in srgb, #d99a6c 7%, transparent);
+}
 
-.q3 .qDot { background: var(--accent-foreground); }
-.q3 .qHeader { background: color-mix(in srgb, var(--accent-foreground) 6%, transparent); }
+.q3 .qDot {
+    background: var(--accent-foreground);
+}
+.q3 .qHeader {
+    background: color-mix(in srgb, var(--accent-foreground) 6%, transparent);
+}
 
-.q4 .qDot { background: var(--muted-foreground); }
-.q4 .qHeader { background: color-mix(in srgb, var(--muted-foreground) 4%, transparent); }
+.q4 .qDot {
+    background: var(--muted-foreground);
+}
+.q4 .qHeader {
+    background: color-mix(in srgb, var(--muted-foreground) 4%, transparent);
+}
 
 /*-- 拖拽落点 --*/
 

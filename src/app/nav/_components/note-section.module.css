@@ -48,7 +48,9 @@
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease;
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .addBtn:hover {
@@ -78,7 +80,9 @@
     border: 1px solid var(--border);
     background: var(--card);
     cursor: pointer;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
 }
 
 .noteItem:hover {
@@ -124,7 +128,9 @@
     color: var(--muted-foreground);
     cursor: pointer;
     opacity: 0;
-    transition: color 0.15s ease, opacity 0.15s ease;
+    transition:
+        color 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .noteItem:hover .noteDelete,
@@ -232,7 +238,9 @@
     font-size: 0.78125rem;
     line-height: 1.2;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .viewTab:hover {

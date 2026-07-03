@@ -73,7 +73,7 @@ export default function AdminLoginCard() {
                 STORAGE_KEYS.adminRememberedUsername,
                 JSON.stringify({
                     username: loginForm.username.trim(),
-                } satisfies RememberedLoginPayload),
+                } satisfies RememberedLoginPayload)
             );
         } else {
             window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
@@ -108,64 +108,49 @@ export default function AdminLoginCard() {
 
     return (
         <main className={styles.page}>
-            <div aria-hidden='true' className={styles.texture}>
+            <div aria-hidden="true" className={styles.texture}>
                 <div className={styles.textureGlow} />
             </div>
 
             <section className={styles.shell}>
                 <header className={styles.brand}>
-                    <img
-                        alt='Zhijian Logo'
-                        className={styles.logo}
-                        decoding='async'
-                        height='56'
-                        src='/images/logo.webp'
-                        width='56'
-                    />
+                    <img alt="Zhijian Logo" className={styles.logo} decoding="async" height="56" src="/images/logo.webp" width="56" />
                     <h1 className={styles.title}>Zhijian Admin</h1>
                 </header>
 
-                <section className={styles.card} aria-label='后台登录表单'>
+                <section className={styles.card} aria-label="后台登录表单">
                     <form className={styles.form} onSubmit={handleLoginSubmit}>
                         <TextInput
                             icon={<UserIcon />}
-                            id='username'
-                            label='用户名'
+                            id="username"
+                            label="用户名"
                             onChange={(event) => handleFieldChange('username', event.target.value)}
-                            placeholder='请输入您的用户名'
+                            placeholder="请输入您的用户名"
                             required
-                            autoComplete='username'
+                            autoComplete="username"
                             value={loginForm.username}
                         />
 
                         <TextInput
                             icon={<LockIcon />}
-                            id='password'
-                            label='密码'
+                            id="password"
+                            label="密码"
                             onChange={(event) => handleFieldChange('password', event.target.value)}
-                            placeholder='请输入您的密码'
+                            placeholder="请输入您的密码"
                             required
                             autoComplete={loginForm.remember ? 'current-password' : 'off'}
-                            type='password'
+                            type="password"
                             value={loginForm.password}
                         />
 
-                        <label className={styles.checkboxRow} htmlFor='remember'>
-                            <input
-                                checked={loginForm.remember}
-                                className={styles.checkbox}
-                                id='remember'
-                                onChange={(event) => handleFieldChange('remember', event.target.checked)}
-                                type='checkbox'
-                            />
+                        <label className={styles.checkboxRow} htmlFor="remember">
+                            <input checked={loginForm.remember} className={styles.checkbox} id="remember" onChange={(event) => handleFieldChange('remember', event.target.checked)} type="checkbox" />
                             <span>记住用户名</span>
                         </label>
 
-                        <SubmitButton disabled={isPending}>
-                            {isPending ? '登录中...' : '登录'}
-                        </SubmitButton>
+                        <SubmitButton disabled={isPending}>{isPending ? '登录中...' : '登录'}</SubmitButton>
 
-                        <p aria-live='polite' className={styles.message}>
+                        <p aria-live="polite" className={styles.message}>
                             {message}
                         </p>
                     </form>

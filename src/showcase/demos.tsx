@@ -23,11 +23,13 @@ const row = { display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: '
 export function TagDemo() {
     return (
         <>
-            {(['default', 'primary', 'outlined'] as const).map(v => (
+            {(['default', 'primary', 'outlined'] as const).map((v) => (
                 <div key={v} style={row}>
                     <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>variant: {v}</span>
-                    {(['mini', 'small', 'medium', 'default'] as const).map(s => (
-                        <Tag key={s} size={s} variant={v}>{s}</Tag>
+                    {(['mini', 'small', 'medium', 'default'] as const).map((s) => (
+                        <Tag key={s} size={s} variant={v}>
+                            {s}
+                        </Tag>
                     ))}
                 </div>
             ))}
@@ -39,19 +41,27 @@ export function TagDemo() {
 export function GhostButtonDemo() {
     return (
         <>
-            {(['default', 'primary'] as const).map(v => (
+            {(['default', 'primary'] as const).map((v) => (
                 <div key={v} style={row}>
                     <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>variant: {v}</span>
-                    {(['small', 'medium', 'default'] as const).map(s => (
-                        <GhostButton key={s} href='#' size={s} variant={v}>{s}</GhostButton>
+                    {(['small', 'medium', 'default'] as const).map((s) => (
+                        <GhostButton key={s} href="#" size={s} variant={v}>
+                            {s}
+                        </GhostButton>
                     ))}
-                    <GhostButton asButton icon={<PlusIcon />} size='medium' variant={v}>带图标</GhostButton>
+                    <GhostButton asButton icon={<PlusIcon />} size="medium" variant={v}>
+                        带图标
+                    </GhostButton>
                 </div>
             ))}
             <div style={row}>
                 <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>disabled</span>
-                <GhostButton asButton disabled>禁用态</GhostButton>
-                <GhostButton asButton disabled variant='primary'>禁用主色</GhostButton>
+                <GhostButton asButton disabled>
+                    禁用态
+                </GhostButton>
+                <GhostButton asButton disabled variant="primary">
+                    禁用主色
+                </GhostButton>
             </div>
         </>
     );
@@ -63,8 +73,10 @@ export function SubmitButtonDemo() {
         <>
             <div style={row}>
                 <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>size</span>
-                {(['small', 'medium', 'default'] as const).map(s => (
-                    <SubmitButton key={s} size={s}>{s}</SubmitButton>
+                {(['small', 'medium', 'default'] as const).map((s) => (
+                    <SubmitButton key={s} size={s}>
+                        {s}
+                    </SubmitButton>
                 ))}
             </div>
             <div style={row}>
@@ -79,12 +91,12 @@ export function SubmitButtonDemo() {
 export function IconButtonDemo() {
     return (
         <>
-            {(['default', 'danger'] as const).map(v => (
+            {(['default', 'danger'] as const).map((v) => (
                 <div key={v} style={row}>
                     <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>variant: {v}</span>
-                    <IconButton icon={<PencilIcon />} size='small' title='small' variant={v} />
-                    <IconButton icon={<PlusIcon />} size='medium' title='medium' variant={v} />
-                    <IconButton icon={<Trash2Icon />} title='default' variant={v} />
+                    <IconButton icon={<PencilIcon />} size="small" title="small" variant={v} />
+                    <IconButton icon={<PlusIcon />} size="medium" title="medium" variant={v} />
+                    <IconButton icon={<Trash2Icon />} title="default" variant={v} />
                 </div>
             ))}
         </>
@@ -96,8 +108,10 @@ export function TextLinkDemo() {
     return (
         <div style={row}>
             <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>showArrow</span>
-            <TextLink href='#'>true（默认）</TextLink>
-            <TextLink href='#' showArrow={false}>false</TextLink>
+            <TextLink href="#">true（默认）</TextLink>
+            <TextLink href="#" showArrow={false}>
+                false
+            </TextLink>
         </div>
     );
 }
@@ -106,10 +120,10 @@ export function TextLinkDemo() {
 export function TextInputDemo() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '20rem' }}>
-            <TextInput id='ti-1' label='标题' placeholder='带标签' />
-            <TextInput icon={<SearchIcon />} id='ti-2' inputSize='medium' placeholder='带图标 medium' />
-            <TextInput icon={<SearchIcon />} id='ti-3' inputSize='small' placeholder='带图标 small' />
-            <TextInput id='ti-4' inputSize='default' placeholder='default 尺寸' />
+            <TextInput id="ti-1" label="标题" placeholder="带标签" />
+            <TextInput icon={<SearchIcon />} id="ti-2" inputSize="medium" placeholder="带图标 medium" />
+            <TextInput icon={<SearchIcon />} id="ti-3" inputSize="small" placeholder="带图标 small" />
+            <TextInput id="ti-4" inputSize="default" placeholder="default 尺寸" />
         </div>
     );
 }
@@ -138,9 +152,9 @@ function PillSelectRow({ size }: { size: 'small' | 'medium' | 'default' }) {
 export function PillSelectDemo() {
     return (
         <>
-            <PillSelectRow size='small' />
-            <PillSelectRow size='medium' />
-            <PillSelectRow size='default' />
+            <PillSelectRow size="small" />
+            <PillSelectRow size="medium" />
+            <PillSelectRow size="default" />
         </>
     );
 }
@@ -150,7 +164,10 @@ function SelectRow({ size, disabled }: { size: 'small' | 'medium' | 'default'; d
     const [v, setV] = useState('draft');
     return (
         <div style={row}>
-            <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>size: {size}{disabled ? ' · disabled' : ''}</span>
+            <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                size: {size}
+                {disabled ? ' · disabled' : ''}
+            </span>
             <Select
                 disabled={disabled}
                 onChange={setV}
@@ -159,7 +176,7 @@ function SelectRow({ size, disabled }: { size: 'small' | 'medium' | 'default'; d
                     { value: 'published', label: '已发布' },
                     { value: 'archived', label: '已归档' },
                 ]}
-                placeholder='请选择'
+                placeholder="请选择"
                 size={size}
                 value={v}
             />
@@ -170,10 +187,10 @@ function SelectRow({ size, disabled }: { size: 'small' | 'medium' | 'default'; d
 export function SelectDemo() {
     return (
         <>
-            <SelectRow size='small' />
-            <SelectRow size='medium' />
-            <SelectRow size='default' />
-            <SelectRow size='medium' disabled />
+            <SelectRow size="small" />
+            <SelectRow size="medium" />
+            <SelectRow size="default" />
+            <SelectRow size="medium" disabled />
         </>
     );
 }
@@ -189,7 +206,10 @@ export function PaginationDemo() {
                 <Pagination
                     current={page}
                     onPageChange={setPage}
-                    onPageSizeChange={(s) => { setSize(s); setPage(1); }}
+                    onPageSizeChange={(s) => {
+                        setSize(s);
+                        setPage(1);
+                    }}
                     pageSize={size}
                     total={8}
                 />
@@ -203,7 +223,11 @@ export function PaginationDemo() {
 }
 
 /*== DataTable：普通 + scrollable + 空状态 ==*/
-interface DTRow { id: number; title: string; status: string }
+interface DTRow {
+    id: number;
+    title: string;
+    status: string;
+}
 
 export function DataTableDemo() {
     const rows: DTRow[] = [
@@ -212,13 +236,24 @@ export function DataTableDemo() {
     ];
     const columns: DataColumn<DTRow>[] = [
         { header: '标题', width: '8rem', render: (r) => r.title },
-        { header: '状态', render: (r) => <Tag size='mini' variant={r.status === '已发布' ? 'primary' : 'default'}>{r.status}</Tag> },
-        { header: '操作', width: '6rem', render: () => (
-            <div style={{ display: 'flex', gap: '0.25rem' }}>
-                <IconButton icon={<PencilIcon />} size='medium' title='编辑' />
-                <IconButton icon={<Trash2Icon />} size='medium' title='删除' variant='danger' />
-            </div>
-        ) },
+        {
+            header: '状态',
+            render: (r) => (
+                <Tag size="mini" variant={r.status === '已发布' ? 'primary' : 'default'}>
+                    {r.status}
+                </Tag>
+            ),
+        },
+        {
+            header: '操作',
+            width: '6rem',
+            render: () => (
+                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <IconButton icon={<PencilIcon />} size="medium" title="编辑" />
+                    <IconButton icon={<Trash2Icon />} size="medium" title="删除" variant="danger" />
+                </div>
+            ),
+        },
     ];
     const emptyCols: DataColumn<DTRow>[] = [{ header: '标题', render: (r) => r.title }];
     return (
@@ -229,7 +264,7 @@ export function DataTableDemo() {
             </div>
             <div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>空状态</div>
-                <DataTable columns={emptyCols} emptyText='暂无数据' rowKey={(r) => r.id} rows={[]} />
+                <DataTable columns={emptyCols} emptyText="暂无数据" rowKey={(r) => r.id} rows={[]} />
             </div>
         </div>
     );
@@ -242,12 +277,16 @@ export function DialogDemo() {
     return (
         <div style={row}>
             <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>open</span>
-            <GhostButton asButton onClick={() => setOpen(true)} variant='primary'>默认宽度</GhostButton>
-            <GhostButton asButton onClick={() => setCustomOpen(true)} variant='primary'>自定义宽度</GhostButton>
-            <Dialog onClose={() => setOpen(false)} open={open} title='示例弹窗'>
+            <GhostButton asButton onClick={() => setOpen(true)} variant="primary">
+                默认宽度
+            </GhostButton>
+            <GhostButton asButton onClick={() => setCustomOpen(true)} variant="primary">
+                自定义宽度
+            </GhostButton>
+            <Dialog onClose={() => setOpen(false)} open={open} title="示例弹窗">
                 <p style={{ margin: 0 }}>Esc 或点击遮罩关闭。默认 maxWidth 28rem。</p>
             </Dialog>
-            <Dialog maxWidth='40rem' onClose={() => setCustomOpen(false)} open={customOpen} title='宽弹窗'>
+            <Dialog maxWidth="40rem" onClose={() => setCustomOpen(false)} open={customOpen} title="宽弹窗">
                 <p style={{ margin: 0 }}>maxWidth=40rem，适合长表单。</p>
             </Dialog>
         </div>
@@ -262,22 +301,27 @@ export function ConfirmDialogDemo() {
     return (
         <div style={row}>
             <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>open</span>
-            <GhostButton asButton onClick={() => setOpen(true)} variant='primary'>默认按钮</GhostButton>
-            <GhostButton asButton onClick={() => setCustom(true)} variant='primary'>自定义按钮 + loading</GhostButton>
+            <GhostButton asButton onClick={() => setOpen(true)} variant="primary">
+                默认按钮
+            </GhostButton>
+            <GhostButton asButton onClick={() => setCustom(true)} variant="primary">
+                自定义按钮 + loading
+            </GhostButton>
+            <ConfirmDialog message="确定要执行此操作吗？此操作不可撤销。" onCancel={() => setOpen(false)} onConfirm={() => setOpen(false)} open={open} title="确认操作" />
             <ConfirmDialog
-                message='确定要执行此操作吗？此操作不可撤销。'
-                onCancel={() => setOpen(false)}
-                onConfirm={() => setOpen(false)}
-                open={open}
-                title='确认操作'
-            />
-            <ConfirmDialog
-                confirmLabel='删除'
-                message='确定要删除这条记录吗？'
+                confirmLabel="删除"
+                message="确定要删除这条记录吗？"
                 onCancel={() => setCustom(false)}
-                onConfirm={() => { setLoading(true); setTimeout(() => { setLoading(false); setCustom(false); toast.success('已删除'); }, 1000); }}
+                onConfirm={() => {
+                    setLoading(true);
+                    setTimeout(() => {
+                        setLoading(false);
+                        setCustom(false);
+                        toast.success('已删除');
+                    }, 1000);
+                }}
                 open={custom}
-                title='删除确认'
+                title="删除确认"
                 loading={loading}
             />
         </div>
@@ -289,8 +333,12 @@ export function ToastDemo() {
     return (
         <div style={row}>
             <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>type</span>
-            <GhostButton asButton onClick={() => toast.success('操作成功')} variant='primary'>success</GhostButton>
-            <GhostButton asButton onClick={() => toast.error('操作失败')}>error</GhostButton>
+            <GhostButton asButton onClick={() => toast.success('操作成功')} variant="primary">
+                success
+            </GhostButton>
+            <GhostButton asButton onClick={() => toast.error('操作失败')}>
+                error
+            </GhostButton>
         </div>
     );
 }

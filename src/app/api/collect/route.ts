@@ -70,7 +70,7 @@ interface RawEvent {
     duration?: number;
     screen?: string;
     lang?: string;
-    ua?: string;           // #12 新增
+    ua?: string; // #12 新增
     isNew?: number;
     isSessionStart?: number;
     ts: number;
@@ -135,19 +135,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(fail(50000, '服务暂不可用'), { status: 500, headers: corsHeaders });
         }
 
-        const [siteRows] = await db.execute(
-            'SELECT id FROM zhijian_track_sites WHERE id = ? AND status = ?',
-            [siteId, 'active'],
-        );
+        const [siteRows] = await db.execute('SELECT id FROM zhijian_track_sites WHERE id = ? AND status = ?', [siteId, 'active']);
         if ((siteRows as any[]).length === 0) {
             return NextResponse.json(fail(40400, '站点未注册或已停用'), { status: 404, headers: corsHeaders });
         }
 
         /*-- 提取 IP + 解析地理位置 --*/
         const forwarded = request.headers.get('x-forwarded-for');
-        const rawIp = forwarded
-            ? forwarded.split(',')[0].trim()
-            : (request.headers.get('x-real-ip') || '');
+        const rawIp = forwarded ? forwarded.split(',')[0].trim() : request.headers.get('x-real-ip') || '';
         const maskedIp = rawIp ? maskIp(rawIp) : null;
         const geo = rawIp ? lookup(rawIp) : null;
 
@@ -168,7 +163,6 @@ export async function POST(request: NextRequest) {
         const placeholders: string[] = [];
 
         for (const evt of dedupedEvents) {
-
             /* #14 UA 解析 */
             const uaInfo = parseUA(evt.ua || '');
 
@@ -192,7 +186,7 @@ export async function POST(request: NextRequest) {
                 geo?.city || null,
                 (evt.ua || '').slice(0, 500) || null,
                 uaInfo.browser || null,
-                uaInfo.os || null,
+                uaInfo.os || null
             );
         }
 
@@ -203,7 +197,7 @@ export async function POST(request: NextRequest) {
         /*-- 批量写入 --*/
         await db.execute(
             `INSERT INTO zhijian_track_events (site_id, type, path, referrer, title, duration, screen, lang, is_new, is_session, visitor_id, session_id, ip, country, region, city, ua, browser, os) VALUES ${placeholders.join(', ')}`,
-            values,
+            values
         );
 
         return new NextResponse(null, { status: 202, headers: corsHeaders });

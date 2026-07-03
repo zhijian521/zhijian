@@ -14,9 +14,7 @@ export const GET = withAdmin(async (request) => {
 
     /*-- 支持单篇导出（?id=） --*/
     const targetId = request.nextUrl.searchParams.get('id');
-    const posts = targetId
-        ? allPosts.filter((p) => p.id === Number(targetId))
-        : allPosts;
+    const posts = targetId ? allPosts.filter((p) => p.id === Number(targetId)) : allPosts;
 
     /*-- 收集图片路径映射：源路径 → ZIP 内目标路径 --*/
     const imageMap = new Map<string, string>();
@@ -63,9 +61,7 @@ export const GET = withAdmin(async (request) => {
             `status: ${post.status}`,
             post.summary ? `summary: ${escapeYaml(post.summary)}` : '',
             post.categoryName ? `category: ${escapeYaml(post.categoryName)}` : '',
-            post.tagNames?.length
-                ? `tags: [${post.tagNames.map((t) => escapeYaml(t.name)).join(', ')}]`
-                : '',
+            post.tagNames?.length ? `tags: [${post.tagNames.map((t) => escapeYaml(t.name)).join(', ')}]` : '',
             post.publishedAt ? `publishedAt: ${post.publishedAt}` : '',
             coverMap.has(post.id) ? `coverImage: ${coverMap.get(post.id)}` : '',
         ]
@@ -75,9 +71,7 @@ export const GET = withAdmin(async (request) => {
         const mdContent = `---\n${frontMatter}\n---\n\n${content}\n`;
 
         /* 文件名：标题去非法字符，冲突追加 id */
-        const rawName = (post.title || `untitled-${post.id}`)
-            .replace(/[\/\\:*?"<>|]/g, '-')
-            .trim() || `untitled-${post.id}`;
+        const rawName = (post.title || `untitled-${post.id}`).replace(/[\/\\:*?"<>|]/g, '-').trim() || `untitled-${post.id}`;
 
         let fileName = rawName;
         const count = usedTitles.get(rawName) ?? 0;

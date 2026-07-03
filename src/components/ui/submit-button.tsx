@@ -15,11 +15,7 @@ const SIZE_CLASS: Record<string, string | undefined> = {
 export function SubmitButton({ size = 'medium', className, children, ...props }: SubmitButtonProps) {
     const sizeClass = SIZE_CLASS[size];
     return (
-        <button
-            className={`${styles.button}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`}
-            type="submit"
-            {...props}
-        >
+        <button className={`${styles.button}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`} type="submit" {...props}>
             {children}
         </button>
     );

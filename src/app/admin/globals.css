@@ -65,7 +65,9 @@
 .admin-stitch-card {
     border: 1px solid var(--primary);
     background: var(--background);
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .admin-stitch-card:hover {

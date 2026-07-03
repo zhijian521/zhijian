@@ -43,8 +43,7 @@ export default function TaxonomyManagement() {
 
     /*-- 统一删除目标 --*/
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
-    const deleteLoading = (deleteTarget?.kind === 'cat' && catList.deleting !== null)
-        || (deleteTarget?.kind === 'tag' && tagList.deleting !== null);
+    const deleteLoading = (deleteTarget?.kind === 'cat' && catList.deleting !== null) || (deleteTarget?.kind === 'tag' && tagList.deleting !== null);
 
     async function handleDeleteConfirm() {
         if (!deleteTarget) return;
@@ -103,7 +102,12 @@ export default function TaxonomyManagement() {
     function handleCatNameChange(value: string) {
         setCatFormName(value);
         if (!catIsEditing) {
-            setCatFormSlug(value.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''));
+            setCatFormSlug(
+                value
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w-]/g, '')
+            );
         }
     }
 
@@ -116,9 +120,7 @@ export default function TaxonomyManagement() {
 
         try {
             const body = { name: catFormName.trim(), slug: catFormSlug, sort_order: Math.max(1, Math.round(catFormSortOrder)) };
-            const res = catIsEditing
-                ? await api.put(`/admin/categories/${catEditingId}`, body)
-                : await api.post('/admin/categories', body);
+            const res = catIsEditing ? await api.put(`/admin/categories/${catEditingId}`, body) : await api.post('/admin/categories', body);
 
             if (res.code !== 0) {
                 setCatFormMessage(res.message || '操作失败。');
@@ -156,7 +158,12 @@ export default function TaxonomyManagement() {
     function handleTagNameChange(value: string) {
         setTagFormName(value);
         if (!tagIsEditing) {
-            setTagFormSlug(value.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''));
+            setTagFormSlug(
+                value
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w-]/g, '')
+            );
         }
     }
 
@@ -169,9 +176,7 @@ export default function TaxonomyManagement() {
 
         try {
             const body = { name: tagFormName.trim(), slug: tagFormSlug };
-            const res = tagIsEditing
-                ? await api.put(`/admin/tags/${tagEditingId}`, body)
-                : await api.post('/admin/tags', body);
+            const res = tagIsEditing ? await api.put(`/admin/tags/${tagEditingId}`, body) : await api.post('/admin/tags', body);
 
             if (res.code !== 0) {
                 setTagFormMessage(res.message || '操作失败。');
@@ -193,10 +198,10 @@ export default function TaxonomyManagement() {
     return (
         <>
             <AdminPageHeader
-                description='管理文章分类与标签，支持新增、编辑和删除。'
-                eyebrow='Categories & Tags'
+                description="管理文章分类与标签，支持新增、编辑和删除。"
+                eyebrow="Categories & Tags"
                 tag={`${catList.data.total} 个分类 · ${tagList.data.total} 个标签`}
-                title='分类标签'
+                title="分类标签"
             />
 
             <div className={styles.columns}>
@@ -207,13 +212,7 @@ export default function TaxonomyManagement() {
                             <span className={styles.columnTitle}>分类</span>
                             <span className={styles.columnSub}>Categories</span>
                         </div>
-                        <GhostButton
-                            asButton
-                            icon={<PlusIcon className={shared.btnIcon} />}
-                            onClick={openCatCreateForm}
-                            size='small'
-                            variant='primary'
-                        >
+                        <GhostButton asButton icon={<PlusIcon className={shared.btnIcon} />} onClick={openCatCreateForm} size="small" variant="primary">
                             新增
                         </GhostButton>
                     </div>
@@ -245,13 +244,7 @@ export default function TaxonomyManagement() {
                             <span className={styles.columnTitle}>标签</span>
                             <span className={styles.columnSub}>Tags</span>
                         </div>
-                        <GhostButton
-                            asButton
-                            icon={<PlusIcon className={shared.btnIcon} />}
-                            onClick={openTagCreateForm}
-                            size='small'
-                            variant='primary'
-                        >
+                        <GhostButton asButton icon={<PlusIcon className={shared.btnIcon} />} onClick={openTagCreateForm} size="small" variant="primary">
                             新增
                         </GhostButton>
                     </div>
@@ -279,37 +272,21 @@ export default function TaxonomyManagement() {
             {/*-- 分类 Dialog --*/}
             <Dialog onClose={() => setCatFormOpen(false)} open={catFormOpen} title={catIsEditing ? '编辑分类' : '新增分类'}>
                 <form className={shared.form} onSubmit={handleCatSubmit}>
-                    <TextInput
-                        id='cat-name'
-                        label='分类名'
-                        onChange={(e) => handleCatNameChange(e.target.value)}
-                        placeholder='输入分类名'
-                        required
-                        value={catFormName}
-                    />
-                    <TextInput
-                        id='cat-slug'
-                        label='Slug'
-                        onChange={(e) => setCatFormSlug(e.target.value)}
-                        placeholder='url-friendly-identifier'
-                        value={catFormSlug}
-                    />
-                    <TextInput
-                        id='cat-sort'
-                        label='排序号'
-                        onChange={(e) => setCatFormSortOrder(Number(e.target.value))}
-                        placeholder='1'
-                        type='number'
-                        value={String(catFormSortOrder)}
-                    />
+                    <TextInput id="cat-name" label="分类名" onChange={(e) => handleCatNameChange(e.target.value)} placeholder="输入分类名" required value={catFormName} />
+                    <TextInput id="cat-slug" label="Slug" onChange={(e) => setCatFormSlug(e.target.value)} placeholder="url-friendly-identifier" value={catFormSlug} />
+                    <TextInput id="cat-sort" label="排序号" onChange={(e) => setCatFormSortOrder(Number(e.target.value))} placeholder="1" type="number" value={String(catFormSortOrder)} />
                     <div className={shared.formActions}>
-                        <GhostButton asButton onClick={() => setCatFormOpen(false)}>取消</GhostButton>
-                        <SubmitButton size='medium' disabled={catSubmitting}>
+                        <GhostButton asButton onClick={() => setCatFormOpen(false)}>
+                            取消
+                        </GhostButton>
+                        <SubmitButton size="medium" disabled={catSubmitting}>
                             {catSubmitting ? '保存中...' : catIsEditing ? '保存修改' : '新增分类'}
                         </SubmitButton>
                     </div>
                     {catFormMessage && (
-                        <p className={shared.formMessage} role="alert">{catFormMessage}</p>
+                        <p className={shared.formMessage} role="alert">
+                            {catFormMessage}
+                        </p>
                     )}
                 </form>
             </Dialog>
@@ -317,42 +294,33 @@ export default function TaxonomyManagement() {
             {/*-- 标签 Dialog --*/}
             <Dialog onClose={() => setTagFormOpen(false)} open={tagFormOpen} title={tagIsEditing ? '编辑标签' : '新增标签'}>
                 <form className={shared.form} onSubmit={handleTagSubmit}>
-                    <TextInput
-                        id='tag-name'
-                        label='标签名'
-                        onChange={(e) => handleTagNameChange(e.target.value)}
-                        placeholder='输入标签名'
-                        required
-                        value={tagFormName}
-                    />
-                    <TextInput
-                        id='tag-slug'
-                        label='Slug'
-                        onChange={(e) => setTagFormSlug(e.target.value)}
-                        placeholder='url-friendly-identifier'
-                        value={tagFormSlug}
-                    />
+                    <TextInput id="tag-name" label="标签名" onChange={(e) => handleTagNameChange(e.target.value)} placeholder="输入标签名" required value={tagFormName} />
+                    <TextInput id="tag-slug" label="Slug" onChange={(e) => setTagFormSlug(e.target.value)} placeholder="url-friendly-identifier" value={tagFormSlug} />
                     <div className={shared.formActions}>
-                        <GhostButton asButton onClick={() => setTagFormOpen(false)}>取消</GhostButton>
-                        <SubmitButton size='medium' disabled={tagSubmitting}>
+                        <GhostButton asButton onClick={() => setTagFormOpen(false)}>
+                            取消
+                        </GhostButton>
+                        <SubmitButton size="medium" disabled={tagSubmitting}>
                             {tagSubmitting ? '保存中...' : tagIsEditing ? '保存修改' : '新增标签'}
                         </SubmitButton>
                     </div>
                     {tagFormMessage && (
-                        <p className={shared.formMessage} role="alert">{tagFormMessage}</p>
+                        <p className={shared.formMessage} role="alert">
+                            {tagFormMessage}
+                        </p>
                     )}
                 </form>
             </Dialog>
 
             {/*-- 删除确认 --*/}
             <ConfirmDialog
-                confirmLabel='删除'
+                confirmLabel="删除"
                 message={`确定要删除「${deleteTarget?.name ?? ''}」吗？此操作不可撤销。`}
                 onCancel={() => setDeleteTarget(null)}
                 onConfirm={handleDeleteConfirm}
                 open={!!deleteTarget}
                 loading={deleteLoading}
-                title='确认删除'
+                title="确认删除"
             />
         </>
     );

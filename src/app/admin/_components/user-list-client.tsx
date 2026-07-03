@@ -63,23 +63,26 @@ export default function UserListClient() {
     const [submitting, setSubmitting] = useState(false);
     const [formMessage, setFormMessage] = useState<string | null>(null);
 
-    const fetchUsers = useCallback(async (opts?: { page?: number; search?: string }) => {
-        const p = opts?.page ?? page;
-        const s = opts?.search ?? searchKeyword;
-        setLoading(true);
-        try {
-            const params: Record<string, unknown> = { page: p, pageSize };
-            if (s.trim()) params.search = s.trim();
-            const res = await api.get<ListData<UserItem>>('/admin/users', params);
-            if (res.code === 0 && res.data) {
-                setData(res.data);
+    const fetchUsers = useCallback(
+        async (opts?: { page?: number; search?: string }) => {
+            const p = opts?.page ?? page;
+            const s = opts?.search ?? searchKeyword;
+            setLoading(true);
+            try {
+                const params: Record<string, unknown> = { page: p, pageSize };
+                if (s.trim()) params.search = s.trim();
+                const res = await api.get<ListData<UserItem>>('/admin/users', params);
+                if (res.code === 0 && res.data) {
+                    setData(res.data);
+                }
+            } catch (err) {
+                toast.error('获取用户列表失败');
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            toast.error('获取用户列表失败');
-        } finally {
-            setLoading(false);
-        }
-    }, [page, searchKeyword]);
+        },
+        [page, searchKeyword]
+    );
 
     useEffect(() => {
         fetchUsers();
@@ -161,10 +164,7 @@ export default function UserListClient() {
         if (form.password.trim()) body.password = form.password.trim();
 
         try {
-            const res =
-                formMode === 'create'
-                    ? await api.post('/admin/users', body)
-                    : await api.put(`/admin/users/${editingUser!.id}`, body);
+            const res = formMode === 'create' ? await api.post('/admin/users', body) : await api.put(`/admin/users/${editingUser!.id}`, body);
 
             if (res.code !== 0) {
                 setFormMessage(res.message || '操作失败。');
@@ -220,20 +220,8 @@ export default function UserListClient() {
             width: '6rem',
             render: (user) => (
                 <div className={shared.actionGroup}>
-                    <IconButton
-                        icon={<PencilIcon />}
-                        onClick={() => openEditForm(user)}
-                        size="medium"
-                        title="编辑"
-                    />
-                    <IconButton
-                        icon={<Trash2Icon />}
-                        onClick={() => handleDeleteClick(user.id, user.username)}
-                        size="medium"
-                        title="删除"
-                        variant="danger"
-                        disabled={deleting === user.id}
-                    />
+                    <IconButton icon={<PencilIcon />} onClick={() => openEditForm(user)} size="medium" title="编辑" />
+                    <IconButton icon={<Trash2Icon />} onClick={() => handleDeleteClick(user.id, user.username)} size="medium" title="删除" variant="danger" disabled={deleting === user.id} />
                 </div>
             ),
         },
@@ -244,36 +232,18 @@ export default function UserListClient() {
             {/* 顶部操作栏 */}
             <div className={styles.toolbar}>
                 <form className={styles.searchForm} onSubmit={handleSearchSubmit} role="search" aria-label="搜索用户">
-                    <TextInput
-                        icon={<SearchIcon />}
-                        id='user-search'
-                        inputSize='medium'
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        placeholder="搜索用户名或邮箱..."
-                        value={searchInput}
-                    />
-                    <GhostButton asButton size='medium' variant='primary' onClick={handleSearchSubmit}>
+                    <TextInput icon={<SearchIcon />} id="user-search" inputSize="medium" onChange={(e) => setSearchInput(e.target.value)} placeholder="搜索用户名或邮箱..." value={searchInput} />
+                    <GhostButton asButton size="medium" variant="primary" onClick={handleSearchSubmit}>
                         搜索
                     </GhostButton>
                 </form>
-                <GhostButton
-                    asButton
-                    icon={<PlusIcon className={shared.btnIcon} />}
-                    onClick={openCreateForm}
-                    size='medium'
-                    variant='primary'
-                >
+                <GhostButton asButton icon={<PlusIcon className={shared.btnIcon} />} onClick={openCreateForm} size="medium" variant="primary">
                     新建用户
                 </GhostButton>
             </div>
 
             {/* 表格 */}
-            <DataTable
-                columns={columns}
-                emptyText={loading ? '加载中...' : '暂无用户数据'}
-                rowKey={(user) => user.id}
-                rows={data.data}
-            />
+            <DataTable columns={columns} emptyText={loading ? '加载中...' : '暂无用户数据'} rowKey={(user) => user.id} rows={data.data} />
 
             <ConfirmDialog
                 open={!!deleteTarget}
@@ -286,40 +256,28 @@ export default function UserListClient() {
             />
 
             {/* 新增/编辑弹窗 */}
-            <Dialog
-                onClose={() => setFormOpen(false)}
-                open={formOpen}
-                title={formMode === 'create' ? '新建用户' : `编辑用户：${editingUser?.username || ''}`}
-            >
+            <Dialog onClose={() => setFormOpen(false)} open={formOpen} title={formMode === 'create' ? '新建用户' : `编辑用户：${editingUser?.username || ''}`}>
                 <form className={shared.form} onSubmit={handleFormSubmit}>
                     <TextInput
-                        id='form-username'
-                        label='用户名'
+                        id="form-username"
+                        label="用户名"
                         maxLength={50}
                         onChange={(e) => handleFormChange('username', e.target.value)}
-                        placeholder='2-50 个字符'
+                        placeholder="2-50 个字符"
                         required
                         value={form.username}
                     />
 
-                    <TextInput
-                        id='form-email'
-                        label='邮箱'
-                        onChange={(e) => handleFormChange('email', e.target.value)}
-                        placeholder='user@example.com'
-                        required
-                        type='email'
-                        value={form.email}
-                    />
+                    <TextInput id="form-email" label="邮箱" onChange={(e) => handleFormChange('email', e.target.value)} placeholder="user@example.com" required type="email" value={form.email} />
 
                     <TextInput
-                        id='form-password'
+                        id="form-password"
                         label={formMode === 'create' ? '密码' : '新密码（留空则不修改）'}
                         minLength={6}
                         onChange={(e) => handleFormChange('password', e.target.value)}
                         placeholder={formMode === 'create' ? '至少 6 个字符' : '留空不修改密码'}
                         required={formMode === 'create'}
-                        type='password'
+                        type="password"
                         value={form.password}
                     />
 
@@ -327,7 +285,7 @@ export default function UserListClient() {
                     <div className={styles.field}>
                         <span className={styles.fieldLabel}>角色</span>
                         <PillSelect
-                            name='role'
+                            name="role"
                             onChange={(v) => handleFormChange('role', v)}
                             options={[
                                 { value: 'user', label: '普通用户' },
@@ -342,7 +300,7 @@ export default function UserListClient() {
                         <div className={styles.field}>
                             <span className={styles.fieldLabel}>状态</span>
                             <PillSelect
-                                name='status'
+                                name="status"
                                 onChange={(v) => handleFormChange('status', v)}
                                 options={[
                                     { value: 'active', label: '正常' },
@@ -357,19 +315,30 @@ export default function UserListClient() {
                         <GhostButton asButton onClick={() => setFormOpen(false)}>
                             取消
                         </GhostButton>
-                        <SubmitButton size='medium' disabled={submitting}>
+                        <SubmitButton size="medium" disabled={submitting}>
                             {submitting ? '保存中...' : formMode === 'create' ? '创建用户' : '保存修改'}
                         </SubmitButton>
                     </div>
 
                     {formMessage && (
-                        <p className={shared.formMessage} role="alert">{formMessage}</p>
+                        <p className={shared.formMessage} role="alert">
+                            {formMessage}
+                        </p>
                     )}
                 </form>
             </Dialog>
 
             {/* 分页 */}
-            <Pagination current={page} onPageChange={setPage} total={totalPages} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} />
+            <Pagination
+                current={page}
+                onPageChange={setPage}
+                total={totalPages}
+                pageSize={pageSize}
+                onPageSizeChange={(s) => {
+                    setPageSize(s);
+                    setPage(1);
+                }}
+            />
         </div>
     );
 }

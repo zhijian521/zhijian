@@ -81,7 +81,7 @@ export const POST = withUser(async (request: NextRequest) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`,
+                        Authorization: `Bearer ${apiKey}`,
                     },
                     body: JSON.stringify({
                         model,
@@ -147,13 +147,17 @@ export const POST = withUser(async (request: NextRequest) => {
                 }
                 try {
                     controller.enqueue(sseData(JSON.stringify({ error: 'AI 响应中断。' })));
-                } catch { /* 流已关闭，忽略 */ }
+                } catch {
+                    /* 流已关闭，忽略 */
+                }
                 console.warn('[ai/chat] stream read error:', e);
             } finally {
                 try {
                     controller.enqueue(sseData('[DONE]'));
                     controller.close();
-                } catch { /* 流已取消/关闭，忽略 */ }
+                } catch {
+                    /* 流已取消/关闭，忽略 */
+                }
             }
         },
     });
@@ -162,7 +166,7 @@ export const POST = withUser(async (request: NextRequest) => {
         headers: {
             'Content-Type': 'text/event-stream; charset=utf-8',
             'Cache-Control': 'no-cache, no-transform',
-            'Connection': 'keep-alive',
+            Connection: 'keep-alive',
         },
     });
 });

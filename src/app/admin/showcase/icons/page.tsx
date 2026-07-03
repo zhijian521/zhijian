@@ -22,32 +22,27 @@ export default function ShowcaseIconsPage() {
     };
 
     /* 卸载时清理复制提示定时器，避免对已卸载组件 setState */
-    useEffect(() => () => {
-        if (timerRef.current) clearTimeout(timerRef.current);
-    }, []);
+    useEffect(
+        () => () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        },
+        []
+    );
 
     const total = SECTIONS.reduce((sum, s) => sum + s.names.length, 0);
 
     return (
         <div>
-            <AdminPageHeader
-                eyebrow="Icons"
-                title="图标预览"
-                description="浏览项目内所有可用的图标，点击图标即可复制 import 用法。"
-                tag={`共 ${total} 个图标`}
-            />
+            <AdminPageHeader eyebrow="Icons" title="图标预览" description="浏览项目内所有可用的图标，点击图标即可复制 import 用法。" tag={`共 ${total} 个图标`} />
 
-            {SECTIONS.map(section => (
+            {SECTIONS.map((section) => (
                 <section key={section.key} className={styles.section}>
-                    <h2 className={styles.sectionTitle}>{section.title} · {section.names.length}</h2>
+                    <h2 className={styles.sectionTitle}>
+                        {section.title} · {section.names.length}
+                    </h2>
                     <div className={styles.grid}>
-                        {section.names.map(name => (
-                            <button
-                                key={name}
-                                className={styles.iconCell}
-                                onClick={() => handleCopy(name)}
-                                title={`点击复制 ${name}`}
-                            >
+                        {section.names.map((name) => (
+                            <button key={name} className={styles.iconCell} onClick={() => handleCopy(name)} title={`点击复制 ${name}`}>
                                 <Icon name={name} className={styles.icon} />
                                 <span className={styles.iconName}>{copied === name ? '已复制' : name}</span>
                             </button>

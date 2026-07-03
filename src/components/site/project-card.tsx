@@ -23,13 +23,7 @@ export interface ProjectCardProps {
 }
 
 /*== ProjectCard 项目卡片 — 组合 Tag + GhostButton ==*/
-export function ProjectCard({
-    icon,
-    title,
-    description,
-    tags,
-    actions,
-}: ProjectCardProps) {
+export function ProjectCard({ icon, title, description, tags, actions }: ProjectCardProps) {
     return (
         <div className={styles.card}>
             <div className={styles.header}>
@@ -44,7 +38,9 @@ export function ProjectCard({
             {tags && tags.length > 0 ? (
                 <div className={styles.tags}>
                     {tags.map((tag) => (
-                        <Tag key={tag} size="mini">{tag}</Tag>
+                        <Tag key={tag} size="mini">
+                            {tag}
+                        </Tag>
                     ))}
                 </div>
             ) : null}
@@ -52,14 +48,7 @@ export function ProjectCard({
             {actions && actions.length > 0 ? (
                 <div className={styles.actions}>
                     {actions.map((action) => (
-                        <GhostButton
-                            href={action.href}
-                            icon={action.icon}
-                            key={action.label}
-                            rel="noreferrer"
-                            size="small"
-                            target="_blank"
-                        >
+                        <GhostButton href={action.href} icon={action.icon} key={action.label} rel="noreferrer" size="small" target="_blank">
                             {action.label}
                         </GhostButton>
                     ))}

@@ -20,36 +20,15 @@ interface TaxonomyCardProps {
     onDelete: () => void;
 }
 
-export default function TaxonomyCard({
-    name,
-    sortOrder,
-    tone,
-    deleting,
-    onEdit,
-    onDelete,
-}: TaxonomyCardProps) {
+export default function TaxonomyCard({ name, sortOrder, tone, deleting, onEdit, onDelete }: TaxonomyCardProps) {
     return (
         <div className={`${styles.card} ${tone === 'tag' ? styles.cardTag : styles.cardCat}`} role="listitem" tabIndex={0}>
             <div className={styles.actions}>
-                <IconButton
-                    icon={<PencilIcon />}
-                    onClick={onEdit}
-                    size="small"
-                    title="编辑"
-                />
-                <IconButton
-                    disabled={deleting}
-                    icon={<Trash2Icon />}
-                    onClick={onDelete}
-                    size="small"
-                    title="删除"
-                    variant="danger"
-                />
+                <IconButton icon={<PencilIcon />} onClick={onEdit} size="small" title="编辑" />
+                <IconButton disabled={deleting} icon={<Trash2Icon />} onClick={onDelete} size="small" title="删除" variant="danger" />
             </div>
             <span className={styles.name}>{name}</span>
-            {sortOrder != null && (
-                <span className={styles.meta}>#{sortOrder}</span>
-            )}
+            {sortOrder != null && <span className={styles.meta}>#{sortOrder}</span>}
         </div>
     );
 }

@@ -30,16 +30,7 @@ const SAVE_STATUS_LABELS = {
 } as const;
 
 /*== Nav 设置面板：首屏右上角触发，承载账号与同步状态 ==*/
-export default function SettingsSection({
-    user,
-    isLoggedIn,
-    loading,
-    onLogin,
-    onRegister,
-    onLogout,
-    onAuthChange,
-    loginSignal = 0,
-}: SettingsSectionProps) {
+export default function SettingsSection({ user, isLoggedIn, loading, onLogin, onRegister, onLogout, onAuthChange, loginSignal = 0 }: SettingsSectionProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState<'login' | 'register' | false>(false);
     const [loggingOut, setLoggingOut] = useState(false);
@@ -118,14 +109,7 @@ export default function SettingsSection({
 
     return (
         <div className={styles.root} ref={rootRef}>
-            <button
-                aria-controls={isOpen ? panelId : undefined}
-                aria-expanded={isOpen}
-                aria-label={triggerLabel}
-                className={styles.triggerButton}
-                onClick={handleToggleOpen}
-                type="button"
-            >
+            <button aria-controls={isOpen ? panelId : undefined} aria-expanded={isOpen} aria-label={triggerLabel} className={styles.triggerButton} onClick={handleToggleOpen} type="button">
                 {isLoggedIn && user ? <span className={styles.triggerName}>{user.username}</span> : null}
                 <SettingsIcon className={styles.triggerIcon} />
             </button>
@@ -155,12 +139,7 @@ export default function SettingsSection({
                                     <span className={styles.profileValue}>{user.role}</span>
                                 </div>
 
-                                <button
-                                    className={styles.logoutButton}
-                                    disabled={loggingOut}
-                                    onClick={handleLogout}
-                                    type="button"
-                                >
+                                <button className={styles.logoutButton} disabled={loggingOut} onClick={handleLogout} type="button">
                                     <LogOutIcon className={styles.logoutIcon} />
                                     <span>{loggingOut ? '退出中…' : '退出登录'}</span>
                                 </button>
@@ -170,18 +149,10 @@ export default function SettingsSection({
                                 <p className={styles.cardHint}>登录后会自动把当前导航数据同步到你的账号。</p>
 
                                 <div className={styles.authButtons}>
-                                    <button
-                                        className={styles.primaryButton}
-                                        onClick={() => setShowAuthModal('login')}
-                                        type="button"
-                                    >
+                                    <button className={styles.primaryButton} onClick={() => setShowAuthModal('login')} type="button">
                                         登录
                                     </button>
-                                    <button
-                                        className={styles.secondaryButton}
-                                        onClick={() => setShowAuthModal('register')}
-                                        type="button"
-                                    >
+                                    <button className={styles.secondaryButton} onClick={() => setShowAuthModal('register')} type="button">
                                         注册
                                     </button>
                                 </div>
@@ -197,22 +168,8 @@ export default function SettingsSection({
                         <div className={styles.syncList}>
                             {(['bookmarks', 'todos', 'notes', 'chat'] as const).map((key) => {
                                 const status = isLoggedIn ? saveStatus[key] : 'local';
-                                const dotClassName =
-                                    status === 'ok'
-                                        ? styles.syncDotOk
-                                        : status === 'pending'
-                                          ? styles.syncDotPending
-                                          : status === 'error'
-                                            ? styles.syncDotError
-                                            : styles.syncDotLocal;
-                                const statusLabel =
-                                    status === 'ok'
-                                        ? '已同步'
-                                        : status === 'pending'
-                                          ? '同步中'
-                                          : status === 'error'
-                                            ? '同步失败'
-                                            : '仅本地';
+                                const dotClassName = status === 'ok' ? styles.syncDotOk : status === 'pending' ? styles.syncDotPending : status === 'error' ? styles.syncDotError : styles.syncDotLocal;
+                                const statusLabel = status === 'ok' ? '已同步' : status === 'pending' ? '同步中' : status === 'error' ? '同步失败' : '仅本地';
 
                                 return (
                                     <div className={styles.syncRow} key={key}>

@@ -25,20 +25,8 @@ export function PillSelect<T extends string>({ options, value, onChange, name, s
     return (
         <div className={`${styles.group}${sizeClass ? ` ${styles[sizeClass]}` : ''}`}>
             {options.map((opt) => (
-                <button
-                    className={`${styles.pill}${value === opt.value ? ` ${styles.pillActive}` : ''}`}
-                    key={opt.value}
-                    onClick={() => onChange(opt.value)}
-                    type='button'
-                >
-                    <input
-                        checked={value === opt.value}
-                        className={styles.input}
-                        name={name}
-                        readOnly
-                        type='radio'
-                        value={opt.value}
-                    />
+                <button className={`${styles.pill}${value === opt.value ? ` ${styles.pillActive}` : ''}`} key={opt.value} onClick={() => onChange(opt.value)} type="button">
+                    <input checked={value === opt.value} className={styles.input} name={name} readOnly type="radio" value={opt.value} />
                     {opt.label}
                 </button>
             ))}

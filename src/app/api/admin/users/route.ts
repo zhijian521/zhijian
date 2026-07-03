@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { createUser, hashPassword, listUsers, validateUserFields } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 
 /*==
@@ -48,12 +48,22 @@ export const POST = withAdmin(async (request) => {
         const passwordHash = await hashPassword(password);
         const user = await createUser({ username, email, passwordHash, role });
 
-        return NextResponse.json(success({
-            user: {
-                id: user.id, username: user.username, email: user.email,
-                role: user.role, status: user.status, created_at: user.created_at,
-            },
-        }, '用户创建成功。'), { status: 201 });
+        return NextResponse.json(
+            success(
+                {
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        status: user.status,
+                        created_at: user.created_at,
+                    },
+                },
+                '用户创建成功。'
+            ),
+            { status: 201 }
+        );
     } catch (err: any) {
         if (err.code === 'ER_DUP_ENTRY') {
             return NextResponse.json(fail(BizCode.USER_EXISTS, '用户名或邮箱已被占用。'), { status: 409 });

@@ -61,24 +61,25 @@ export default function UploadManagement() {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
     /* 加载图片列表 */
-    const fetchUploads = useCallback(async (p: number) => {
-        setLoading(true);
-        try {
-            const res = await api.get<{ data: UploadItem[]; total: number }>(
-                `/admin/uploads?page=${p}&pageSize=${pageSize}`,
-            );
-            if (res.code === 0 && res.data) {
-                setUploads(res.data.data);
-                setTotal(res.data.total);
-            } else {
-                toast.error(res.message || '获取图片列表失败');
+    const fetchUploads = useCallback(
+        async (p: number) => {
+            setLoading(true);
+            try {
+                const res = await api.get<{ data: UploadItem[]; total: number }>(`/admin/uploads?page=${p}&pageSize=${pageSize}`);
+                if (res.code === 0 && res.data) {
+                    setUploads(res.data.data);
+                    setTotal(res.data.total);
+                } else {
+                    toast.error(res.message || '获取图片列表失败');
+                }
+            } catch {
+                toast.error('网络错误');
+            } finally {
+                setLoading(false);
             }
-        } catch {
-            toast.error('网络错误');
-        } finally {
-            setLoading(false);
-        }
-    }, [pageSize]);
+        },
+        [pageSize]
+    );
 
     useEffect(() => {
         fetchUploads(page);
@@ -141,17 +142,12 @@ export default function UploadManagement() {
     return (
         <div className={styles.management}>
             <AdminPageHeader
-                description='上传和管理文章图片，支持复制 Markdown 路径和同步到本地开发环境。'
-                eyebrow='Uploads'
+                description="上传和管理文章图片，支持复制 Markdown 路径和同步到本地开发环境。"
+                eyebrow="Uploads"
                 tag={`${total} 张图片`}
-                title='图片管理'
+                title="图片管理"
                 action={
-                    <GhostButton
-                        asButton
-                        icon={<DownloadIcon className={shared.btnIcon} />}
-                        onClick={() => setSyncOpen(true)}
-                        size='small'
-                    >
+                    <GhostButton asButton icon={<DownloadIcon className={shared.btnIcon} />} onClick={() => setSyncOpen(true)} size="small">
                         同步到本地
                     </GhostButton>
                 }
@@ -178,32 +174,14 @@ export default function UploadManagement() {
                                     >
                                         <PencilIcon className={styles.iconSmall} />
                                     </button>
-                                    <button
-                                        aria-label="复制 Markdown"
-                                        className={styles.iconBtn}
-                                        onClick={() => handleCopy(upload)}
-                                        type="button"
-                                    >
-                                        {copiedId === upload.id
-                                            ? <CheckIcon className={styles.iconSmall} />
-                                            : <CopyIcon className={styles.iconSmall} />
-                                        }
+                                    <button aria-label="复制 Markdown" className={styles.iconBtn} onClick={() => handleCopy(upload)} type="button">
+                                        {copiedId === upload.id ? <CheckIcon className={styles.iconSmall} /> : <CopyIcon className={styles.iconSmall} />}
                                     </button>
-                                    <button
-                                        aria-label="删除图片"
-                                        className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                                        onClick={() => setDeleteTarget(upload)}
-                                        type="button"
-                                    >
+                                    <button aria-label="删除图片" className={`${styles.iconBtn} ${styles.iconBtnDanger}`} onClick={() => setDeleteTarget(upload)} type="button">
                                         <Trash2Icon className={styles.iconSmall} />
                                     </button>
                                 </div>
-                                <img
-                                    alt={upload.alt || upload.original}
-                                    className={styles.thumbnail}
-                                    loading="lazy"
-                                    src={upload.path}
-                                />
+                                <img alt={upload.alt || upload.original} className={styles.thumbnail} loading="lazy" src={upload.path} />
                                 <div className={styles.info}>
                                     <span className={styles.filename} title={upload.original}>
                                         {upload.original}
@@ -222,7 +200,10 @@ export default function UploadManagement() {
                             onPageChange={setPage}
                             total={totalPages}
                             pageSize={pageSize}
-                            onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+                            onPageSizeChange={(s) => {
+                                setPageSize(s);
+                                setPage(1);
+                            }}
                         />
                     </div>
                 </>
@@ -241,11 +222,7 @@ export default function UploadManagement() {
             />
 
             {/* 同步到本地弹窗 */}
-            <Dialog
-                onClose={() => setSyncOpen(false)}
-                open={syncOpen}
-                title="同步到本地"
-            >
+            <Dialog onClose={() => setSyncOpen(false)} open={syncOpen} title="同步到本地">
                 <div className={styles.syncBody}>
                     <p className={styles.syncDesc}>
                         将服务器上的图片文件同步到本地 <code className={styles.syncCode}>public/uploads/</code> 目录，用于开发环境预览。
@@ -263,10 +240,7 @@ export default function UploadManagement() {
                             }}
                             type="button"
                         >
-                            {syncCopied
-                                ? <CheckIcon className={styles.syncCopyIcon} />
-                                : <CopyIcon className={styles.syncCopyIcon} />
-                            }
+                            {syncCopied ? <CheckIcon className={styles.syncCopyIcon} /> : <CopyIcon className={styles.syncCopyIcon} />}
                         </button>
                     </div>
                     <p className={styles.syncHint}>
@@ -277,23 +251,20 @@ export default function UploadManagement() {
             </Dialog>
 
             {/* 重命名弹窗 */}
-            <Dialog
-                onClose={() => setRenameTarget(null)}
-                open={renameTarget !== null}
-                title="修改名称"
-            >
-                <form className={shared.form} onSubmit={(e) => { e.preventDefault(); handleRename(); }}>
-                    <TextInput
-                        id='rename-original'
-                        label='文件名'
-                        onChange={(e) => setRenameValue(e.target.value)}
-                        placeholder='输入新名称'
-                        required
-                        value={renameValue}
-                    />
+            <Dialog onClose={() => setRenameTarget(null)} open={renameTarget !== null} title="修改名称">
+                <form
+                    className={shared.form}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleRename();
+                    }}
+                >
+                    <TextInput id="rename-original" label="文件名" onChange={(e) => setRenameValue(e.target.value)} placeholder="输入新名称" required value={renameValue} />
                     <div className={shared.formActions}>
-                        <GhostButton asButton onClick={() => setRenameTarget(null)}>取消</GhostButton>
-                        <SubmitButton size='medium' disabled={renaming}>
+                        <GhostButton asButton onClick={() => setRenameTarget(null)}>
+                            取消
+                        </GhostButton>
+                        <SubmitButton size="medium" disabled={renaming}>
                             {renaming ? '保存中...' : '保存'}
                         </SubmitButton>
                     </div>

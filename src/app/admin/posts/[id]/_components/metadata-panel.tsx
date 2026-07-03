@@ -58,17 +58,14 @@ export function MetadataPanel({
     onSelectedTagsChange,
 }: MetadataPanelProps) {
     /* 分类选项：加一个"无分类"选项 */
-    const categoryOptions = [
-        { value: NONE_VALUE, label: '无分类' },
-        ...categories.map((c) => ({ value: String(c.id), label: c.name })),
-    ];
+    const categoryOptions = [{ value: NONE_VALUE, label: '无分类' }, ...categories.map((c) => ({ value: String(c.id), label: c.name }))];
     const categoryValue = categoryId ? String(categoryId) : NONE_VALUE;
 
     const handleCategoryChange = useCallback(
         (value: string) => {
             onCategoryIdChange(value === NONE_VALUE ? null : Number(value));
         },
-        [onCategoryIdChange],
+        [onCategoryIdChange]
     );
 
     /* 标签多选 */
@@ -78,14 +75,14 @@ export function MetadataPanel({
                 onSelectedTagsChange([...selectedTags, tagId]);
             }
         },
-        [selectedTags, onSelectedTagsChange],
+        [selectedTags, onSelectedTagsChange]
     );
 
     const handleRemoveTag = useCallback(
         (tagId: number) => {
             onSelectedTagsChange(selectedTags.filter((id) => id !== tagId));
         },
-        [selectedTags, onSelectedTagsChange],
+        [selectedTags, onSelectedTagsChange]
     );
 
     /* 发布时间变更 */
@@ -93,31 +90,20 @@ export function MetadataPanel({
         (e: React.ChangeEvent<HTMLInputElement>) => {
             onPublishedAtChange(e.target.value || null);
         },
-        [onPublishedAtChange],
+        [onPublishedAtChange]
     );
 
     return (
         <div className={styles.panel}>
             {/* 封面图 */}
-            <CoverUpload
-                altText={altText}
-                coverImage={coverImage}
-                onAltTextChange={onAltTextChange}
-                onCoverImageChange={onCoverImageChange}
-            />
+            <CoverUpload altText={altText} coverImage={coverImage} onAltTextChange={onAltTextChange} onCoverImageChange={onCoverImageChange} />
 
             <hr className={styles.sectionDivider} />
 
             {/* 分类 */}
             <div className={styles.field}>
                 <span className={styles.fieldLabel}>分类</span>
-                <Select
-                    className={styles.fieldFull}
-                    onChange={handleCategoryChange}
-                    options={categoryOptions}
-                    size="small"
-                    value={categoryValue}
-                />
+                <Select className={styles.fieldFull} onChange={handleCategoryChange} options={categoryOptions} size="small" value={categoryValue} />
             </div>
 
             {/* 标签 */}
@@ -131,12 +117,7 @@ export function MetadataPanel({
                             return (
                                 <span className={styles.tagItem} key={tagId}>
                                     {tag.name}
-                                    <button
-                                        className={styles.tagRemoveBtn}
-                                        onClick={() => handleRemoveTag(tagId)}
-                                        type="button"
-                                        aria-label={`移除标签 ${tag.name}`}
-                                    >
+                                    <button className={styles.tagRemoveBtn} onClick={() => handleRemoveTag(tagId)} type="button" aria-label={`移除标签 ${tag.name}`}>
                                         <XIcon className={styles.tagRemoveIcon} />
                                     </button>
                                 </span>
@@ -148,12 +129,7 @@ export function MetadataPanel({
                     {tags
                         .filter((t) => !selectedTags.includes(t.id))
                         .map((tag) => (
-                            <button
-                                className={styles.availableTag}
-                                key={tag.id}
-                                onClick={() => handleAddTag(tag.id)}
-                                type="button"
-                            >
+                            <button className={styles.availableTag} key={tag.id} onClick={() => handleAddTag(tag.id)} type="button">
                                 + {tag.name}
                             </button>
                         ))}
@@ -167,26 +143,13 @@ export function MetadataPanel({
                 <label className={styles.fieldLabel} htmlFor="post-slug">
                     Slug
                 </label>
-                <input
-                    className={styles.fieldInput}
-                    id="post-slug"
-                    onChange={(e) => onSlugChange(e.target.value)}
-                    placeholder="url-slug"
-                    type="text"
-                    value={slug}
-                />
+                <input className={styles.fieldInput} id="post-slug" onChange={(e) => onSlugChange(e.target.value)} placeholder="url-slug" type="text" value={slug} />
             </div>
 
             {/* 状态：药丸单选 */}
             <div className={styles.field}>
                 <span className={styles.fieldLabel}>状态</span>
-                <PillSelect
-                    name="post-status"
-                    onChange={onStatusChange}
-                    options={STATUS_OPTIONS}
-                    size="small"
-                    value={status}
-                />
+                <PillSelect name="post-status" onChange={onStatusChange} options={STATUS_OPTIONS} size="small" value={status} />
             </div>
 
             {/* 发布时间 */}
@@ -194,13 +157,7 @@ export function MetadataPanel({
                 <label className={styles.fieldLabel} htmlFor="post-published-at">
                     发布时间
                 </label>
-                <input
-                    className={styles.fieldInput}
-                    id="post-published-at"
-                    onChange={handlePublishedAtChange}
-                    type="datetime-local"
-                    value={toDateTimeLocalValue(publishedAt)}
-                />
+                <input className={styles.fieldInput} id="post-published-at" onChange={handlePublishedAtChange} type="datetime-local" value={toDateTimeLocalValue(publishedAt)} />
             </div>
         </div>
     );

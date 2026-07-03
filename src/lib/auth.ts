@@ -66,10 +66,7 @@ export async function getUserByUsername(username: string): Promise<(User & { pas
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute(
-        'SELECT id, username, email, password_hash, role, status, created_at, updated_at FROM zhijian_users WHERE username = ?',
-        [username],
-    );
+    const [rows] = await db.execute('SELECT id, username, email, password_hash, role, status, created_at, updated_at FROM zhijian_users WHERE username = ?', [username]);
     const list = rows as any[];
     if (list.length === 0) return null;
     const row = list[0];
@@ -81,10 +78,7 @@ export async function getUserById(id: number): Promise<User | null> {
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute(
-        'SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users WHERE id = ?',
-        [id],
-    );
+    const [rows] = await db.execute('SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users WHERE id = ?', [id]);
     const list = rows as any[];
     return list.length > 0 ? toUser(list[0]) : null;
 }
@@ -99,19 +93,16 @@ export function validateUserFields(username: string, email: string, password: st
 }
 
 /*== 创建用户，返回新用户（不含密码哈希）。 调用方负责先 hash 密码。 ==*/
-export async function createUser(params: {
-    username: string;
-    email: string;
-    passwordHash: string;
-    role?: UserRole;
-}): Promise<User> {
+export async function createUser(params: { username: string; email: string; passwordHash: string; role?: UserRole }): Promise<User> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute(
-        'INSERT INTO zhijian_users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
-        [params.username, params.email, params.passwordHash, params.role || 'user'],
-    );
+    const [result] = await db.execute('INSERT INTO zhijian_users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [
+        params.username,
+        params.email,
+        params.passwordHash,
+        params.role || 'user',
+    ]);
     const insertResult = result as any;
     return (await getUserById(insertResult.insertId))!;
 }
@@ -125,7 +116,7 @@ export async function updateUser(
         passwordHash?: string;
         role?: UserRole;
         status?: UserStatus;
-    },
+    }
 ): Promise<User | null> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
@@ -133,11 +124,26 @@ export async function updateUser(
     const sets: string[] = [];
     const values: any[] = [];
 
-    if (fields.username !== undefined) { sets.push('username = ?'); values.push(fields.username); }
-    if (fields.email !== undefined) { sets.push('email = ?'); values.push(fields.email); }
-    if (fields.passwordHash !== undefined) { sets.push('password_hash = ?'); values.push(fields.passwordHash); }
-    if (fields.role !== undefined) { sets.push('role = ?'); values.push(fields.role); }
-    if (fields.status !== undefined) { sets.push('status = ?'); values.push(fields.status); }
+    if (fields.username !== undefined) {
+        sets.push('username = ?');
+        values.push(fields.username);
+    }
+    if (fields.email !== undefined) {
+        sets.push('email = ?');
+        values.push(fields.email);
+    }
+    if (fields.passwordHash !== undefined) {
+        sets.push('password_hash = ?');
+        values.push(fields.passwordHash);
+    }
+    if (fields.role !== undefined) {
+        sets.push('role = ?');
+        values.push(fields.role);
+    }
+    if (fields.status !== undefined) {
+        sets.push('status = ?');
+        values.push(fields.status);
+    }
 
     if (sets.length === 0) return getUserById(id);
 
@@ -156,11 +162,7 @@ export async function deleteUser(id: number): Promise<boolean> {
 }
 
 /*== 用户列表（分页 + 搜索）。 ==*/
-export async function listUsers(params: {
-    page?: number;
-    pageSize?: number;
-    search?: string;
-}): Promise<{ users: User[]; total: number }> {
+export async function listUsers(params: { page?: number; pageSize?: number; search?: string }): Promise<{ users: User[]; total: number }> {
     const db = getDb();
     if (!db) return { users: [], total: 0 };
 
@@ -177,16 +179,14 @@ export async function listUsers(params: {
         values.push(`%${search}%`, `%${search}%`);
     }
 
-    const [countRows] = await db.execute(
-        `SELECT COUNT(*) AS total FROM zhijian_users ${where}`,
-        values,
-    );
+    const [countRows] = await db.execute(`SELECT COUNT(*) AS total FROM zhijian_users ${where}`, values);
     const total = (countRows as any[])[0].total as number;
 
-    const [rows] = await db.execute(
-        `SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-        [...values, pageSize, offset],
-    );
+    const [rows] = await db.execute(`SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`, [
+        ...values,
+        pageSize,
+        offset,
+    ]);
 
     return {
         users: (rows as any[]).map(toUser),
@@ -200,9 +200,7 @@ export async function countUsersByRole(): Promise<{ admin: number; user: number 
     if (!db) return { admin: 0, user: 0 };
 
     try {
-        const [rows] = await db.execute(
-            `SELECT role, COUNT(*) AS cnt FROM zhijian_users WHERE status = 'active' GROUP BY role`,
-        );
+        const [rows] = await db.execute(`SELECT role, COUNT(*) AS cnt FROM zhijian_users WHERE status = 'active' GROUP BY role`);
         const counts: Record<string, number> = {};
         for (const row of rows as any[]) {
             counts[row.role] = row.cnt;

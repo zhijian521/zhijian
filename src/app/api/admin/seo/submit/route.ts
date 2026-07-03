@@ -11,19 +11,20 @@ export const POST = withAdmin(async () => {
     try {
         const posts = await getPublishedPosts();
 
-        const urls = [
-            SITE_METADATA.siteUrl,
-            `${SITE_METADATA.siteUrl}/blog`,
-            ...posts.map((post) => `${SITE_METADATA.siteUrl}/blog/${post.slug}`),
-        ];
+        const urls = [SITE_METADATA.siteUrl, `${SITE_METADATA.siteUrl}/blog`, ...posts.map((post) => `${SITE_METADATA.siteUrl}/blog/${post.slug}`)];
 
         const result = await submitUrlsToSearchEngines(urls);
 
-        return NextResponse.json(success({
-            totalUrls: urls.length,
-            indexNow: result.indexNow,
-            baidu: result.baidu,
-        }, '提交完成。'));
+        return NextResponse.json(
+            success(
+                {
+                    totalUrls: urls.length,
+                    indexNow: result.indexNow,
+                    baidu: result.baidu,
+                },
+                '提交完成。'
+            )
+        );
     } catch (err) {
         console.error('SEO 提交失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '提交失败，请稍后重试。'), { status: 500 });

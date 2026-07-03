@@ -6,7 +6,11 @@ import styles from './favicon-img.module.css';
 
 /*-- 从 URL 提取域名，失败返回空串 --*/
 function getDomain(url: string): string {
-    try { return new URL(url).hostname; } catch { return ''; }
+    try {
+        return new URL(url).hostname;
+    } catch {
+        return '';
+    }
 }
 
 interface FaviconImgProps {
@@ -21,11 +25,7 @@ export default function FaviconImg({ url, className, fallbackChar }: FaviconImgP
     const domain = getDomain(url);
 
     if (src === 'none' || !domain) {
-        return (
-            <span className={`${styles.fallback} ${className}`}>
-                {fallbackChar ?? ''}
-            </span>
-        );
+        return <span className={`${styles.fallback} ${className}`}>{fallbackChar ?? ''}</span>;
     }
 
     return (
@@ -33,10 +33,8 @@ export default function FaviconImg({ url, className, fallbackChar }: FaviconImgP
             alt=""
             className={className}
             loading="lazy"
-            src={src === 'primary'
-                ? `/api/favicon?domain=${domain}`
-                : `https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
-            onError={() => setSrc(prev => prev === 'primary' ? 'secondary' : 'none')}
+            src={src === 'primary' ? `/api/favicon?domain=${domain}` : `https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+            onError={() => setSrc((prev) => (prev === 'primary' ? 'secondary' : 'none'))}
         />
     );
 }

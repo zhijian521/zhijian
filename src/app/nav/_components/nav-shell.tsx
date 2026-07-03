@@ -21,9 +21,12 @@ export default function NavShell() {
     const shellRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    const sectionRef = useCallback((index: number) => (element: HTMLDivElement | null) => {
-        sectionRefs.current[index] = element;
-    }, []);
+    const sectionRef = useCallback(
+        (index: number) => (element: HTMLDivElement | null) => {
+            sectionRefs.current[index] = element;
+        },
+        []
+    );
 
     const scrollToSection = useCallback((index: number) => {
         const element = sectionRefs.current[index];

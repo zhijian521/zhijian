@@ -5,15 +5,7 @@ import { ContentImage } from '@/components/site/content-image';
 import { PostCard } from '@/components/site/post-card';
 import { ProjectCard, type ProjectAction } from '@/components/site/project-card';
 import { GhostButton } from '@/components/ui/ghost-button';
-import {
-    ArrowDownIcon,
-    ArrowRightIcon,
-    BookIcon,
-    CodeIcon,
-    ExternalLinkIcon,
-    GitHubIcon,
-    MailIcon,
-} from '@/components/ui/icons';
+import { ArrowDownIcon, ArrowRightIcon, BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon, MailIcon } from '@/components/ui/icons';
 import { TextLink } from '@/components/ui/text-link';
 import { getPublishedPosts } from '@/lib/posts';
 import { formatPostDate } from '@/lib/posts';
@@ -121,27 +113,15 @@ export default async function HomePage() {
 
     return (
         <main className={styles.page}>
-            <script
-                type='application/ld+json'
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
-            />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
             <section className={styles.hero}>
-                <Image
-                    alt='山水留白背景'
-                    className={styles.heroBackground}
-                    fill
-                    priority
-                    sizes='100vw'
-                    src='/images/bg-landscape.webp'
-                />
+                <Image alt="山水留白背景" className={styles.heroBackground} fill priority sizes="100vw" src="/images/bg-landscape.webp" />
                 <div className={styles.heroOverlay} />
                 <div className={styles.heroContent}>
                     <h1 className={styles.heroTitle}>Zhi Jian</h1>
                     <p className={styles.heroSub}>前端开发 · 全栈 · 简约设计 · 造物</p>
-                    <p className={styles.heroCopy}>
-                        写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。
-                    </p>
-                    <a className={styles.heroButton} href='#about-me'>
+                    <p className={styles.heroCopy}>写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。</p>
+                    <a className={styles.heroButton} href="#about-me">
                         开始探索
                         <ArrowDownIcon className={styles.iconSmall} />
                     </a>
@@ -149,7 +129,7 @@ export default async function HomePage() {
             </section>
 
             <div className={styles.content}>
-                <section className={styles.section} id='about-me'>
+                <section className={styles.section} id="about-me">
                     <div className={styles.sectionHeading}>
                         <h2 className={styles.sectionTitle}>个人信息</h2>
                         <div className={styles.sectionLine} />
@@ -158,7 +138,7 @@ export default async function HomePage() {
                     <div className={styles.profileCard}>
                         <div className={styles.avatarWrap}>
                             <div className={styles.avatarFrame}>
-                                <Image alt='Lin Zhi' className={styles.avatar} fill sizes='160px' src='/images/logo.webp' />
+                                <Image alt="Lin Zhi" className={styles.avatar} fill sizes="160px" src="/images/logo.webp" />
                             </div>
                         </div>
 
@@ -166,24 +146,13 @@ export default async function HomePage() {
                             <h3 className={styles.profileName}>Zhi Jian</h3>
                             <p className={styles.profileMeta}>前端开发 · 全栈 · 简约设计 · 造物</p>
                             <p className={styles.profileCopy}>
-                                喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。
-                                这里没有宏大的叙事，只有一些零散的记录和简单的快乐。
+                                喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。 这里没有宏大的叙事，只有一些零散的记录和简单的快乐。
                             </p>
                             <div className={styles.profileLinks}>
-                                <GhostButton
-                                    href='mailto:yuwb0521@yeah.net'
-                                    icon={<MailIcon />}
-                                    size='small'
-                                >
+                                <GhostButton href="mailto:yuwb0521@yeah.net" icon={<MailIcon />} size="small">
                                     联系我
                                 </GhostButton>
-                                <GhostButton
-                                    href='https://github.com/zhijian521'
-                                    icon={<ArrowRightIcon />}
-                                    rel='noreferrer'
-                                    size='small'
-                                    target='_blank'
-                                >
+                                <GhostButton href="https://github.com/zhijian521" icon={<ArrowRightIcon />} rel="noreferrer" size="small" target="_blank">
                                     GitHub
                                 </GhostButton>
                                 <RssCopyButton />
@@ -196,32 +165,34 @@ export default async function HomePage() {
                     <div className={styles.sectionHeading}>
                         <h2 className={styles.sectionTitle}>最新文章</h2>
                         <div className={styles.sectionLine} />
-                        <TextLink href='/blog'>查看全部</TextLink>
+                        <TextLink href="/blog">查看全部</TextLink>
                     </div>
 
                     <div className={styles.postsGrid}>
-                        {posts.length > 0 ? posts.map((post) => (
-                            <PostCard
-                                key={post.id}
-                                tag={post.categoryName ?? undefined}
-                                tagVariant='primary'
-                                date={formatPostDate(post.updatedAt || post.publishedAt)}
-                                title={post.title}
-                                summary={post.summary}
-                                href={`/blog/${post.slug}`}
-                                visual={post.coverImage ? (
-                                    <ContentImage
-                                        alt={post.altText || post.title}
-                                        sizes='(min-width: 1024px) 22rem, 100vw'
-                                        src={post.coverImage}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    />
-                                ) : undefined}
-                            />
-                        )) : (
-                            <p style={{ color: 'var(--muted-foreground)', fontSize: '0.9375rem' }}>
-                                暂无文章。
-                            </p>
+                        {posts.length > 0 ? (
+                            posts.map((post) => (
+                                <PostCard
+                                    key={post.id}
+                                    tag={post.categoryName ?? undefined}
+                                    tagVariant="primary"
+                                    date={formatPostDate(post.updatedAt || post.publishedAt)}
+                                    title={post.title}
+                                    summary={post.summary}
+                                    href={`/blog/${post.slug}`}
+                                    visual={
+                                        post.coverImage ? (
+                                            <ContentImage
+                                                alt={post.altText || post.title}
+                                                sizes="(min-width: 1024px) 22rem, 100vw"
+                                                src={post.coverImage}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        ) : undefined
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <p style={{ color: 'var(--muted-foreground)', fontSize: '0.9375rem' }}>暂无文章。</p>
                         )}
                     </div>
                 </section>

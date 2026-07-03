@@ -12,11 +12,7 @@
     position: fixed;
     inset: 0;
     z-index: 0;
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--background) 30%, transparent) 0%,
-        var(--background) 60%
-    );
+    background: linear-gradient(180deg, color-mix(in srgb, var(--background) 30%, transparent) 0%, var(--background) 60%);
     pointer-events: none;
 }
 
@@ -118,9 +114,18 @@
 }
 
 @keyframes loadingSlide {
-    0% { width: 0; margin-left: 0; }
-    50% { width: 40%; margin-left: 30%; }
-    100% { width: 0; margin-left: 100%; }
+    0% {
+        width: 0;
+        margin-left: 0;
+    }
+    50% {
+        width: 40%;
+        margin-left: 30%;
+    }
+    100% {
+        width: 0;
+        margin-left: 100%;
+    }
 }
 
 /* 筛选按钮：仅手机端可见 */

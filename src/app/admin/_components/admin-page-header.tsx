@@ -13,10 +13,10 @@ export default function AdminPageHeader({ action, description, eyebrow, tag, tit
     return (
         <header className={styles.header}>
             {eyebrow ? <p className={`${styles.eyebrow} admin-kicker`}>{eyebrow}</p> : null}
-            <h1 className='admin-title'>{title}</h1>
+            <h1 className="admin-title">{title}</h1>
             <p className={`${styles.description} admin-copy`}>{description}</p>
 
-            {(tag || action) ? (
+            {tag || action ? (
                 <div className={styles.metaRow}>
                     {tag ? <span className={styles.tag}>{tag}</span> : null}
                     {action}

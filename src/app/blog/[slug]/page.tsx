@@ -40,11 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const canonical = `${SITE_METADATA.siteUrl}/blog/${slug}`;
     const publishedTime = toPostIsoDateTime(post.publishedAt);
     const modifiedTime = toPostIsoDateTime(post.updatedAt);
-    const keywords = [
-        ...(post.tagNames?.map((tag) => tag.name) ?? []),
-        ...(post.categoryName ? [post.categoryName] : []),
-        ...SITE_METADATA.keywords,
-    ];
+    const keywords = [...(post.tagNames?.map((tag) => tag.name) ?? []), ...(post.categoryName ? [post.categoryName] : []), ...SITE_METADATA.keywords];
 
     return {
         title,
@@ -87,9 +83,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     /* 相关文章：查同标签文章，排除当前文章，最多 3 篇 */
     const tagSlugs = post.tagNames?.map((t) => t.slug) ?? [];
-    const relatedPosts = tagSlugs.length > 0
-        ? (await getPublishedPosts({ tagSlugs, limit: 5 })).filter((p) => p.id !== post.id).slice(0, 3)
-        : [];
+    const relatedPosts = tagSlugs.length > 0 ? (await getPublishedPosts({ tagSlugs, limit: 5 })).filter((p) => p.id !== post.id).slice(0, 3) : [];
 
     const canonical = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
     const articleImage = toAbsoluteUrl(post.coverImage);
@@ -178,24 +172,31 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     return (
         <main className={styles.page}>
-            <script
-                type='application/ld+json'
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <article className={styles.article}>
                 {/* 面包屑导航 */}
-                <nav aria-label='面包屑' className={styles.breadcrumb}>
+                <nav aria-label="面包屑" className={styles.breadcrumb}>
                     <ol className={styles.breadcrumbList}>
                         <li className={styles.breadcrumbItem}>
-                            <Link className={styles.breadcrumbLink} href='/'>{SITE_METADATA.title}</Link>
+                            <Link className={styles.breadcrumbLink} href="/">
+                                {SITE_METADATA.title}
+                            </Link>
                         </li>
                         <li className={styles.breadcrumbItem}>
-                            <span className={styles.breadcrumbSep} aria-hidden>/</span>
-                            <Link className={styles.breadcrumbLink} href='/blog'>文章</Link>
+                            <span className={styles.breadcrumbSep} aria-hidden>
+                                /
+                            </span>
+                            <Link className={styles.breadcrumbLink} href="/blog">
+                                文章
+                            </Link>
                         </li>
                         <li className={styles.breadcrumbItem}>
-                            <span className={styles.breadcrumbSep} aria-hidden>/</span>
-                            <span className={styles.breadcrumbCurrent} aria-current='page' title={post.title}>{post.title}</span>
+                            <span className={styles.breadcrumbSep} aria-hidden>
+                                /
+                            </span>
+                            <span className={styles.breadcrumbCurrent} aria-current="page" title={post.title}>
+                                {post.title}
+                            </span>
                         </li>
                     </ol>
                 </nav>
@@ -215,7 +216,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                 <footer className={styles.footer}>
                     <div className={styles.footerTags}>
                         {post.tagNames?.map((tag) => (
-                            <span className={styles.footerTag} key={tag.id}>{tag.name}</span>
+                            <span className={styles.footerTag} key={tag.id}>
+                                {tag.name}
+                            </span>
                         ))}
                     </div>
                     <ArticleFooterActions />
@@ -233,7 +236,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                 {rp.tagNames && rp.tagNames.length > 0 ? (
                                     <div className={styles.relatedCardTags}>
                                         {rp.tagNames.slice(0, 3).map((tag) => (
-                                            <span className={styles.relatedCardTag} key={tag.id}>{tag.name}</span>
+                                            <span className={styles.relatedCardTag} key={tag.id}>
+                                                {tag.name}
+                                            </span>
                                         ))}
                                     </div>
                                 ) : null}

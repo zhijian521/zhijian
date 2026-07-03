@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { fail, BizCode, success } from '@/lib/api-response'
+import { fail, BizCode, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 import { getVisits } from '@/lib/analytics';
 import type { DateRange } from '@/lib/analytics';

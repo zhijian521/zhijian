@@ -3,7 +3,7 @@ import path from 'path';
 
 import { NextResponse } from 'next/server';
 
-import { success } from '@/lib/api-response'
+import { success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 
 /*== 图片同步清单接口 — 扫描服务器 public/uploads/ 目录，返回所有图片的路径和大小，供本地同步脚本使用。 ==*/

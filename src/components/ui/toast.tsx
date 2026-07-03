@@ -12,7 +12,7 @@ function ToastRow({ item }: { item: ToastItem }) {
         <div className={`${styles.item} ${styles[item.type]}`}>
             <Icon className={styles.icon} />
             <span className={styles.message}>{item.message}</span>
-            <button className={styles.closeBtn} onClick={() => toast.remove(item.id)} type='button'>
+            <button className={styles.closeBtn} onClick={() => toast.remove(item.id)} type="button">
                 <XIcon className={styles.closeIcon} />
             </button>
         </div>

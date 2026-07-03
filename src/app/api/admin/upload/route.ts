@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 import { validateImageFile, saveUpload } from '@/lib/uploads';
 
@@ -21,9 +21,7 @@ export const POST = withAdmin(async (request) => {
     /*-- 校验图片格式和大小 --*/
     const validationError = validateImageFile({ type: file.type, size: file.size });
     if (validationError) {
-        const bizCode = file.size > 5 * 1024 * 1024
-            ? BizCode.UPLOAD_TOO_LARGE
-            : BizCode.UPLOAD_INVALID_FILE;
+        const bizCode = file.size > 5 * 1024 * 1024 ? BizCode.UPLOAD_TOO_LARGE : BizCode.UPLOAD_INVALID_FILE;
         return NextResponse.json(fail(bizCode, validationError), { status: 400 });
     }
 

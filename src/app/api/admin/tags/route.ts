@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { listTags, createTag } from '@/lib/tags';
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 
 /*==

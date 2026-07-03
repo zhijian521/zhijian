@@ -20,29 +20,32 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
     const panelRef = useRef<HTMLDivElement>(null);
 
     /* 焦点陷阱：Tab / Shift+Tab 循环在面板内 */
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-            onClose();
-            return;
-        }
-        if (e.key !== 'Tab' || !panelRef.current) return;
+    const handleKeyDown = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+                return;
+            }
+            if (e.key !== 'Tab' || !panelRef.current) return;
 
-        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
-            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
+            const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusable.length === 0) return;
 
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
 
-        if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-        }
-    }, [onClose]);
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        },
+        [onClose]
+    );
 
     useEffect(() => {
         if (!open) return;
@@ -63,7 +66,7 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
         if (open && !prevOpenRef.current) {
             requestAnimationFrame(() => {
                 const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
-                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
                 );
                 focusable?.[0]?.focus();
             });
@@ -76,21 +79,14 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
     return (
         <div className={styles.overlay}>
             <div className={styles.backdrop} onClick={onClose} />
-            <div
-                className={styles.panel}
-                ref={panelRef}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="dialog-title"
-                style={maxWidth ? { maxWidth } : undefined}
-            >
+            <div className={styles.panel} ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="dialog-title" style={maxWidth ? { maxWidth } : undefined}>
                 <div className={styles.header}>
-                    <h3 className={styles.title} id="dialog-title">{title}</h3>
+                    <h3 className={styles.title} id="dialog-title">
+                        {title}
+                    </h3>
                     <IconButton icon={<XIcon />} onClick={onClose} size="small" aria-label="关闭" />
                 </div>
-                <div className={styles.body}>
-                    {children}
-                </div>
+                <div className={styles.body}>{children}</div>
             </div>
         </div>
     );

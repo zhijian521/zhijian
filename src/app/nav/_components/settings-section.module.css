@@ -17,7 +17,10 @@
     font-size: 0.8125rem;
     line-height: 1;
     cursor: pointer;
-    transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease;
 }
 
 .triggerButton:hover {
@@ -130,7 +133,9 @@
     color: var(--destructive);
     font-size: 0.8125rem;
     cursor: pointer;
-    transition: background-color 0.18s ease, opacity 0.18s ease;
+    transition:
+        background-color 0.18s ease,
+        opacity 0.18s ease;
 }
 
 .logoutButton:hover {
@@ -164,7 +169,10 @@
     padding: 0.5rem 0.875rem;
     font-size: 0.8125rem;
     cursor: pointer;
-    transition: opacity 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    transition:
+        opacity 0.18s ease,
+        background-color 0.18s ease,
+        border-color 0.18s ease;
 }
 
 .primaryButton {

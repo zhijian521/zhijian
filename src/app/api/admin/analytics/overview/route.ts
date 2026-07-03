@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 import { getOverview, getTrend, getPageRank, getSources, getDevices, getLanguages, getBrowsers, getOS, getCountries, getRegions, getEntryPages, getExitPages, ensureAggregated } from '@/lib/analytics';
 import type { DateRange } from '@/lib/analytics';
@@ -39,20 +39,22 @@ export const GET = withAdmin(async (request) => {
             getExitPages(siteId, range),
         ]);
 
-        return NextResponse.json(success({
-            overview,
-            trend,
-            pages,
-            sources,
-            devices,
-            languages,
-            countries,
-            regions,
-            browsers,
-            os,
-            entryPages,
-            exitPages,
-        }));
+        return NextResponse.json(
+            success({
+                overview,
+                trend,
+                pages,
+                sources,
+                devices,
+                languages,
+                countries,
+                regions,
+                browsers,
+                os,
+                entryPages,
+                exitPages,
+            })
+        );
     } catch (err) {
         console.error('获取分析数据失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '获取分析数据失败。'), { status: 500 });

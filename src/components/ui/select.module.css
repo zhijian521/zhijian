@@ -22,7 +22,9 @@
     color: var(--foreground);
     cursor: pointer;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
     text-align: left;
 }
 
@@ -74,7 +76,9 @@
     display: flex;
     align-items: center;
     color: var(--muted-foreground);
-    transition: transform 0.2s ease, color 0.15s;
+    transition:
+        transform 0.2s ease,
+        color 0.15s;
     pointer-events: none;
 }
 
@@ -116,7 +120,10 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+    transition:
+        background-color 0.1s,
+        color 0.1s,
+        border-color 0.1s;
 }
 
 .option:hover {

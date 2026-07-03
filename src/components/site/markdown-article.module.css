@@ -233,7 +233,7 @@
 }
 
 /*== 任务列表（GFM） ==*/
-.body :global(input[type="checkbox"]) {
+.body :global(input[type='checkbox']) {
     margin-right: 0.5rem;
     accent-color: var(--primary);
 }

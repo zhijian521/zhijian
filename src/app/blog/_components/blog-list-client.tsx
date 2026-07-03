@@ -37,17 +37,7 @@ interface BlogListClientProps {
     totalPages: number;
 }
 
-export default function BlogListClient({
-    activeCategorySlug,
-    activeFilterChips,
-    activeTagSlugs,
-    categoryOptions,
-    currentPage,
-    paginationHrefs,
-    posts,
-    tagOptions,
-    totalPages,
-}: BlogListClientProps) {
+export default function BlogListClient({ activeCategorySlug, activeFilterChips, activeTagSlugs, categoryOptions, currentPage, paginationHrefs, posts, tagOptions, totalPages }: BlogListClientProps) {
     const [filterOpen, setFilterOpen] = useState(false);
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -92,105 +82,100 @@ export default function BlogListClient({
                                 </div>
                             ) : null}
                         </div>
-                    {hasFilters ? (
-                        <button
-                            className={styles.filterBtn}
-                            onClick={() => setFilterOpen(true)}
-                            type="button"
-                        >
-                            筛选
-                        </button>
-                    ) : null}
-                </div>
-                <Dialog
-                    maxWidth="20rem"
-                    onClose={() => setFilterOpen(false)}
-                    open={filterOpen}
-                    title="筛选"
-                >
-                    <div className={styles.filterDialogBody}>
-                        {categoryOptions.length > 1 ? (
-                            <div className={styles.filterBlock}>
-                                <h3 className={styles.filterBlockTitle}>分类</h3>
-                                <div className={styles.categories}>
-                                    {categoryOptions.map((category) => (
-                                        <button
-                                            className={`${styles.catBtn} ${isCategoryActive(category.slug) ? styles.catActive : ''}`}
-                                            key={category.slug || 'all'}
-                                            onClick={() => { setFilterOpen(false); navigateTo(category.href); }}
-                                            type="button"
-                                        >
-                                            {category.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        ) : null}
-
-                        {tagOptions.length > 0 ? (
-                            <div className={styles.filterBlock}>
-                                <h3 className={styles.filterBlockTitle}>标签</h3>
-                                <div className={styles.tagFilter}>
-                                    {tagOptions.map((tag) => (
-                                        <button
-                                            className={`${styles.tagBtn} ${activeTagSlugs.includes(tag.slug) ? styles.tagActive : ''}`}
-                                            key={tag.slug}
-                                            onClick={() => { setFilterOpen(false); navigateTo(tag.href); }}
-                                            type="button"
-                                        >
-                                            {tag.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                        {hasFilters ? (
+                            <button className={styles.filterBtn} onClick={() => setFilterOpen(true)} type="button">
+                                筛选
+                            </button>
                         ) : null}
                     </div>
-                </Dialog>
+                    <Dialog maxWidth="20rem" onClose={() => setFilterOpen(false)} open={filterOpen} title="筛选">
+                        <div className={styles.filterDialogBody}>
+                            {categoryOptions.length > 1 ? (
+                                <div className={styles.filterBlock}>
+                                    <h3 className={styles.filterBlockTitle}>分类</h3>
+                                    <div className={styles.categories}>
+                                        {categoryOptions.map((category) => (
+                                            <button
+                                                className={`${styles.catBtn} ${isCategoryActive(category.slug) ? styles.catActive : ''}`}
+                                                key={category.slug || 'all'}
+                                                onClick={() => {
+                                                    setFilterOpen(false);
+                                                    navigateTo(category.href);
+                                                }}
+                                                type="button"
+                                            >
+                                                {category.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : null}
+
+                            {tagOptions.length > 0 ? (
+                                <div className={styles.filterBlock}>
+                                    <h3 className={styles.filterBlockTitle}>标签</h3>
+                                    <div className={styles.tagFilter}>
+                                        {tagOptions.map((tag) => (
+                                            <button
+                                                className={`${styles.tagBtn} ${activeTagSlugs.includes(tag.slug) ? styles.tagActive : ''}`}
+                                                key={tag.slug}
+                                                onClick={() => {
+                                                    setFilterOpen(false);
+                                                    navigateTo(tag.href);
+                                                }}
+                                                type="button"
+                                            >
+                                                {tag.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : null}
+                        </div>
+                    </Dialog>
                 </header>
 
                 <div className={styles.layout}>
                     <section className={styles.main}>
                         <div className={styles.list}>
-                            {posts.length > 0 ? posts.map((post) => (
-                                <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id}>
-                                    <div className={styles.itemBody}>
-                                        <h2 className={styles.itemTitle}>{post.title}</h2>
-                                        <p className={styles.itemSummary}>{post.summary}</p>
-                                        <div className={styles.itemMeta}>
-                                            {post.categoryName ? (
-                                                <span className={styles.itemCategory}>{post.categoryName}</span>
-                                            ) : null}
-                                            {post.tagNames && post.tagNames.length > 0 ? (
-                                                <div className={styles.itemTags}>
-                                                    {post.tagNames.map((tag) => (
-                                                        <Tag key={tag.id} size='mini' variant='outlined'>{tag.name}</Tag>
-                                                    ))}
-                                                </div>
-                                            ) : null}
-                                            <span className={styles.itemDate}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
+                            {posts.length > 0 ? (
+                                posts.map((post) => (
+                                    <Link className={styles.listItem} href={`/blog/${post.slug}`} key={post.id}>
+                                        <div className={styles.itemBody}>
+                                            <h2 className={styles.itemTitle}>{post.title}</h2>
+                                            <p className={styles.itemSummary}>{post.summary}</p>
+                                            <div className={styles.itemMeta}>
+                                                {post.categoryName ? <span className={styles.itemCategory}>{post.categoryName}</span> : null}
+                                                {post.tagNames && post.tagNames.length > 0 ? (
+                                                    <div className={styles.itemTags}>
+                                                        {post.tagNames.map((tag) => (
+                                                            <Tag key={tag.id} size="mini" variant="outlined">
+                                                                {tag.name}
+                                                            </Tag>
+                                                        ))}
+                                                    </div>
+                                                ) : null}
+                                                <span className={styles.itemDate}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    {post.coverImage ? (
-                                        <div className={styles.itemCover}>
-                                            <ContentImage
-                                                alt={post.altText || post.title}
-                                                sizes="(max-width: 640px) 100vw, 180px"
-                                                src={post.coverImage}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        </div>
-                                    ) : null}
-                                </Link>
-                            )) : (
-                                <p style={{ color: 'var(--muted-foreground)', padding: '2rem 0', fontSize: '0.9375rem' }}>
-                                    没有匹配的文章。
-                                </p>
+                                        {post.coverImage ? (
+                                            <div className={styles.itemCover}>
+                                                <ContentImage
+                                                    alt={post.altText || post.title}
+                                                    sizes="(max-width: 640px) 100vw, 180px"
+                                                    src={post.coverImage}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                />
+                                            </div>
+                                        ) : null}
+                                    </Link>
+                                ))
+                            ) : (
+                                <p style={{ color: 'var(--muted-foreground)', padding: '2rem 0', fontSize: '0.9375rem' }}>没有匹配的文章。</p>
                             )}
                         </div>
 
-                        {totalPages > 1 ? (
-                            <Pagination current={currentPage} getHref={(page) => paginationHrefs[page] ?? '/blog'} total={totalPages} />
-                        ) : null}
+                        {totalPages > 1 ? <Pagination current={currentPage} getHref={(page) => paginationHrefs[page] ?? '/blog'} total={totalPages} /> : null}
                     </section>
 
                     <aside className={styles.sidebar}>

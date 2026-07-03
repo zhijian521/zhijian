@@ -47,9 +47,12 @@ async function submitToBaidu(urls: string[]): Promise<SubmitResult> {
         const siteUrl = process.env.BAIDU_SITE || SITE_METADATA.siteUrl;
         const site = new URL(siteUrl).host;
         const baiduOrigin = new URL(siteUrl).origin;
-        const baiduUrls = urls.map(u => {
-            try { return u.replace(new URL(u).origin, baiduOrigin); }
-            catch { return u; }
+        const baiduUrls = urls.map((u) => {
+            try {
+                return u.replace(new URL(u).origin, baiduOrigin);
+            } catch {
+                return u;
+            }
         });
         const body = baiduUrls.join('\n');
         const path = `/urls?site=${site}&token=${token}`;
@@ -66,7 +69,7 @@ async function submitToBaidu(urls: string[]): Promise<SubmitResult> {
                     const chunks: Buffer[] = [];
                     res.on('data', (chunk: Buffer) => chunks.push(chunk));
                     res.on('end', () => resolve(Buffer.concat(chunks).toString()));
-                },
+                }
             );
             req.on('error', reject);
             req.write(body);
@@ -88,10 +91,7 @@ export async function submitUrlsToSearchEngines(urls: string[]): Promise<{
     indexNow: SubmitResult;
     baidu: SubmitResult;
 }> {
-    const [indexNow, baidu] = await Promise.all([
-        submitToIndexNow(urls),
-        submitToBaidu(urls),
-    ]);
+    const [indexNow, baidu] = await Promise.all([submitToIndexNow(urls), submitToBaidu(urls)]);
 
     return { indexNow, baidu };
 }

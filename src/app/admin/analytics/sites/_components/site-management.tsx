@@ -86,9 +86,10 @@ export default function SiteManagement() {
 
         try {
             const body = { name: formName.trim(), domain: formDomain.trim() };
-            const res = formMode === 'create'
-                ? await api.post<{ site: TrackSite }>('/admin/analytics/sites', body)
-                : await api.put<{ site: TrackSite }>('/admin/analytics/sites', { id: editingSite!.id, ...body });
+            const res =
+                formMode === 'create'
+                    ? await api.post<{ site: TrackSite }>('/admin/analytics/sites', body)
+                    : await api.put<{ site: TrackSite }>('/admin/analytics/sites', { id: editingSite!.id, ...body });
 
             if (res.code !== 0) {
                 setFormMessage(res.message || '操作失败。');
@@ -176,12 +177,7 @@ export default function SiteManagement() {
             render: (site) => (
                 <span className={styles.idCell}>
                     {site.id}
-                    <IconButton
-                        icon={<CopyIcon />}
-                        onClick={() => copyEmbedCode(site.id)}
-                        size="small"
-                        title="复制接入代码"
-                    />
+                    <IconButton icon={<CopyIcon />} onClick={() => copyEmbedCode(site.id)} size="small" title="复制接入代码" />
                 </span>
             ),
         },
@@ -190,26 +186,14 @@ export default function SiteManagement() {
             width: '9rem',
             render: (site) => (
                 <div className={shared.actionGroup}>
-                    <IconButton
-                        icon={<PencilIcon />}
-                        onClick={() => openEditForm(site)}
-                        size="medium"
-                        title="编辑"
-                    />
+                    <IconButton icon={<PencilIcon />} onClick={() => openEditForm(site)} size="medium" title="编辑" />
                     <IconButton
                         icon={site.status === 'active' ? <PauseIcon /> : <PlayIcon />}
                         onClick={() => handleToggleStatus(site)}
                         size="medium"
                         title={site.status === 'active' ? '暂停' : '启用'}
                     />
-                    <IconButton
-                        icon={<Trash2Icon />}
-                        onClick={() => setDeleteTarget({ id: site.id, name: site.name })}
-                        size="medium"
-                        title="删除"
-                        variant="danger"
-                        disabled={deleting === site.id}
-                    />
+                    <IconButton icon={<Trash2Icon />} onClick={() => setDeleteTarget({ id: site.id, name: site.name })} size="medium" title="删除" variant="danger" disabled={deleting === site.id} />
                 </div>
             ),
         },
@@ -217,96 +201,56 @@ export default function SiteManagement() {
 
     return (
         <>
-            <AdminPageHeader
-                description='管理监控站点，获取接入代码嵌入目标网站即可开始采集数据。'
-                eyebrow='Analytics'
-                tag={`${data.total} 个站点`}
-                title='站点管理'
-            />
+            <AdminPageHeader description="管理监控站点，获取接入代码嵌入目标网站即可开始采集数据。" eyebrow="Analytics" tag={`${data.total} 个站点`} title="站点管理" />
 
             <div className={styles.toolbar}>
-                <GhostButton
-                    asButton
-                    icon={<PlusIcon className={shared.btnIcon} />}
-                    onClick={openCreateForm}
-                    size='medium'
-                    variant='primary'
-                >
+                <GhostButton asButton icon={<PlusIcon className={shared.btnIcon} />} onClick={openCreateForm} size="medium" variant="primary">
                     新增站点
                 </GhostButton>
             </div>
 
-            <DataTable
-                columns={columns}
-                emptyText={loading ? '加载中...' : '暂无站点'}
-                rowKey={(site) => site.id}
-                rows={data.data}
-            />
+            <DataTable columns={columns} emptyText={loading ? '加载中...' : '暂无站点'} rowKey={(site) => site.id} rows={data.data} />
 
             <ConfirmDialog
-                confirmLabel='删除'
+                confirmLabel="删除"
                 message={`确定要删除站点「${deleteTarget?.name ?? ''}」吗？相关数据将保留但不再采集。`}
                 onCancel={() => setDeleteTarget(null)}
                 onConfirm={handleDeleteConfirm}
                 open={!!deleteTarget}
                 loading={deleting !== null}
-                title='确认删除'
+                title="确认删除"
             />
 
             {/* 新增/编辑弹窗 */}
-            <Dialog
-                onClose={() => setFormOpen(false)}
-                open={formOpen}
-                title={formMode === 'create' ? '新增站点' : `编辑站点：${editingSite?.name || ''}`}
-            >
+            <Dialog onClose={() => setFormOpen(false)} open={formOpen} title={formMode === 'create' ? '新增站点' : `编辑站点：${editingSite?.name || ''}`}>
                 <form className={shared.form} onSubmit={handleSubmit}>
-                    <TextInput
-                        id='site-name'
-                        label='站点名称'
-                        onChange={(e) => setFormName(e.target.value)}
-                        placeholder='如：主站、博客'
-                        required
-                        value={formName}
-                    />
-                    <TextInput
-                        id='site-domain'
-                        label='站点域名'
-                        onChange={(e) => setFormDomain(e.target.value)}
-                        placeholder='如：yuwb.cn'
-                        required
-                        value={formDomain}
-                    />
+                    <TextInput id="site-name" label="站点名称" onChange={(e) => setFormName(e.target.value)} placeholder="如：主站、博客" required value={formName} />
+                    <TextInput id="site-domain" label="站点域名" onChange={(e) => setFormDomain(e.target.value)} placeholder="如：yuwb.cn" required value={formDomain} />
                     <div className={shared.formActions}>
-                        <GhostButton asButton onClick={() => setFormOpen(false)}>取消</GhostButton>
-                        <SubmitButton size='medium' disabled={submitting}>
+                        <GhostButton asButton onClick={() => setFormOpen(false)}>
+                            取消
+                        </GhostButton>
+                        <SubmitButton size="medium" disabled={submitting}>
                             {submitting ? '保存中...' : formMode === 'create' ? '创建站点' : '保存修改'}
                         </SubmitButton>
                     </div>
                     {formMessage && (
-                        <p className={shared.formMessage} role="alert">{formMessage}</p>
+                        <p className={shared.formMessage} role="alert">
+                            {formMessage}
+                        </p>
                     )}
                 </form>
             </Dialog>
 
             {/* 接入代码弹窗 */}
-            <Dialog
-                onClose={() => setCodeDialogOpen(false)}
-                open={codeDialogOpen}
-                title='接入代码'
-            >
+            <Dialog onClose={() => setCodeDialogOpen(false)} open={codeDialogOpen} title="接入代码">
                 <div className={styles.codeDialogContent}>
                     <p className={styles.codeHint}>将以下代码添加到网站的 &lt;head&gt; 中即可开始采集数据：</p>
                     <div className={styles.codeBlock}>
                         <code>{getEmbedScript(codeDialogSiteId)}</code>
                     </div>
                     <div className={styles.codeActions}>
-                        <GhostButton
-                            asButton
-                            icon={<CopyIcon />}
-                            onClick={() => copyEmbedCode(codeDialogSiteId)}
-                            size='medium'
-                            variant='primary'
-                        >
+                        <GhostButton asButton icon={<CopyIcon />} onClick={() => copyEmbedCode(codeDialogSiteId)} size="medium" variant="primary">
                             复制代码
                         </GhostButton>
                     </div>

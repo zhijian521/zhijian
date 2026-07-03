@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { listTrackSites, createTrackSite, updateTrackSite, deleteTrackSite } from '@/lib/track-sites';
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 
 /*==

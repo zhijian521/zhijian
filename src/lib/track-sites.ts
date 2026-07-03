@@ -21,10 +21,7 @@ export async function generateSiteId(): Promise<string> {
             id += chars[Math.floor(Math.random() * chars.length)];
         }
         if (db) {
-            const [rows] = await db.execute<RowDataPacket[]>(
-                'SELECT id FROM zhijian_track_sites WHERE id = ?',
-                [id],
-            );
+            const [rows] = await db.execute<RowDataPacket[]>('SELECT id FROM zhijian_track_sites WHERE id = ?', [id]);
             if ((rows as any[]).length === 0) return id;
         } else {
             return id;
@@ -38,9 +35,7 @@ export async function listTrackSites(): Promise<TrackSite[]> {
     const db = getDb();
     if (!db) return [];
 
-    const [rows] = await db.execute<RowDataPacket[]>(
-        `SELECT * FROM zhijian_track_sites WHERE status != 'deleted' ORDER BY created_at DESC`,
-    );
+    const [rows] = await db.execute<RowDataPacket[]>(`SELECT * FROM zhijian_track_sites WHERE status != 'deleted' ORDER BY created_at DESC`);
     return rows as TrackSite[];
 }
 
@@ -49,10 +44,7 @@ export async function getTrackSiteById(id: string): Promise<TrackSite | null> {
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute<RowDataPacket[]>(
-        'SELECT * FROM zhijian_track_sites WHERE id = ?',
-        [id],
-    );
+    const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM zhijian_track_sites WHERE id = ?', [id]);
     return (rows[0] as TrackSite) ?? null;
 }
 
@@ -62,29 +54,32 @@ export async function createTrackSite(data: { name: string; domain: string }): P
     if (!db) throw new Error('数据库未配置');
 
     const id = await generateSiteId();
-    await db.execute(
-        'INSERT INTO zhijian_track_sites (id, name, domain) VALUES (?, ?, ?)',
-        [id, data.name, data.domain],
-    );
+    await db.execute('INSERT INTO zhijian_track_sites (id, name, domain) VALUES (?, ?, ?)', [id, data.name, data.domain]);
 
     const created = await getTrackSiteById(id);
     return created!;
 }
 
 /*== 更新站点 ==*/
-export async function updateTrackSite(
-    id: string,
-    fields: Partial<Pick<TrackSite, 'name' | 'domain' | 'status'>>,
-): Promise<TrackSite> {
+export async function updateTrackSite(id: string, fields: Partial<Pick<TrackSite, 'name' | 'domain' | 'status'>>): Promise<TrackSite> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
     const sets: string[] = [];
     const values: unknown[] = [];
 
-    if (fields.name !== undefined) { sets.push('name = ?'); values.push(fields.name); }
-    if (fields.domain !== undefined) { sets.push('domain = ?'); values.push(fields.domain); }
-    if (fields.status !== undefined) { sets.push('status = ?'); values.push(fields.status); }
+    if (fields.name !== undefined) {
+        sets.push('name = ?');
+        values.push(fields.name);
+    }
+    if (fields.domain !== undefined) {
+        sets.push('domain = ?');
+        values.push(fields.domain);
+    }
+    if (fields.status !== undefined) {
+        sets.push('status = ?');
+        values.push(fields.status);
+    }
 
     if (sets.length === 0) {
         const existing = await getTrackSiteById(id);
@@ -104,9 +99,6 @@ export async function deleteTrackSite(id: string): Promise<boolean> {
     const db = getDb();
     if (!db) return false;
 
-    const [result] = await db.execute(
-        "UPDATE zhijian_track_sites SET status = 'deleted' WHERE id = ?",
-        [id],
-    );
+    const [result] = await db.execute("UPDATE zhijian_track_sites SET status = 'deleted' WHERE id = ?", [id]);
     return (result as any).affectedRows > 0;
 }

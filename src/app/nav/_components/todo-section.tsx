@@ -18,9 +18,9 @@ interface Quadrant {
 }
 
 const QUADRANTS: Quadrant[] = [
-    { key: 'q1', important: true,  urgent: true,  label: '重要紧急',   cls: styles.q1 },
-    { key: 'q2', important: false, urgent: true,  label: '不重要紧急', cls: styles.q2 },
-    { key: 'q3', important: true,  urgent: false, label: '重要不紧急', cls: styles.q3 },
+    { key: 'q1', important: true, urgent: true, label: '重要紧急', cls: styles.q1 },
+    { key: 'q2', important: false, urgent: true, label: '不重要紧急', cls: styles.q2 },
+    { key: 'q3', important: true, urgent: false, label: '重要不紧急', cls: styles.q3 },
     { key: 'q4', important: false, urgent: false, label: '不重要不紧急', cls: styles.q4 },
 ];
 
@@ -58,7 +58,7 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
     }
 
     function todosOf(q: Quadrant): TodoItem[] {
-        return todos.filter(t => t.important === q.important && t.urgent === q.urgent);
+        return todos.filter((t) => t.important === q.important && t.urgent === q.urgent);
     }
 
     /*== 拖拽 ==*/
@@ -92,25 +92,37 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
     const handleDrop = useCallback((e: React.DragEvent, q: Quadrant) => {
         e.preventDefault();
         const dt = dropTargetRef.current;
-        if (!dt || !dt.qKey) { setDropTarget(null); return; }
-        if (dt.dragId === dt.overCardId) { setDropTarget(null); return; }
+        if (!dt || !dt.qKey) {
+            setDropTarget(null);
+            return;
+        }
+        if (dt.dragId === dt.overCardId) {
+            setDropTarget(null);
+            return;
+        }
 
         const list = todosRef.current;
-        const dragged = list.find(t => t.id === dt.dragId);
-        if (!dragged) { setDropTarget(null); return; }
+        const dragged = list.find((t) => t.id === dt.dragId);
+        if (!dragged) {
+            setDropTarget(null);
+            return;
+        }
 
         const moved: TodoItem = { ...dragged, important: q.important, urgent: q.urgent };
-        const without = list.filter(t => t.id !== dt.dragId);
+        const without = list.filter((t) => t.id !== dt.dragId);
 
         let insertIdx = without.length;
         if (dt.overCardId) {
-            const overIdx = without.findIndex(t => t.id === dt.overCardId);
+            const overIdx = without.findIndex((t) => t.id === dt.overCardId);
             if (overIdx !== -1) insertIdx = overIdx;
         } else {
             let lastQIdx = -1;
             for (let i = without.length - 1; i >= 0; i--) {
                 const t = without[i];
-                if (t.important === q.important && t.urgent === q.urgent) { lastQIdx = i; break; }
+                if (t.important === q.important && t.urgent === q.urgent) {
+                    lastQIdx = i;
+                    break;
+                }
             }
             insertIdx = lastQIdx + 1;
         }
@@ -137,7 +149,7 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
             createdAt: Date.now(),
         };
         /*-- 插到该象限第一项之前；象限为空则追加末尾 --*/
-        const firstIdx = todos.findIndex(t => t.important === q.important && t.urgent === q.urgent);
+        const firstIdx = todos.findIndex((t) => t.important === q.important && t.urgent === q.urgent);
         const next = [...todos];
         next.splice(firstIdx === -1 ? next.length : firstIdx, 0, newItem);
         persist(next);
@@ -145,16 +157,16 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
     }
 
     function handleToggle(id: string) {
-        persist(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+        persist(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
     }
 
     function handleDelete(id: string) {
-        persist(todos.filter(t => t.id !== id));
+        persist(todos.filter((t) => t.id !== id));
         if (editingId === id) setEditingId(null);
     }
 
     function handleUpdateText(id: string, value: string) {
-        persist(todos.map(t => t.id === id ? { ...t, text: value } : t));
+        persist(todos.map((t) => (t.id === id ? { ...t, text: value } : t)));
     }
 
     return (
@@ -168,22 +180,12 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                     const items = todosOf(q);
                     const isOver = dropTarget?.qKey === q.key;
                     return (
-                        <div
-                            key={q.key}
-                            className={`${styles.quadrant} ${q.cls} ${isOver ? styles.dragOver : ''}`}
-                            onDragOver={(e) => handleQDragOver(e, q)}
-                            onDrop={(e) => handleDrop(e, q)}
-                        >
+                        <div key={q.key} className={`${styles.quadrant} ${q.cls} ${isOver ? styles.dragOver : ''}`} onDragOver={(e) => handleQDragOver(e, q)} onDrop={(e) => handleDrop(e, q)}>
                             <div className={styles.qHeader}>
                                 <span className={styles.qDot} />
                                 <span className={styles.qTitle}>{q.label}</span>
                                 <span className={styles.qCount}>{items.length}</span>
-                                <button
-                                    aria-label="新增"
-                                    className={styles.qAdd}
-                                    onClick={() => handleAddInQuadrant(q)}
-                                    type="button"
-                                >
+                                <button aria-label="新增" className={styles.qAdd} onClick={() => handleAddInQuadrant(q)} type="button">
                                     <PlusIcon style={{ width: '0.875rem', height: '0.875rem' }} />
                                 </button>
                             </div>
@@ -198,24 +200,29 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                             draggable={!isEditing}
                                             onDragStart={(e) => handleDragStart(e, t.id)}
                                             onDragOver={(e) => handleCardDragOver(e, t.id, q)}
-                                            onDrop={(e) => { e.stopPropagation(); handleDrop(e, q); }}
+                                            onDrop={(e) => {
+                                                e.stopPropagation();
+                                                handleDrop(e, q);
+                                            }}
                                             onDragEnd={handleDragEnd}
-                                            onClick={() => { if (!isEditing) setEditingId(t.id); }}
+                                            onClick={() => {
+                                                if (!isEditing) setEditingId(t.id);
+                                            }}
                                         >
-                                            <input
-                                                checked={t.done}
-                                                className={styles.cardCheckbox}
-                                                onChange={() => handleToggle(t.id)}
-                                                onClick={(e) => e.stopPropagation()}
-                                                type="checkbox"
-                                            />
+                                            <input checked={t.done} className={styles.cardCheckbox} onChange={() => handleToggle(t.id)} onClick={(e) => e.stopPropagation()} type="checkbox" />
                                             {isEditing ? (
                                                 <textarea
                                                     autoFocus
                                                     className={styles.editArea}
-                                                    onChange={(e) => { handleUpdateText(t.id, e.target.value); autoResize(e.currentTarget); }}
+                                                    onChange={(e) => {
+                                                        handleUpdateText(t.id, e.target.value);
+                                                        autoResize(e.currentTarget);
+                                                    }}
                                                     onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); setEditingId(null); }
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            e.preventDefault();
+                                                            setEditingId(null);
+                                                        }
                                                         if (e.key === 'Escape') setEditingId(null);
                                                     }}
                                                     onBlur={() => setEditingId(null)}
@@ -226,14 +233,15 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                                     onClick={(e) => e.stopPropagation()}
                                                 />
                                             ) : (
-                                                <div className={`${styles.cardText} ${t.done ? styles.cardTextDone : ''}`}>
-                                                    {t.text || '（空）'}
-                                                </div>
+                                                <div className={`${styles.cardText} ${t.done ? styles.cardTextDone : ''}`}>{t.text || '（空）'}</div>
                                             )}
                                             <button
                                                 aria-label="删除"
                                                 className={styles.cardDelete}
-                                                onClick={(e) => { e.stopPropagation(); handleDelete(t.id); }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(t.id);
+                                                }}
                                                 type="button"
                                             >
                                                 <Trash2Icon className={styles.cardDeleteIcon} />

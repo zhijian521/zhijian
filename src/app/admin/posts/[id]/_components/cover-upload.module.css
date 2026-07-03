@@ -13,7 +13,9 @@
     background: var(--muted);
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .dropZone:hover {
@@ -68,7 +70,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* 预览区 */
@@ -105,7 +109,10 @@
     border: 1px solid var(--border);
     color: var(--muted-foreground);
     cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .deleteBtn:hover {

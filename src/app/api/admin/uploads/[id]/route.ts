@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response'
+import { BizCode, fail, success } from '@/lib/api-response';
 import { withAdmin } from '@/lib/with-admin';
 import { getUploadById, deleteUploadById, updateUploadById } from '@/lib/uploads';
 

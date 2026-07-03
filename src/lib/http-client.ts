@@ -44,12 +44,16 @@ async function extractApiResponse<T>(response: Response): Promise<ApiResponse<T>
     }
 
     return fail(
-        response.status === 401 ? BizCode.UNAUTHORIZED :
-        response.status === 403 ? BizCode.FORBIDDEN :
-        response.status === 404 ? BizCode.NOT_FOUND :
-        response.status === 409 ? BizCode.CONFLICT :
-        BizCode.INTERNAL,
-        body?.message || `请求失败 (${response.status})`,
+        response.status === 401
+            ? BizCode.UNAUTHORIZED
+            : response.status === 403
+              ? BizCode.FORBIDDEN
+              : response.status === 404
+                ? BizCode.NOT_FOUND
+                : response.status === 409
+                  ? BizCode.CONFLICT
+                  : BizCode.INTERNAL,
+        body?.message || `请求失败 (${response.status})`
     ) as ApiResponse<T>;
 }
 
@@ -68,9 +72,14 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
 export const api = {
     async get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
         try {
-            const qs = params ? '?' + new URLSearchParams(
-                Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
-            ).toString() : '';
+            const qs = params
+                ? '?' +
+                  new URLSearchParams(
+                      Object.entries(params)
+                          .filter(([, v]) => v !== undefined)
+                          .map(([k, v]) => [k, String(v)])
+                  ).toString()
+                : '';
             const res = await fetchWithTimeout(`${BASE_URL}${url}${qs}`, { method: 'GET' });
             return extractApiResponse<T>(res);
         } catch {

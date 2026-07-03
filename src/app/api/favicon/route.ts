@@ -86,7 +86,9 @@ export async function GET(request: NextRequest) {
                 const html = await htmlRes.text();
                 faviconUrl = extractFaviconUrl(html, origin);
             }
-        } catch { /* 首页抓取失败，忽略 */ }
+        } catch {
+            /* 首页抓取失败，忽略 */
+        }
 
         /*-- 第二步：fallback /favicon.ico --*/
         if (!faviconUrl) {
@@ -124,9 +126,6 @@ export async function GET(request: NextRequest) {
         });
     } catch {
         /*-- 兜底：302 到 Google favicon API --*/
-        return NextResponse.redirect(
-            `https://www.google.com/s2/favicons?domain=${domain}&sz=32`,
-            302,
-        );
+        return NextResponse.redirect(`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, 302);
     }
 }

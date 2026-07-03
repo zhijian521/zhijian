@@ -8,7 +8,9 @@
     background: var(--primary);
     color: var(--primary-foreground);
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .button:hover {

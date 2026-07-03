@@ -19,10 +19,7 @@ export const metadata: Metadata = {
 
 /*== 后台概览页：从数据库读取真实文章与用户统计。 ==*/
 export default async function AdminPage() {
-    const [posts, userCounts] = await Promise.all([
-        getAllPosts(),
-        countUsersByRole(),
-    ]);
+    const [posts, userCounts] = await Promise.all([getAllPosts(), countUsersByRole()]);
 
     const publishedCount = posts.filter((p) => p.status === 'published').length;
     const draftCount = posts.length - publishedCount;
@@ -51,46 +48,19 @@ export default async function AdminPage() {
         {
             header: '操作',
             width: '4rem',
-            render: (post) => (
-                <IconButton
-                    href={`${APP_ROUTES.adminPosts}/${post.id}`}
-                    icon={<Edit3Icon />}
-                    target="_blank"
-                    title="编辑"
-                />
-            ),
+            render: (post) => <IconButton href={`${APP_ROUTES.adminPosts}/${post.id}`} icon={<Edit3Icon />} target="_blank" title="编辑" />,
         },
     ];
 
     return (
         <div className={styles.page}>
-            <AdminPageHeader
-                description='欢迎回来，这里是当前站点内容与数据的概览。'
-                eyebrow='Overview'
-                tag={`${posts.length} 篇文章 · ${totalUsers} 个用户`}
-                title='概览'
-            />
+            <AdminPageHeader description="欢迎回来，这里是当前站点内容与数据的概览。" eyebrow="Overview" tag={`${posts.length} 篇文章 · ${totalUsers} 个用户`} title="概览" />
 
             {/* 指标卡片 */}
             <section className={styles.metrics}>
-                <MetricCard
-                    description={`${publishedCount} 篇已发布`}
-                    icon={<FileTextIcon className={styles.metricIcon} />}
-                    title='文章'
-                    value={`${posts.length}`}
-                />
-                <MetricCard
-                    description={`${userCounts.admin} 管理员 · ${userCounts.user} 用户`}
-                    icon={<UsersIcon className={styles.metricIcon} />}
-                    title='用户'
-                    value={`${totalUsers}`}
-                />
-                <MetricCard
-                    description='草稿与已发布'
-                    icon={<Edit3Icon className={styles.metricIcon} />}
-                    title='状态'
-                    value={`${draftCount} / ${publishedCount}`}
-                />
+                <MetricCard description={`${publishedCount} 篇已发布`} icon={<FileTextIcon className={styles.metricIcon} />} title="文章" value={`${posts.length}`} />
+                <MetricCard description={`${userCounts.admin} 管理员 · ${userCounts.user} 用户`} icon={<UsersIcon className={styles.metricIcon} />} title="用户" value={`${totalUsers}`} />
+                <MetricCard description="草稿与已发布" icon={<Edit3Icon className={styles.metricIcon} />} title="状态" value={`${draftCount} / ${publishedCount}`} />
             </section>
 
             {/* 近期文章 */}
@@ -103,12 +73,7 @@ export default async function AdminPage() {
                     </Link>
                 </div>
 
-                <DataTable
-                    columns={columns}
-                    emptyText='暂无文章'
-                    rowKey={(post) => post.id}
-                    rows={recentPosts}
-                />
+                <DataTable columns={columns} emptyText="暂无文章" rowKey={(post) => post.id} rows={recentPosts} />
             </section>
         </div>
     );
@@ -127,15 +92,11 @@ function MetricCard({ description, icon, title, value }: MetricCardProps) {
         <div className={`${styles.metricCard} admin-stitch-card`}>
             <div className={styles.metricHeader}>
                 <p className={styles.metricLabel}>{title}</p>
-                <div className={styles.metricIconWrap}>
-                    {icon}
-                </div>
+                <div className={styles.metricIconWrap}>{icon}</div>
             </div>
             <div>
-                <h3 className='admin-stitch-number'>{value}</h3>
-                <p className={styles.metricDesc}>
-                    {description}
-                </p>
+                <h3 className="admin-stitch-number">{value}</h3>
+                <p className={styles.metricDesc}>{description}</p>
             </div>
         </div>
     );

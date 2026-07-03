@@ -17,7 +17,7 @@ export const GET = withUser(async () => {
 
     try {
         const res = await fetch(DEEPSEEK_MODELS_URL, {
-            headers: { 'Authorization': `Bearer ${apiKey}` },
+            headers: { Authorization: `Bearer ${apiKey}` },
             signal: AbortSignal.timeout(8000),
         });
 
@@ -32,9 +32,7 @@ export const GET = withUser(async () => {
         }
 
         /*-- 只透传 id，丢弃其余字段 --*/
-        const models = list
-            .map((m: any) => (typeof m?.id === 'string' ? m.id : null))
-            .filter((id: string | null): id is string => Boolean(id));
+        const models = list.map((m: any) => (typeof m?.id === 'string' ? m.id : null)).filter((id: string | null): id is string => Boolean(id));
 
         return NextResponse.json(success(models));
     } catch (e) {

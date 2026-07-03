@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(fail(BizCode.USER_DISABLED, '用户不存在或已被禁用。'), { status: 401 });
     }
 
-    return NextResponse.json(success({
-        user: { id: user.id, username: user.username, email: user.email, role: user.role },
-    }));
+    return NextResponse.json(
+        success({
+            user: { id: user.id, username: user.username, email: user.email, role: user.role },
+        })
+    );
 }

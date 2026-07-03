@@ -12,7 +12,9 @@
     font-family: var(--font-sans);
     text-decoration: none;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition:
+        border-color 0.15s,
+        background 0.15s;
     white-space: nowrap;
     max-width: 8rem;
     overflow: hidden;

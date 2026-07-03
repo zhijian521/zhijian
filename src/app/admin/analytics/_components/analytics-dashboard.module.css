@@ -37,11 +37,15 @@
 }
 
 @media (max-width: 1024px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 640px) {
-    .grid { grid-template-columns: 1fr; }
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /*-- 1. 概览指标行 — 五列一行 ==*/
@@ -54,11 +58,15 @@
 }
 
 @media (max-width: 1024px) {
-    .metricsRow { grid-template-columns: repeat(3, 1fr); }
+    .metricsRow {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media (max-width: 640px) {
-    .metricsRow { grid-template-columns: repeat(2, 1fr); }
+    .metricsRow {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .metric {
@@ -87,7 +95,8 @@
 
 /*-- 卡片基础 ==*/
 
-.cardWide, .cardThird {
+.cardWide,
+.cardThird {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--card);
@@ -103,7 +112,10 @@
 }
 
 @media (max-width: 640px) {
-    .cardThird, .cardWide { grid-column: 1 / -1; }
+    .cardThird,
+    .cardWide {
+        grid-column: 1 / -1;
+    }
 }
 
 /*-- 一行双卡片（全宽容器内分两列） ==*/
@@ -116,7 +128,9 @@
 }
 
 @media (max-width: 640px) {
-    .rowPair { grid-template-columns: 1fr; }
+    .rowPair {
+        grid-template-columns: 1fr;
+    }
 }
 
 .pairCard {
@@ -158,15 +172,32 @@
 
 /*-- 变化指示器 ==*/
 
-.change { display: inline-flex; align-items: center; gap: 2px; font-size: 0.8rem; }
-.changeUp { color: var(--primary); }
-.changeDown { color: var(--muted-foreground); }
-.changeNeutral { font-size: 0.8rem; color: var(--muted-foreground); }
-.changeIcon { width: 0.75rem; height: 0.75rem; }
+.change {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8rem;
+}
+.changeUp {
+    color: var(--primary);
+}
+.changeDown {
+    color: var(--muted-foreground);
+}
+.changeNeutral {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+.changeIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
 
 /*-- 图表区 ==*/
 
-.chartArea { width: 100%; }
+.chartArea {
+    width: 100%;
+}
 
 .chartEmpty {
     display: flex;
@@ -215,8 +246,15 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.tooltipLabel { margin: 0 0 0.25rem; font-size: 0.8rem; color: var(--muted-foreground); }
-.tooltipValue { margin: 0; font-size: 0.8rem; }
+.tooltipLabel {
+    margin: 0 0 0.25rem;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+.tooltipValue {
+    margin: 0;
+    font-size: 0.8rem;
+}
 
 /*== 3. 排行列表 ==*/
 
@@ -240,7 +278,10 @@
     text-align: center;
 }
 
-.rankBody { flex: 1; min-width: 0; }
+.rankBody {
+    flex: 1;
+    min-width: 0;
+}
 
 .rankLabel {
     display: block;
@@ -251,7 +292,12 @@
     text-overflow: ellipsis;
 }
 
-.rankMeta { display: block; margin-top: 2px; font-size: 0.7rem; color: var(--muted-foreground); }
+.rankMeta {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: var(--muted-foreground);
+}
 
 .rankNum {
     flex-shrink: 0;
@@ -386,14 +432,20 @@
 }
 
 @media (max-width: 1024px) {
-    .geoInner { grid-template-columns: repeat(2, 1fr); }
+    .geoInner {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 640px) {
-    .geoInner { grid-template-columns: 1fr; }
+    .geoInner {
+        grid-template-columns: 1fr;
+    }
 }
 
-.geoCol { min-width: 0; }
+.geoCol {
+    min-width: 0;
+}
 
 /*== 标签云 ==*/
 
@@ -410,7 +462,9 @@
     padding: 0.375rem 0.75rem;
     border: 1px solid var(--border);
     background: var(--muted);
-    transition: border-color 0.15s, background 0.15s;
+    transition:
+        border-color 0.15s,
+        background 0.15s;
 }
 
 .cloudTag:hover {
@@ -418,8 +472,15 @@
     background: var(--primary-subtle-soft);
 }
 
-.cloudName { font-size: 0.85rem; color: var(--foreground); }
-.cloudPct { font-size: 0.75rem; color: var(--primary); font-variant-numeric: tabular-nums; }
+.cloudName {
+    font-size: 0.85rem;
+    color: var(--foreground);
+}
+.cloudPct {
+    font-size: 0.75rem;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+}
 
 /*== 圆点列表 ==*/
 
@@ -443,20 +504,64 @@
     background: var(--primary);
 }
 
-.dotName { flex: 1; min-width: 0; font-size: 0.85rem; color: var(--foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dotCnt { font-size: 0.75rem; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
-.dotPct { min-width: 2.5rem; text-align: right; font-size: 0.85rem; color: var(--foreground); font-variant-numeric: tabular-nums; }
+.dotName {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dotCnt {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+}
+.dotPct {
+    min-width: 2.5rem;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+}
 
 /*== 6. 入口/出口表格 ==*/
 
-.tablePath { font-size: 0.8rem; color: var(--foreground); word-break: break-all; }
-.tableNum { font-size: 0.8rem; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
+.tablePath {
+    font-size: 0.8rem;
+    color: var(--foreground);
+    word-break: break-all;
+}
+.tableNum {
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+}
 
 /*== 空状态 / 加载 / 错误 ==*/
 
-.empty { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem 1rem; text-align: center; }
-.empty p { margin: 0; font-size: 0.9rem; color: var(--muted-foreground); }
-.loading { display: flex; align-items: center; justify-content: center; padding: 3rem; font-size: 0.9rem; color: var(--muted-foreground); }
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+.empty p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}
 
 .errorBanner {
     display: flex;
@@ -478,8 +583,31 @@
 
 /*== 访问记录 ==*/
 
-.visitPageCell { display: flex; flex-direction: column; gap: 2px; }
-.visitPath { font-size: 0.8rem; color: var(--foreground); white-space: nowrap; }
-.visitTitle { font-size: 0.7rem; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-.visitMuted { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; color: var(--muted-foreground); }
-.newTag { margin-left: 0.25rem; }
+.visitPageCell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.visitPath {
+    font-size: 0.8rem;
+    color: var(--foreground);
+    white-space: nowrap;
+}
+.visitTitle {
+    font-size: 0.7rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+.visitMuted {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+.newTag {
+    margin-left: 0.25rem;
+}
