@@ -1,5 +1,4 @@
-/* 顶部样式见 ../shared.module.css */
-
+/*== 区块 ==*/
 .section {
     margin-bottom: var(--space-7);
 }
@@ -13,9 +12,10 @@
     margin-bottom: var(--space-3);
 }
 
+/*== 图标网格 ==*/
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
     gap: var(--space-2);
 }
 
@@ -24,11 +24,11 @@
     flex-direction: column;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-4);
+    padding: var(--space-2);
     background: var(--muted);
     border: none;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background var(--transition-fast);
 }
 
 .iconCell:hover {
@@ -40,17 +40,18 @@
 }
 
 .icon {
-    width: var(--space-5);
-    height: var(--space-5);
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: var(--space-2);
     color: var(--muted-foreground);
-    transition: color 0.15s;
+    transition: color var(--transition-fast);
 }
 
 .iconName {
     font-size: var(--text-xs);
     color: var(--muted-foreground);
     font-family: var(--font-mono);
+    line-height: var(--leading-normal);
     word-break: break-all;
     text-align: center;
-    line-height: 1.2;
 }
