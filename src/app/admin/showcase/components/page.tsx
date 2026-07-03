@@ -13,9 +13,10 @@ export default function ShowcaseComponentsPage() {
     return (
         <div>
             <AdminPageHeader
-                eyebrow="Showcase"
+                eyebrow="Components"
                 title="组件预览"
-                description={`已登记 ${SHOWCASE_REGISTRY.length} 个组件。新增组件在 src/showcase/registry.ts 登记。`}
+                description="浏览项目内所有可复用的 UI 组件，新增组件需在 src/showcase/registry.ts 登记。"
+                tag={`已登记 ${SHOWCASE_REGISTRY.length} 个组件`}
             />
 
             {Object.entries(byModule).map(([module, entries]) => (

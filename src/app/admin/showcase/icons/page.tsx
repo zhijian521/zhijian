@@ -20,9 +20,10 @@ export default function ShowcaseIconsPage() {
     return (
         <div>
             <AdminPageHeader
-                eyebrow="Showcase"
+                eyebrow="Icons"
                 title="图标预览"
-                description={`共 ${strokeNames.length + fillNames.length} 个图标。点击复制 import 用法。`}
+                description="浏览项目内所有可用的图标，点击图标即可复制 import 用法。"
+                tag={`共 ${strokeNames.length + fillNames.length} 个图标`}
             />
 
             <section className={styles.section}>
