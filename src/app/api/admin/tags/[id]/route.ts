@@ -1,3 +1,12 @@
+/**
+ * @api 标签编辑/删除
+ * @group admin
+ * @auth admin
+ * @method PUT    更新标签
+ * @method DELETE 删除标签
+ * @returns success<Tag> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { getTagById, updateTag, deleteTag } from '@/lib/tags';

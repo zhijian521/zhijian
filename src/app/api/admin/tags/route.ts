@@ -1,3 +1,12 @@
+/**
+ * @api 标签管理（列表/创建）
+ * @group admin
+ * @auth admin
+ * @method GET  标签列表
+ * @method POST 创建标签
+ * @returns success<Tag[]> | success<Tag> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { listTags, createTag } from '@/lib/tags';

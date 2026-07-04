@@ -1,3 +1,11 @@
+/**
+ * @api 图片同步检查
+ * @group admin
+ * @auth admin
+ * @method GET 对比远程与本地图片差异
+ * @returns success<{ missing: string[] }> | fail
+ */
+
 import fs from 'fs';
 import path from 'path';
 

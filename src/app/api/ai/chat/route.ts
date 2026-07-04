@@ -1,3 +1,11 @@
+/**
+ * @api AI 对话
+ * @group ai
+ * @auth user
+ * @method POST 发送消息到 AI，流式返回（SSE）
+ * @returns SSE 流 | fail
+ */
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 

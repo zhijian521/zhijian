@@ -1,3 +1,11 @@
+/**
+ * @api 访问明细
+ * @group admin
+ * @auth admin
+ * @method GET 分页查询访问记录
+ * @returns success<ListData<Visit>> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { fail, BizCode, success } from '@/lib/api-response';

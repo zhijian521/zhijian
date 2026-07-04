@@ -1,3 +1,11 @@
+/**
+ * @api 文章导出
+ * @group admin
+ * @auth admin
+ * @method GET 导出文章与引用图片为 ZIP（?id= 可选单篇）
+ * @returns ZIP 文件流 | fail
+ */
+
 import fs from 'fs';
 import path from 'path';
 

@@ -1,3 +1,11 @@
+/**
+ * @api Favicon 代理
+ * @group util
+ * @auth none
+ * @method GET 自建 favicon 获取服务，代理抓取站点图标
+ * @returns 图片二进制 | 302 重定向
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 
 /*============================================================================

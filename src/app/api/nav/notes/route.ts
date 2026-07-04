@@ -1,3 +1,11 @@
+/**
+ * @api 笔记保存
+ * @group nav
+ * @auth user
+ * @method PUT 保存当前用户笔记数据
+ * @returns success | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { withUser } from '@/lib/with-user';

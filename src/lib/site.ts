@@ -87,6 +87,7 @@ export const APP_ROUTES = {
     adminShowcaseComponents: '/admin/showcase/components', // 组件预览
     adminShowcaseIcons: '/admin/showcase/icons', // 图标预览
     adminDocs: '/admin/docs', // 项目文档
+    adminApiDocs: '/admin/docs/api', // 接口文档
 
     /*-- 错误 --*/
     forbidden: '/forbidden', // 403 无权限
@@ -169,7 +170,8 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
         items: [
             { href: APP_ROUTES.adminShowcaseComponents, label: '组件预览', icon: LayoutDashboardIcon, match: 'exact' },
             { href: APP_ROUTES.adminShowcaseIcons, label: '图标预览', icon: ImageIcon, match: 'exact' },
-            { href: APP_ROUTES.adminDocs, label: '项目文档', icon: BookIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminDocs, label: '项目文档', icon: BookIcon, match: 'exact' },
+            { href: APP_ROUTES.adminApiDocs, label: '接口文档', icon: CodeIcon, match: 'exact' },
         ],
     },
 ];

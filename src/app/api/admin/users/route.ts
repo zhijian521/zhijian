@@ -1,3 +1,12 @@
+/**
+ * @api 用户管理（列表/创建）
+ * @group admin
+ * @auth admin
+ * @method GET  用户列表（分页+搜索）
+ * @method POST 创建用户
+ * @returns success<ListData<User>> | success<User> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { createUser, hashPassword, listUsers, validateUserFields } from '@/lib/auth';

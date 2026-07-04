@@ -1,3 +1,11 @@
+/**
+ * @api 统计数据采集
+ * @group collect
+ * @auth none
+ * @method POST 接收前端埋点数据（PV/UV/事件等）
+ * @returns success | fail
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getDb } from '@/lib/db';

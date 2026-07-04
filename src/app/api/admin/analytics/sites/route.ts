@@ -1,3 +1,14 @@
+/**
+ * @api 统计站点管理
+ * @group admin
+ * @auth admin
+ * @method GET    站点列表
+ * @method POST   创建站点
+ * @method PUT    更新站点
+ * @method DELETE 删除站点
+ * @returns success<TrackSite[]> | success<TrackSite> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { listTrackSites, createTrackSite, updateTrackSite, deleteTrackSite } from '@/lib/track-sites';

@@ -1,3 +1,12 @@
+/**
+ * @api 分类管理（列表/创建）
+ * @group admin
+ * @auth admin
+ * @method GET  分类列表
+ * @method POST 创建分类
+ * @returns success<Category[]> | success<Category> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { listCategories, createCategory } from '@/lib/categories';

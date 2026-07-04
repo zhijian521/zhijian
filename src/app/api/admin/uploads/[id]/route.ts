@@ -1,3 +1,12 @@
+/**
+ * @api 图片编辑/删除
+ * @group admin
+ * @auth admin
+ * @method PATCH  更新图片信息
+ * @method DELETE 删除图片
+ * @returns success<Upload> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

@@ -1,3 +1,12 @@
+/**
+ * @api 文章管理（列表/创建）
+ * @group admin
+ * @auth admin
+ * @method GET  获取全部文章（含草稿）
+ * @method POST 创建草稿
+ * @returns success<Post[]> | success<Post> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

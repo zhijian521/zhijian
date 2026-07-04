@@ -1,3 +1,11 @@
+/**
+ * @api 用户登出
+ * @group auth
+ * @auth none
+ * @method POST 清除 session cookie
+ * @returns success
+ */
+
 import { NextResponse } from 'next/server';
 
 import { SESSION_COOKIE_NAME, getSessionCookieOptions } from '@/lib/auth';

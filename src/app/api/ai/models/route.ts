@@ -1,3 +1,11 @@
+/**
+ * @api AI 模型列表
+ * @group ai
+ * @auth user
+ * @method GET 返回可用 AI 模型配置
+ * @returns success<ModelConfig[]> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { withUser } from '@/lib/with-user';

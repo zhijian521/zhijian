@@ -1,3 +1,11 @@
+/**
+ * @api 当前用户信息
+ * @group auth
+ * @auth none
+ * @method GET 从 cookie 解析当前登录用户信息
+ * @returns success<User> | fail
+ */
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 

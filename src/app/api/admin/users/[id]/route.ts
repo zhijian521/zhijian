@@ -1,3 +1,13 @@
+/**
+ * @api 用户编辑/删除
+ * @group admin
+ * @auth admin
+ * @method GET    获取用户详情
+ * @method PUT    更新用户信息
+ * @method DELETE 删除用户
+ * @returns success<User> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { getUserById, hashPassword, updateUser, deleteUser } from '@/lib/auth';

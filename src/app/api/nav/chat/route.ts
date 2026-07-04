@@ -1,3 +1,12 @@
+/**
+ * @api 聊天记录
+ * @group nav
+ * @auth user
+ * @method GET 获取聊天历史
+ * @method PUT 保存聊天记录
+ * @returns success<ChatData> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { withUser } from '@/lib/with-user';

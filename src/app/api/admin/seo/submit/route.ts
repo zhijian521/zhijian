@@ -1,3 +1,11 @@
+/**
+ * @api SEO URL 推送
+ * @group admin
+ * @auth admin
+ * @method POST 将已发布文章 URL 推送到搜索引擎
+ * @returns success | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

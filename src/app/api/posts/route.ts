@@ -1,3 +1,11 @@
+/**
+ * @api 公开文章列表
+ * @group posts
+ * @auth none
+ * @method GET 返回全部已发布文章
+ * @returns success<Post[]> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { success } from '@/lib/api-response';

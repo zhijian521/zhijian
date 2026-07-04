@@ -1,3 +1,11 @@
+/**
+ * @api 图片列表
+ * @group admin
+ * @auth admin
+ * @method GET 图片列表（分页）
+ * @returns success<ListData<Upload>> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

@@ -1,3 +1,11 @@
+/**
+ * @api 导航站数据同步
+ * @group nav
+ * @auth user
+ * @method POST 批量覆盖同步导航数据（localStorage → 服务端）
+ * @returns success | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { withUser } from '@/lib/with-user';

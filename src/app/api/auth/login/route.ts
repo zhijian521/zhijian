@@ -1,3 +1,11 @@
+/**
+ * @api 用户登录
+ * @group auth
+ * @auth none
+ * @method POST 用户名/密码登录，成功返回 session cookie
+ * @returns success<{ userId }> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { createSessionToken, getUserByUsername, getSessionCookieOptions, SESSION_COOKIE_NAME, verifyPassword } from '@/lib/auth';

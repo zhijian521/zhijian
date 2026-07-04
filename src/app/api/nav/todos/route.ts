@@ -1,3 +1,11 @@
+/**
+ * @api 待办保存
+ * @group nav
+ * @auth user
+ * @method PUT 保存当前用户待办数据
+ * @returns success | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { withUser } from '@/lib/with-user';

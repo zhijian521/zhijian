@@ -25,7 +25,7 @@ export default function DocsIndexPage() {
             <AdminPageHeader
                 eyebrow="Docs"
                 title="项目文档"
-                description="功能文档与接口说明。改功能时同步改文档，新增文档需在 src/docs/features/_registry.ts 登记。"
+                description="功能文档说明。改功能时同步改文档，新增文档需在 src/docs/features/_registry.ts 登记。"
                 tag={`${DOC_REGISTRY.length} 篇文档`}
             />
 

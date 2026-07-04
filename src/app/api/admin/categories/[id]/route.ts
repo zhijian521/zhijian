@@ -1,3 +1,12 @@
+/**
+ * @api 分类编辑/删除
+ * @group admin
+ * @auth admin
+ * @method PUT    更新分类
+ * @method DELETE 删除分类
+ * @returns success<Category> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { getCategoryById, updateCategory, deleteCategory } from '@/lib/categories';

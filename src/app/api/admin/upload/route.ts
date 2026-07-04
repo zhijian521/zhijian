@@ -1,3 +1,11 @@
+/**
+ * @api 图片上传
+ * @group admin
+ * @auth admin
+ * @method POST 上传图片（multipart/form-data）
+ * @returns success<Upload> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

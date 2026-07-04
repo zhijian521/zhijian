@@ -1,3 +1,11 @@
+/**
+ * @api 统计概览
+ * @group admin
+ * @auth admin
+ * @method GET 综合统计数据（趋势/排名/来源/设备/语言/地域等）
+ * @returns success<OverviewData> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

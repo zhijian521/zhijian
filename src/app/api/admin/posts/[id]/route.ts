@@ -1,3 +1,12 @@
+/**
+ * @api 文章编辑/删除
+ * @group admin
+ * @auth admin
+ * @method PATCH  更新文章字段
+ * @method DELETE 删除文章
+ * @returns success<Post> | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/api-response';

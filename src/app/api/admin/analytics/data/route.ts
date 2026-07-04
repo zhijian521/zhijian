@@ -1,3 +1,11 @@
+/**
+ * @api 统计原始数据
+ * @group admin
+ * @auth admin
+ * @method DELETE 清除指定站点统计数据
+ * @returns success | fail
+ */
+
 import { NextResponse } from 'next/server';
 
 import { clearSiteData } from '@/lib/analytics';

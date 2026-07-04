@@ -1,25 +1,27 @@
 /*============================================================================
   docs-check — 文档与 registry 一致性校验
 
-  校验 src/docs/features/_registry.ts 与磁盘 md 双向一致：
+  功能文档：
   1. DOC_REGISTRY 登记的每篇 md 文件必须存在
   2. 磁盘上的 src/docs/features/*.md 必须都已登记（防漏登）
 
-  接口文档校验（specs/07 第 3-5 条）预留分支：
-  - 检测到 src/app/api 下任意 route.ts 存在时，若 src/docs/api/_registry.ts
-    不存在则当前仅 warn（第二阶段接入 API_REGISTRY 后改为 fail）。
+  接口文档：
+  3. API_REGISTRY 登记的每个路径的 route.ts 必须存在
+  4. 磁盘上的每个 src/app/api/** /route.ts 必须都已登记（防漏登）
 
   用法：npm run docs:check
 ============================================================================*/
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
+import { resolve, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, '..');
 const featuresDir = resolve(projectRoot, 'src/docs/features');
-const registryFile = join(featuresDir, '_registry.ts');
+const featuresRegistryFile = join(featuresDir, '_registry.ts');
+const apiDir = resolve(projectRoot, 'src/app/api');
+const apiRegistryFile = resolve(projectRoot, 'src/docs/api/_registry.ts');
 
 let errors = 0;
 const warnings = [];
@@ -28,6 +30,24 @@ function fail(msg) {
     console.error(`  ✗ ${msg}`);
     errors++;
 }
+
+/*== 递归收集目录下所有满足 filter 的文件 ==*/
+function collectFiles(dir, filter) {
+    const result = [];
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, entry.name);
+        if (entry.isDirectory()) {
+            result.push(...collectFiles(full, filter));
+        } else if (filter(entry.name)) {
+            result.push(full);
+        }
+    }
+    return result;
+}
+
+// =====================================
+// 功能文档校验
+// =====================================
 
 /*== 解析 _registry.ts，提取所有 file: 'xxx.md' 值 ==*/
 function parseRegistryFiles(content) {
@@ -40,63 +60,81 @@ function parseRegistryFiles(content) {
     return files;
 }
 
-/*== 1. registry 必须存在 ==*/
-if (!existsSync(registryFile)) {
+if (!existsSync(featuresRegistryFile)) {
     console.error('✗ docs:check failed');
-    fail(`功能文档 registry 不存在：src/docs/features/_registry.ts`);
-    console.error(`\n  按规范，src/docs/features/ 下只要有 md，就必须有 _registry.ts 登记。`);
+    fail('功能文档 registry 不存在：src/docs/features/_registry.ts');
+    console.error('\n  按规范，src/docs/features/ 下只要有 md，就必须有 _registry.ts 登记。');
     process.exit(1);
 }
 
-const registryContent = readFileSync(registryFile, 'utf8');
-const registeredFiles = parseRegistryFiles(registryContent);
+const featuresContent = readFileSync(featuresRegistryFile, 'utf8');
+const registeredFiles = parseRegistryFiles(featuresContent);
 
-/*== 2. 登记项的文件必须存在 ==*/
 console.log('检查功能文档登记项指向的文件...');
 for (const file of registeredFiles) {
-    const fullPath = join(featuresDir, file);
-    if (!existsSync(fullPath)) {
+    if (!existsSync(join(featuresDir, file))) {
         fail(`registry 登记的文件不存在：${file}`);
     }
 }
 
-/*== 3. 磁盘 md 必须都已登记（双向防漏）==*/
 console.log('检查磁盘 md 是否都已登记...');
-const diskFiles = readdirSync(featuresDir).filter((f) => f.endsWith('.md'));
-const registeredSet = new Set(registeredFiles);
-for (const file of diskFiles) {
-    if (!registeredSet.has(file)) {
+const diskMdFiles = readdirSync(featuresDir).filter((f) => f.endsWith('.md'));
+const registeredFileSet = new Set(registeredFiles);
+for (const file of diskMdFiles) {
+    if (!registeredFileSet.has(file)) {
         fail(`磁盘文档未登记到 registry：src/docs/features/${file}`);
     }
 }
 
-/*== 递归收集 api 目录下所有 route.ts ==*/
-function collectRouteFiles(dir) {
-    const result = [];
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-        const full = join(dir, entry.name);
-        if (entry.isDirectory()) {
-            result.push(...collectRouteFiles(full));
-        } else if (entry.name === 'route.ts') {
-            result.push(full);
+// =====================================
+// 接口文档校验
+// =====================================
+
+/*== 解析 _registry.ts，提取所有 path: 'xxx' 值 ==*/
+function parseRegistryPaths(content) {
+    const paths = [];
+    const re = /path:\s*['"]([^'"]+)['"]/g;
+    let m;
+    while ((m = re.exec(content)) !== null) {
+        paths.push(m[1]);
+    }
+    return paths;
+}
+
+if (existsSync(apiRegistryFile)) {
+    const apiContent = readFileSync(apiRegistryFile, 'utf8');
+    const registeredPaths = parseRegistryPaths(apiContent);
+    const registeredPathSet = new Set(registeredPaths);
+
+    // 3. 登记路径的 route.ts 必须存在
+    console.log('检查接口登记项对应的 route 文件...');
+    for (const p of registeredPaths) {
+        const routePath = join(apiDir, p, 'route.ts');
+        if (!existsSync(routePath)) {
+            fail(`API registry 登记的路径不存在：${p}/route.ts`);
         }
     }
-    return result;
-}
 
-/*== 4. 接口文档预留校验（第二阶段启用） ==*/
-const apiDir = resolve(projectRoot, 'src/app/api');
-const apiRegistry = resolve(projectRoot, 'src/docs/api/_registry.ts');
-if (existsSync(apiDir)) {
-    const hasRoute = collectRouteFiles(apiDir).length > 0;
-    if (hasRoute && !existsSync(apiRegistry)) {
-        warnings.push(
-            '检测到 API route 但 src/docs/api/_registry.ts 不存在（接口文档校验将在第二阶段启用，当前仅提醒）',
-        );
+    // 4. 磁盘 route.ts 必须都已登记
+    console.log('检查磁盘 route.ts 是否都已登记...');
+    const diskRoutes = collectFiles(apiDir, (name) => name === 'route.ts');
+    for (const route of diskRoutes) {
+        const relPath = relative(apiDir, route).replace(/\\/g, '/').replace('/route.ts', '');
+        if (!registeredPathSet.has(relPath)) {
+            fail(`API route 未登记到 registry：src/app/api/${relPath}/route.ts`);
+        }
+    }
+} else {
+    const hasRoute = collectFiles(apiDir, (name) => name === 'route.ts').length > 0;
+    if (hasRoute) {
+        fail('检测到 API route 但 src/docs/api/_registry.ts 不存在（按 specs/07，有 route 必须有 registry）');
     }
 }
 
-/*== 输出结果 ==*/
+// =====================================
+// 输出结果
+// =====================================
+
 for (const w of warnings) {
     console.warn(`  ⚠ ${w}`);
 }
@@ -106,4 +144,8 @@ if (errors > 0) {
     process.exit(1);
 }
 
-console.log(`\n✓ docs:check passed（${registeredFiles.length} 篇功能文档）`);
+const featureCount = registeredFiles.length;
+const apiCount = existsSync(apiRegistryFile) ? parseRegistryPaths(readFileSync(apiRegistryFile, 'utf8')).length : 0;
+const summary = [`${featureCount} 篇功能文档`];
+if (apiCount > 0) summary.push(`${apiCount} 个接口`);
+console.log(`\n✓ docs:check passed（${summary.join('，')}）`);
