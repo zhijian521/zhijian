@@ -2,9 +2,9 @@
   图片同步脚本 — 将服务器上的图片文件增量同步到本地 public/uploads/ 目录。
 
   用法：
-    node src/scripts/sync-uploads.mjs
-    node src/scripts/sync-uploads.mjs --server https://yuwb.dev
-    node src/scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --password xxx
+    node scripts/sync-uploads.mjs
+    node scripts/sync-uploads.mjs --server https://yuwb.dev
+    node scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --password xxx
 
   自动加载项目根目录的 .env.local 和 .env 获取 NEXT_PUBLIC_SITE_URL。
 ==*/

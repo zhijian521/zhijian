@@ -230,12 +230,12 @@ export default function UploadManagement() {
                     </p>
                     <p className={styles.syncStep}>在项目根目录运行以下命令：</p>
                     <div className={styles.syncCmdRow}>
-                        <code className={styles.syncCmd}>node src/scripts/sync-uploads.mjs</code>
+                        <code className={styles.syncCmd}>node scripts/sync-uploads.mjs</code>
                         <button
                             aria-label="复制命令"
                             className={styles.syncCopyBtn}
                             onClick={() => {
-                                navigator.clipboard.writeText('node src/scripts/sync-uploads.mjs');
+                                navigator.clipboard.writeText('node scripts/sync-uploads.mjs');
                                 setSyncCopied(true);
                                 setTimeout(() => setSyncCopied(false), 1500);
                             }}

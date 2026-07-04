@@ -237,7 +237,7 @@
 
 | 序号 | 名称 | 路径 |
 |------|------|------|
-| 9.1 | 上传同步脚本 | `src/scripts/sync-uploads.mjs` |
+| 9.1 | 上传同步脚本 | `scripts/sync-uploads.mjs` |
 
 ---
 

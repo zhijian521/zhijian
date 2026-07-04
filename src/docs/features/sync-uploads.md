@@ -7,7 +7,7 @@
 在项目根目录运行：
 
 ```bash
-node src/scripts/sync-uploads.mjs
+node scripts/sync-uploads.mjs
 ```
 
 脚本会交互式提示输入用户名和密码，登录后自动获取服务器图片清单并下载到本地。
@@ -24,13 +24,13 @@ node src/scripts/sync-uploads.mjs
 
 ```bash
 # 基本用法
-node src/scripts/sync-uploads.mjs
+node scripts/sync-uploads.mjs
 
 # 指定服务器
-node src/scripts/sync-uploads.mjs --server https://yuwb.dev
+node scripts/sync-uploads.mjs --server https://yuwb.dev
 
 # 完整参数（CI 场景）
-node src/scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --password xxx
+node scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --password xxx
 ```
 
 ## 同步规则
@@ -43,7 +43,7 @@ node src/scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --p
 ## 运行示例
 
 ```
-$ node src/scripts/sync-uploads.mjs
+$ node scripts/sync-uploads.mjs
 
 知简图片同步工具
 服务器: https://yuwb.dev
@@ -69,6 +69,6 @@ $ node src/scripts/sync-uploads.mjs
 
 | 文件 | 说明 |
 |------|------|
-| `src/scripts/sync-uploads.mjs` | 同步脚本 |
+| `scripts/sync-uploads.mjs` | 同步脚本 |
 | `src/app/api/admin/uploads/sync/route.ts` | 文件清单 API |
 | `src/app/admin/uploads/_components/upload-management.tsx` | 管理页同步按钮 |
