@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { SearchIcon, ShieldIcon, WrenchIcon } from '@/components/ui/icons';
-import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
 import { SettingsSubmitButton } from './_components/settings-submit-button';
 import styles from './settings.module.css';
 

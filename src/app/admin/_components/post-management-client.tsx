@@ -12,7 +12,7 @@ import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
-import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
 import { api } from '@/lib/core/http-client';
 import { APP_ROUTES } from '@/lib/core/site';
 

@@ -1,4 +1,4 @@
-import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
 import { SHOWCASE_REGISTRY } from '@/showcase/registry';
 import styles from './page.module.css';
 

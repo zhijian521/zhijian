@@ -13,7 +13,7 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import { getEmbedScript } from '@/lib/core/utils';
-import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
 import type { TrackSite } from '@/lib/domain/track-sites';

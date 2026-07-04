@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
 import { Icon, STROKE_ICONS, FILL_ICONS } from '@/components/ui/icons';
 import styles from './page.module.css';
 

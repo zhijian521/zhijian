@@ -14,7 +14,7 @@ import { Tag } from '@/components/ui/tag';
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { getEmbedScript } from '@/lib/core/utils';
-import AdminPageHeader from '@/app/admin/_components/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
 import { api } from '@/lib/core/http-client';
 
 import styles from './analytics-dashboard.module.css';
