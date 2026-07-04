@@ -570,15 +570,15 @@
     gap: 1rem;
     padding: 1rem 1.25rem;
     margin-bottom: 1rem;
-    border: 1px solid #e8b4b4;
+    border: 1px solid color-mix(in srgb, var(--destructive) 30%, transparent);
     border-radius: var(--radius);
-    background: #fdf2f2;
+    background: var(--destructive-subtle);
 }
 
 .errorText {
     margin: 0;
     font-size: 0.875rem;
-    color: #9f1239;
+    color: var(--destructive);
 }
 
 /*== 访问记录 ==*/
