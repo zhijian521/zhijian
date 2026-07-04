@@ -29,6 +29,7 @@ export default function FaviconImg({ url, className, fallbackChar }: FaviconImgP
     }
 
     return (
+        // eslint-disable-next-line @next/next/no-img-element -- favicon 代理外链，尺寸未知
         <img
             alt=""
             className={className}

@@ -52,10 +52,10 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         getTodos(isLoggedIn).then(setTodos);
     }, [isLoggedIn, dataVersion]);
 
-    function persist(updated: TodoItem[]) {
+    const persist = useCallback((updated: TodoItem[]) => {
         setTodos(updated);
         saveTodos(updated, isLoggedIn);
-    }
+    }, [isLoggedIn]);
 
     function todosOf(q: Quadrant): TodoItem[] {
         return todos.filter((t) => t.important === q.important && t.urgent === q.urgent);
@@ -131,7 +131,7 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         next.splice(insertIdx, 0, moved);
         persist(next);
         setDropTarget(null);
-    }, []);
+    }, [persist]);
 
     const handleDragEnd = useCallback(() => {
         setDropTarget(null);

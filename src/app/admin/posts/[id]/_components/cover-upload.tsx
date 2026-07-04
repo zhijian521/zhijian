@@ -117,6 +117,7 @@ export function CoverUpload({ coverImage, altText, onCoverImageChange, onAltText
             {coverImage ? (
                 <>
                     <div className={styles.previewWrap}>
+                        {/* eslint-disable-next-line @next/next/no-img-element -- 上传封面图不走 next/image 优化 */}
                         <img alt={altText || '封面图'} className={`${styles.previewImage}${uploading ? ` ${styles.previewImageUploading}` : ''}`} src={coverImage} />
                         <button aria-label="删除封面图" className={styles.deleteBtn} disabled={uploading} onClick={handleDelete} type="button">
                             <XIcon className={styles.deleteIcon} />

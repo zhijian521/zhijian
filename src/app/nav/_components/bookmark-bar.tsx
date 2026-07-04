@@ -55,10 +55,10 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         getBookmarks(isLoggedIn).then(setBookmarks);
     }, [isLoggedIn, dataVersion]);
 
-    function persist(updated: Bookmark[]) {
+    const persist = useCallback((updated: Bookmark[]) => {
         setBookmarks(updated);
         saveBookmarks(updated, isLoggedIn);
-    }
+    }, [isLoggedIn]);
 
     /*== 右键菜单 ==*/
     const handleContextMenu = useCallback((e: React.MouseEvent, bookmark: Bookmark, parentFolderId?: string) => {
@@ -157,7 +157,7 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         /*-- 统一插入：inside=追加进文件夹末尾，before/after=插到目标项旁 --*/
         persist(insertIntoTree(tree, removed, targetId, position, targetFolderId));
         setDragState(null);
-    }, []);
+    }, [persist]);
 
     const handleDragEnd = useCallback(() => {
         setDragState(null);

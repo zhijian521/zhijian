@@ -81,7 +81,7 @@ export default function UserListClient() {
                 setLoading(false);
             }
         },
-        [page, searchKeyword]
+        [page, searchKeyword, pageSize]
     );
 
     useEffect(() => {

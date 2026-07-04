@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
+import Image from 'next/image';
 
 import { UserIcon, LockIcon } from '@/components/ui/icons';
 import { APP_ROUTES, STORAGE_KEYS } from '@/lib/site';
@@ -114,7 +115,7 @@ export default function AdminLoginCard() {
 
             <section className={styles.shell}>
                 <header className={styles.brand}>
-                    <img alt="Zhijian Logo" className={styles.logo} decoding="async" height="56" src="/images/logo.webp" width="56" />
+                    <Image alt="Zhijian Logo" className={styles.logo} height={56} priority src="/images/logo.webp" width={56} />
                     <h1 className={styles.title}>Zhijian Admin</h1>
                 </header>
 

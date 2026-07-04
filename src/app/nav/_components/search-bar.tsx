@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 import { SparklesIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/nav-config';
@@ -84,7 +85,7 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
             <div className={styles.bar}>
                 <div ref={dropdownRef} className={styles.engineAnchor}>
                     <button className={styles.engineBtn} onClick={() => setDropdownOpen((v) => !v)} type="button">
-                        <img alt={engine.name} className={styles.engineIcon} src={engine.logo} />
+                        <Image alt={engine.name} className={styles.engineIcon} height={20} src={engine.logo} width={20} />
                     </button>
                     {dropdownOpen && (
                         <div className={styles.engineDropdown}>
@@ -95,7 +96,7 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
                                     onClick={() => handleEngineChange(e.key)}
                                     type="button"
                                 >
-                                    <img alt={e.name} className={styles.engineOptionIcon} src={e.logo} />
+                                    <Image alt={e.name} className={styles.engineOptionIcon} height={16} src={e.logo} width={16} />
                                     {e.name}
                                 </button>
                             ))}

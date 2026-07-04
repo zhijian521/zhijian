@@ -181,6 +181,7 @@ export default function UploadManagement() {
                                         <Trash2Icon className={styles.iconSmall} />
                                     </button>
                                 </div>
+                                {/* eslint-disable-next-line @next/next/no-img-element -- 上传缩略图不走 next/image 优化 */}
                                 <img alt={upload.alt || upload.original} className={styles.thumbnail} loading="lazy" src={upload.path} />
                                 <div className={styles.info}>
                                     <span className={styles.filename} title={upload.original}>

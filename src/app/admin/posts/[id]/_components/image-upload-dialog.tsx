@@ -125,6 +125,7 @@ export function ImageUploadDialog({ open, onClose, onInsert }: ImageUploadDialog
             {previewUrl ? (
                 <>
                     <div className={styles.previewWrap}>
+                        {/* eslint-disable-next-line @next/next/no-img-element -- 上传预览不走 next/image 优化 */}
                         <img alt="预览" className={styles.previewImage} src={previewUrl} />
                     </div>
                     <div className={styles.altField}>
