@@ -76,4 +76,11 @@ export const DOC_REGISTRY: DocEntry[] = [
         file: 'legacy-redirects.md',
         description: '旧站地址到新站结构的 301 重定向配置。',
     },
+    {
+        slug: 'review-checklist',
+        title: '功能审查清单',
+        group: 'infra',
+        file: 'review-checklist.md',
+        description: '按功能模块和页面逐一列出对应文件，用于逐项代码审查。',
+    },
 ];
