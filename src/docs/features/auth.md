@@ -154,7 +154,7 @@ const { user, isLoggedIn, loading, login, register, logout } = useAuth();
 
 ## 数据层
 
-**文件**：`src/lib/auth.ts`
+**文件**：`src/lib/core/auth.ts`
 
 ### 密码工具
 
@@ -212,9 +212,9 @@ const { user, isLoggedIn, loading, login, register, logout } = useAuth();
 
 | 文件 | 说明 |
 |------|------|
-| `src/lib/auth.ts` | 认证核心：密码、session token、鉴权守卫、用户 CRUD |
-| `src/lib/with-admin.ts` | API Route admin 鉴权包装器 |
-| `src/lib/with-user.ts` | API Route 用户鉴权包装器 |
+| `src/lib/core/auth.ts` | 认证核心：密码、session token、鉴权守卫、用户 CRUD |
+| `src/lib/core/with-admin.ts` | API Route admin 鉴权包装器 |
+| `src/lib/core/with-user.ts` | API Route 用户鉴权包装器 |
 | `src/app/api/auth/login/route.ts` | 登录接口 |
 | `src/app/api/auth/register/route.ts` | 注册接口 |
 | `src/app/api/auth/logout/route.ts` | 登出接口 |

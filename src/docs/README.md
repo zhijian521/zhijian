@@ -2,9 +2,9 @@
 
 ## 项目概览
 
-- [AI 助手上下文](agents.md) — 项目架构、技术栈、编码约定（供 AI 工具读取）
-- [部署指南](deployment.md) — 生产环境部署配置
-- [视觉风格指南](style-guide.md) — 设计系统：色彩、排版、组件规格
+- [AI 助手上下文](AGENTS.md) — 项目架构、技术栈、编码约定（供 AI 工具读取）
+- [视觉风格指南](features/style-guide.md) — 设计系统：色彩、排版、组件规格
+- [部署指南](features/deployment.md) — 生产环境部署配置
 
 ## 功能模块
 

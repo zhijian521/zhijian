@@ -146,7 +146,7 @@ Client Component，直角风格登录表单：
 
 脱离 AdminShell 的独立全屏页面，路由 `/admin/posts/:id`。
 
-### 8 个子组件
+### 6 个子组件
 
 | 组件 | 说明 |
 |------|------|
@@ -156,7 +156,6 @@ Client Component，直角风格登录表单：
 | `markdown-preview.tsx` | Markdown 预览区（复用 ArticleView） |
 | `metadata-panel.tsx` | 侧边元数据面板：分类选择 + 标签选择 + 封面图 + 摘要 |
 | `cover-upload.tsx` | 封面图上传区 |
-| `image-upload-dialog.tsx` | 图片选择弹窗（插入图片到正文） |
 | `page.tsx` | 编辑器页面壳：加载数据 + 渲染 PostEditor |
 
 ### 编辑器布局
@@ -190,9 +189,9 @@ Client Component，直角风格登录表单：
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET/POST | `/api/admin/categories` | 列表 / 创建 |
-| PATCH/DELETE | `/api/admin/categories/:id` | 更新 / 删除 |
+| PUT/DELETE | `/api/admin/categories/:id` | 更新 / 删除 |
 | GET/POST | `/api/admin/tags` | 列表 / 创建 |
-| PATCH/DELETE | `/api/admin/tags/:id` | 更新 / 删除 |
+| PUT/DELETE | `/api/admin/tags/:id` | 更新 / 删除 |
 
 ---
 
@@ -237,7 +236,7 @@ Client Component，直角风格登录表单：
 |------|------|------|
 | GET | `/api/admin/users` | 用户列表（分页 + 搜索） |
 | POST | `/api/admin/users` | 创建用户 |
-| PATCH | `/api/admin/users/:id` | 更新用户（用户名/邮箱/密码/角色/状态） |
+| PUT | `/api/admin/users/:id` | 更新用户（用户名/邮箱/密码/角色/状态） |
 | DELETE | `/api/admin/users/:id` | 删除用户 |
 
 ---
@@ -259,7 +258,7 @@ Client Component，直角风格登录表单：
 
 ### AdminPageHeader
 
-**文件**：`src/app/admin/_components/admin-page-header.tsx`
+**文件**：`src/components/modules/admin/admin-page-header/admin-page-header.tsx`
 
 后台页面统一头部，匹配博客衬线标题风格。
 
@@ -295,7 +294,7 @@ interface AdminPageHeaderProps {
 | `src/app/admin/_components/admin-shell.tsx` | 布局壳（侧边栏 + 主内容区） |
 | `src/app/admin/_components/admin-sidebar.tsx` | 侧边栏导航 |
 | `src/app/admin/_components/admin-login-card.tsx` | 登录表单卡片 |
-| `src/app/admin/_components/admin-page-header.tsx` | 页面统一头部 |
+| `src/components/modules/admin/admin-page-header/admin-page-header.tsx` | 页面统一头部 |
 | `src/app/admin/_components/admin-shared.module.css` | 后台共享样式 |
 | `src/app/admin/page.tsx` | 概览页 |
 | `src/app/admin/login/page.tsx` | 登录页 |
@@ -307,7 +306,6 @@ interface AdminPageHeaderProps {
 | `src/app/admin/posts/[id]/_components/markdown-preview.tsx` | Markdown 预览区 |
 | `src/app/admin/posts/[id]/_components/metadata-panel.tsx` | 元数据面板 |
 | `src/app/admin/posts/[id]/_components/cover-upload.tsx` | 封面图上传 |
-| `src/app/admin/posts/[id]/_components/image-upload-dialog.tsx` | 图片选择弹窗 |
 | `src/app/admin/taxonomy/page.tsx` | 分类标签管理页 |
 | `src/app/admin/uploads/page.tsx` | 图片管理页 |
 | `src/app/admin/users/page.tsx` | 用户管理页 |

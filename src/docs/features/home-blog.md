@@ -355,10 +355,10 @@ interface Post {
 
 | 函数 | 文件 | 说明 |
 |------|------|------|
-| `getPublishedPosts(filter?)` | `src/lib/posts.ts` | 查询已发布文章，支持分类/标签筛选和数量限制 |
-| `getPostBySlug(slug)` | `src/lib/posts.ts` | 按 slug 查询单篇已发布文章，不存在返回 `null` |
-| `listCategories()` | `src/lib/categories.ts` | 查询全部分类，按 sort_order 排序 |
-| `listTags()` | `src/lib/tags.ts` | 查询全部标签，按 id 排序 |
+| `getPublishedPosts(filter?)` | `src/lib/domain/posts.ts` | 查询已发布文章，支持分类/标签筛选和数量限制 |
+| `getPostBySlug(slug)` | `src/lib/domain/posts.ts` | 按 slug 查询单篇已发布文章，不存在返回 `null` |
+| `listCategories()` | `src/lib/domain/categories.ts` | 查询全部分类，按 sort_order 排序 |
+| `listTags()` | `src/lib/domain/tags.ts` | 查询全部标签，按 id 排序 |
 
 ### 查询流程
 
@@ -568,11 +568,11 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/components/site/markdown-article.tsx` | Markdown 渲染器 |
 | `src/components/site/code-block.tsx` | 代码块 + 复制按钮 |
 | `src/components/site/content-image.tsx` | 自适应图片 |
-| `src/lib/posts.ts` | 文章数据层 |
-| `src/lib/post-shared.ts` | Post 类型 + 日期工具函数 |
-| `src/lib/categories.ts` | 分类数据层 |
-| `src/lib/tags.ts` | 标签数据层 |
-| `src/lib/site.ts` | 站点元数据与路由配置（blogTitle = '知简博客'） |
+| `src/lib/domain/posts.ts` | 文章数据层 |
+| `src/lib/domain/post-shared.ts` | Post 类型 + 日期工具函数 |
+| `src/lib/domain/categories.ts` | 分类数据层 |
+| `src/lib/domain/tags.ts` | 标签数据层 |
+| `src/lib/core/site.ts` | 站点元数据与路由配置（blogTitle = '知简博客'） |
 | `src/app/sitemap.ts` | Sitemap（首页/列表页含 lastModified） |
 | `src/app/feed.xml/route.ts` | RSS 2.0 feed 生成 |
 | `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮（复制 feed 地址） |

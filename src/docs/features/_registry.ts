@@ -83,4 +83,18 @@ export const DOC_REGISTRY: DocEntry[] = [
         file: 'review-checklist.md',
         description: '按功能模块和页面逐一列出对应文件，用于逐项代码审查。',
     },
+    {
+        slug: 'style-guide',
+        title: '视觉风格指南',
+        group: 'infra',
+        file: 'style-guide.md',
+        description: '设计系统：色彩、排版、组件规格与交互规范。',
+    },
+    {
+        slug: 'deployment',
+        title: '部署指南',
+        group: 'infra',
+        file: 'deployment.md',
+        description: '生产环境部署配置：Nginx、环境变量、构建流程。',
+    },
 ];

@@ -18,7 +18,7 @@
 
 ## 配置方式
 
-映射关系集中在 `src/lib/legacy-redirects.ts`，增删改只需编辑此文件：
+映射关系集中在 `src/lib/core/legacy-redirects.ts`，增删改只需编辑此文件：
 
 ```ts
 export const LEGACY_REDIRECTS: LegacyRedirect[] = [
@@ -50,5 +50,5 @@ async redirects() {
 
 | 文件 | 说明 |
 |------|------|
-| `src/lib/legacy-redirects.ts` | 映射配置，`LegacyRedirect` 类型 + `LEGACY_REDIRECTS` 数组 |
+| `src/lib/core/legacy-redirects.ts` | 映射配置，`LegacyRedirect` 类型 + `LEGACY_REDIRECTS` 数组 |
 | `next.config.ts` | `redirects()` 读取配置生成 301 规则 |

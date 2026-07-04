@@ -126,7 +126,7 @@ UA 解析 — parseUA() 提取 browser / os
 
 ## 日聚合机制
 
-**文件**：`src/lib/analytics.ts`（`aggregateDaily` / `ensureAggregated`）
+**文件**：`src/lib/domain/analytics.ts`（`aggregateDaily` / `ensureAggregated`）
 
 原始事件存入 `zhijian_track_events` 后，日聚合逻辑将数据汇总到 `zhijian_track_daily` 表，供仪表盘查询使用。
 
@@ -449,7 +449,7 @@ const [overview, trend, pages, ...] = await Promise.all([
 
 ### GeoIP 解析
 
-**文件**：`src/lib/geo.ts`
+**文件**：`src/lib/domain/geo.ts`
 
 使用 `ip2region` 离线数据库解析 IP 地理位置：
 
@@ -470,7 +470,7 @@ interface GeoInfo {
 
 ### UA 解析
 
-**文件**：`src/lib/ua.ts`
+**文件**：`src/lib/domain/ua.ts`
 
 轻量手写正则解析 User-Agent，不引入外部库：
 
@@ -485,7 +485,7 @@ interface UAInfo {
 
 ### 站点数据层
 
-**文件**：`src/lib/track-sites.ts`
+**文件**：`src/lib/domain/track-sites.ts`
 
 | 函数 | 说明 |
 |------|------|
@@ -551,8 +551,8 @@ interface UAInfo {
 | `src/app/api/admin/analytics/overview/route.ts` | 概览数据 API |
 | `src/app/api/admin/analytics/visits/route.ts` | 访问记录 API |
 | `src/app/api/admin/analytics/sites/route.ts` | 站点管理 CRUD API |
-| `src/lib/analytics.ts` | 日聚合 + 查询函数（数据层） |
-| `src/lib/track-sites.ts` | 站点 CRUD 数据层 |
-| `src/lib/geo.ts` | GeoIP 解析（ip2region） |
-| `src/lib/ua.ts` | UA 解析（手写正则） |
-| `src/lib/utils.ts` | `getEmbedScript()` 嵌入代码生成 |
+| `src/lib/domain/analytics.ts` | 日聚合 + 查询函数（数据层） |
+| `src/lib/domain/track-sites.ts` | 站点 CRUD 数据层 |
+| `src/lib/domain/geo.ts` | GeoIP 解析（ip2region） |
+| `src/lib/domain/ua.ts` | UA 解析（手写正则） |
+| `src/lib/core/utils.ts` | `getEmbedScript()` 嵌入代码生成 |

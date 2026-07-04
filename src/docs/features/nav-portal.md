@@ -61,7 +61,7 @@
 
 - 居中显示，输入关键词后**回车跳转到搜索引擎结果页**（行为不变）
 - 可切换搜索引擎：Google / 百度 / Bing / Yahoo / Yandex / DuckDuckGo
-- 搜索引擎列表配置在 `src/lib/nav-config.ts`
+- 搜索引擎列表配置在 `src/lib/domain/nav-config.ts`
 - 右侧为 **AI 按钮**（非搜索按钮）：点击跳到第二屏 AI 对话；若搜索框有内容，自动作为首条消息发送
 
 ### AI 对话
@@ -119,12 +119,12 @@
 | 笔记 | 数据库 + API | localStorage |
 | AI 对话 | 数据库 + API | localStorage |
 
-数据层抽离为独立模块（`src/lib/nav-storage.ts`），登录状态切换时自动切换数据源，上层代码不变。
+数据层抽离为独立模块（`src/lib/domain/nav-storage.ts`），登录状态切换时自动切换数据源，上层代码不变。
 
 ### 双端数据层
 
-- `src/lib/nav-storage.ts` — 统一数据层入口，登录走 API，未登录走 localStorage
-- `src/lib/nav-db.ts` — 数据库层，操作 `zhijian_nav_bookmarks/todos/notes/chat` 表
+- `src/lib/domain/nav-storage.ts` — 统一数据层入口，登录走 API，未登录走 localStorage
+- `src/lib/domain/nav-db.ts` — 数据库层，操作 `zhijian_nav_bookmarks/todos/notes/chat` 表
 - 每用户一条 JSON 记录，整体读写（非逐条 CRUD）
 - AI 对话历史走独立接口 `/api/nav/chat`（不纳入 `/api/nav/data` 聚合，避免首屏加载过重）
 
@@ -134,15 +134,11 @@
 
 | 方法 | 路径 | 说明 | 鉴权 |
 |------|------|------|------|
-| `GET` | `/api/nav/data` | 获取导航数据（书签+备忘录+笔记） | 用户鉴权 |
-| `PUT` | `/api/nav/data` | 更新导航数据 | 用户鉴权 |
-| `POST` | `/api/nav/sync` | 同步导航数据（合并本地到远端） | 用户鉴权 |
-| `GET` | `/api/nav/bookmarks` | 获取书签 | 用户鉴权 |
-| `PUT` | `/api/nav/bookmarks` | 更新书签 | 用户鉴权 |
-| `GET` | `/api/nav/todos` | 获取备忘录 | 用户鉴权 |
-| `PUT` | `/api/nav/todos` | 更新备忘录 | 用户鉴权 |
-| `GET` | `/api/nav/notes` | 获取笔记 | 用户鉴权 |
-| `PUT` | `/api/nav/notes` | 更新笔记 | 用户鉴权 |
+| `GET` | `/api/nav/data` | 获取全量导航数据（书签+备忘录+笔记+聊天） | 用户鉴权 |
+| `POST` | `/api/nav/sync` | 批量同步导航数据（localStorage → 服务端） | 用户鉴权 |
+| `PUT` | `/api/nav/bookmarks` | 保存书签 | 用户鉴权 |
+| `PUT` | `/api/nav/todos` | 保存备忘录 | 用户鉴权 |
+| `PUT` | `/api/nav/notes` | 保存笔记 | 用户鉴权 |
 | `GET` | `/api/nav/chat` | 获取 AI 对话历史 | 用户鉴权 |
 | `PUT` | `/api/nav/chat` | 更新 AI 对话历史 | 用户鉴权 |
 | `POST` | `/api/ai/chat` | AI 对话（DeepSeek，SSE 流式） | 用户鉴权 |
@@ -221,5 +217,6 @@ src/hooks/
 | `zhijian_nav_bookmarks` | 书签数据（每用户一条 JSON） |
 | `zhijian_nav_todos` | 备忘录数据（每用户一条 JSON） |
 | `zhijian_nav_notes` | 笔记数据（每用户一条 JSON） |
+| `zhijian_nav_chat` | AI 对话历史（每用户一条 JSON） |
 
-三张表结构相同：`id` / `user_id`（FK → zhijian_users）/ `data`（JSON）/ `created_at` / `updated_at`，通过 `UNIQUE KEY` 约束每用户一条记录。
+四张表结构相同：`id` / `user_id`（FK → zhijian_users）/ `data`（JSON）/ `created_at` / `updated_at`，通过 `UNIQUE KEY` 约束每用户一条记录。
