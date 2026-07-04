@@ -4,10 +4,10 @@ import { useCallback } from 'react';
 import { Select } from '@/components/ui/select';
 import { PillSelect } from '@/components/ui/pill-select';
 import { XIcon } from '@/components/ui/icons';
-import type { PostStatus } from '@/lib/post-shared';
-import { toDateTimeLocalValue } from '@/lib/post-shared';
-import type { Category } from '@/lib/categories';
-import type { Tag } from '@/lib/tags';
+import type { PostStatus } from '@/lib/domain/post-shared';
+import { toDateTimeLocalValue } from '@/lib/domain/post-shared';
+import type { Category } from '@/lib/domain/categories';
+import type { Tag } from '@/lib/domain/tags';
 
 import { CoverUpload } from './cover-upload';
 import styles from './metadata-panel.module.css';

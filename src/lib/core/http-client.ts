@@ -10,7 +10,7 @@
   - 泛型方法：api.get<T>(url) / api.post<T>(url, body) 等
 
   用法：
-    import { api } from '@/lib/http-client';
+    import { api } from './http-client';
     const res = await api.post<{ user: User }>('/auth/login', { username, password });
     if (res.code === 0) { ...res.data.user }
     else { showError(res.message) }
@@ -18,8 +18,8 @@
   ponytail: 原生 fetch 替代 axios — 无拦截器/retry/取消需求，axios 多余。
 ============================================================================*/
 
-import type { ApiResponse } from '@/lib/api-response';
-import { BizCode, fail } from '@/lib/api-response';
+import type { ApiResponse } from './api-response';
+import { BizCode, fail } from './api-response';
 
 const BASE_URL = '/api';
 const TIMEOUT_MS = 15000;

@@ -1,5 +1,5 @@
-import { isBookmarkFolder } from '@/lib/nav-config';
-import type { Bookmark, BookmarkItem } from '@/lib/nav-config';
+import { isBookmarkFolder } from '@/lib/domain/nav-config';
+import type { Bookmark, BookmarkItem } from '@/lib/domain/nav-config';
 
 /*-- 拖拽状态 --*/
 export interface DragState {

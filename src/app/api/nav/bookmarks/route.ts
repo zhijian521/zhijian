@@ -8,10 +8,10 @@
 
 import { NextResponse } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { saveBookmarksDb } from '@/lib/nav-db';
-import { BizCode, fail, success } from '@/lib/api-response';
-import type { Bookmark } from '@/lib/nav-config';
+import { withUser } from '@/lib/core/with-user';
+import { saveBookmarksDb } from '@/lib/domain/nav-db';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import type { Bookmark } from '@/lib/domain/nav-config';
 
 /*== 保存书签
   PUT body: { data: Bookmark[] }

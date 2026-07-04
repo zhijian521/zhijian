@@ -9,10 +9,10 @@
 
 import { NextResponse } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { getChatDb, saveChatDb } from '@/lib/nav-db';
-import { BizCode, fail, success } from '@/lib/api-response';
-import type { ChatConversation } from '@/lib/nav-storage';
+import { withUser } from '@/lib/core/with-user';
+import { getChatDb, saveChatDb } from '@/lib/domain/nav-db';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import type { ChatConversation } from '@/lib/domain/nav-storage';
 
 /*== AI 对话历史
   GET  → 取当前用户全部会话

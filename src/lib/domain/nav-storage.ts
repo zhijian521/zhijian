@@ -1,5 +1,5 @@
-import type { Bookmark } from '@/lib/nav-config';
-import { BOOKMARKS, BOOKMARKS_VERSION } from '@/lib/nav-config';
+import type { Bookmark } from './nav-config';
+import { BOOKMARKS, BOOKMARKS_VERSION } from './nav-config';
 
 /*============================================================================
   导航页统一数据层 — 登录走 API，未登录走 localStorage

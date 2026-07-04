@@ -1,4 +1,4 @@
-import { SITE_METADATA } from '@/lib/site';
+import { SITE_METADATA } from '@/lib/core/site';
 
 export default function robots() {
     return {

@@ -1,5 +1,5 @@
 import type { RowDataPacket, ResultSetHeader } from 'mysql2';
-import { getDb, getDbConnection } from '@/lib/db';
+import { getDb, getDbConnection } from '../core/db';
 
 /*============================================================================
   站点监控分析数据层

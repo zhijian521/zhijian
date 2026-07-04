@@ -9,10 +9,10 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { isPostStatus, updatePostById, deletePostById, getPostById } from '@/lib/posts';
-import type { UpdatePostInput } from '@/lib/posts';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { isPostStatus, updatePostById, deletePostById, getPostById } from '@/lib/domain/posts';
+import type { UpdatePostInput } from '@/lib/domain/posts';
 
 /*== 后台文章详情接口：PATCH 更新 / DELETE 删除。 ==*/
 

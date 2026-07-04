@@ -1,5 +1,5 @@
 import type { RowDataPacket } from 'mysql2';
-import { getDb } from '@/lib/db';
+import { getDb } from '../core/db';
 
 /*== 站点类型 ==*/
 export interface TrackSite {

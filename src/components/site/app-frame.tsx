@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 
-import { APP_ROUTES } from '@/lib/site';
+import { APP_ROUTES } from '@/lib/core/site';
 import PublicChrome from '@/components/site/public-chrome';
 
 interface AppFrameProps {

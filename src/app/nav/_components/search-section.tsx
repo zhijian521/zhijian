@@ -1,6 +1,6 @@
 'use client';
 
-import { SITE_METADATA } from '@/lib/site';
+import { SITE_METADATA } from '@/lib/core/site';
 
 import SearchBar from './search-bar';
 import BookmarkBar from './bookmark-bar';

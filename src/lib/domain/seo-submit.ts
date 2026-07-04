@@ -1,6 +1,6 @@
 import http from 'node:http';
 
-import { SITE_METADATA } from '@/lib/site';
+import { SITE_METADATA } from '../core/site';
 
 /*== 搜索引擎提交结果 ==*/
 export interface SubmitResult {

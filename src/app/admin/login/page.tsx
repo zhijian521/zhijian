@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import AdminLoginCard from '@/app/admin/_components/admin-login-card';
-import { getSessionFromCookies } from '@/lib/auth';
-import { APP_ROUTES } from '@/lib/site';
+import { getSessionFromCookies } from '@/lib/core/auth';
+import { APP_ROUTES } from '@/lib/core/site';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from 'next/cache';
-import { getDb } from '@/lib/db';
+import { getDb } from '../core/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 export type { PostStatus } from './post-shared';

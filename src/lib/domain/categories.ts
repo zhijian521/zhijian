@@ -1,5 +1,5 @@
 import type { RowDataPacket } from 'mysql2';
-import { getDb } from '@/lib/db';
+import { getDb } from '../core/db';
 
 /*== 分类类型 ==*/
 export interface Category {

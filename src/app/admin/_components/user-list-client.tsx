@@ -14,8 +14,8 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { toast } from '@/components/ui/toast';
-import { api } from '@/lib/http-client';
-import type { ListData } from '@/lib/api-response';
+import { api } from '@/lib/core/http-client';
+import type { ListData } from '@/lib/core/api-response';
 import styles from './user-list-client.module.css';
 import shared from './admin-shared.module.css';
 

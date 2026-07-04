@@ -8,9 +8,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { hasNavData, saveBookmarksDb, saveTodosDb, saveNotesDb, saveChatDb } from '@/lib/nav-db';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { withUser } from '@/lib/core/with-user';
+import { hasNavData, saveBookmarksDb, saveTodosDb, saveNotesDb, saveChatDb } from '@/lib/domain/nav-db';
+import { BizCode, fail, success } from '@/lib/core/api-response';
 
 /*== 首次登录同步：把本地数据推到数据库
   数据库已有数据则拒绝（以数据库为准）。

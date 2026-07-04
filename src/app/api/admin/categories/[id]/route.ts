@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { getCategoryById, updateCategory, deleteCategory } from '@/lib/categories';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { getCategoryById, updateCategory, deleteCategory } from '@/lib/domain/categories';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   单个分类操作：PUT / DELETE。均需管理员权限。

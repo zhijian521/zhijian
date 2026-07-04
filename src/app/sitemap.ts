@@ -1,6 +1,6 @@
-import { getPublishedPosts } from '@/lib/posts';
-import { toPostIsoDateTime } from '@/lib/posts';
-import { SITE_METADATA } from '@/lib/site';
+import { getPublishedPosts } from '@/lib/domain/posts';
+import { toPostIsoDateTime } from '@/lib/domain/posts';
+import { SITE_METADATA } from '@/lib/core/site';
 
 export default async function sitemap() {
     const posts = await getPublishedPosts();

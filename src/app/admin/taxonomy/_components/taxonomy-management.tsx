@@ -11,7 +11,7 @@ import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 import shared from '@/app/admin/_components/admin-shared.module.css';
-import { api } from '@/lib/http-client';
+import { api } from '@/lib/core/http-client';
 import { useCrudList } from '@/app/admin/_hooks/use-crud-list';
 
 import TaxonomyCard from './taxonomy-card';

@@ -8,8 +8,8 @@
 
 import { NextResponse } from 'next/server';
 
-import { createSessionToken, getUserByUsername, getSessionCookieOptions, SESSION_COOKIE_NAME, verifyPassword } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { createSessionToken, getUserByUsername, getSessionCookieOptions, SESSION_COOKIE_NAME, verifyPassword } from '@/lib/core/auth';
+import { BizCode, fail, success } from '@/lib/core/api-response';
 
 /*==
   公开登录接口。

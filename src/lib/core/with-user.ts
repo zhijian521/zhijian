@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { getSessionFromRequest, type SessionPayload } from '@/lib/auth';
-import { BizCode, fail } from '@/lib/api-response';
+import { getSessionFromRequest, type SessionPayload } from './auth';
+import { BizCode, fail } from './api-response';
 
 type UserHandler = (request: NextRequest, user: SessionPayload, context: { params: Promise<Record<string, string | string[]>> }) => Promise<Response | NextResponse> | Response | NextResponse;
 

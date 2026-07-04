@@ -4,8 +4,8 @@ import { useEffect, useState, useTransition } from 'react';
 import Image from 'next/image';
 
 import { UserIcon, LockIcon } from '@/components/ui/icons';
-import { APP_ROUTES, STORAGE_KEYS } from '@/lib/site';
-import { api } from '@/lib/http-client';
+import { APP_ROUTES, STORAGE_KEYS } from '@/lib/core/site';
+import { api } from '@/lib/core/http-client';
 import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import styles from './admin-login-card.module.css';

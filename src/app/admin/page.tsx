@@ -6,11 +6,11 @@ import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { IconButton } from '@/components/ui/icon-button';
 import { Tag } from '@/components/ui/tag';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { countUsersByRole } from '@/lib/auth';
-import type { Post } from '@/lib/posts';
-import { formatPostDate } from '@/lib/posts';
-import { getAllPosts } from '@/lib/posts';
-import { APP_ROUTES } from '@/lib/site';
+import { countUsersByRole } from '@/lib/core/auth';
+import type { Post } from '@/lib/domain/posts';
+import { formatPostDate } from '@/lib/domain/posts';
+import { getAllPosts } from '@/lib/domain/posts';
+import { APP_ROUTES } from '@/lib/core/site';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {

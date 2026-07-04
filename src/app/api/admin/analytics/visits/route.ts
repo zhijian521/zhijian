@@ -8,10 +8,10 @@
 
 import { NextResponse } from 'next/server';
 
-import { fail, BizCode, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { getVisits } from '@/lib/analytics';
-import type { DateRange } from '@/lib/analytics';
+import { fail, BizCode, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { getVisits } from '@/lib/domain/analytics';
+import type { DateRange } from '@/lib/domain/analytics';
 
 const VALID_RANGES = new Set<DateRange>(['7d', '30d', '90d']);
 

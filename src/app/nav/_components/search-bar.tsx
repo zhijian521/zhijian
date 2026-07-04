@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 import { SparklesIcon } from '@/components/ui/icons';
-import { SEARCH_ENGINES } from '@/lib/nav-config';
-import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine, genId } from '@/lib/nav-storage';
-import type { SearchRecord } from '@/lib/nav-storage';
+import { SEARCH_ENGINES } from '@/lib/domain/nav-config';
+import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine, genId } from '@/lib/domain/nav-storage';
+import type { SearchRecord } from '@/lib/domain/nav-storage';
 
 import styles from './search-bar.module.css';
 

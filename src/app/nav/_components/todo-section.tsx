@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
-import { getTodos, saveTodos, genId } from '@/lib/nav-storage';
-import type { TodoItem } from '@/lib/nav-storage';
+import { getTodos, saveTodos, genId } from '@/lib/domain/nav-storage';
+import type { TodoItem } from '@/lib/domain/nav-storage';
 
 import styles from './todo-section.module.css';
 

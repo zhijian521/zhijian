@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { createPost, getAllPosts } from '@/lib/posts';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { createPost, getAllPosts } from '@/lib/domain/posts';
 
 /*== 后台文章列表接口：GET 返回全部文章，POST 创建草稿。 ==*/
 export const GET = withAdmin(async () => {

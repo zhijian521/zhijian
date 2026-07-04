@@ -12,8 +12,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { requireAdminFromRequest, type SessionPayload } from '@/lib/auth';
-import { BizCode, fail } from '@/lib/api-response';
+import { requireAdminFromRequest, type SessionPayload } from './auth';
+import { BizCode, fail } from './api-response';
 
 type AdminHandler = (request: NextRequest, admin: SessionPayload, context: { params: Promise<Record<string, string | string[]>> }) => Promise<Response | NextResponse> | Response | NextResponse;
 

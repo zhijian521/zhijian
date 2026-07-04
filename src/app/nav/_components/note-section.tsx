@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
-import type { NoteItem } from '@/lib/nav-storage';
-import { genId, getNotes, saveNotes } from '@/lib/nav-storage';
+import type { NoteItem } from '@/lib/domain/nav-storage';
+import { genId, getNotes, saveNotes } from '@/lib/domain/nav-storage';
 
 import { reorder, type DragState } from './drag-utils';
 import NoteMarkdownEditor from './note-markdown-editor';

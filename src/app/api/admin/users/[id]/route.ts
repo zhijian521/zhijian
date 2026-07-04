@@ -10,9 +10,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { getUserById, hashPassword, updateUser, deleteUser } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { getUserById, hashPassword, updateUser, deleteUser } from '@/lib/core/auth';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   单个用户操作：GET / PUT / DELETE。均需管理员权限。

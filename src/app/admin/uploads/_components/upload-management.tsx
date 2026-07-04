@@ -9,7 +9,7 @@ import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
-import { api } from '@/lib/http-client';
+import { api } from '@/lib/core/http-client';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
 

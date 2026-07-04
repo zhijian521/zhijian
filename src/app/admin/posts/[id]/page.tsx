@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { getPostById } from '@/lib/posts';
-import { listCategories } from '@/lib/categories';
-import { listTags } from '@/lib/tags';
+import { getPostById } from '@/lib/domain/posts';
+import { listCategories } from '@/lib/domain/categories';
+import { listTags } from '@/lib/domain/tags';
 import PostEditor from './_components/post-editor';
 
 interface PageProps {

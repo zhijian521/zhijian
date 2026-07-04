@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAuth } from '@/hooks/use-auth';
-import { clearNavDataCache } from '@/lib/nav-storage';
+import { clearNavDataCache } from '@/lib/domain/nav-storage';
 
 import AiSection from './ai-section';
 import NoteSection from './note-section';

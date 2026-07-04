@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 
 import { LogOutIcon, SettingsIcon } from '@/components/ui/icons';
 import type { AuthUser } from '@/hooks/use-auth';
-import { getSaveStatus, onSaveStatusChange, syncLocalToServer, clearLocalNavData } from '@/lib/nav-storage';
+import { getSaveStatus, onSaveStatusChange, syncLocalToServer, clearLocalNavData } from '@/lib/domain/nav-storage';
 
 import AuthModal from './auth-modal';
 

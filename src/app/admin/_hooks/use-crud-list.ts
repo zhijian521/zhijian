@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { api } from '@/lib/http-client';
-import type { ListData } from '@/lib/api-response';
+import { api } from '@/lib/core/http-client';
+import type { ListData } from '@/lib/core/api-response';
 import { toast } from '@/components/ui/toast';
 
 /**

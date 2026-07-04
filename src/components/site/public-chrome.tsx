@@ -7,8 +7,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { MenuIcon, XIcon } from '@/components/ui/icons';
-import { APP_ROUTES, PUBLIC_NAV_ITEMS, SITE_METADATA } from '@/lib/site';
-import { isNavItemActive } from '@/lib/utils';
+import { APP_ROUTES, PUBLIC_NAV_ITEMS, SITE_METADATA } from '@/lib/core/site';
+import { isNavItemActive } from '@/lib/core/utils';
 import styles from './public-chrome.module.css';
 
 interface PublicChromeProps {

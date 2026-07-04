@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { listTags, createTag } from '@/lib/tags';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { listTags, createTag } from '@/lib/domain/tags';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   标签列表（GET） / 创建标签（POST）

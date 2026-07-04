@@ -8,8 +8,8 @@
 
 import { NextResponse } from 'next/server';
 
-import { SESSION_COOKIE_NAME, getSessionCookieOptions } from '@/lib/auth';
-import { success } from '@/lib/api-response';
+import { SESSION_COOKIE_NAME, getSessionCookieOptions } from '@/lib/core/auth';
+import { success } from '@/lib/core/api-response';
 
 /*== 退出登录接口。清除 session cookie。 ==*/
 export async function POST() {

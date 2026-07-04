@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
-import { SITE_METADATA } from '@/lib/site';
+import { SITE_METADATA } from '@/lib/core/site';
 
 /*== RSS 订阅按钮 — 点击复制 feed 地址到剪贴板，短暂显示「已复制」反馈 ==*/
 export function RssCopyButton() {

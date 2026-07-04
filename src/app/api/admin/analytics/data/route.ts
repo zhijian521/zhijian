@@ -8,9 +8,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { clearSiteData } from '@/lib/analytics';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { clearSiteData } from '@/lib/domain/analytics';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   站点数据清空 API

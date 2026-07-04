@@ -8,9 +8,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { getAllNavData } from '@/lib/nav-db';
-import { success } from '@/lib/api-response';
+import { withUser } from '@/lib/core/with-user';
+import { getAllNavData } from '@/lib/domain/nav-db';
+import { success } from '@/lib/core/api-response';
 
 /*== 获取当前用户全部 nav 数据 ==*/
 export const GET = withUser(async (_request, user) => {

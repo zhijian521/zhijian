@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowLeftIcon, SaveIcon } from '@/components/ui/icons';
-import type { PostStatus } from '@/lib/post-shared';
+import type { PostStatus } from '@/lib/domain/post-shared';
 
 import styles from './editor-toolbar.module.css';
 

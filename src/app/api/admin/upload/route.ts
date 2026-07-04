@@ -8,9 +8,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { validateImageFile, saveUpload } from '@/lib/uploads';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { validateImageFile, saveUpload } from '@/lib/domain/uploads';
 
 /*== 单图上传接口（POST）。 ==*/
 export const POST = withAdmin(async (request) => {

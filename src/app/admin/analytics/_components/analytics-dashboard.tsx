@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem, VisitRecord } from '@/lib/analytics';
+import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem, VisitRecord } from '@/lib/domain/analytics';
 
 import { TrendingUpIcon, TrendingDownIcon, CopyIcon, Trash2Icon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
@@ -13,9 +13,9 @@ import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { Tag } from '@/components/ui/tag';
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
-import { getEmbedScript } from '@/lib/utils';
+import { getEmbedScript } from '@/lib/core/utils';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { api } from '@/lib/http-client';
+import { api } from '@/lib/core/http-client';
 
 import styles from './analytics-dashboard.module.css';
 

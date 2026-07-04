@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 import type { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 
-import { getDb } from '@/lib/db';
-import { APP_ROUTES } from '@/lib/site';
+import { getDb } from './db';
+import { APP_ROUTES } from './site';
 
 /*============================================================================
   常量

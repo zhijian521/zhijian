@@ -8,11 +8,11 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { getPublishedPosts } from '@/lib/posts';
-import { submitUrlsToSearchEngines } from '@/lib/seo-submit';
-import { SITE_METADATA } from '@/lib/site';
-import { withAdmin } from '@/lib/with-admin';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { getPublishedPosts } from '@/lib/domain/posts';
+import { submitUrlsToSearchEngines } from '@/lib/domain/seo-submit';
+import { SITE_METADATA } from '@/lib/core/site';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*== 后台 SEO 提交接口：收集全站 URL 并提交到 IndexNow 和百度。 ==*/
 export const POST = withAdmin(async () => {

@@ -8,10 +8,10 @@
 
 import { NextResponse } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { saveNotesDb } from '@/lib/nav-db';
-import { BizCode, fail, success } from '@/lib/api-response';
-import type { NoteItem } from '@/lib/nav-storage';
+import { withUser } from '@/lib/core/with-user';
+import { saveNotesDb } from '@/lib/domain/nav-db';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import type { NoteItem } from '@/lib/domain/nav-storage';
 
 /*== 保存笔记
   PUT body: { data: NoteItem[] }

@@ -9,8 +9,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { BizCode, fail } from '@/lib/api-response';
+import { withUser } from '@/lib/core/with-user';
+import { BizCode, fail } from '@/lib/core/api-response';
 
 /*== AI 对话（DeepSeek，OpenAI 兼容接口，SSE 流式转发）
 

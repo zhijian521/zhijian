@@ -9,8 +9,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { getSessionFromRequest, getUserById } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { getSessionFromRequest, getUserById } from '@/lib/core/auth';
+import { BizCode, fail, success } from '@/lib/core/api-response';
 
 /*== 获取当前登录用户信息。未登录返回 401。 ==*/
 export async function GET(request: NextRequest) {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { SubmitButton } from '@/components/ui/submit-button';
 import { toast } from '@/components/ui/toast';
-import type { SubmitResult } from '@/lib/seo-submit';
+import type { SubmitResult } from '@/lib/domain/seo-submit';
 
 interface SubmitResponse {
     totalUrls: number;

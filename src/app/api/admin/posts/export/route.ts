@@ -11,8 +11,8 @@ import path from 'path';
 
 import { ZipArchive } from 'archiver';
 
-import { withAdmin } from '@/lib/with-admin';
-import { extractImagePaths, getAllPosts } from '@/lib/posts';
+import { withAdmin } from '@/lib/core/with-admin';
+import { extractImagePaths, getAllPosts } from '@/lib/domain/posts';
 
 /*== 文章一键导出 API — 将所有文章 + 引用图片打包为 ZIP 流式下载
     支持 ?id= 参数：指定时只导出该文章；省略时导出全部。 ==*/

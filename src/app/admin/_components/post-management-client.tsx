@@ -13,8 +13,8 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/app/admin/_components/admin-page-header';
-import { api } from '@/lib/http-client';
-import { APP_ROUTES } from '@/lib/site';
+import { api } from '@/lib/core/http-client';
+import { APP_ROUTES } from '@/lib/core/site';
 
 import styles from './post-management-client.module.css';
 import shared from '@/app/admin/_components/admin-shared.module.css';

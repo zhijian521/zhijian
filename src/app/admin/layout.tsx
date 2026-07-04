@@ -2,8 +2,8 @@ import { headers } from 'next/headers';
 
 import AdminShell from '@/app/admin/_components/admin-shell';
 import { ToastContainer } from '@/components/ui/toast';
-import { requireAdmin } from '@/lib/auth';
-import { APP_ROUTES } from '@/lib/site';
+import { requireAdmin } from '@/lib/core/auth';
+import { APP_ROUTES } from '@/lib/core/site';
 import './globals.css';
 
 interface AdminLayoutProps {

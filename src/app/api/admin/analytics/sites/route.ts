@@ -11,9 +11,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { listTrackSites, createTrackSite, updateTrackSite, deleteTrackSite } from '@/lib/track-sites';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { listTrackSites, createTrackSite, updateTrackSite, deleteTrackSite } from '@/lib/domain/track-sites';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   站点管理 API
@@ -79,7 +79,7 @@ export const PUT = withAdmin(async (request) => {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '缺少站点 ID。'), { status: 400 });
     }
 
-    const fields: Partial<Pick<import('@/lib/track-sites').TrackSite, 'name' | 'domain' | 'status'>> = {};
+    const fields: Partial<Pick<import('@/lib/domain/track-sites').TrackSite, 'name' | 'domain' | 'status'>> = {};
     if (name !== undefined) fields.name = name.trim();
     if (domain !== undefined) fields.domain = domain.trim();
     if (status !== undefined) {

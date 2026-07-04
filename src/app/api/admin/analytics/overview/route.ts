@@ -8,10 +8,10 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { getOverview, getTrend, getPageRank, getSources, getDevices, getLanguages, getBrowsers, getOS, getCountries, getRegions, getEntryPages, getExitPages, ensureAggregated } from '@/lib/analytics';
-import type { DateRange } from '@/lib/analytics';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { getOverview, getTrend, getPageRank, getSources, getDevices, getLanguages, getBrowsers, getOS, getCountries, getRegions, getEntryPages, getExitPages, ensureAggregated } from '@/lib/domain/analytics';
+import type { DateRange } from '@/lib/domain/analytics';
 
 /*== 仪表盘概览数据 API ==*/
 export const GET = withAdmin(async (request) => {

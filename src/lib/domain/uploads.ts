@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
-import { getDb } from '@/lib/db';
+import { getDb } from '../core/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 /*== 类型定义 ==*/

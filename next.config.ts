@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 
-import { LEGACY_REDIRECTS } from '@/lib/legacy-redirects';
+import { LEGACY_REDIRECTS } from '@/lib/core/legacy-redirects';
 
 const nextConfig: NextConfig = {
     turbopack: {},

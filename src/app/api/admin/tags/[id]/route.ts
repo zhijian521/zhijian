@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { getTagById, updateTag, deleteTag } from '@/lib/tags';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { getTagById, updateTag, deleteTag } from '@/lib/domain/tags';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   单个标签操作：PUT / DELETE。均需管理员权限。

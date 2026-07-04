@@ -1,6 +1,6 @@
-import { getDb } from '@/lib/db';
-import type { Bookmark } from '@/lib/nav-config';
-import type { TodoItem, NoteItem, ChatConversation } from '@/lib/nav-storage';
+import { getDb } from '../core/db';
+import type { Bookmark } from './nav-config';
+import type { TodoItem, NoteItem, ChatConversation } from './nav-storage';
 
 /*== Nav 数据库操作 — 每用户每类型一条 JSON 记录，整存整取 ==*/
 

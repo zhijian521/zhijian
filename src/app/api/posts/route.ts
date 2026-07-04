@@ -8,8 +8,8 @@
 
 import { NextResponse } from 'next/server';
 
-import { success } from '@/lib/api-response';
-import { getPublishedPosts } from '@/lib/posts';
+import { success } from '@/lib/core/api-response';
+import { getPublishedPosts } from '@/lib/domain/posts';
 
 /*== 公开文章接口返回数据库最新内容，不参与静态缓存。 ==*/
 export const dynamic = 'force-dynamic';

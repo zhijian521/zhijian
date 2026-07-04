@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { getUploadById, deleteUploadById, updateUploadById } from '@/lib/uploads';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { getUploadById, deleteUploadById, updateUploadById } from '@/lib/domain/uploads';
 
 /*== 单个图片操作：PATCH / DELETE。 ==*/
 

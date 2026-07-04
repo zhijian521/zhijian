@@ -8,9 +8,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
-import { listUploads } from '@/lib/uploads';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
+import { listUploads } from '@/lib/domain/uploads';
 
 /*== 图片列表接口（GET）。 ==*/
 export const GET = withAdmin(async (request) => {

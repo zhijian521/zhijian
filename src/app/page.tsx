@@ -7,9 +7,9 @@ import { ProjectCard, type ProjectAction } from '@/components/site/project-card'
 import { GhostButton } from '@/components/ui/ghost-button';
 import { ArrowDownIcon, ArrowRightIcon, BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon, MailIcon } from '@/components/ui/icons';
 import { TextLink } from '@/components/ui/text-link';
-import { getPublishedPosts } from '@/lib/posts';
-import { formatPostDate } from '@/lib/posts';
-import { SITE_METADATA } from '@/lib/site';
+import { getPublishedPosts } from '@/lib/domain/posts';
+import { formatPostDate } from '@/lib/domain/posts';
+import { SITE_METADATA } from '@/lib/core/site';
 
 import { RssCopyButton } from '@/components/site/rss-copy-button';
 import styles from './page.module.css';

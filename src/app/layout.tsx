@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import AppFrame from '@/components/site/app-frame';
-import { SITE_METADATA } from '@/lib/site';
+import { SITE_METADATA } from '@/lib/core/site';
 import './globals.css';
 
 export const metadata: Metadata = {

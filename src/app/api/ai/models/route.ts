@@ -8,8 +8,8 @@
 
 import { NextResponse } from 'next/server';
 
-import { withUser } from '@/lib/with-user';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { withUser } from '@/lib/core/with-user';
+import { BizCode, fail, success } from '@/lib/core/api-response';
 
 /*== AI 模型列表
   GET → 转发 DeepSeek /models，返回可用模型 id 列表

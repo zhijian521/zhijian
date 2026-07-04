@@ -1,6 +1,6 @@
 import { ContentImage } from '@/components/site/content-image';
 import { MarkdownArticle } from '@/components/site/markdown-article';
-import { formatPostDate } from '@/lib/post-shared';
+import { formatPostDate } from '@/lib/domain/post-shared';
 
 import styles from './article-view.module.css';
 

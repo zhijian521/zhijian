@@ -8,8 +8,8 @@
 
 import { NextResponse } from 'next/server';
 
-import { createUser, hashPassword, validateUserFields } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
+import { createUser, hashPassword, validateUserFields } from '@/lib/core/auth';
+import { BizCode, fail, success } from '@/lib/core/api-response';
 
 /*== 公开注册接口
   POST body: { username, email, password }

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 
-import { listCategories } from '@/lib/categories';
-import { getPublishedPosts } from '@/lib/posts';
-import { SITE_METADATA } from '@/lib/site';
-import { listTags } from '@/lib/tags';
+import { listCategories } from '@/lib/domain/categories';
+import { getPublishedPosts } from '@/lib/domain/posts';
+import { SITE_METADATA } from '@/lib/core/site';
+import { listTags } from '@/lib/domain/tags';
 
 import BlogListClient from './_components/blog-list-client';
 

@@ -9,8 +9,8 @@ import Dialog from '@/components/ui/dialog';
 import { XIcon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
 import { Tag } from '@/components/ui/tag';
-import { formatPostDate } from '@/lib/post-shared';
-import type { Post } from '@/lib/post-shared';
+import { formatPostDate } from '@/lib/domain/post-shared';
+import type { Post } from '@/lib/domain/post-shared';
 
 import styles from '../page.module.css';
 

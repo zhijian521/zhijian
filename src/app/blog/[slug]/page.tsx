@@ -4,10 +4,10 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
-import { getPostBySlug, getPublishedPosts } from '@/lib/posts';
-import { formatPostDate, toPostIsoDateTime } from '@/lib/posts';
-import { SITE_METADATA } from '@/lib/site';
-import { toAbsoluteUrl } from '@/lib/utils';
+import { getPostBySlug, getPublishedPosts } from '@/lib/domain/posts';
+import { formatPostDate, toPostIsoDateTime } from '@/lib/domain/posts';
+import { SITE_METADATA } from '@/lib/core/site';
+import { toAbsoluteUrl } from '@/lib/core/utils';
 
 import { ArticleFooterActions } from './_components/article-footer-actions';
 import styles from './page.module.css';

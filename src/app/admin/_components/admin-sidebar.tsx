@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation';
 import { ChevronRightIcon, LogOutIcon, PlusIcon, UserCircle2Icon } from '@/components/ui/icons';
 import { useState } from 'react';
 
-import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/site';
-import { api } from '@/lib/http-client';
+import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/core/site';
+import { api } from '@/lib/core/http-client';
 import { toast } from '@/components/ui/toast';
-import { cn, isNavItemActive } from '@/lib/utils';
+import { cn, isNavItemActive } from '@/lib/core/utils';
 import styles from './admin-sidebar.module.css';
 
 /*== 后台侧边栏：数据驱动二级折叠菜单，自动展开当前路由所在分组。 ==*/

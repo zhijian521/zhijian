@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { listCategories, createCategory } from '@/lib/categories';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { listCategories, createCategory } from '@/lib/domain/categories';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   分类列表（GET） / 创建分类（POST）

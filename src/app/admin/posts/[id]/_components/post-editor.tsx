@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-import type { Post, PostStatus } from '@/lib/post-shared';
-import type { Category } from '@/lib/categories';
-import type { Tag } from '@/lib/tags';
-import { api } from '@/lib/http-client';
+import type { Post, PostStatus } from '@/lib/domain/post-shared';
+import type { Category } from '@/lib/domain/categories';
+import type { Tag } from '@/lib/domain/tags';
+import { api } from '@/lib/core/http-client';
 import { toast } from '@/components/ui/toast';
-import { APP_ROUTES } from '@/lib/site';
+import { APP_ROUTES } from '@/lib/core/site';
 
 import { EditorToolbar, type ViewMode } from './editor-toolbar';
 import { MarkdownEditor } from './markdown-editor';

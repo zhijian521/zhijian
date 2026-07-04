@@ -6,8 +6,8 @@ import { MarkdownArticle } from '@/components/site/markdown-article';
 import { PlusIcon, Trash2Icon, ArrowUpIcon, SparklesIcon } from '@/components/ui/icons';
 import { toast } from '@/components/ui/toast';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
-import type { ChatConversation, ChatMessage } from '@/lib/nav-storage';
-import { genId, getChatConversations, saveChatConversations, getAiModel, setAiModel } from '@/lib/nav-storage';
+import type { ChatConversation, ChatMessage } from '@/lib/domain/nav-storage';
+import { genId, getChatConversations, saveChatConversations, getAiModel, setAiModel } from '@/lib/domain/nav-storage';
 
 import styles from './ai-section.module.css';
 

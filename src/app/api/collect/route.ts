@@ -8,10 +8,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getDb } from '@/lib/db';
-import { fail, type BizCodeValue } from '@/lib/api-response';
-import { lookup, maskIp } from '@/lib/geo';
-import { parseUA } from '@/lib/ua';
+import { getDb } from '@/lib/core/db';
+import { fail, type BizCodeValue } from '@/lib/core/api-response';
+import { lookup, maskIp } from '@/lib/domain/geo';
+import { parseUA } from '@/lib/domain/ua';
 
 /*============================================================================
   数据收集 API — 供 script.js 上报，无鉴权

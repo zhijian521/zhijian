@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 
-import { createUser, hashPassword, listUsers, validateUserFields } from '@/lib/auth';
-import { BizCode, fail, success } from '@/lib/api-response';
-import { withAdmin } from '@/lib/with-admin';
+import { createUser, hashPassword, listUsers, validateUserFields } from '@/lib/core/auth';
+import { BizCode, fail, success } from '@/lib/core/api-response';
+import { withAdmin } from '@/lib/core/with-admin';
 
 /*==
   用户列表（GET） / 创建用户（POST）

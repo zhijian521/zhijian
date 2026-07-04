@@ -3,9 +3,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 import Dialog from '@/components/ui/dialog';
-import { isBookmarkFolder } from '@/lib/nav-config';
-import type { Bookmark, BookmarkItem, BookmarkFolder } from '@/lib/nav-config';
-import { getBookmarks, saveBookmarks, genId } from '@/lib/nav-storage';
+import { isBookmarkFolder } from '@/lib/domain/nav-config';
+import type { Bookmark, BookmarkItem, BookmarkFolder } from '@/lib/domain/nav-config';
+import { getBookmarks, saveBookmarks, genId } from '@/lib/domain/nav-storage';
 import { insertAfter, removeFromTree, insertIntoTree, type DragState } from './drag-utils';
 
 import BookmarkContextMenu from './bookmark-context-menu';
