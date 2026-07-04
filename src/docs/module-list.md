@@ -66,9 +66,9 @@
 | 4.18 | 备忘录 API | `src/app/api/nav/todos/route.ts` |
 | 4.19 | 笔记 API | `src/app/api/nav/notes/route.ts` |
 | 4.20 | Favicon 代理 API | `src/app/api/favicon/route.ts` |
-| 4.21 | Nav 配置 | `src/lib/nav-config.ts` |
-| 4.22 | Nav 数据库层 | `src/lib/nav-db.ts` |
-| 4.23 | Nav 存储层 | `src/lib/nav-storage.ts` |
+| 4.21 | Nav 配置 | `src/lib/domain/nav-config.ts` |
+| 4.22 | Nav 数据库层 | `src/lib/domain/nav-db.ts` |
+| 4.23 | Nav 存储层 | `src/lib/domain/nav-storage.ts` |
 | 4.24 | Nav 认证 Hook | `src/hooks/use-auth.ts` |
 
 ---
@@ -81,9 +81,9 @@
 | 5.2 | 注册 API | `src/app/api/auth/register/route.ts` |
 | 5.3 | 登出 API | `src/app/api/auth/logout/route.ts` |
 | 5.4 | 当前用户 API | `src/app/api/auth/me/route.ts` |
-| 5.5 | 认证工具 | `src/lib/auth.ts` |
-| 5.6 | withAdmin 中间件 | `src/lib/with-admin.ts` |
-| 5.7 | withUser 中间件 | `src/lib/with-user.ts` |
+| 5.5 | 认证工具 | `src/lib/core/auth.ts` |
+| 5.6 | withAdmin 中间件 | `src/lib/core/with-admin.ts` |
+| 5.7 | withUser 中间件 | `src/lib/core/with-user.ts` |
 
 ---
 
@@ -210,25 +210,25 @@
 
 | 序号 | 名称 | 路径 |
 |------|------|------|
-| 8.1 | 数据库连接 | `src/lib/db.ts` |
-| 8.2 | API 响应工具 | `src/lib/api-response.ts` |
-| 8.3 | HTTP 客户端 | `src/lib/http-client.ts` |
-| 8.4 | 工具函数 | `src/lib/utils.ts` |
-| 8.5 | 站点配置 | `src/lib/site.ts` |
-| 8.6 | 文章数据层 | `src/lib/posts.ts` |
-| 8.7 | 文章共享 | `src/lib/post-shared.ts` |
-| 8.8 | 分类数据层 | `src/lib/categories.ts` |
-| 8.9 | 标签数据层 | `src/lib/tags.ts` |
-| 8.10 | 上传数据层 | `src/lib/uploads.ts` |
-| 8.11 | 统计数据层 | `src/lib/analytics.ts` |
-| 8.12 | 追踪站点 | `src/lib/track-sites.ts` |
-| 8.13 | 地理定位 | `src/lib/geo.ts` |
-| 8.14 | UA 解析 | `src/lib/ua.ts` |
-| 8.15 | 旧链接重定向 | `src/lib/legacy-redirects.ts` |
+| 8.1 | 数据库连接 | `src/lib/core/db.ts` |
+| 8.2 | API 响应工具 | `src/lib/core/api-response.ts` |
+| 8.3 | HTTP 客户端 | `src/lib/core/http-client.ts` |
+| 8.4 | 工具函数 | `src/lib/core/utils.ts` |
+| 8.5 | 站点配置 | `src/lib/core/site.ts` |
+| 8.6 | 文章数据层 | `src/lib/domain/posts.ts` |
+| 8.7 | 文章共享 | `src/lib/domain/post-shared.ts` |
+| 8.8 | 分类数据层 | `src/lib/domain/categories.ts` |
+| 8.9 | 标签数据层 | `src/lib/domain/tags.ts` |
+| 8.10 | 上传数据层 | `src/lib/domain/uploads.ts` |
+| 8.11 | 统计数据层 | `src/lib/domain/analytics.ts` |
+| 8.12 | 追踪站点 | `src/lib/domain/track-sites.ts` |
+| 8.13 | 地理定位 | `src/lib/domain/geo.ts` |
+| 8.14 | UA 解析 | `src/lib/domain/ua.ts` |
+| 8.15 | 旧链接重定向 | `src/lib/core/legacy-redirects.ts` |
 | 8.16 | 采集 API | `src/app/api/collect/route.ts` |
-| 8.17 | Nav 配置 | `src/lib/nav-config.ts` |
-| 8.18 | Nav 数据库层 | `src/lib/nav-db.ts` |
-| 8.19 | Nav 存储层 | `src/lib/nav-storage.ts` |
+| 8.17 | Nav 配置 | `src/lib/domain/nav-config.ts` |
+| 8.18 | Nav 数据库层 | `src/lib/domain/nav-db.ts` |
+| 8.19 | Nav 存储层 | `src/lib/domain/nav-storage.ts` |
 | 8.20 | Nav 认证 Hook | `src/hooks/use-auth.ts` |
 
 ---

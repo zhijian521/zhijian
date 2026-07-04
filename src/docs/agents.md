@@ -269,7 +269,7 @@ interface ListData<T> {
 }
 ```
 
-**业务错误码** (`src/lib/api-response.ts`):
+**业务错误码** (`src/lib/core/api-response.ts`):
 | 常量 | 值 | 含义 |
 |------|-----|------|
 | `SUCCESS` | 0 | 成功 |
@@ -323,7 +323,7 @@ const session = getSessionFromRequest(request)
 
 ### 5. 数据库访问
 
-**连接池** (`src/lib/db.ts`):
+**连接池** (`src/lib/core/db.ts`):
 ```typescript
 import { getDb } from '@/lib/db'
 
@@ -359,7 +359,7 @@ const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM zhijian_blog_pos
 
 ### 6. HTTP 客户端
 
-**使用方式** (`src/lib/http-client.ts`):
+**使用方式** (`src/lib/core/http-client.ts`):
 ```typescript
 import { api } from '@/lib/http-client'
 
@@ -743,22 +743,22 @@ fix(api): handle null response from database
 | 用途 | 文件 |
 |------|------|
 | 统一主题变量 | `src/app/theme.css` |
-| 路由/导航配置 | `src/lib/site.ts` |
-| API 响应格式 + ListData | `src/lib/api-response.ts` |
-| 认证系统 + 用户数据层 | `src/lib/auth.ts` |
-| 分类数据层 | `src/lib/categories.ts` |
-| 标签数据层 | `src/lib/tags.ts` |
-| 文章数据层（数据库） | `src/lib/posts.ts` |
-| 图片上传数据层 | `src/lib/uploads.ts` |
-| 数据库连接 | `src/lib/db.ts` |
-| HTTP 客户端 | `src/lib/http-client.ts` |
+| 路由/导航配置 | `src/lib/core/site.ts` |
+| API 响应格式 + ListData | `src/lib/core/api-response.ts` |
+| 认证系统 + 用户数据层 | `src/lib/core/auth.ts` |
+| 分类数据层 | `src/lib/domain/categories.ts` |
+| 标签数据层 | `src/lib/domain/tags.ts` |
+| 文章数据层（数据库） | `src/lib/domain/posts.ts` |
+| 图片上传数据层 | `src/lib/domain/uploads.ts` |
+| 数据库连接 | `src/lib/core/db.ts` |
+| HTTP 客户端 | `src/lib/core/http-client.ts` |
 | 全局样式 | `src/app/globals.css` |
 | 自建图标库 | `src/components/ui/icons.tsx` |
 | Toast 提示 | `src/components/ui/toast.tsx` + `use-toast.ts` |
 | 站点监控嵌入脚本 | `public/script.js` |
-| 站点监控数据层 | `src/lib/analytics.ts` + `track-sites.ts` |
-| IP 地理定位 | `src/lib/geo.ts` |
-| UA 解析 | `src/lib/ua.ts` |
+| 站点监控数据层 | `src/lib/domain/analytics.ts` + `track-sites.ts` |
+| IP 地理定位 | `src/lib/domain/geo.ts` |
+| UA 解析 | `src/lib/domain/ua.ts` |
 | 数据收集 API | `src/app/api/collect/route.ts` |
 | 仪表盘页面 | `src/app/admin/analytics/page.tsx` |
 | 站点管理页面 | `src/app/admin/analytics/sites/page.tsx` |
@@ -769,9 +769,9 @@ fix(api): handle null response from database
 | 后台壳组件 | `src/app/admin/_components/admin-shell.tsx` |
 | 公开站点壳 | `src/components/site/public-chrome.tsx` |
 | 导航页入口 | `src/app/nav/page.tsx` |
-| 导航页配置 | `src/lib/nav-config.ts` |
-| 导航页数据库层 | `src/lib/nav-db.ts` |
-| 导航页存储层 | `src/lib/nav-storage.ts` |
+| 导航页配置 | `src/lib/domain/nav-config.ts` |
+| 导航页数据库层 | `src/lib/domain/nav-db.ts` |
+| 导航页存储层 | `src/lib/domain/nav-storage.ts` |
 | 导航页认证 Hook | `src/hooks/use-auth.ts` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
 | PWA 清单 | `public/manifest.json` |
@@ -822,7 +822,7 @@ fix(api): handle null response from database
 
 1. 在 `src/app/admin/` 下创建目录和 `page.tsx`
 2. 如需交互，创建对应的 `*-client.tsx` 组件
-3. 在 `src/lib/site.ts` 的 `ADMIN_NAV_GROUPS` 中添加导航项
+3. 在 `src/lib/core/site.ts` 的 `ADMIN_NAV_GROUPS` 中添加导航项
 4. 如需 API，在 `src/app/api/admin/` 创建路由
 5. 数据层在 `src/lib/` 下创建，使用 `RowDataPacket[]` 类型
 
