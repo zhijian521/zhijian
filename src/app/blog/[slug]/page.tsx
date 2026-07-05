@@ -172,6 +172,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     return (
         <main className={styles.page}>
+            <div className="bg-overlay" />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <article className={styles.article}>
                 {/* 面包屑导航 */}

@@ -84,7 +84,7 @@
 }
 
 /*== 暗色主题 · 墨色底,朱砂留,宣纸换成冷墨 ==*/
-/*@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     :root {
         --primary: #b8333f;
         --primary-hover: #c44550;
@@ -138,4 +138,4 @@
 
         --selection: rgba(214, 51, 65, 0.26);
     }
-}*/
+}

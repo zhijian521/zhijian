@@ -59,6 +59,7 @@ export default function BlogListClient({ activeCategorySlug, activeFilterChips, 
 
     return (
         <main className={styles.page}>
+            <div className="bg-overlay" />
             {/* 导航加载遮罩 */}
             {isPending ? (
                 <div className={styles.loadingOverlay}>

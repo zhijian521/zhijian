@@ -73,6 +73,7 @@ export default function NavShell() {
 
     return (
         <div className={styles.shell} ref={shellRef}>
+            <div className="bg-overlay" />
             <div className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
                 <div className={styles.sectionActions}>
                     <SettingsSection
