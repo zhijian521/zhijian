@@ -65,11 +65,6 @@
     --shadow-lg: 0 12px 32px rgba(29, 27, 32, 0.1);
     --ring: 0 0 0 3px var(--ring-subtle);
 
-    /* 过渡 · 全站统一节奏,避免各组件自定 */
-    --transition-fast: 120ms ease;
-    --transition: 180ms ease;
-    --transition-slow: 280ms ease;
-
     /* 焦点轮廓 · 代替浏览器默认蓝,用朱砂 ring */
     --focus-outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
     --focus-offset: 2px;

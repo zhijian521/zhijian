@@ -30,4 +30,13 @@
 
     /* 圆角（全站零圆角，矩形是品牌语言） */
     --radius: 0;
+
+    /* 毛玻璃模糊 */
+    --blur-sm: blur(10px);
+    --blur-md: blur(16px);
+
+    /* 过渡 · 全站统一节奏 */
+    --transition-fast: 120ms ease;
+    --transition: 180ms ease;
+    --transition-slow: 280ms ease;
 }
