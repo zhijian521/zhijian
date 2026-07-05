@@ -13,7 +13,7 @@
     max-width: 56rem;
     margin: 0 auto;
     padding: 8rem 1.5rem 4rem;
-    background: color-mix(in srgb, var(--highlight) 85%, transparent);
+    background: color-mix(in srgb, var(--muted) 50%, transparent);
 }
 
 /*== 文章底部 ==*/
@@ -147,7 +147,7 @@
     padding: 1.125rem 1.25rem;
     border: 1px solid var(--border);
     text-decoration: none;
-    background: color-mix(in srgb, var(--highlight) 85%, transparent);
+    background: color-mix(in srgb, var(--muted) 50%, transparent);
     transition: border-color 0.15s;
 }
 
