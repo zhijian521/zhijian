@@ -1,6 +1,6 @@
 import type { DailyCommits } from '@/lib/domain/github';
-import { ProfileCard } from '@/components/site/profile-card/profile-card';
-import { CommitChart } from '@/components/site/commit-chart/commit-chart';
+import { ProfileCard } from '@/components/modules/home/profile-card/profile-card';
+import { CommitChart } from '@/components/modules/home/commit-chart/commit-chart';
 import { SectionHeading } from '@/components/site/section-heading/section-heading';
 import styles from './profile-section.module.css';
 
