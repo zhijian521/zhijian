@@ -23,6 +23,12 @@
     --text-2xl: 1.5rem; /* 24px */
     --text-3xl: 2rem; /* 32px */
 
+    /* 字体粗细 */
+    --weight-normal:   400;  /* 正文 */
+    --weight-medium:   500;  /* 标签/按钮/中等强调 */
+    --weight-semibold: 600;  /* 标题/区域名 */
+    --weight-bold:     700;  /* 强强调 */
+
     /* 组件密度 — UI 组件内边距和字号阶梯（比页面 text/space 更细粒度） */
     --comp-text-sm:   0.8125rem;   /* 13px  small */
     --comp-text-md:   0.84375rem;  /* 13.5px medium */
