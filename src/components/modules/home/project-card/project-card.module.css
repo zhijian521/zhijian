@@ -41,7 +41,7 @@
     font-family: var(--font-serif);
     font-size: var(--text-2xl);
     line-height: var(--leading-normal);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     color: var(--foreground);
 }
 

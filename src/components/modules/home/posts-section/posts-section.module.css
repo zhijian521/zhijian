@@ -1,11 +1,11 @@
 .section {
-    margin-top: 3rem;
+    margin-top: var(--space-7);
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    gap: var(--space-4);
 }
 
 @media (max-width: 1024px) {
@@ -16,5 +16,5 @@
 
 .empty {
     color: var(--muted-foreground);
-    font-size: 0.9375rem;
+    font-size: var(--text-base);
 }

@@ -48,7 +48,7 @@ export function ProjectCard({ icon, title, description, tags, actions }: Project
             {actions && actions.length > 0 ? (
                 <div className={styles.actions}>
                     {actions.map((action) => (
-                        <GhostButton href={action.href} icon={action.icon} key={action.label} rel="noreferrer" size="small" target="_blank">
+                        <GhostButton href={action.href} icon={action.icon} key={action.label} rel="noopener noreferrer" size="small" target="_blank">
                             {action.label}
                         </GhostButton>
                     ))}

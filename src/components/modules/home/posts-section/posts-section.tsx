@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { ContentImage } from '@/components/site/content-image';
 import { PostCard } from '@/components/modules/home/post-card/post-card';
 import { SectionHeading } from '@/components/site/section-heading/section-heading';
