@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ProjectCard, type ProjectAction } from '@/components/site/project-card';
+import { ProjectCard, type ProjectAction } from '@/components/modules/home/project-card/project-card';
 import { SectionHeading } from '@/components/site/section-heading/section-heading';
 import styles from './projects-section.module.css';
 

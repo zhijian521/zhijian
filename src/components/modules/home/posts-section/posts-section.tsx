@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { ContentImage } from '@/components/site/content-image';
-import { PostCard } from '@/components/site/post-card';
+import { PostCard } from '@/components/modules/home/post-card/post-card';
 import { SectionHeading } from '@/components/site/section-heading/section-heading';
 import { TextLink } from '@/components/ui/text-link';
 import { formatPostDate } from '@/lib/domain/posts';
