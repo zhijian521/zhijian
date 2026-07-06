@@ -59,7 +59,7 @@
 }
 
 .brand:hover {
-    opacity: 0.85;
+    opacity: var(--opacity-80);
 }
 
 .brandText {

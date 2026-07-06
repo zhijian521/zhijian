@@ -4,7 +4,9 @@ import { useState } from 'react';
 import type { DailyCommits } from '@/lib/domain/github';
 import styles from './commit-chart.module.css';
 
-interface CommitChartProps { data: DailyCommits[] }
+interface CommitChartProps {
+    data: DailyCommits[];
+}
 
 const LEVELS = ['l0', 'l1', 'l2', 'l3', 'l4'] as const;
 
@@ -49,12 +51,23 @@ export function CommitChart({ data }: CommitChartProps) {
         <div className={styles.wrap}>
             <p className={styles.title}>
                 项目提交记录
-                {selected ? <span className={styles.tip}> — {formatDate(selected.date)} · {selected.count} 次提交</span> : null}
+                {selected ? (
+                    <span className={styles.tip}>
+                        {' '}
+                        — {formatDate(selected.date)} · {selected.count} 次提交
+                    </span>
+                ) : null}
             </p>
             <div className={styles.scroll}>
                 <div className={styles.grid}>
                     <div className={styles.weekLabels}>
-                        <span /><span>一</span><span /><span>三</span><span /><span>五</span><span />
+                        <span />
+                        <span>一</span>
+                        <span />
+                        <span>三</span>
+                        <span />
+                        <span>五</span>
+                        <span />
                     </div>
                     <div className={styles.cells}>
                         {weeks.map((w, wi) => (
@@ -63,13 +76,7 @@ export function CommitChart({ data }: CommitChartProps) {
                                     const count = dayMap.get(day.date) || 0;
                                     const label = `${formatDate(day.date)}: ${count} 次提交`;
                                     return (
-                                        <button
-                                            aria-label={label}
-                                            className={`${styles.cell} ${styles[day.level]}`}
-                                            key={di}
-                                            onClick={() => setSelected({ date: day.date, count })}
-                                            type="button"
-                                        />
+                                        <button aria-label={label} className={`${styles.cell} ${styles[day.level]}`} key={di} onClick={() => setSelected({ date: day.date, count })} type="button" />
                                     );
                                 })}
                             </div>
@@ -79,7 +86,9 @@ export function CommitChart({ data }: CommitChartProps) {
             </div>
             <div className={styles.legend}>
                 <span>少</span>
-                {LEVELS.map((l) => <span className={`${styles.cell} ${styles[l]}`} key={l} />)}
+                {LEVELS.map((l) => (
+                    <span className={`${styles.cell} ${styles[l]}`} key={l} />
+                ))}
                 <span>多</span>
             </div>
         </div>

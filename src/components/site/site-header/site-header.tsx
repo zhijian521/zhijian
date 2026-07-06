@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MenuIcon, XIcon } from '@/components/ui/icons';
 import { APP_ROUTES, PUBLIC_NAV_ITEMS, SITE_METADATA } from '@/lib/core/site';
-import { isNavItemActive } from '@/lib/core/utils';
+import { cn, isNavItemActive } from '@/lib/core/utils';
 import styles from './site-header.module.css';
 
 interface SiteHeaderProps {
@@ -23,10 +23,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
     const triggerRef = useRef<HTMLButtonElement>(null);
 
     /*-- 预计算导航项活跃状态 --*/
-    const navItems = useMemo(
-        () => PUBLIC_NAV_ITEMS.map((item) => ({ ...item, isActive: isNavItemActive(pathname, item.href, item.match) })),
-        [pathname],
-    );
+    const navItems = useMemo(() => PUBLIC_NAV_ITEMS.map((item) => ({ ...item, isActive: isNavItemActive(pathname, item.href, item.match) })), [pathname]);
 
     /*-- 路由切换关闭菜单 --*/
     useEffect(() => setIsMobileNavOpen(false), [pathname]);
@@ -56,7 +53,9 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                 closeMenu();
             }
         };
-        const onEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') closeMenu(); };
+        const onEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') closeMenu();
+        };
 
         document.addEventListener('mousedown', onOutside);
         document.addEventListener('keydown', onEscape);
@@ -66,9 +65,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
         };
     }, [isMobileNavOpen, closeMenu]);
 
-    const headerClass = transparent
-        ? `${styles.headerHome} ${isScrolled ? styles.headerScrolled : ''}`
-        : styles.headerInner;
+    const headerClass = transparent ? cn(styles.headerHome, isScrolled && styles.headerScrolled) : styles.headerInner;
 
     return (
         <header className={headerClass}>
@@ -82,7 +79,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                     {/* 桌面导航 */}
                     <nav aria-label="站点主导航" className={styles.nav}>
                         {navItems.map((item) => (
-                            <Link className={`${styles.navLink} ${item.isActive ? styles.navLinkActive : styles.navLinkInactive}`} href={item.href} key={item.label}>
+                            <Link className={cn(styles.navLink, item.isActive ? styles.navLinkActive : styles.navLinkInactive)} href={item.href} key={item.label}>
                                 {item.label}
                                 {item.isActive ? <span aria-hidden className={styles.navUnderline} /> : null}
                             </Link>
@@ -95,7 +92,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                             aria-controls="public-mobile-nav"
                             aria-expanded={isMobileNavOpen}
                             aria-label={isMobileNavOpen ? '关闭导航菜单' : '打开导航菜单'}
-                            className={`${styles.mobileMenu} ${isMobileNavOpen ? styles.mobileMenuOpen : ''}`}
+                            className={cn(styles.mobileMenu, isMobileNavOpen && styles.mobileMenuOpen)}
                             onClick={() => setIsMobileNavOpen((v) => !v)}
                             ref={triggerRef}
                             type="button"
@@ -113,7 +110,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                                 </div>
                                 <nav aria-label="移动端站点导航" className={styles.mobileNav}>
                                     {navItems.map((item) => (
-                                        <Link className={`${styles.mobileNavLink} ${item.isActive ? styles.mobileNavLinkActive : ''}`} href={item.href} key={item.label}>
+                                        <Link className={cn(styles.mobileNavLink, item.isActive && styles.mobileNavLinkActive)} href={item.href} key={item.label}>
                                             <span>{item.label}</span>
                                         </Link>
                                     ))}

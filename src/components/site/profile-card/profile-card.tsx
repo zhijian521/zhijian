@@ -15,12 +15,14 @@ export function ProfileCard() {
             <div className={styles.body}>
                 <h3 className={styles.name}>Zhi Jian</h3>
                 <p className={styles.meta}>前端开发 · 全栈 · 简约设计 · 造物</p>
-                <p className={styles.copy}>
-                    喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。这里没有宏大的叙事，只有一些零散的记录和简单的快乐。
-                </p>
+                <p className={styles.copy}>喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。这里没有宏大的叙事，只有一些零散的记录和简单的快乐。</p>
                 <div className={styles.links}>
-                    <GhostButton href="mailto:yuwb0521@yeah.net" icon={<MailIcon />} size="small">联系我</GhostButton>
-                    <GhostButton href="https://github.com/zhijian521" icon={<ArrowRightIcon />} rel="noreferrer" size="small" target="_blank">GitHub</GhostButton>
+                    <GhostButton href="mailto:yuwb0521@yeah.net" icon={<MailIcon />} size="small">
+                        联系我
+                    </GhostButton>
+                    <GhostButton href="https://github.com/zhijian521" icon={<ArrowRightIcon />} size="small" target="_blank">
+                        GitHub
+                    </GhostButton>
                     <RssCopyButton />
                 </div>
             </div>

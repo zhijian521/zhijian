@@ -50,6 +50,7 @@
     --leading-tight: 1.25;
     --leading-normal: 1.5;
     --leading-relaxed: 1.75;
+    --leading-loose: 2;
 
     /* 圆角（全站零圆角，矩形是品牌语言） */
     --radius: 0;
@@ -57,6 +58,14 @@
     /* 毛玻璃模糊 */
     --blur-sm: blur(10px);
     --blur-md: blur(16px);
+
+    /* 透明度阶梯 · 百分比语义 */
+    --opacity-0:   0;
+    --opacity-20:  0.2;
+    --opacity-40:  0.4;
+    --opacity-60:  0.6;
+    --opacity-80:  0.8;
+    --opacity-100: 1;
 
     /* 过渡 · 全站统一节奏 */
     --transition-fast: 120ms ease;

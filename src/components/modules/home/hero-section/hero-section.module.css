@@ -33,7 +33,7 @@
 .title {
     margin: 0;
     font-family: var(--font-serif);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     font-size: clamp(2.75rem, 6vw, 4.75rem);
     line-height: var(--leading-tight);
     letter-spacing: var(--tracking-tight);
