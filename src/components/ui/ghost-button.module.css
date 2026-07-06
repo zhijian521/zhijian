@@ -30,6 +30,12 @@
     font-size: 0.8125rem;
 }
 
+/* large 变体：hero 等大标题场景，icon 同步放大 */
+.large {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-sm);
+}
+
 .button:hover {
     color: var(--primary);
     border-color: var(--primary);

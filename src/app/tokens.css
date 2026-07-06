@@ -23,6 +23,12 @@
     --text-2xl: 1.5rem; /* 24px */
     --text-3xl: 2rem; /* 32px */
 
+    /* 字距阶梯 · 文人书斋舒朗节奏 */
+    --tracking-normal: 0;          /* 正文 */
+    --tracking-tight: 0.04em;      /* 衬线标题：略收紧显端庄 */
+    --tracking-wide: 0.1em;        /* 标签/按钮：略舒展 */
+    --tracking-wider: 0.2em;       /* 副标题/eyebrow：明显疏朗 */
+
     /* 行高 */
     --leading-tight: 1.25;
     --leading-normal: 1.5;

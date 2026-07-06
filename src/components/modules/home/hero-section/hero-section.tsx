@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ArrowDownIcon } from '@/components/ui/icons';
+import { GhostButton } from '@/components/ui/ghost-button';
 import styles from './hero-section.module.css';
 
 export function HeroSection() {
@@ -11,10 +12,9 @@ export function HeroSection() {
                 <h1 className={styles.title}>Zhi Jian</h1>
                 <p className={styles.sub}>前端开发 · 全栈 · 简约设计 · 造物</p>
                 <p className={styles.copy}>写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。</p>
-                <a className={styles.btn} href="#about-me">
+                <GhostButton variant="primary" size="large" icon={<ArrowDownIcon />} href="#about-me" className={styles.cta}>
                     开始探索
-                    <ArrowDownIcon className={styles.icon} />
-                </a>
+                </GhostButton>
             </div>
         </section>
     );

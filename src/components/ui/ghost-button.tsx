@@ -5,8 +5,8 @@ export interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorE
     icon?: React.ReactNode;
     /** 按钮变体：default 默认边框 / primary 主色边框+hover 反色 */
     variant?: 'default' | 'primary';
-    /** 按钮尺寸：small 紧凑 / medium 中等 / default 默认 */
-    size?: 'small' | 'medium' | 'default';
+    /** 按钮尺寸：small 紧凑 / medium 中等 / default 默认 / large 大（hero 等大标题场景） */
+    size?: 'small' | 'medium' | 'default' | 'large';
     /** 渲染为 button 标签（用于弹窗等非链接场景） */
     asButton?: boolean;
     /** 禁用态（仅 asButton 模式生效） */
@@ -16,6 +16,7 @@ export interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorE
 const SIZE_CLASS: Record<string, string | undefined> = {
     small: 'small',
     medium: 'medium',
+    large: 'large',
     // default 不需要额外 class，基础样式即为 default 尺寸
 };
 

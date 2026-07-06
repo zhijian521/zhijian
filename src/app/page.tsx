@@ -5,8 +5,9 @@ import { ProfileSection } from '@/components/modules/home/profile-section/profil
 import { PostsSection } from '@/components/modules/home/posts-section/posts-section';
 import { ProjectsSection } from '@/components/modules/home/projects-section/projects-section';
 import { BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon } from '@/components/ui/icons';
-import { getPublishedPosts } from '@/lib/domain/posts';
+
 import { SITE_METADATA } from '@/lib/core/site';
+import { getPublishedPosts } from '@/lib/domain/posts';
 import { fetchCommitHistory } from '@/lib/domain/github';
 
 export const metadata: Metadata = {
