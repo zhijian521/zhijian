@@ -1,7 +1,7 @@
 /*== SubmitButton 提交按钮 — 朱砂红主按钮 ==*/
 .button {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+    padding: var(--comp-py-base) var(--comp-px-base);
+    font-size: var(--comp-text-base);
     line-height: 1.4;
     font-weight: 500;
     border: 1px solid var(--primary);
@@ -28,11 +28,11 @@
 
 /* 尺寸变体（仅 non-default，default 已在 .button 基础样式中） */
 .medium {
-    padding: 0.5rem 0.8125rem;
-    font-size: 0.84375rem;
+    padding: var(--comp-py-md) var(--comp-px-md);
+    font-size: var(--comp-text-md);
 }
 
 .small {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.8125rem;
+    padding: var(--comp-py-sm) var(--comp-px-sm);
+    font-size: var(--comp-text-sm);
 }

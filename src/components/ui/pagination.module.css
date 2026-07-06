@@ -18,7 +18,7 @@
 }
 
 .sizeLabel {
-    font-size: 0.8125rem;
+    font-size: var(--comp-text-sm);
     color: var(--muted-foreground);
 }
 
@@ -33,7 +33,7 @@
     border: 1px solid var(--border);
     background: transparent;
     font-family: var(--font-sans);
-    font-size: 0.8125rem;
+    font-size: var(--comp-text-sm);
     color: var(--muted-foreground);
     cursor: pointer;
     transition:
@@ -65,7 +65,7 @@
 /*== 翻页按钮（上一页/下一页） ==*/
 .navBtn {
     padding: 0 0.75rem;
-    font-size: 0.8125rem;
+    font-size: var(--comp-text-sm);
 }
 
 /*== 当前页 — 朱砂红实色 ==*/
@@ -89,7 +89,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.875rem;
+    font-size: var(--comp-text-base);
     color: var(--muted-foreground);
     letter-spacing: 0.1em;
     user-select: none;

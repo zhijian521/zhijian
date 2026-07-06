@@ -13,9 +13,9 @@
     justify-content: space-between;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.625rem 0.875rem;
+    padding: var(--comp-py-base) var(--comp-px-base);
     padding-right: 2rem;
-    font-size: 0.875rem;
+    font-size: var(--comp-text-base);
     line-height: 1.4;
     border: 1px solid var(--input);
     background: var(--background);
@@ -143,23 +143,23 @@
 /*-- 尺寸变体（仅 non-default，default 已在 .trigger 基础样式中） --*/
 
 .medium .trigger {
-    padding: 0.5rem 0.8125rem;
+    padding: var(--comp-py-md) var(--comp-px-md);
     padding-right: 2rem;
-    font-size: 0.84375rem;
+    font-size: var(--comp-text-md);
 }
 
 .medium .option {
-    padding: 0.5rem 0.8125rem;
-    font-size: 0.8125rem;
+    padding: var(--comp-py-md) var(--comp-px-md);
+    font-size: var(--comp-text-sm);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .small .trigger {
-    padding: 0.375rem 0.75rem;
+    padding: var(--comp-py-sm) var(--comp-px-sm);
     padding-right: 1.75rem;
-    font-size: 0.8125rem;
+    font-size: var(--comp-text-sm);
 }
 
 .small .option {

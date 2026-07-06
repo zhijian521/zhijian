@@ -22,7 +22,7 @@
 
 .message {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--comp-text-base);
     color: var(--muted-foreground);
     line-height: 1.625;
 }

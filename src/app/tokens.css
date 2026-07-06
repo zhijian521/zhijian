@@ -23,6 +23,17 @@
     --text-2xl: 1.5rem; /* 24px */
     --text-3xl: 2rem; /* 32px */
 
+    /* 组件密度 — UI 组件内边距和字号阶梯（比页面 text/space 更细粒度） */
+    --comp-text-sm:   0.8125rem;   /* 13px  small */
+    --comp-text-md:   0.84375rem;  /* 13.5px medium */
+    --comp-text-base: 0.875rem;    /* 14px  default */
+    --comp-py-sm:     0.375rem;    /* 6px  small */
+    --comp-py-md:     0.5rem;      /* 8px  medium */
+    --comp-py-base:   0.625rem;    /* 10px default */
+    --comp-px-sm:     0.75rem;     /* 12px small */
+    --comp-px-md:     0.8125rem;   /* 13px medium */
+    --comp-px-base:   0.875rem;    /* 14px default */
+
     /* 字距阶梯 · 文人书斋舒朗节奏 */
     --tracking-normal: 0;          /* 正文 */
     --tracking-tight: 0.04em;      /* 衬线标题：略收紧显端庄 */

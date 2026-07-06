@@ -18,7 +18,7 @@
     max-width: 20rem;
     padding: 0.625rem 0.75rem;
     border-radius: var(--radius);
-    font-size: 0.875rem;
+    font-size: var(--comp-text-base);
     pointer-events: auto;
     animation: toastIn 0.2s ease;
 }

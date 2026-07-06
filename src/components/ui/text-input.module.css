@@ -6,7 +6,7 @@
 }
 
 .label {
-    font-size: 0.875rem;
+    font-size: var(--comp-text-base);
     line-height: 1.4;
     font-weight: 500;
     color: var(--muted-foreground);
@@ -14,11 +14,11 @@
 
 /* 标签尺寸变体（仅 non-default 需覆盖） */
 .labelMedium {
-    font-size: 0.84375rem;
+    font-size: var(--comp-text-md);
 }
 
 .labelSmall {
-    font-size: 0.8125rem;
+    font-size: var(--comp-text-sm);
 }
 
 .inputWrap {
@@ -47,8 +47,8 @@
 /* 基础输入框 — 对应 default 尺寸 */
 .input {
     width: 100%;
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+    padding: var(--comp-py-base) var(--comp-px-base);
+    font-size: var(--comp-text-base);
     line-height: 1.4;
     border: 1px solid var(--border);
     background: var(--background);
@@ -71,13 +71,13 @@
 
 /* 尺寸变体（仅 non-default，default 已在 .input 基础样式中） */
 .medium {
-    padding: 0.5rem 0.8125rem;
-    font-size: 0.84375rem;
+    padding: var(--comp-py-md) var(--comp-px-md);
+    font-size: var(--comp-text-md);
 }
 
 .small {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.8125rem;
+    padding: var(--comp-py-sm) var(--comp-px-sm);
+    font-size: var(--comp-text-sm);
 }
 
 /* 图标左侧间距（仅在有 icon 时应用） */
