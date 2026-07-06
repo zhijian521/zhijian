@@ -3,18 +3,10 @@
     display: flex;
     min-height: 100%;
     flex-direction: column;
+    position: relative;
     border: 1px solid var(--primary);
     border-radius: var(--radius);
     background: var(--background);
-    box-shadow: 0 1px 3px rgba(27, 28, 28, 0.04);
-    transition:
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.card:hover {
-    background: var(--highlight);
-    box-shadow: 0 2px 8px rgba(27, 28, 28, 0.06);
 }
 
 /*== 封面图 + 渐变叠层卡片 ==*/
@@ -47,26 +39,20 @@
     pointer-events: none;
 }
 
-/* 内容区：主体在图片下方，微微上移盖住图片底部 */
-.visualBody {
+/*== 内容区 ==*/
+.body {
+    flex: 1;
+}
+
+.bodyContent {
+    padding: var(--space-5) var(--space-5) var(--space-7);
+}
+
+.hasVisual {
     position: relative;
     z-index: 1;
     margin-top: -2rem;
-    padding: 2rem 1rem 1.25rem;
     background: linear-gradient(to bottom, transparent 0%, var(--background) 2rem);
-    transition: background 0.2s ease;
-}
-
-.card:hover .visualBody {
-    background: linear-gradient(to bottom, transparent 0%, var(--highlight) 2rem);
-}
-
-/*== 纯文字卡片内容区 ==*/
-.body {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding: 2rem 1rem;
 }
 
 /*== 通用元素 ==*/
@@ -74,14 +60,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
 .date {
-    font-size: 0.75rem;
-    line-height: 1.4;
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
     color: var(--muted-foreground);
 }
 
@@ -89,9 +75,9 @@
 .title {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: 2rem;
-    line-height: 1.35;
-    font-weight: 600;
+    font-size: var(--text-2xl);
+    line-height: var(--leading-normal);
+    font-weight: var(--weight-semibold);
     color: var(--foreground);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -101,10 +87,9 @@
 
 /* 摘要最多三行 */
 .summary {
-    flex: 1;
-    margin: 0.75rem 0 1rem;
-    font-size: 1rem;
-    line-height: 1.85;
+    margin: var(--space-3) 0 var(--space-4);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
     color: var(--muted-foreground);
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -112,10 +97,13 @@
     overflow: hidden;
 }
 
-/* 纯文字卡片底部分割线 */
-.divider {
-    border-top: 1px solid var(--primary);
-    opacity: 0.3;
-    margin-top: auto;
-    padding-top: 1rem;
+/* 阅读更多右对齐置底 · 绝对定位在卡片底部 */
+.linkWrap {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+    padding: 0 var(--space-5) var(--space-4);
 }

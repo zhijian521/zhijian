@@ -1,5 +1,6 @@
 import { Tag } from '@/components/ui/tag';
 import { TextLink } from '@/components/ui/text-link';
+import { cn } from '@/lib/core/utils';
 
 import styles from './post-card.module.css';
 
@@ -20,34 +21,20 @@ export interface PostCardProps {
     href: string;
 }
 
-/*== PostCard 文章卡片 — 有封面图时图片+渐变+内容叠层，无封面图时纯文字 ==*/
+/*== PostCard 文章卡片 — 有封面图时展示图片+渐变，内容区统一样式 ==*/
 export function PostCard({ visual, tag, tagVariant = 'default', date, title, summary, href }: PostCardProps) {
     const hasVisual = !!visual;
 
     return (
         <article className={styles.card}>
             {hasVisual ? (
-                /* 封面图 + 渐变叠层 + 内容 */
                 <div className={styles.visualCard}>
                     <div className={styles.visualImage}>{visual}</div>
                     <div className={styles.visualGradient} />
-                    <div className={styles.visualBody}>
-                        <h3 className={styles.title}>{title}</h3>
-                        <div className={styles.metaRow}>
-                            {tag ? (
-                                <Tag variant={tagVariant} size="mini">
-                                    {tag}
-                                </Tag>
-                            ) : null}
-                            {date ? <span className={styles.date}>{date}</span> : null}
-                        </div>
-                        {summary ? <p className={styles.summary}>{summary}</p> : null}
-                        <TextLink href={href}>阅读更多</TextLink>
-                    </div>
                 </div>
-            ) : (
-                /* 纯文字卡片 */
-                <div className={styles.body}>
+            ) : null}
+            <div className={cn(styles.body, hasVisual && styles.hasVisual)}>
+                <div className={styles.bodyContent}>
                     <h3 className={styles.title}>{title}</h3>
                     <div className={styles.metaRow}>
                         {tag ? (
@@ -58,10 +45,11 @@ export function PostCard({ visual, tag, tagVariant = 'default', date, title, sum
                         {date ? <span className={styles.date}>{date}</span> : null}
                     </div>
                     {summary ? <p className={styles.summary}>{summary}</p> : null}
-                    <div className={styles.divider} />
-                    <TextLink href={href}>阅读更多</TextLink>
                 </div>
-            )}
+            </div>
+            <div className={styles.linkWrap}>
+                <TextLink href={href}>阅读更多</TextLink>
+            </div>
         </article>
     );
 }
