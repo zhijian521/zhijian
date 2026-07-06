@@ -232,7 +232,7 @@ Client Component，三个 `<IconButton>`：
 
 ### PostCard
 
-**文件**：`src/components/site/post-card.tsx`
+**文件**：`src/components/modules/home/post-card/post-card.tsx`
 
 文章卡片，用于首页「最新文章」区域。
 
@@ -554,26 +554,26 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 
 | 文件 | 说明 |
 |------|------|
-| `src/app/page.tsx` | 首页 |
-| `src/app/page.module.css` | 首页样式 |
+| `src/app/page.tsx` | 首页（Hero + ProfileSection + PostsSection + ProjectsSection） |
+| `src/components/modules/home/hero-section/` | Hero 首屏 |
+| `src/components/modules/home/profile-section/` | 个人信息区（含 profile-card + commit-chart） |
+| `src/components/modules/home/post-card/` | 文章卡片 |
+| `src/components/modules/home/project-card/` | 项目卡片 |
+| `src/components/site/section-heading/` | 通用标题组件 |
 | `src/app/blog/page.tsx` | 列表页（服务端逻辑 + metadata） |
-| `src/app/blog/_components/blog-list-client.tsx` | 列表页展示（useTransition + router.push） |
-| `src/app/blog/page.module.css` | 列表页样式 |
-| `src/app/blog/[slug]/page.tsx` | 详情页（面包屑 + 相关文章 + JSON-LD） |
-| `src/app/blog/[slug]/page.module.css` | 详情页样式 |
-| `src/app/blog/[slug]/_components/article-footer-actions.tsx` | 详情页底部操作 |
-| `src/components/site/post-card.tsx` | 文章卡片 |
-| `src/components/site/article-view.tsx` | 文章视图（详情 + 编辑器预览共用） |
-| `src/components/site/article-view.module.css` | 文章视图样式（分类无 font-weight 加粗） |
+| `src/app/blog/_components/blog-list-client.tsx` | 列表页展示 |
+| `src/app/blog/[slug]/page.tsx` | 详情页 |
+| `src/components/site/article-view.tsx` | 文章视图 |
 | `src/components/site/markdown-article.tsx` | Markdown 渲染器 |
 | `src/components/site/code-block.tsx` | 代码块 + 复制按钮 |
 | `src/components/site/content-image.tsx` | 自适应图片 |
 | `src/lib/domain/posts.ts` | 文章数据层 |
-| `src/lib/domain/post-shared.ts` | Post 类型 + 日期工具函数 |
+| `src/lib/domain/post-shared.ts` | Post 类型 + 日期工具 |
+| `src/lib/domain/github.ts` | Git 提交记录 |
 | `src/lib/domain/categories.ts` | 分类数据层 |
 | `src/lib/domain/tags.ts` | 标签数据层 |
-| `src/lib/core/site.ts` | 站点元数据与路由配置（blogTitle = '知简博客'） |
-| `src/app/sitemap.ts` | Sitemap（首页/列表页含 lastModified） |
-| `src/app/feed.xml/route.ts` | RSS 2.0 feed 生成 |
-| `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮（复制 feed 地址） |
-| `public/manifest.json` | PWA Web App Manifest（宣纸色主题） |
+| `src/lib/core/site.ts` | 站点元数据与路由配置 |
+| `src/app/sitemap.ts` | Sitemap |
+| `src/app/feed.xml/route.ts` | RSS Feed |
+| `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮 |
+| `public/manifest.json` | PWA Manifest |

@@ -40,10 +40,10 @@ src/
 ├── components/
 │   ├── ui/       # 原子组件：button/input/dialog/tag/table...
 │   ├── site/     # 前台展示：article/card/chrome/markdown...
-│   └── modules/  # 业务组件：admin-page-header
+│   └── modules/  # 业务组件：admin-page-header + home（首页 8 模块）
 ├── lib/
 │   ├── core/     # 基础设施（9 文件）：db/auth/api/http/site/utils/with-*/legacy
-│   └── domain/   # 业务数据层（13 文件）：posts/categories/tags/nav-*/uploads/analytics/...
+│   └── domain/   # 业务数据层（14 文件）：posts/categories/tags/nav-*/uploads/analytics/github/...
 ├── hooks/        # use-auth.ts
 ├── showcase/     # 组件展示 registry
 └── docs/         # 功能文档 + API registry
@@ -233,9 +233,12 @@ refactor: 中文描述
 | Nav 配置 | `src/lib/domain/nav-config.ts` |
 | Nav DB | `src/lib/domain/nav-db.ts` |
 | Nav 存储 | `src/lib/domain/nav-storage.ts` |
+| Git 提交记录 | `src/lib/domain/github.ts` |
 | 图标库 | `src/components/ui/icons.tsx` |
 | Toast | `src/components/ui/toast.tsx` + `use-toast.ts` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
+| 导航栏组件 | `src/components/site/site-header/site-header.tsx` |
+| 标题组件 | `src/components/site/section-heading/section-heading.tsx` |
 | 后台壳 | `src/app/admin/layout.tsx` + `_components/admin-shell.tsx` |
 | 公开壳 | `src/components/site/public-chrome.tsx` |
 | 埋点脚本 | `public/script.js` |

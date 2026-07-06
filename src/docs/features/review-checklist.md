@@ -10,9 +10,9 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/page.tsx` |
-| 样式 | `src/app/page.module.css` |
-| 数据层 | `src/lib/domain/posts.ts`, `src/lib/core/site.ts` |
-| 共享组件 | `src/components/site/post-card.tsx`, `src/components/site/project-card.tsx`, `src/components/site/content-image.tsx`, `src/components/site/rss-copy-button.tsx` |
+| 模块 | `src/components/modules/home/hero-section/`, `profile-section/`, `profile-card/`, `commit-chart/`, `posts-section/`, `post-card/`, `projects-section/`, `project-card/` |
+| 共享组件 | `src/components/site/section-heading/`, `src/components/site/content-image.tsx`, `src/components/site/rss-copy-button.tsx` |
+| 数据层 | `src/lib/domain/posts.ts`, `src/lib/domain/github.ts`, `src/lib/core/site.ts` |
 | UI 组件 | `src/components/ui/ghost-button.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/text-link.tsx` |
 
 ### 文章列表 `/blog`
