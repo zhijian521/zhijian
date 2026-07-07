@@ -19,7 +19,7 @@
     height: 1px;
     flex: 1;
     background: var(--primary);
-    opacity: 0.3;
+    opacity: var(--opacity-30);
 }
 
 @media (max-width: 480px) {

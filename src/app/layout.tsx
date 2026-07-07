@@ -1,9 +1,15 @@
 import type { Metadata } from 'next';
 
+/*== 组件导入 ==*/
 import AppFrame from '@/components/site/app-frame';
+
+/*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
+
+/*== 全局样式 ==*/
 import './globals.css';
 
+/*== 页面元数据 ==*/
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_METADATA.siteUrl),
     title: {
@@ -41,6 +47,7 @@ export const metadata: Metadata = {
     },
 };
 
+/*== 类型定义 ==*/
 interface RootLayoutProps {
     children: React.ReactNode;
 }

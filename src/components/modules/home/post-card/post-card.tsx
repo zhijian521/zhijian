@@ -1,23 +1,27 @@
+/*== 组件导入 ==*/
 import { Tag } from '@/components/ui/tag';
 import { TextLink } from '@/components/ui/text-link';
+
+/*== 数据与配置 ==*/
 import { cn } from '@/lib/core/utils';
 
+/*== 样式导入 ==*/
 import styles from './post-card.module.css';
 
 export interface PostCardProps {
-    /** 卡片顶部视觉区内容，传入渐变 div 或图片。不传则为纯文字卡片 */
+    /*-- 卡片顶部视觉区内容，传入渐变 div 或图片。不传则为纯文字卡片 --*/
     visual?: React.ReactNode;
-    /** 标签文字 */
+    /*-- 标签文字 --*/
     tag?: string;
-    /** 标签变体 */
+    /*-- 标签变体 --*/
     tagVariant?: 'default' | 'primary';
-    /** 日期文字 */
+    /*-- 日期文字 --*/
     date?: string;
-    /** 文章标题 */
+    /*-- 文章标题 --*/
     title: string;
-    /** 文章摘要 */
+    /*-- 文章摘要 --*/
     summary?: string;
-    /** 文章链接 */
+    /*-- 文章链接 --*/
     href: string;
 }
 

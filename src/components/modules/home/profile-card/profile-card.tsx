@@ -1,7 +1,11 @@
 import Image from 'next/image';
+
+/*== 组件导入 ==*/
 import { GhostButton } from '@/components/ui/ghost-button';
 import { ArrowRightIcon, MailIcon } from '@/components/ui/icons';
 import { RssCopyButton } from '@/components/site/rss-copy-button';
+
+/*== 样式导入 ==*/
 import styles from './profile-card.module.css';
 
 export function ProfileCard() {

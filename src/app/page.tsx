@@ -1,15 +1,21 @@
 import type { Metadata } from 'next';
 
+/*== 组件导入 ==*/
 import { HeroSection } from '@/components/modules/home/hero-section/hero-section';
 import { ProfileSection } from '@/components/modules/home/profile-section/profile-section';
 import { PostsSection } from '@/components/modules/home/posts-section/posts-section';
 import { ProjectsSection } from '@/components/modules/home/projects-section/projects-section';
 import { BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon } from '@/components/ui/icons';
 
+/*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
 import { getPublishedPosts } from '@/lib/domain/posts';
 import { fetchCommitHistory } from '@/lib/domain/github';
 
+/*== 服务端渲染 ==*/
+export const dynamic = 'force-dynamic';
+
+/*== 页面元数据 ==*/
 export const metadata: Metadata = {
     title: SITE_METADATA.brandTitle,
     description: SITE_METADATA.description,
@@ -32,8 +38,7 @@ export const metadata: Metadata = {
     },
 };
 
-export const dynamic = 'force-dynamic';
-
+/*== 开源项目信息 ==*/
 const PROJECTS = [
     {
         icon: <CodeIcon />,
@@ -58,8 +63,11 @@ const PROJECTS = [
 ];
 
 export default async function HomePage() {
+    /*-- 获取文章与提交记录 --*/
     const posts = await getPublishedPosts({ limit: 3 });
     const commitData = await fetchCommitHistory();
+
+    /*-- 结构化数据 --*/
     const homeJsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -85,6 +93,7 @@ export default async function HomePage() {
         ],
     };
 
+    /*-- 首页页面 --*/
     return (
         <main>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />

@@ -1,8 +1,13 @@
 import type { ReactNode } from 'react';
+
+/*== 组件导入 ==*/
 import { ProjectCard, type ProjectAction } from '@/components/modules/home/project-card/project-card';
 import { SectionHeading } from '@/components/site/section-heading/section-heading';
+
+/*== 样式导入 ==*/
 import styles from './projects-section.module.css';
 
+/*== 类型定义 ==*/
 interface Project {
     icon: ReactNode;
     title: string;

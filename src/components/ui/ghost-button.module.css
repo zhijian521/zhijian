@@ -2,11 +2,11 @@
 .button {
     display: inline-flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: var(--space-2);
     padding: var(--comp-py-base) var(--comp-px-base);
     font-size: var(--comp-text-base);
     font-family: inherit;
-    line-height: 1.4;
+    line-height: var(--leading-normal);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: transparent;
@@ -19,7 +19,7 @@
         background-color 0.2s ease;
 }
 
-/* 尺寸变体（仅 non-default，default 已在 .button 基础样式中） */
+/*== 尺寸变体（仅 non-default，default 已在 .button 基础样式中） ==*/
 .medium {
     padding: var(--comp-py-md) var(--comp-px-md);
     font-size: var(--comp-text-md);
@@ -30,7 +30,7 @@
     font-size: var(--comp-text-sm);
 }
 
-/* large 变体：hero 等大标题场景，icon 同步放大 */
+/*== large 变体：hero 等大标题场景，icon 同步放大 ==*/
 .large {
     padding: var(--space-3) var(--space-6);
     font-size: var(--text-sm);
@@ -42,11 +42,11 @@
     background: var(--muted);
 }
 
-/* primary 变体：主色边框 + hover 反色 */
+/*== primary 变体：主色边框 + hover 反色 ==*/
 .primary {
     border-color: var(--primary);
     color: var(--primary);
-    font-weight: 500;
+    font-weight: var(--weight-medium);
 }
 
 .primary:hover {
@@ -60,9 +60,9 @@
     flex-shrink: 0;
 }
 
-/* 禁用态：降低透明度 + 禁止交互 */
+/*== 禁用态：降低透明度 + 禁止交互 ==*/
 .button:disabled {
-    opacity: 0.45;
+    opacity: var(--opacity-40);
     cursor: not-allowed;
     pointer-events: none;
 }

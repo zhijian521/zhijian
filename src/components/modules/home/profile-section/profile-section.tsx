@@ -1,9 +1,15 @@
-import type { DailyCommits } from '@/lib/domain/github';
+/*== 组件导入 ==*/
 import { ProfileCard } from '@/components/modules/home/profile-card/profile-card';
 import { CommitChart } from '@/components/modules/home/commit-chart/commit-chart';
 import { SectionHeading } from '@/components/site/section-heading/section-heading';
+
+/*== 数据与配置 ==*/
+import type { DailyCommits } from '@/lib/domain/github';
+
+/*== 样式导入 ==*/
 import styles from './profile-section.module.css';
 
+/*== 类型定义 ==*/
 interface ProfileSectionProps {
     commitData: DailyCommits[];
 }

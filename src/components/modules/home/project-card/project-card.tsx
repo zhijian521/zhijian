@@ -1,8 +1,11 @@
+/*== 组件导入 ==*/
 import { Tag } from '@/components/ui/tag';
 import { GhostButton } from '@/components/ui/ghost-button';
 
+/*== 样式导入 ==*/
 import styles from './project-card.module.css';
 
+/*== 类型定义 ==*/
 export interface ProjectAction {
     label: string;
     href: string;
@@ -10,15 +13,15 @@ export interface ProjectAction {
 }
 
 export interface ProjectCardProps {
-    /** 项目图标，传入 SVG 元素 */
+    /*-- 项目图标，传入 SVG 元素 --*/
     icon?: React.ReactNode;
-    /** 项目名称 */
+    /*-- 项目名称 --*/
     title: string;
-    /** 项目描述 */
+    /*-- 项目描述 --*/
     description?: string;
-    /** 技术标签列表 */
+    /*-- 技术标签列表 --*/
     tags?: string[];
-    /** 操作按钮列表 */
+    /*-- 操作按钮列表 --*/
     actions?: ProjectAction[];
 }
 

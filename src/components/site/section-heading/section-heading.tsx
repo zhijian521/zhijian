@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
+
+/*== 样式导入 ==*/
 import styles from './section-heading.module.css';
 
+/*== 类型定义 ==*/
 interface SectionHeadingProps {
     children: ReactNode;
     action?: ReactNode;

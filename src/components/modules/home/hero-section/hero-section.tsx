@@ -1,6 +1,10 @@
 import Image from 'next/image';
+
+/*== 组件导入 ==*/
 import { ArrowDownIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
+
+/*== 样式导入 ==*/
 import styles from './hero-section.module.css';
 
 export function HeroSection() {

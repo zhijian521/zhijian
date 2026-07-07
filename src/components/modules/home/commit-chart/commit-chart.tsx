@@ -1,9 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+
+/*== 数据与配置 ==*/
 import type { DailyCommits } from '@/lib/domain/github';
+
+/*== 样式导入 ==*/
 import styles from './commit-chart.module.css';
 
+/*== 类型定义 ==*/
 interface CommitChartProps {
     data: DailyCommits[];
 }

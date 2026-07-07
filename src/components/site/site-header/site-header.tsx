@@ -5,11 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+/*== 组件导入 ==*/
 import { MenuIcon, XIcon } from '@/components/ui/icons';
+
+/*== 数据与配置 ==*/
 import { APP_ROUTES, PUBLIC_NAV_ITEMS, SITE_METADATA } from '@/lib/core/site';
 import { cn, isNavItemActive } from '@/lib/core/utils';
+
+/*== 样式导入 ==*/
 import styles from './site-header.module.css';
 
+/*== 类型定义 ==*/
 interface SiteHeaderProps {
     transparent?: boolean;
 }
