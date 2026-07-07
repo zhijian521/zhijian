@@ -1,9 +1,13 @@
-/* 知简 · 全站主题变量 — 文人书斋 · 水墨宣纸 · 温润雅致
-   主色朱砂、宣纸米白、衬线标题。颜色/字体族只在此文件,token 层不碰颜色。
-   暗色主题随系统 prefers-color-scheme,不增依赖。 */
+/*============================================================================
+  theme — 全站主题变量层
+
+  文人书斋 · 水墨宣纸 · 温润雅致。
+  主色朱砂、宣纸米白、衬线标题。颜色/字体族只在此文件，token 层不碰颜色。
+  暗色主题随系统 prefers-color-scheme，不增依赖。
+============================================================================*/
 
 :root {
-    /* 主色 · 朱砂 */
+    /*== 主色 · 朱砂 ==*/
     --primary: #9f000f;
     --primary-foreground: #ffffff;
     --primary-hover: #c41e3a;
@@ -13,7 +17,7 @@
     --primary-subtle-medium: color-mix(in srgb, var(--primary) 6%, transparent);
     --ring-subtle: color-mix(in srgb, var(--primary) 10%, transparent);
 
-    /* 语义色 · 印章/竹青/靛蓝,呼应书斋意象 */
+    /*== 语义色 · 印章/竹青/靛蓝，呼应书斋意象 ==*/
     --success: #2f6b3e;
     --success-foreground: #ffffff;
     --success-subtle: color-mix(in srgb, var(--success) 10%, transparent);
@@ -23,28 +27,28 @@
     --info: #345b8a;
     --info-subtle: color-mix(in srgb, var(--info) 10%, transparent);
 
-    /* 危险色 */
+    /*== 危险色 ==*/
     --destructive: #ba1a1a;
     --destructive-foreground: #ffffff;
     --destructive-subtle: color-mix(in srgb, var(--destructive) 8%, transparent);
     --destructive-subtle-medium: color-mix(in srgb, var(--destructive) 16%, transparent);
 
-    /* 文字（两级,不引入第三级） */
+    /*== 文字（两级，不引入第三级） ==*/
     --foreground: #1d1b20;
     --muted-foreground: #6f655c;
 
-    /* 链接色 · 比朱砂柔和的赭,正文内联链接用,不抢标题 */
+    /*== 链接色 · 比朱砂柔和的赭，正文内联链接用，不抢标题 ==*/
     --link: #8a3b1c;
     --link-hover: #a84a22;
 
-    /* 背景（浅→深） */
+    /*== 背景（浅→深） ==*/
     --background: #fbf9f9;
     --highlight: #faf7f4;
     --muted: #f6efe7;
     --secondary: #f3ece4;
     --secondary-foreground: #1d1b20;
 
-    /* 点缀 */
+    /*== 点缀 ==*/
     --accent: #e6efe5;
     --accent-foreground: #31483f;
     --accent-warm: #f5e6e6;
@@ -52,34 +56,34 @@
     --border-strong: #d4c5b3;
     --input: #d9cbbc;
 
-    /* 卡片与弹窗 */
+    /*== 卡片与弹窗 ==*/
     --card: rgba(255, 255, 255, 0.8);
     --card-foreground: #1d1b20;
     --popover: #ffffff;
     --popover-foreground: #1d1b20;
     --overlay: rgba(29, 27, 32, 0.48);
 
-    /* 阴影 · 矩形语言,阴影极克制,主要给浮层定锚 */
+    /*== 阴影 · 矩形语言，阴影极克制，主要给浮层定锚 ==*/
     --shadow-sm: 0 1px 2px rgba(29, 27, 32, 0.04);
     --shadow: 0 4px 12px rgba(29, 27, 32, 0.06);
     --shadow-lg: 0 12px 32px rgba(29, 27, 32, 0.1);
     --ring: 0 0 0 3px var(--ring-subtle);
 
-    /* 焦点轮廓 · 代替浏览器默认蓝,用朱砂 ring */
+    /*== 焦点轮廓 · 代替浏览器默认蓝，用朱砂 ring ==*/
     --focus-outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
     --focus-offset: 2px;
 
-    /* 字体 */
+    /*== 字体 ==*/
     --font-serif: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
     --font-sans:
         system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
         'Noto Sans CJK SC', sans-serif;
     --font-mono: 'SF Mono', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace;
 
-    /* 选中色（赭色,不用默认蓝） */
+    /*== 选中色（赭色，不用默认蓝） ==*/
     --selection: rgba(182, 72, 43, 0.18);
 
-    /* 黑白蒙版渐变 · 亮色主题用浅蒙版，暗色主题用深蒙版覆盖 */
+    /*== 黑白蒙版渐变 · 亮色主题用浅蒙版，暗色主题用深蒙版覆盖 ==*/
     --overlay-gradient: linear-gradient(
         180deg,
         color-mix(in srgb, var(--background) 0%, transparent) 0%,
@@ -88,7 +92,7 @@
     );
 }
 
-/*== 暗色主题 · 墨色底,朱砂留,宣纸换成冷墨 ==*/
+/*== 暗色主题 · 墨色底，朱砂留，宣纸换成冷墨 ==*/
 @media (prefers-color-scheme: dark) {
     :root {
         --primary: #b8333f;
