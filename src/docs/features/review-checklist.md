@@ -270,7 +270,7 @@
 | TextLink | `src/components/ui/text-link.tsx` |
 | Toast | `src/components/ui/toast.tsx` + `use-toast.ts` |
 
-### `components/site/` — 前台展示组件（9 个）
+### `components/site/` — 前台展示组件（7 个）
 | 组件 | 文件 |
 |------|------|
 | AppFrame | `src/components/site/app-frame.tsx` |
@@ -279,14 +279,20 @@
 | MarkdownArticle | `src/components/site/markdown-article.tsx` |
 | CodeBlock | `src/components/site/code-block.tsx` |
 | ContentImage | `src/components/site/content-image.tsx` |
-| PostCard | `src/components/site/post-card.tsx` |
-| ProjectCard | `src/components/site/project-card.tsx` |
 | RssCopyButton | `src/components/site/rss-copy-button.tsx` |
 
-### `components/modules/` — 业务模块组件（1 个）
+### `components/modules/` — 业务模块组件（9 个）
 | 组件 | 文件 |
 |------|------|
 | AdminPageHeader | `src/components/modules/admin/admin-page-header/admin-page-header.tsx` |
+| HeroSection | `src/components/modules/home/hero-section/hero-section.tsx` |
+| ProfileSection | `src/components/modules/home/profile-section/profile-section.tsx` |
+| ProfileCard | `src/components/modules/home/profile-card/profile-card.tsx` |
+| CommitChart | `src/components/modules/home/commit-chart/commit-chart.tsx` |
+| PostsSection | `src/components/modules/home/posts-section/posts-section.tsx` |
+| PostCard | `src/components/modules/home/post-card/post-card.tsx` |
+| ProjectsSection | `src/components/modules/home/projects-section/projects-section.tsx` |
+| ProjectCard | `src/components/modules/home/project-card/project-card.tsx` |
 
 ---
 

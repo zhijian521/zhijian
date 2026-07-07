@@ -29,12 +29,14 @@
 
 ```
 <main>
-  ├── Hero 区 — 全屏山水背景 + 标题 + 副标题 + 简介 + 锚点按钮
-  ├── 个人信息区 — 头像 + 姓名 + 定位语 + 简介 + GhostButton 按钮（联系我 · GitHub · RSS订阅）
-  ├── 最新文章区 — 3 篇文章 PostCard 网格（按最后修改时间排序）
-  └── 开源项目区 — ProjectCard 网格（静态数据）
+  ├── HeroSection — 全屏山水背景 + 标题 + 副标题 + 简介 + CTA 锚点按钮
+  ├── ProfileSection — ProfileCard（头像+姓名+简介+社交按钮）+ CommitChart（Git 提交热力图）
+  ├── PostsSection — 3 篇文章 PostCard 网格（按最后修改时间排序）+ SectionHeading
+  └── ProjectsSection — ProjectCard 网格（静态数据）
 </main>
 ```
+
+组件均已模块化到 `src/components/modules/home/`，通过 `page.tsx` 组合渲染。`section-heading` 通用标题组件位于 `src/components/site/`，供各 section 共用。
 
 ### 数据流
 
@@ -52,6 +54,7 @@
 | 头像 | `/images/logo.webp`（WebP 格式），7.5rem 方形带边框阴影 |
 | PostCard 封面 | 有 `coverImage` 时渲染 `<ContentImage>`，无则纯文字卡片 |
 | 联系方式 | GhostButton 组件（`size="small"`），统一按钮风格 |
+| CommitChart | 显示最近 27 周 Git 提交热力图，点击查看日期与次数，无数据时提示配置 GITHUB_TOKEN |
 | RSS 订阅 | `RssCopyButton` 客户端组件，点击复制 `/feed.xml` 地址，1.5s 反馈 |
 
 ---
@@ -554,19 +557,17 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 
 | 文件 | 说明 |
 |------|------|
-| `src/app/page.tsx` | 首页（Hero + ProfileSection + PostsSection + ProjectsSection） |
-| `src/components/modules/home/hero-section/` | Hero 首屏 |
-| `src/components/modules/home/profile-section/` | 个人信息区（含 profile-card + commit-chart） |
+| `src/app/page.tsx` | 首页（HeroSection + ProfileSection + PostsSection + ProjectsSection） |
+| `src/components/modules/home/hero-section/` | Hero 首屏（标题+CTA） |
+| `src/components/modules/home/profile-section/` | 个人信息区（含 ProfileCard + CommitChart） |
+| `src/components/modules/home/profile-card/` | 个人信息卡片（头像+简介+社交按钮） |
+| `src/components/modules/home/commit-chart/` | Git 提交热力图 |
+| `src/components/modules/home/posts-section/` | 最新文章区 |
 | `src/components/modules/home/post-card/` | 文章卡片 |
+| `src/components/modules/home/projects-section/` | 开源项目区 |
 | `src/components/modules/home/project-card/` | 项目卡片 |
-| `src/components/site/section-heading/` | 通用标题组件 |
-| `src/app/blog/page.tsx` | 列表页（服务端逻辑 + metadata） |
-| `src/app/blog/_components/blog-list-client.tsx` | 列表页展示 |
-| `src/app/blog/[slug]/page.tsx` | 详情页 |
-| `src/components/site/article-view.tsx` | 文章视图 |
-| `src/components/site/markdown-article.tsx` | Markdown 渲染器 |
-| `src/components/site/code-block.tsx` | 代码块 + 复制按钮 |
-| `src/components/site/content-image.tsx` | 自适应图片 |
+| `src/components/site/section-heading/` | 通用区域标题组件 |
+| `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮 |
 | `src/lib/domain/posts.ts` | 文章数据层 |
 | `src/lib/domain/post-shared.ts` | Post 类型 + 日期工具 |
 | `src/lib/domain/github.ts` | Git 提交记录 |
@@ -575,5 +576,4 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/lib/core/site.ts` | 站点元数据与路由配置 |
 | `src/app/sitemap.ts` | Sitemap |
 | `src/app/feed.xml/route.ts` | RSS Feed |
-| `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮 |
 | `public/manifest.json` | PWA Manifest |

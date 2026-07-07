@@ -75,6 +75,8 @@
 | 小标签(kicker) | `0.6875rem`, `letter-spacing: 0.3em`, `uppercase`, `color: var(--primary)` |
 | 后台指标大数字 | `font-serif`, `2.75rem`, `line-height: 1` |
 
+> **与 token 的对应**：上表中的硬编码值在代码中已映射为 token。`1.2` → `--leading-tight`，`1.3` 无精确 token（保留），`1.85`/`2` → `--leading-relaxed` / `--leading-loose`，`0.6875rem` 无精确 token（保留），`0.04em` → `--tracking-tight`，`0.2em` → `--tracking-wider`，`0.3em` 无精确 token（保留），`600` → `--weight-semibold`，`2rem` → `--text-3xl`。此表描述的是设计意图（视觉规格），不是代码实现——以 tokens.css / theme.css 实际变量为准。
+
 ---
 
 ## 布局规格
@@ -270,7 +272,7 @@
 | ✅ 衬线作标题 | 所有标题/大数字用 `Noto Serif SC` |
 | ✅ 微动反馈 | 悬停上浮 2px，按压回缩 `scale(0.98)` |
 | ✅ 渐显边框 | 悬停时边框色渐变（不是突变） |
-| ✅ 0.2s 过渡 | 所有交互统一 `0.2s ease` |
+| ✅ 0.18s 过渡 | 所有交互统一 `--transition`（`180ms ease`） |
 | ✅ 1.85~2 行高 | 正文留白充裕，适合中文阅读 |
 | ❌ 不用默认蓝 | 选中色用 `var(--selection)` (`rgba(182,72,43,0.18)`) |
 | ✅ 温白背景 | `#fbf9f9` 而非纯白 `#fff` |

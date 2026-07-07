@@ -6,6 +6,11 @@
 - [视觉风格指南](features/style-guide.md) — 设计系统：色彩、排版、组件规格
 - [部署指南](features/deployment.md) — 生产环境部署配置
 
+## 后台基础设施
+
+- [组件预览 `/admin/showcase`](features/review-checklist.md#5-组件层) — 手写 registry 驱动的 UI 组件与图标预览
+- [文档中心 `/admin/docs`](features/review-checklist.md#后台管理-admin) — 功能文档 + API 接口文档，后台可读
+
 ## 功能模块
 
 - [博客前台](features/home-blog.md) — 首页、文章列表、文章详情、SEO、RSS、PWA
