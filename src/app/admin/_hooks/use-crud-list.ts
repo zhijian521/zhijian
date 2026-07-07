@@ -11,7 +11,11 @@ import { toast } from '@/components/ui/toast';
  * @param endpoint  API 端点，如 '/admin/tags'
  * @param labelName 单条目名称，用于 toast 提示，如 '标签'
  */
-export function useCrudList<T extends { id: number; name: string }>(endpoint: string, labelName: string, defaultPageSize = 10) {
+export function useCrudList<T extends { id: number; name: string }>(
+    endpoint: string,
+    labelName: string,
+    defaultPageSize = 10
+) {
     const [data, setData] = useState<ListData<T>>({ data: [], total: 0 });
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<number | null>(null);

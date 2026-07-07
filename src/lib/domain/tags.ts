@@ -37,7 +37,10 @@ export async function createTag(data: { name: string; slug: string }): Promise<T
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute('INSERT INTO zhijian_blog_tags (name, slug) VALUES (?, ?)', [data.name, data.slug]);
+    const [result] = await db.execute('INSERT INTO zhijian_blog_tags (name, slug) VALUES (?, ?)', [
+        data.name,
+        data.slug,
+    ]);
 
     const id = (result as any).insertId;
     const created = await getTagById(id);

@@ -115,7 +115,14 @@ export default function AdminLoginCard() {
 
             <section className={styles.shell}>
                 <header className={styles.brand}>
-                    <Image alt="Zhijian Logo" className={styles.logo} height={56} priority src="/images/logo.webp" width={56} />
+                    <Image
+                        alt="Zhijian Logo"
+                        className={styles.logo}
+                        height={56}
+                        priority
+                        src="/images/logo.webp"
+                        width={56}
+                    />
                     <h1 className={styles.title}>Zhijian Admin</h1>
                 </header>
 
@@ -145,7 +152,13 @@ export default function AdminLoginCard() {
                         />
 
                         <label className={styles.checkboxRow} htmlFor="remember">
-                            <input checked={loginForm.remember} className={styles.checkbox} id="remember" onChange={(event) => handleFieldChange('remember', event.target.checked)} type="checkbox" />
+                            <input
+                                checked={loginForm.remember}
+                                className={styles.checkbox}
+                                id="remember"
+                                onChange={(event) => handleFieldChange('remember', event.target.checked)}
+                                type="checkbox"
+                            />
                             <span>记住用户名</span>
                         </label>
 

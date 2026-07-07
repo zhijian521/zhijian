@@ -27,7 +27,15 @@ const SIZE_CLASS: Record<string, string | undefined> = {
     // default 不需要额外 class，.trigger 基础样式即为 default 尺寸
 };
 
-export function Select<T extends string>({ options, value, onChange, placeholder, size = 'medium', disabled = false, className }: SelectProps<T>) {
+export function Select<T extends string>({
+    options,
+    value,
+    onChange,
+    placeholder,
+    size = 'medium',
+    disabled = false,
+    className,
+}: SelectProps<T>) {
     const [open, setOpen] = React.useState(false);
     const wrapperRef = React.useRef<HTMLDivElement>(null);
     const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -72,7 +80,10 @@ export function Select<T extends string>({ options, value, onChange, placeholder
     }
 
     return (
-        <div className={`${styles.wrapper}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`} ref={wrapperRef}>
+        <div
+            className={`${styles.wrapper}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`}
+            ref={wrapperRef}
+        >
             <button
                 className={`${styles.trigger}${open ? ` ${styles.triggerOpen}` : ''}${disabled ? ` ${styles.triggerDisabled}` : ''}`}
                 onClick={handleToggle}
@@ -86,7 +97,9 @@ export function Select<T extends string>({ options, value, onChange, placeholder
                 type="button"
                 disabled={disabled}
             >
-                <span className={`${styles.triggerText}${!selected ? ` ${styles.triggerPlaceholder}` : ''}`}>{selected ? selected.label : placeholder || '请选择'}</span>
+                <span className={`${styles.triggerText}${!selected ? ` ${styles.triggerPlaceholder}` : ''}`}>
+                    {selected ? selected.label : placeholder || '请选择'}
+                </span>
                 <span className={`${styles.chevron}${open ? ` ${styles.chevronOpen}` : ''}`}>
                     <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width="12" height="12">
                         <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -97,7 +110,12 @@ export function Select<T extends string>({ options, value, onChange, placeholder
             {open && options.length > 0 && (
                 <div className={styles.panel}>
                     {options.map((opt) => (
-                        <button className={`${styles.option}${opt.value === value ? ` ${styles.optionActive}` : ''}`} key={opt.value} onClick={() => handleSelect(opt.value)} type="button">
+                        <button
+                            className={`${styles.option}${opt.value === value ? ` ${styles.optionActive}` : ''}`}
+                            key={opt.value}
+                            onClick={() => handleSelect(opt.value)}
+                            type="button"
+                        >
                             {opt.label}
                         </button>
                     ))}

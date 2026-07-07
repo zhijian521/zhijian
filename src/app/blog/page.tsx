@@ -66,7 +66,12 @@ async function resolveBlogFilters(searchParams: BlogPageProps['searchParams']): 
     };
 }
 
-function buildBlogUrl(filters: { categorySlug?: string; page?: number; siteUrl?: boolean; tagSlugs?: string[] }): string {
+function buildBlogUrl(filters: {
+    categorySlug?: string;
+    page?: number;
+    siteUrl?: boolean;
+    tagSlugs?: string[];
+}): string {
     const params = new URLSearchParams();
 
     if (filters.categorySlug) {
@@ -87,11 +92,16 @@ function buildBlogUrl(filters: { categorySlug?: string; page?: number; siteUrl?:
     return filters.siteUrl ? `${SITE_METADATA.siteUrl}${path}` : path;
 }
 
-function resolveFilterState(filters: BlogFilters, categories: Awaited<ReturnType<typeof listCategories>>, tags: Awaited<ReturnType<typeof listTags>>) {
+function resolveFilterState(
+    filters: BlogFilters,
+    categories: Awaited<ReturnType<typeof listCategories>>,
+    tags: Awaited<ReturnType<typeof listTags>>
+) {
     const categoryMap = new Map(categories.map((category) => [category.slug, category]));
     const tagMap = new Map(tags.map((tag) => [tag.slug, tag]));
 
-    const activeCategorySlug = filters.categorySlug && categoryMap.has(filters.categorySlug) ? filters.categorySlug : undefined;
+    const activeCategorySlug =
+        filters.categorySlug && categoryMap.has(filters.categorySlug) ? filters.categorySlug : undefined;
     const activeCategoryLabel = activeCategorySlug ? categoryMap.get(activeCategorySlug)!.name : '全部';
     const activeTagSlugs = filters.tagSlugs.filter((tagSlug) => tagMap.has(tagSlug));
     const activeTagNames = activeTagSlugs.map((tagSlug) => tagMap.get(tagSlug)!.name);
@@ -123,7 +133,12 @@ function resolveFilterState(filters: BlogFilters, categories: Awaited<ReturnType
     };
 }
 
-function buildFilterOptions(options: { activeCategorySlug?: string; activeTagSlugs: string[]; categories: Awaited<ReturnType<typeof listCategories>>; tags: Awaited<ReturnType<typeof listTags>> }): {
+function buildFilterOptions(options: {
+    activeCategorySlug?: string;
+    activeTagSlugs: string[];
+    categories: Awaited<ReturnType<typeof listCategories>>;
+    tags: Awaited<ReturnType<typeof listTags>>;
+}): {
     categoryOptions: FilterOption[];
     paginationHrefs: Record<number, string>;
     tagOptions: FilterOption[];
@@ -147,7 +162,9 @@ function buildFilterOptions(options: { activeCategorySlug?: string; activeTagSlu
     ];
 
     const tagOptions: FilterOption[] = options.tags.map((tag) => {
-        const nextTagSlugs = options.activeTagSlugs.includes(tag.slug) ? options.activeTagSlugs.filter((activeTag) => activeTag !== tag.slug) : [...options.activeTagSlugs, tag.slug];
+        const nextTagSlugs = options.activeTagSlugs.includes(tag.slug)
+            ? options.activeTagSlugs.filter((activeTag) => activeTag !== tag.slug)
+            : [...options.activeTagSlugs, tag.slug];
 
         return {
             href: buildBlogUrl({
@@ -166,7 +183,11 @@ function buildFilterOptions(options: { activeCategorySlug?: string; activeTagSlu
     };
 }
 
-function buildPaginationHrefs(options: { activeCategorySlug?: string; activeTagSlugs: string[]; totalPages: number }): Record<number, string> {
+function buildPaginationHrefs(options: {
+    activeCategorySlug?: string;
+    activeTagSlugs: string[];
+    totalPages: number;
+}): Record<number, string> {
     return Object.fromEntries(
         Array.from({ length: options.totalPages }, (_, index) => {
             const page = index + 1;
@@ -184,8 +205,16 @@ function buildPaginationHrefs(options: { activeCategorySlug?: string; activeTagS
 }
 
 export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
-    const [filters, categories, tags] = await Promise.all([resolveBlogFilters(searchParams), cachedCategories(), cachedTags()]);
-    const { activeCategoryLabel, activeCategorySlug, activeTagNames, activeTagSlugs } = resolveFilterState(filters, categories, tags);
+    const [filters, categories, tags] = await Promise.all([
+        resolveBlogFilters(searchParams),
+        cachedCategories(),
+        cachedTags(),
+    ]);
+    const { activeCategoryLabel, activeCategorySlug, activeTagNames, activeTagSlugs } = resolveFilterState(
+        filters,
+        categories,
+        tags
+    );
     const posts = await cachedPublishedPosts({
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
@@ -272,8 +301,13 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
 export const dynamic = 'force-dynamic';
 
 export default async function BlogListPage({ searchParams }: BlogPageProps) {
-    const [filters, categories, tags] = await Promise.all([resolveBlogFilters(searchParams), cachedCategories(), cachedTags()]);
-    const { activeCategoryLabel, activeCategorySlug, activeFilterChips, activeTagNames, activeTagSlugs } = resolveFilterState(filters, categories, tags);
+    const [filters, categories, tags] = await Promise.all([
+        resolveBlogFilters(searchParams),
+        cachedCategories(),
+        cachedTags(),
+    ]);
+    const { activeCategoryLabel, activeCategorySlug, activeFilterChips, activeTagNames, activeTagSlugs } =
+        resolveFilterState(filters, categories, tags);
     const filteredPosts = await cachedPublishedPosts({
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,

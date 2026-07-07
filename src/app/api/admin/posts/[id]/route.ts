@@ -41,7 +41,10 @@ export const PATCH = withAdmin(async (request, _admin, { params }) => {
         const slug = body.slug.trim();
         if (!slug) return NextResponse.json(fail(BizCode.BAD_REQUEST, 'Slug 不能为空。'), { status: 400 });
         if (!/^[a-z0-9-]+$/.test(slug) || slug.length > 120) {
-            return NextResponse.json(fail(BizCode.BAD_REQUEST, 'Slug 只能使用小写字母、数字和中划线，且长度不超过 120 个字符。'), { status: 400 });
+            return NextResponse.json(
+                fail(BizCode.BAD_REQUEST, 'Slug 只能使用小写字母、数字和中划线，且长度不超过 120 个字符。'),
+                { status: 400 }
+            );
         }
         body.slug = slug;
     }

@@ -24,27 +24,27 @@
     --text-3xl: 2rem; /* 32px */
 
     /* 字体粗细 */
-    --weight-normal:   400;  /* 正文 */
-    --weight-medium:   500;  /* 标签/按钮/中等强调 */
-    --weight-semibold: 600;  /* 标题/区域名 */
-    --weight-bold:     700;  /* 强强调 */
+    --weight-normal: 400; /* 正文 */
+    --weight-medium: 500; /* 标签/按钮/中等强调 */
+    --weight-semibold: 600; /* 标题/区域名 */
+    --weight-bold: 700; /* 强强调 */
 
     /* 组件密度 — UI 组件内边距和字号阶梯（比页面 text/space 更细粒度） */
-    --comp-text-sm:   0.8125rem;   /* 13px  small */
-    --comp-text-md:   0.84375rem;  /* 13.5px medium */
-    --comp-text-base: 0.875rem;    /* 14px  default */
-    --comp-py-sm:     0.375rem;    /* 6px  small */
-    --comp-py-md:     0.5rem;      /* 8px  medium */
-    --comp-py-base:   0.625rem;    /* 10px default */
-    --comp-px-sm:     0.75rem;     /* 12px small */
-    --comp-px-md:     0.8125rem;   /* 13px medium */
-    --comp-px-base:   0.875rem;    /* 14px default */
+    --comp-text-sm: 0.8125rem; /* 13px  small */
+    --comp-text-md: 0.84375rem; /* 13.5px medium */
+    --comp-text-base: 0.875rem; /* 14px  default */
+    --comp-py-sm: 0.375rem; /* 6px  small */
+    --comp-py-md: 0.5rem; /* 8px  medium */
+    --comp-py-base: 0.625rem; /* 10px default */
+    --comp-px-sm: 0.75rem; /* 12px small */
+    --comp-px-md: 0.8125rem; /* 13px medium */
+    --comp-px-base: 0.875rem; /* 14px default */
 
     /* 字距阶梯 · 文人书斋舒朗节奏 */
-    --tracking-normal: 0;          /* 正文 */
-    --tracking-tight: 0.04em;      /* 衬线标题：略收紧显端庄 */
-    --tracking-wide: 0.1em;        /* 标签/按钮：略舒展 */
-    --tracking-wider: 0.2em;       /* 副标题/eyebrow：明显疏朗 */
+    --tracking-normal: 0; /* 正文 */
+    --tracking-tight: 0.04em; /* 衬线标题：略收紧显端庄 */
+    --tracking-wide: 0.1em; /* 标签/按钮：略舒展 */
+    --tracking-wider: 0.2em; /* 副标题/eyebrow：明显疏朗 */
 
     /* 行高 */
     --leading-tight: 1.25;
@@ -60,12 +60,12 @@
     --blur-md: blur(16px);
 
     /* 透明度阶梯 · 百分比语义 */
-    --opacity-0:   0;
-    --opacity-20:  0.2;
-    --opacity-30:  0.3;
-    --opacity-40:  0.4;
-    --opacity-60:  0.6;
-    --opacity-80:  0.8;
+    --opacity-0: 0;
+    --opacity-20: 0.2;
+    --opacity-30: 0.3;
+    --opacity-40: 0.4;
+    --opacity-60: 0.6;
+    --opacity-80: 0.8;
     --opacity-100: 1;
 
     /* 过渡 · 全站统一节奏 */

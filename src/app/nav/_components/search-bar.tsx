@@ -5,7 +5,14 @@ import Image from 'next/image';
 
 import { SparklesIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/domain/nav-config';
-import { getSearchHistory, addSearchRecord, clearSearchHistory, getSearchEngine, setSearchEngine, genId } from '@/lib/domain/nav-storage';
+import {
+    getSearchHistory,
+    addSearchRecord,
+    clearSearchHistory,
+    getSearchEngine,
+    setSearchEngine,
+    genId,
+} from '@/lib/domain/nav-storage';
 import type { SearchRecord } from '@/lib/domain/nav-storage';
 
 import styles from './search-bar.module.css';
@@ -85,7 +92,13 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
             <div className={styles.bar}>
                 <div ref={dropdownRef} className={styles.engineAnchor}>
                     <button className={styles.engineBtn} onClick={() => setDropdownOpen((v) => !v)} type="button">
-                        <Image alt={engine.name} className={styles.engineIcon} height={20} src={engine.logo} width={20} />
+                        <Image
+                            alt={engine.name}
+                            className={styles.engineIcon}
+                            height={20}
+                            src={engine.logo}
+                            width={20}
+                        />
                     </button>
                     {dropdownOpen && (
                         <div className={styles.engineDropdown}>
@@ -96,7 +109,13 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
                                     onClick={() => handleEngineChange(e.key)}
                                     type="button"
                                 >
-                                    <Image alt={e.name} className={styles.engineOptionIcon} height={16} src={e.logo} width={16} />
+                                    <Image
+                                        alt={e.name}
+                                        className={styles.engineOptionIcon}
+                                        height={16}
+                                        src={e.logo}
+                                        width={16}
+                                    />
                                     {e.name}
                                 </button>
                             ))}
@@ -130,7 +149,11 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
                     <ul className={styles.historyList}>
                         {history.map((h) => (
                             <li key={h.id}>
-                                <button className={styles.historyTag} onClick={() => handleSearch(h.query)} type="button">
+                                <button
+                                    className={styles.historyTag}
+                                    onClick={() => handleSearch(h.query)}
+                                    type="button"
+                                >
                                     {h.query}
                                 </button>
                             </li>

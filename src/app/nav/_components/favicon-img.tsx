@@ -34,7 +34,11 @@ export default function FaviconImg({ url, className, fallbackChar }: FaviconImgP
             alt=""
             className={className}
             loading="lazy"
-            src={src === 'primary' ? `/api/favicon?domain=${domain}` : `https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+            src={
+                src === 'primary'
+                    ? `/api/favicon?domain=${domain}`
+                    : `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+            }
             onError={() => setSrc((prev) => (prev === 'primary' ? 'secondary' : 'none'))}
         />
     );

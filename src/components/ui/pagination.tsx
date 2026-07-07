@@ -51,7 +51,17 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
 }
 
 /*== Pagination 分页：支持服务端链接模式和客户端回调模式 ==*/
-export function Pagination({ current, total, getHref, onPageChange, pageSize, onPageSizeChange, pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS, className, ...props }: PaginationProps) {
+export function Pagination({
+    current,
+    total,
+    getHref,
+    onPageChange,
+    pageSize,
+    onPageSizeChange,
+    pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+    className,
+    ...props
+}: PaginationProps) {
     const pages = buildPageNumbers(current, total);
 
     function renderPageButton(page: number, isNav = false, label?: string) {
@@ -59,7 +69,8 @@ export function Pagination({ current, total, getHref, onPageChange, pageSize, on
         const buttonClass = `${styles.btn}${page === current && !isNav ? ` ${styles.active}` : ''}${isNav ? ` ${styles.navBtn}` : ''}`;
 
         if (getHref) {
-            const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
+            const isDisabled =
+                isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
             if (isDisabled) {
                 return (
                     <span aria-disabled="true" className={`${buttonClass} ${styles.disabledLink}`}>
@@ -69,7 +80,11 @@ export function Pagination({ current, total, getHref, onPageChange, pageSize, on
             }
 
             return (
-                <Link aria-current={page === current && !isNav ? 'page' : undefined} className={buttonClass} href={getHref(page)}>
+                <Link
+                    aria-current={page === current && !isNav ? 'page' : undefined}
+                    className={buttonClass}
+                    href={getHref(page)}
+                >
                     {text}
                 </Link>
             );
@@ -82,7 +97,13 @@ export function Pagination({ current, total, getHref, onPageChange, pageSize, on
         const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
 
         return (
-            <button aria-current={page === current && !isNav ? 'page' : undefined} className={buttonClass} disabled={isDisabled} onClick={() => onPageChange(page)} type="button">
+            <button
+                aria-current={page === current && !isNav ? 'page' : undefined}
+                className={buttonClass}
+                disabled={isDisabled}
+                onClick={() => onPageChange(page)}
+                type="button"
+            >
                 {text}
             </button>
         );
@@ -97,7 +118,12 @@ export function Pagination({ current, total, getHref, onPageChange, pageSize, on
             {onPageSizeChange && (
                 <div className={styles.sizeSelector}>
                     <span className={styles.sizeLabel}>每页</span>
-                    <Select options={sizeOptions} onChange={(v) => onPageSizeChange(Number(v))} size="small" value={sizeValue} />
+                    <Select
+                        options={sizeOptions}
+                        onChange={(v) => onPageSizeChange(Number(v))}
+                        size="small"
+                        value={sizeValue}
+                    />
                 </div>
             )}
 

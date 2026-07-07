@@ -59,7 +59,9 @@ function extractFaviconUrl(html: string, origin: string): string | null {
 
 /*-- 域名校验：只允许合法域名 --*/
 function isValidDomain(domain: string): boolean {
-    return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/.test(domain);
+    return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/.test(
+        domain
+    );
 }
 
 export async function GET(request: NextRequest) {

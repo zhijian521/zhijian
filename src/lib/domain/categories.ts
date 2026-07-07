@@ -38,7 +38,11 @@ export async function createCategory(data: { name: string; slug: string; sort_or
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute('INSERT INTO zhijian_blog_categories (name, slug, sort_order) VALUES (?, ?, ?)', [data.name, data.slug, data.sort_order]);
+    const [result] = await db.execute('INSERT INTO zhijian_blog_categories (name, slug, sort_order) VALUES (?, ?, ?)', [
+        data.name,
+        data.slug,
+        data.sort_order,
+    ]);
 
     const id = (result as any).insertId;
     const created = await getCategoryById(id);
@@ -46,7 +50,10 @@ export async function createCategory(data: { name: string; slug: string; sort_or
 }
 
 /*== 更新分类 ==*/
-export async function updateCategory(id: number, fields: Partial<Pick<Category, 'name' | 'slug' | 'sort_order'>>): Promise<Category> {
+export async function updateCategory(
+    id: number,
+    fields: Partial<Pick<Category, 'name' | 'slug' | 'sort_order'>>
+): Promise<Category> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 

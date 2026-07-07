@@ -182,9 +182,28 @@ export default function PostManagementClient() {
             width: '6rem',
             render: (post) => (
                 <div className={shared.actionGroup}>
-                    <IconButton href={`${APP_ROUTES.adminPosts}/${post.id}`} icon={<PencilIcon />} size="medium" target="_blank" title="编辑" />
-                    <IconButton disabled={exporting} icon={<DownloadIcon />} onClick={() => doExport(post.id)} size="medium" title="导出" />
-                    <IconButton disabled={deleting === post.id} icon={<Trash2Icon />} onClick={() => setDeleteTarget({ id: post.id, title: post.title })} size="medium" title="删除" variant="danger" />
+                    <IconButton
+                        href={`${APP_ROUTES.adminPosts}/${post.id}`}
+                        icon={<PencilIcon />}
+                        size="medium"
+                        target="_blank"
+                        title="编辑"
+                    />
+                    <IconButton
+                        disabled={exporting}
+                        icon={<DownloadIcon />}
+                        onClick={() => doExport(post.id)}
+                        size="medium"
+                        title="导出"
+                    />
+                    <IconButton
+                        disabled={deleting === post.id}
+                        icon={<Trash2Icon />}
+                        onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
+                        size="medium"
+                        title="删除"
+                        variant="danger"
+                    />
                 </div>
             ),
         },
@@ -192,7 +211,12 @@ export default function PostManagementClient() {
 
     return (
         <>
-            <AdminPageHeader description="集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。" eyebrow="Posts" tag={`${total} 篇文章`} title="文章管理" />
+            <AdminPageHeader
+                description="集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。"
+                eyebrow="Posts"
+                tag={`${total} 篇文章`}
+                title="文章管理"
+            />
 
             {/* 搜索 + 筛选 + 新建 */}
             <div className={styles.toolbar}>
@@ -222,7 +246,13 @@ export default function PostManagementClient() {
                         value={status}
                     />
                 </div>
-                <GhostButton asButton disabled={exporting} icon={<DownloadIcon className={shared.btnIcon} />} onClick={() => doExport(null)} size="medium">
+                <GhostButton
+                    asButton
+                    disabled={exporting}
+                    icon={<DownloadIcon className={shared.btnIcon} />}
+                    onClick={() => doExport(null)}
+                    size="medium"
+                >
                     {exporting ? '导出中...' : '全部导出'}
                 </GhostButton>
                 <GhostButton
@@ -252,7 +282,12 @@ export default function PostManagementClient() {
                 </GhostButton>
             </div>
 
-            <DataTable columns={columns} emptyText={loading ? '加载中...' : '暂无文章'} rowKey={(post) => post.id} rows={pagedPosts} />
+            <DataTable
+                columns={columns}
+                emptyText={loading ? '加载中...' : '暂无文章'}
+                rowKey={(post) => post.id}
+                rows={pagedPosts}
+            />
 
             <Pagination
                 current={page}

@@ -40,7 +40,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const canonical = `${SITE_METADATA.siteUrl}/blog/${slug}`;
     const publishedTime = toPostIsoDateTime(post.publishedAt);
     const modifiedTime = toPostIsoDateTime(post.updatedAt);
-    const keywords = [...(post.tagNames?.map((tag) => tag.name) ?? []), ...(post.categoryName ? [post.categoryName] : []), ...SITE_METADATA.keywords];
+    const keywords = [
+        ...(post.tagNames?.map((tag) => tag.name) ?? []),
+        ...(post.categoryName ? [post.categoryName] : []),
+        ...SITE_METADATA.keywords,
+    ];
 
     return {
         title,
@@ -83,7 +87,10 @@ export default async function BlogPostPage({ params }: PageProps) {
 
     /* 相关文章：查同标签文章，排除当前文章，最多 3 篇 */
     const tagSlugs = post.tagNames?.map((t) => t.slug) ?? [];
-    const relatedPosts = tagSlugs.length > 0 ? (await getPublishedPosts({ tagSlugs, limit: 5 })).filter((p) => p.id !== post.id).slice(0, 3) : [];
+    const relatedPosts =
+        tagSlugs.length > 0
+            ? (await getPublishedPosts({ tagSlugs, limit: 5 })).filter((p) => p.id !== post.id).slice(0, 3)
+            : [];
 
     const canonical = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
     const articleImage = toAbsoluteUrl(post.coverImage);
@@ -244,7 +251,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                                     </div>
                                 ) : null}
                                 <div className={styles.relatedCardMeta}>
-                                    {rp.categoryName ? <span className={styles.relatedCardCategory}>{rp.categoryName}</span> : null}
+                                    {rp.categoryName ? (
+                                        <span className={styles.relatedCardCategory}>{rp.categoryName}</span>
+                                    ) : null}
                                     <span>{formatPostDate(rp.publishedAt)}</span>
                                 </div>
                             </Link>

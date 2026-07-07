@@ -119,7 +119,13 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         }
         setFormData(newData);
         // 草稿状态、内容/标题/封面图变更时自动保存
-        if (newData.status === 'draft' || key === 'content' || key === 'title' || key === 'coverImage' || key === 'altText') {
+        if (
+            newData.status === 'draft' ||
+            key === 'content' ||
+            key === 'title' ||
+            key === 'coverImage' ||
+            key === 'altText'
+        ) {
             scheduleSave(newData);
         }
     }
@@ -181,7 +187,9 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
     }, []);
 
     /* 获取当前分类名称和标签名称，供预览使用 */
-    const categoryName = formData.categoryId ? (categories.find((c) => c.id === formData.categoryId)?.name ?? null) : null;
+    const categoryName = formData.categoryId
+        ? (categories.find((c) => c.id === formData.categoryId)?.name ?? null)
+        : null;
     const tagNames = formData.tags.map((id) => tags.find((t) => t.id === id)?.name).filter(Boolean) as string[];
 
     return (
@@ -227,7 +235,13 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                             {/* 编辑区 */}
                             <div className={styles.editPane}>
                                 <div className={styles.headerArea}>
-                                    <input className={styles.titleInput} onChange={(e) => updateField('title', e.target.value)} placeholder="文章标题" type="text" value={formData.title} />
+                                    <input
+                                        className={styles.titleInput}
+                                        onChange={(e) => updateField('title', e.target.value)}
+                                        placeholder="文章标题"
+                                        type="text"
+                                        value={formData.title}
+                                    />
                                     <textarea
                                         className={styles.summaryInput}
                                         onChange={(e) => updateField('summary', e.target.value)}
@@ -237,7 +251,12 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                     />
                                 </div>
                                 <div className={styles.contentEdit}>
-                                    <MarkdownEditor content={formData.content} fullWidth={false} onContentChange={(v: string) => updateField('content', v)} onInsertImage={handleInsertImage} />
+                                    <MarkdownEditor
+                                        content={formData.content}
+                                        fullWidth={false}
+                                        onContentChange={(v: string) => updateField('content', v)}
+                                        onInsertImage={handleInsertImage}
+                                    />
                                 </div>
                             </div>
 
@@ -285,7 +304,13 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
 
                         <div className={styles.editPane}>
                             <div className={styles.headerArea}>
-                                <input className={styles.titleInput} onChange={(e) => updateField('title', e.target.value)} placeholder="文章标题" type="text" value={formData.title} />
+                                <input
+                                    className={styles.titleInput}
+                                    onChange={(e) => updateField('title', e.target.value)}
+                                    placeholder="文章标题"
+                                    type="text"
+                                    value={formData.title}
+                                />
                                 <textarea
                                     className={styles.summaryInput}
                                     onChange={(e) => updateField('summary', e.target.value)}
@@ -295,7 +320,12 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                                 />
                             </div>
                             <div className={styles.contentEdit}>
-                                <MarkdownEditor content={formData.content} fullWidth onContentChange={(v: string) => updateField('content', v)} onInsertImage={handleInsertImage} />
+                                <MarkdownEditor
+                                    content={formData.content}
+                                    fullWidth
+                                    onContentChange={(v: string) => updateField('content', v)}
+                                    onInsertImage={handleInsertImage}
+                                />
                             </div>
                         </div>
                     </>

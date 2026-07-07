@@ -13,11 +13,31 @@ export interface SearchEngine {
 }
 
 export const SEARCH_ENGINES: SearchEngine[] = [
-    { key: 'google', name: 'Google', url: 'https://www.google.com/search?q={query}', logo: '/images/engines/google.svg' },
+    {
+        key: 'google',
+        name: 'Google',
+        url: 'https://www.google.com/search?q={query}',
+        logo: '/images/engines/google.svg',
+    },
     { key: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q={query}', logo: '/images/engines/bing.svg' },
-    { key: 'yahoo', name: 'Yahoo', url: 'https://search.yahoo.com/search?p={query}', logo: '/images/engines/yahoo.svg' },
-    { key: 'yandex', name: 'Yandex', url: 'https://yandex.com/search/?text={query}', logo: '/images/engines/yandex.svg' },
-    { key: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q={query}', logo: '/images/engines/duckduckgo.svg' },
+    {
+        key: 'yahoo',
+        name: 'Yahoo',
+        url: 'https://search.yahoo.com/search?p={query}',
+        logo: '/images/engines/yahoo.svg',
+    },
+    {
+        key: 'yandex',
+        name: 'Yandex',
+        url: 'https://yandex.com/search/?text={query}',
+        logo: '/images/engines/yandex.svg',
+    },
+    {
+        key: 'duckduckgo',
+        name: 'DuckDuckGo',
+        url: 'https://duckduckgo.com/?q={query}',
+        logo: '/images/engines/duckduckgo.svg',
+    },
 ];
 
 /*-- 书签 --*/

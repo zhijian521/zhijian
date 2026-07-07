@@ -33,7 +33,12 @@ export default function ShowcaseIconsPage() {
 
     return (
         <div>
-            <AdminPageHeader eyebrow="Icons" title="图标预览" description="浏览项目内所有可用的图标，点击图标即可复制 import 用法。" tag={`共 ${total} 个图标`} />
+            <AdminPageHeader
+                eyebrow="Icons"
+                title="图标预览"
+                description="浏览项目内所有可用的图标，点击图标即可复制 import 用法。"
+                tag={`共 ${total} 个图标`}
+            />
 
             {SECTIONS.map((section) => (
                 <section key={section.key} className={styles.section}>
@@ -42,7 +47,12 @@ export default function ShowcaseIconsPage() {
                     </h2>
                     <div className={styles.grid}>
                         {section.names.map((name) => (
-                            <button key={name} className={styles.iconCell} onClick={() => handleCopy(name)} title={`点击复制 ${name}`}>
+                            <button
+                                key={name}
+                                className={styles.iconCell}
+                                onClick={() => handleCopy(name)}
+                                title={`点击复制 ${name}`}
+                            >
                                 <Icon name={name} className={styles.icon} />
                                 <span className={styles.iconName}>{copied === name ? '已复制' : name}</span>
                             </button>

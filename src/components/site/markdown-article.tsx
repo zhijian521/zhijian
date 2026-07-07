@@ -19,7 +19,11 @@ export function MarkdownArticle({ content, fullWidth = false }: MarkdownArticleP
 
     return (
         <div className={bodyClassName}>
-            <ReactMarkdown components={{ pre: CodeBlock }} rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+                components={{ pre: CodeBlock }}
+                rehypePlugins={[rehypeHighlight]}
+                remarkPlugins={[remarkGfm]}
+            >
                 {content}
             </ReactMarkdown>
         </div>

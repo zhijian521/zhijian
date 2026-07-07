@@ -302,7 +302,9 @@ export async function ensureAggregated(siteId: string, range: DateRange): Promis
         [siteId, startDate]
     );
 
-    const existingDates = new Set((existingRows as any[]).map((r) => (r.date instanceof Date ? formatDate(r.date) : String(r.date).slice(0, 10))));
+    const existingDates = new Set(
+        (existingRows as any[]).map((r) => (r.date instanceof Date ? formatDate(r.date) : String(r.date).slice(0, 10)))
+    );
 
     /* 收集缺失日期 */
     const today = formatDate(new Date());
@@ -341,7 +343,10 @@ export async function ensureAggregated(siteId: string, range: DateRange): Promis
         const DELETE_LIMIT = 5000;
         let deleted = 0;
         do {
-            const [result] = await db.execute(`DELETE FROM zhijian_track_events WHERE site_id = ? AND created_at < ? LIMIT ?`, [siteId, cutoffUtcStart, DELETE_LIMIT]);
+            const [result] = await db.execute(
+                `DELETE FROM zhijian_track_events WHERE site_id = ? AND created_at < ? LIMIT ?`,
+                [siteId, cutoffUtcStart, DELETE_LIMIT]
+            );
             deleted = (result as any)?.affectedRows || 0;
         } while (deleted >= DELETE_LIMIT);
     }
@@ -475,7 +480,12 @@ export async function getTrend(siteId: string, range: DateRange, skipAggregate =
 }
 
 /*== 页面排行 TOP N ==*/
-export async function getPageRank(siteId: string, range: DateRange, limit = 10, skipAggregate = false): Promise<PageRankItem[]> {
+export async function getPageRank(
+    siteId: string,
+    range: DateRange,
+    limit = 10,
+    skipAggregate = false
+): Promise<PageRankItem[]> {
     const db = getDb();
     if (!db) return [];
 
@@ -518,18 +528,45 @@ function categorizeSource(source: string): string {
     if (domain === 'baidu.com' || domain.endsWith('.baidu.com')) return '百度搜索';
     if (domain === 'bing.com' || domain.endsWith('.bing.com')) return 'Bing 搜索';
     if (domain === 'sogou.com' || domain.endsWith('.sogou.com')) return '搜狗搜索';
-    if (domain === 'so.com' || domain.endsWith('.so.com') || domain === '360.cn' || domain.endsWith('.360.cn')) return '360 搜索';
+    if (domain === 'so.com' || domain.endsWith('.so.com') || domain === '360.cn' || domain.endsWith('.360.cn'))
+        return '360 搜索';
     if (domain === 'duckduckgo.com' || domain.endsWith('.duckduckgo.com')) return 'DuckDuckGo';
 
     /* 社交/内容平台 */
-    if (domain === 'weixin.qq.com' || domain.endsWith('.weixin.qq.com') || domain.startsWith('mp.weixin')) return '微信';
-    if (domain === 'weibo.com' || domain === 'weibo.cn' || domain.endsWith('.weibo.com') || domain.endsWith('.weibo.cn')) return '微博';
-    if (domain === 'douyin.com' || domain.endsWith('.douyin.com') || domain === 'tiktok.com' || domain.endsWith('.tiktok.com')) return '抖音/TikTok';
-    if (domain === 'xiaohongshu.com' || domain.endsWith('.xiaohongshu.com') || domain === 'xhslink.com' || domain.endsWith('.xhslink.com')) return '小红书';
+    if (domain === 'weixin.qq.com' || domain.endsWith('.weixin.qq.com') || domain.startsWith('mp.weixin'))
+        return '微信';
+    if (
+        domain === 'weibo.com' ||
+        domain === 'weibo.cn' ||
+        domain.endsWith('.weibo.com') ||
+        domain.endsWith('.weibo.cn')
+    )
+        return '微博';
+    if (
+        domain === 'douyin.com' ||
+        domain.endsWith('.douyin.com') ||
+        domain === 'tiktok.com' ||
+        domain.endsWith('.tiktok.com')
+    )
+        return '抖音/TikTok';
+    if (
+        domain === 'xiaohongshu.com' ||
+        domain.endsWith('.xiaohongshu.com') ||
+        domain === 'xhslink.com' ||
+        domain.endsWith('.xhslink.com')
+    )
+        return '小红书';
     if (domain === 'zhihu.com' || domain.endsWith('.zhihu.com')) return '知乎';
     if (domain === 'bilibili.com' || domain.endsWith('.bilibili.com')) return 'B站';
-    if (domain === 'twitter.com' || domain.endsWith('.twitter.com') || domain === 'x.com' || domain.endsWith('.x.com')) return 'Twitter/X';
-    if (domain === 'facebook.com' || domain.endsWith('.facebook.com') || domain === 'fb.com' || domain.endsWith('.fb.com')) return 'Facebook';
+    if (domain === 'twitter.com' || domain.endsWith('.twitter.com') || domain === 'x.com' || domain.endsWith('.x.com'))
+        return 'Twitter/X';
+    if (
+        domain === 'facebook.com' ||
+        domain.endsWith('.facebook.com') ||
+        domain === 'fb.com' ||
+        domain.endsWith('.fb.com')
+    )
+        return 'Facebook';
     if (domain === 'linkedin.com' || domain.endsWith('.linkedin.com')) return 'LinkedIn';
     if (domain === 'github.com' || domain.endsWith('.github.com')) return 'GitHub';
 
@@ -611,15 +648,25 @@ interface DistributionConfig {
     limit?: number;
 }
 
-async function getDistribution(siteId: string, range: DateRange, config: DistributionConfig): Promise<Record<string, any>[]> {
+async function getDistribution(
+    siteId: string,
+    range: DateRange,
+    config: DistributionConfig
+): Promise<Record<string, any>[]> {
     const db = getDb();
     if (!db) return [];
 
     const utc = rangeToUtcRange(range);
 
     const baseWhere = `site_id = ? AND type = 'pageview' AND created_at >= ? AND created_at < ?`;
-    const whereClause = config.overrideWhere ? config.overrideWhere : config.extraWhere ? `${baseWhere} ${config.extraWhere}` : baseWhere;
-    const whereParams = config.overrideWhere ? config.overrideParams || [siteId, utc.start, utc.end] : [siteId, utc.start, utc.end];
+    const whereClause = config.overrideWhere
+        ? config.overrideWhere
+        : config.extraWhere
+          ? `${baseWhere} ${config.extraWhere}`
+          : baseWhere;
+    const whereParams = config.overrideWhere
+        ? config.overrideParams || [siteId, utc.start, utc.end]
+        : [siteId, utc.start, utc.end];
     const limitClause = config.limit ? ' LIMIT ?' : '';
     const limitParams = config.limit ? [config.limit] : [];
 
@@ -634,7 +681,11 @@ async function getDistribution(siteId: string, range: DateRange, config: Distrib
         [...whereParams, ...limitParams]
     );
 
-    const totalWhere = config.overrideTotalWhere ? config.overrideTotalWhere : config.overrideWhere ? config.overrideWhere : baseWhere;
+    const totalWhere = config.overrideTotalWhere
+        ? config.overrideTotalWhere
+        : config.overrideWhere
+          ? config.overrideWhere
+          : baseWhere;
     const totalParams = config.overrideTotalWhere
         ? config.overrideTotalParams || config.overrideParams || [siteId, utc.start, utc.end]
         : config.overrideWhere
@@ -663,7 +714,11 @@ interface DailyDistributionConfig {
     limit?: number;
 }
 
-async function getDistributionFromDaily(siteId: string, range: DateRange, config: DailyDistributionConfig): Promise<Record<string, any>[]> {
+async function getDistributionFromDaily(
+    siteId: string,
+    range: DateRange,
+    config: DailyDistributionConfig
+): Promise<Record<string, any>[]> {
     const db = getDb();
     if (!db) return [];
 
@@ -842,7 +897,12 @@ export interface VisitRecord {
     createdAt: string;
 }
 
-export async function getVisits(siteId: string, range: DateRange, page: number, pageSize: number): Promise<{ data: VisitRecord[]; total: number }> {
+export async function getVisits(
+    siteId: string,
+    range: DateRange,
+    page: number,
+    pageSize: number
+): Promise<{ data: VisitRecord[]; total: number }> {
     const db = getDb();
     if (!db) return { data: [], total: 0 };
 
@@ -944,7 +1004,9 @@ export async function clearSiteData(siteId: string): Promise<{ events: number; d
     const conn = await getDbConnection();
     try {
         await conn.beginTransaction();
-        const [er] = await conn.execute<ResultSetHeader>('DELETE FROM zhijian_track_events WHERE site_id = ?', [siteId]);
+        const [er] = await conn.execute<ResultSetHeader>('DELETE FROM zhijian_track_events WHERE site_id = ?', [
+            siteId,
+        ]);
         const [dr] = await conn.execute<ResultSetHeader>('DELETE FROM zhijian_track_daily WHERE site_id = ?', [siteId]);
         await conn.commit();
         return { events: er.affectedRows, daily: dr.affectedRows };

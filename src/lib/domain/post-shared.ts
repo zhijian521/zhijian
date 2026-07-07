@@ -38,7 +38,16 @@ export function parsePostDate(value: string | null): Date | null {
     if (matched) {
         const [, year, month, day, hours = '00', minutes = '00', seconds = '00'] = matched;
 
-        return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hours) - CHINA_UTC_OFFSET_HOURS, Number(minutes), Number(seconds)));
+        return new Date(
+            Date.UTC(
+                Number(year),
+                Number(month) - 1,
+                Number(day),
+                Number(hours) - CHINA_UTC_OFFSET_HOURS,
+                Number(minutes),
+                Number(seconds)
+            )
+        );
     }
 
     const fallbackDate = new Date(value.replace(' ', 'T'));

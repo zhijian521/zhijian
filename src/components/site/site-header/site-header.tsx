@@ -29,7 +29,10 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
     const triggerRef = useRef<HTMLButtonElement>(null);
 
     /*-- 预计算导航项活跃状态 --*/
-    const navItems = useMemo(() => PUBLIC_NAV_ITEMS.map((item) => ({ ...item, isActive: isNavItemActive(pathname, item.href, item.match) })), [pathname]);
+    const navItems = useMemo(
+        () => PUBLIC_NAV_ITEMS.map((item) => ({ ...item, isActive: isNavItemActive(pathname, item.href, item.match) })),
+        [pathname]
+    );
 
     /*-- 路由切换关闭菜单 --*/
     useEffect(() => setIsMobileNavOpen(false), [pathname]);
@@ -85,7 +88,14 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                     {/* 桌面导航 */}
                     <nav aria-label="站点主导航" className={styles.nav}>
                         {navItems.map((item) => (
-                            <Link className={cn(styles.navLink, item.isActive ? styles.navLinkActive : styles.navLinkInactive)} href={item.href} key={item.label}>
+                            <Link
+                                className={cn(
+                                    styles.navLink,
+                                    item.isActive ? styles.navLinkActive : styles.navLinkInactive
+                                )}
+                                href={item.href}
+                                key={item.label}
+                            >
                                 {item.label}
                                 {item.isActive ? <span aria-hidden className={styles.navUnderline} /> : null}
                             </Link>
@@ -107,16 +117,34 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                         </button>
 
                         {isMobileNavOpen ? (
-                            <div aria-label="移动端导航菜单" className={styles.mobilePanel} id="public-mobile-nav" ref={mobileNavRef} role="dialog">
+                            <div
+                                aria-label="移动端导航菜单"
+                                className={styles.mobilePanel}
+                                id="public-mobile-nav"
+                                ref={mobileNavRef}
+                                role="dialog"
+                            >
                                 <div className={styles.mobilePanelHeader}>
                                     <span className={styles.mobilePanelTitle}>导航</span>
-                                    <button aria-label="关闭导航菜单" className={styles.mobileClose} onClick={closeMenu} type="button">
+                                    <button
+                                        aria-label="关闭导航菜单"
+                                        className={styles.mobileClose}
+                                        onClick={closeMenu}
+                                        type="button"
+                                    >
                                         <XIcon className={styles.mobileCloseIcon} />
                                     </button>
                                 </div>
                                 <nav aria-label="移动端站点导航" className={styles.mobileNav}>
                                     {navItems.map((item) => (
-                                        <Link className={cn(styles.mobileNavLink, item.isActive && styles.mobileNavLinkActive)} href={item.href} key={item.label}>
+                                        <Link
+                                            className={cn(
+                                                styles.mobileNavLink,
+                                                item.isActive && styles.mobileNavLinkActive
+                                            )}
+                                            href={item.href}
+                                            key={item.label}
+                                        >
                                             <span>{item.label}</span>
                                         </Link>
                                     ))}

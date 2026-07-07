@@ -164,7 +164,10 @@ export default function UserListClient() {
         if (form.password.trim()) body.password = form.password.trim();
 
         try {
-            const res = formMode === 'create' ? await api.post('/admin/users', body) : await api.put(`/admin/users/${editingUser!.id}`, body);
+            const res =
+                formMode === 'create'
+                    ? await api.post('/admin/users', body)
+                    : await api.put(`/admin/users/${editingUser!.id}`, body);
 
             if (res.code !== 0) {
                 setFormMessage(res.message || '操作失败。');
@@ -213,7 +216,9 @@ export default function UserListClient() {
         {
             header: '创建时间',
             hideBelow: 'lg',
-            render: (user) => <span className={shared.mutedCell}>{new Date(user.created_at).toLocaleDateString('zh-CN')}</span>,
+            render: (user) => (
+                <span className={shared.mutedCell}>{new Date(user.created_at).toLocaleDateString('zh-CN')}</span>
+            ),
         },
         {
             header: '操作',
@@ -221,7 +226,14 @@ export default function UserListClient() {
             render: (user) => (
                 <div className={shared.actionGroup}>
                     <IconButton icon={<PencilIcon />} onClick={() => openEditForm(user)} size="medium" title="编辑" />
-                    <IconButton icon={<Trash2Icon />} onClick={() => handleDeleteClick(user.id, user.username)} size="medium" title="删除" variant="danger" disabled={deleting === user.id} />
+                    <IconButton
+                        icon={<Trash2Icon />}
+                        onClick={() => handleDeleteClick(user.id, user.username)}
+                        size="medium"
+                        title="删除"
+                        variant="danger"
+                        disabled={deleting === user.id}
+                    />
                 </div>
             ),
         },
@@ -232,18 +244,36 @@ export default function UserListClient() {
             {/* 顶部操作栏 */}
             <div className={styles.toolbar}>
                 <form className={styles.searchForm} onSubmit={handleSearchSubmit} role="search" aria-label="搜索用户">
-                    <TextInput icon={<SearchIcon />} id="user-search" inputSize="medium" onChange={(e) => setSearchInput(e.target.value)} placeholder="搜索用户名或邮箱..." value={searchInput} />
+                    <TextInput
+                        icon={<SearchIcon />}
+                        id="user-search"
+                        inputSize="medium"
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        placeholder="搜索用户名或邮箱..."
+                        value={searchInput}
+                    />
                     <GhostButton asButton size="medium" variant="primary" onClick={handleSearchSubmit}>
                         搜索
                     </GhostButton>
                 </form>
-                <GhostButton asButton icon={<PlusIcon className={shared.btnIcon} />} onClick={openCreateForm} size="medium" variant="primary">
+                <GhostButton
+                    asButton
+                    icon={<PlusIcon className={shared.btnIcon} />}
+                    onClick={openCreateForm}
+                    size="medium"
+                    variant="primary"
+                >
                     新建用户
                 </GhostButton>
             </div>
 
             {/* 表格 */}
-            <DataTable columns={columns} emptyText={loading ? '加载中...' : '暂无用户数据'} rowKey={(user) => user.id} rows={data.data} />
+            <DataTable
+                columns={columns}
+                emptyText={loading ? '加载中...' : '暂无用户数据'}
+                rowKey={(user) => user.id}
+                rows={data.data}
+            />
 
             <ConfirmDialog
                 open={!!deleteTarget}
@@ -256,7 +286,11 @@ export default function UserListClient() {
             />
 
             {/* 新增/编辑弹窗 */}
-            <Dialog onClose={() => setFormOpen(false)} open={formOpen} title={formMode === 'create' ? '新建用户' : `编辑用户：${editingUser?.username || ''}`}>
+            <Dialog
+                onClose={() => setFormOpen(false)}
+                open={formOpen}
+                title={formMode === 'create' ? '新建用户' : `编辑用户：${editingUser?.username || ''}`}
+            >
                 <form className={shared.form} onSubmit={handleFormSubmit}>
                     <TextInput
                         id="form-username"
@@ -268,7 +302,15 @@ export default function UserListClient() {
                         value={form.username}
                     />
 
-                    <TextInput id="form-email" label="邮箱" onChange={(e) => handleFormChange('email', e.target.value)} placeholder="user@example.com" required type="email" value={form.email} />
+                    <TextInput
+                        id="form-email"
+                        label="邮箱"
+                        onChange={(e) => handleFormChange('email', e.target.value)}
+                        placeholder="user@example.com"
+                        required
+                        type="email"
+                        value={form.email}
+                    />
 
                     <TextInput
                         id="form-password"

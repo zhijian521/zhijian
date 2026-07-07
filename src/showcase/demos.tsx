@@ -25,7 +25,9 @@ export function TagDemo() {
         <>
             {(['default', 'primary', 'outlined'] as const).map((v) => (
                 <div key={v} style={row}>
-                    <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>variant: {v}</span>
+                    <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                        variant: {v}
+                    </span>
                     {(['mini', 'small', 'medium', 'default'] as const).map((s) => (
                         <Tag key={s} size={s} variant={v}>
                             {s}
@@ -43,7 +45,9 @@ export function GhostButtonDemo() {
         <>
             {(['default', 'primary'] as const).map((v) => (
                 <div key={v} style={row}>
-                    <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>variant: {v}</span>
+                    <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                        variant: {v}
+                    </span>
                     {(['small', 'medium', 'default'] as const).map((s) => (
                         <GhostButton key={s} href="#" size={s} variant={v}>
                             {s}
@@ -55,7 +59,9 @@ export function GhostButtonDemo() {
                 </div>
             ))}
             <div style={row}>
-                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>disabled</span>
+                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                    disabled
+                </span>
                 <GhostButton asButton disabled>
                     禁用态
                 </GhostButton>
@@ -80,7 +86,9 @@ export function SubmitButtonDemo() {
                 ))}
             </div>
             <div style={row}>
-                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>disabled</span>
+                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                    disabled
+                </span>
                 <SubmitButton disabled>禁用态</SubmitButton>
             </div>
         </>
@@ -93,7 +101,9 @@ export function IconButtonDemo() {
         <>
             {(['default', 'danger'] as const).map((v) => (
                 <div key={v} style={row}>
-                    <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>variant: {v}</span>
+                    <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                        variant: {v}
+                    </span>
                     <IconButton icon={<PencilIcon />} size="small" title="small" variant={v} />
                     <IconButton icon={<PlusIcon />} size="medium" title="medium" variant={v} />
                     <IconButton icon={<Trash2Icon />} title="default" variant={v} />
@@ -133,7 +143,9 @@ function PillSelectRow({ size }: { size: 'small' | 'medium' | 'default' }) {
     const [v, setV] = useState('all');
     return (
         <div style={row}>
-            <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>size: {size}</span>
+            <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                size: {size}
+            </span>
             <PillSelect
                 name={`pill-${size}`}
                 onChange={setV}
@@ -202,7 +214,9 @@ export function PaginationDemo() {
     return (
         <>
             <div style={row}>
-                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>回调模式</span>
+                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                    回调模式
+                </span>
                 <Pagination
                     current={page}
                     onPageChange={setPage}
@@ -215,7 +229,9 @@ export function PaginationDemo() {
                 />
             </div>
             <div style={row}>
-                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>链接模式</span>
+                <span style={{ minWidth: '4rem', fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>
+                    链接模式
+                </span>
                 <Pagination current={3} getHref={(p) => `#page-${p}`} total={8} />
             </div>
         </>
@@ -259,11 +275,15 @@ export function DataTableDemo() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>scrollable（带 width 列打点）</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>
+                    scrollable（带 width 列打点）
+                </div>
                 <DataTable columns={columns} rowKey={(r) => r.id} rows={rows} scrollable />
             </div>
             <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>空状态</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>
+                    空状态
+                </div>
                 <DataTable columns={emptyCols} emptyText="暂无数据" rowKey={(r) => r.id} rows={[]} />
             </div>
         </div>
@@ -307,7 +327,13 @@ export function ConfirmDialogDemo() {
             <GhostButton asButton onClick={() => setCustom(true)} variant="primary">
                 自定义按钮 + loading
             </GhostButton>
-            <ConfirmDialog message="确定要执行此操作吗？此操作不可撤销。" onCancel={() => setOpen(false)} onConfirm={() => setOpen(false)} open={open} title="确认操作" />
+            <ConfirmDialog
+                message="确定要执行此操作吗？此操作不可撤销。"
+                onCancel={() => setOpen(false)}
+                onConfirm={() => setOpen(false)}
+                open={open}
+                title="确认操作"
+            />
             <ConfirmDialog
                 confirmLabel="删除"
                 message="确定要删除这条记录吗？"

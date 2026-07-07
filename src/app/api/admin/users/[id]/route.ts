@@ -22,7 +22,8 @@ import { withAdmin } from '@/lib/core/with-admin';
 export const GET = withAdmin(async (_request, _admin, { params }) => {
     const { id } = await params;
     const userId = Number(id);
-    if (!Number.isFinite(userId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
+    if (!Number.isFinite(userId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
 
     const user = await getUserById(userId);
     if (!user) return NextResponse.json(fail(BizCode.USER_NOT_FOUND, '用户不存在。'), { status: 404 });
@@ -34,7 +35,8 @@ export const GET = withAdmin(async (_request, _admin, { params }) => {
 export const PUT = withAdmin(async (request, _admin, { params }) => {
     const { id } = await params;
     const userId = Number(id);
-    if (!Number.isFinite(userId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
+    if (!Number.isFinite(userId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
 
     const existing = await getUserById(userId);
     if (!existing) return NextResponse.json(fail(BizCode.USER_NOT_FOUND, '用户不存在。'), { status: 404 });
@@ -50,26 +52,32 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
 
     if (body.username !== undefined) {
         const username = body.username.trim();
-        if (!username || username.length < 2 || username.length > 50) return NextResponse.json(fail(BizCode.BAD_REQUEST, '用户名需在 2-50 个字符之间。'), { status: 400 });
-        if (username.includes(':')) return NextResponse.json(fail(BizCode.BAD_REQUEST, '用户名不能包含特殊字符。'), { status: 400 });
+        if (!username || username.length < 2 || username.length > 50)
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, '用户名需在 2-50 个字符之间。'), { status: 400 });
+        if (username.includes(':'))
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, '用户名不能包含特殊字符。'), { status: 400 });
         fields.username = username;
     }
     if (body.email !== undefined) {
         const email = body.email.trim();
-        if (!email || !email.includes('@')) return NextResponse.json(fail(BizCode.BAD_REQUEST, '请输入有效的邮箱地址。'), { status: 400 });
+        if (!email || !email.includes('@'))
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, '请输入有效的邮箱地址。'), { status: 400 });
         fields.email = email;
     }
     if (body.password !== undefined && body.password.trim() !== '') {
         const password = body.password.trim();
-        if (password.length < 6) return NextResponse.json(fail(BizCode.BAD_REQUEST, '密码至少需要 6 个字符。'), { status: 400 });
+        if (password.length < 6)
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, '密码至少需要 6 个字符。'), { status: 400 });
         fields.passwordHash = await hashPassword(password);
     }
     if (body.role !== undefined) {
-        if (body.role !== 'admin' && body.role !== 'user') return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的角色。'), { status: 400 });
+        if (body.role !== 'admin' && body.role !== 'user')
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的角色。'), { status: 400 });
         fields.role = body.role;
     }
     if (body.status !== undefined) {
-        if (body.status !== 'active' && body.status !== 'disabled') return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的状态。'), { status: 400 });
+        if (body.status !== 'active' && body.status !== 'disabled')
+            return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的状态。'), { status: 400 });
         fields.status = body.status;
     }
 
@@ -77,7 +85,8 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
         const updated = await updateUser(userId, fields);
         return NextResponse.json(success({ user: updated }, '用户更新成功。'));
     } catch (err: any) {
-        if (err.code === 'ER_DUP_ENTRY') return NextResponse.json(fail(BizCode.USER_EXISTS, '用户名或邮箱已被占用。'), { status: 409 });
+        if (err.code === 'ER_DUP_ENTRY')
+            return NextResponse.json(fail(BizCode.USER_EXISTS, '用户名或邮箱已被占用。'), { status: 409 });
         console.error('更新用户失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新用户失败。'), { status: 500 });
     }
@@ -87,8 +96,10 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
 export const DELETE = withAdmin(async (_request, admin, { params }) => {
     const { id } = await params;
     const userId = Number(id);
-    if (!Number.isFinite(userId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
-    if (admin.userId === userId) return NextResponse.json(fail(BizCode.USER_SELF_DELETE, '不能删除自己的账号。'), { status: 400 });
+    if (!Number.isFinite(userId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的用户 ID。'), { status: 400 });
+    if (admin.userId === userId)
+        return NextResponse.json(fail(BizCode.USER_SELF_DELETE, '不能删除自己的账号。'), { status: 400 });
 
     try {
         const deleted = await deleteUser(userId);

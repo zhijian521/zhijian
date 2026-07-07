@@ -71,8 +71,20 @@ export default async function HomePage() {
     const homeJsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
-            { '@type': 'WebSite', '@id': `${SITE_METADATA.siteUrl}#website`, url: SITE_METADATA.siteUrl, name: SITE_METADATA.title, description: SITE_METADATA.description, inLanguage: 'zh-CN' },
-            { '@type': 'Person', '@id': `${SITE_METADATA.siteUrl}#author`, name: SITE_METADATA.author, url: SITE_METADATA.siteUrl },
+            {
+                '@type': 'WebSite',
+                '@id': `${SITE_METADATA.siteUrl}#website`,
+                url: SITE_METADATA.siteUrl,
+                name: SITE_METADATA.title,
+                description: SITE_METADATA.description,
+                inLanguage: 'zh-CN',
+            },
+            {
+                '@type': 'Person',
+                '@id': `${SITE_METADATA.siteUrl}#author`,
+                name: SITE_METADATA.author,
+                url: SITE_METADATA.siteUrl,
+            },
             {
                 '@type': 'CollectionPage',
                 '@id': `${SITE_METADATA.siteUrl}#home`,
@@ -88,7 +100,13 @@ export default async function HomePage() {
                 name: `${SITE_METADATA.title}最新文章`,
                 itemListOrder: 'https://schema.org/ItemListOrderDescending',
                 numberOfItems: posts.length,
-                itemListElement: posts.map((post, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE_METADATA.siteUrl}/blog/${post.slug}`, name: post.title, description: post.summary })),
+                itemListElement: posts.map((post, i) => ({
+                    '@type': 'ListItem',
+                    position: i + 1,
+                    url: `${SITE_METADATA.siteUrl}/blog/${post.slug}`,
+                    name: post.title,
+                    description: post.summary,
+                })),
             },
         ],
     };

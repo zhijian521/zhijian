@@ -22,7 +22,11 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
     activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
     'alert-triangle': (
         <>
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <path d="M12 9v4M12 17h.01" strokeLinecap="round" strokeLinejoin="round" />
         </>
     ),
@@ -72,23 +76,49 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
             <line x1="12" y1="15" x2="12" y2="3" />
         </>
     ),
-    edit3: <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" strokeLinecap="round" strokeLinejoin="round" />,
-    'external-link': <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" strokeLinecap="round" strokeLinejoin="round" />,
+    edit3: (
+        <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" strokeLinecap="round" strokeLinejoin="round" />
+    ),
+    'external-link': (
+        <path
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    ),
     'file-text': (
         <>
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <path d="M14 2v4a2 2 0 0 0 2 2h4" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M10 9H8M16 13H8M16 17H8" strokeLinecap="round" strokeLinejoin="round" />
         </>
     ),
     'folder-tree': (
         <>
-            <path d="M13 10h7a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5L15.5 3h-2.6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M13 21h7a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.5L15.5 14h-2.6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M13 10h7a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5L15.5 3h-2.6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M13 21h7a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.5L15.5 14h-2.6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <path d="M2 10h4M2 6h4M2 14h4M2 18h4" strokeLinecap="round" strokeLinejoin="round" />
         </>
     ),
-    home: <path d="M15 21v-6a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v6M3 10l9-7 9 7M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5" strokeLinecap="round" strokeLinejoin="round" />,
+    home: (
+        <path
+            d="M15 21v-6a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v6M3 10l9-7 9 7M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    ),
     image: (
         <>
             <rect height="18" rx="2" ry="2" width="18" x="3" y="3" />
@@ -144,10 +174,26 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
         </>
     ),
     lock: (
-        <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm3 8H9V7a3 3 0 0 1 6 0v3z" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+            d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm3 8H9V7a3 3 0 0 1 6 0v3z"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
     ),
-    'log-out': <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round" />,
-    mail: <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" />,
+    'log-out': (
+        <path
+            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    ),
+    mail: (
+        <path
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    ),
     menu: <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" />,
     minus: <line x1="5" x2="19" y1="12" y2="12" />,
     pause: (
@@ -172,7 +218,11 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
     ),
     save: (
         <>
-            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M7 3v4a1 1 0 0 0 1 1h4" strokeLinecap="round" strokeLinejoin="round" />
         </>
@@ -185,7 +235,11 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
     ),
     sparkles: (
         <>
-            <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" strokeLinecap="round" strokeLinejoin="round" />
         </>
     ),
@@ -206,10 +260,20 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
             strokeLinejoin="round"
         />
     ),
-    tag: <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42zM7 7h.01" strokeLinecap="round" strokeLinejoin="round" />,
+    tag: (
+        <path
+            d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42zM7 7h.01"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    ),
     trash2: (
         <>
-            <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <line x1="10" x2="10" y1="11" y2="17" strokeLinecap="round" strokeLinejoin="round" />
             <line x1="14" x2="14" y1="11" y2="17" strokeLinecap="round" strokeLinejoin="round" />
         </>
@@ -228,11 +292,21 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
     ),
     'user-circle2': (
         <>
-            <path d="M18 20a6 6 0 0 0-12 0M12 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+                d="M18 20a6 6 0 0 0-12 0M12 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
             <circle cx="12" cy="12" r="10" />
         </>
     ),
-    user: <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" strokeLinecap="round" strokeLinejoin="round" />,
+    user: (
+        <path
+            d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    ),
     users: (
         <>
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
@@ -275,7 +349,16 @@ export function Icon({ name, className, ...props }: IconProps & { name: string }
     const strokeChildren = STROKE_ICONS[name];
     if (strokeChildren) {
         return (
-            <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <svg
+                className={className}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                {...props}
+            >
                 {strokeChildren}
             </svg>
         );

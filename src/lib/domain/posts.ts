@@ -5,7 +5,14 @@ import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { getDb } from '@/lib/core/db';
 import type { Post, PostStatus } from './post-shared';
 export type { Post, PostStatus } from './post-shared';
-export { formatPostDate, formatPostDateTime, parsePostDate, splitPostContent, toDateTimeLocalValue, toPostIsoDateTime } from './post-shared';
+export {
+    formatPostDate,
+    formatPostDateTime,
+    parsePostDate,
+    splitPostContent,
+    toDateTimeLocalValue,
+    toPostIsoDateTime,
+} from './post-shared';
 
 /*== 类型定义 ==*/
 
@@ -174,7 +181,10 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
     values.push(id);
 
     try {
-        const [result] = await db.execute<ResultSetHeader>(`UPDATE zhijian_blog_posts SET ${sets.join(', ')} WHERE id = ?`, values);
+        const [result] = await db.execute<ResultSetHeader>(
+            `UPDATE zhijian_blog_posts SET ${sets.join(', ')} WHERE id = ?`,
+            values
+        );
 
         if (result.affectedRows === 0) {
             return null;
@@ -202,7 +212,16 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
                     (slug, title, summary, content, cover_image, alt_text, category_id, tags, status, published_at, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', NULL, NOW(), NOW())
             `,
-            [input.slug, input.title, input.summary, input.content, input.coverImage ?? null, input.altText ?? null, input.categoryId ?? null, input.tags ? JSON.stringify(input.tags) : null]
+            [
+                input.slug,
+                input.title,
+                input.summary,
+                input.content,
+                input.coverImage ?? null,
+                input.altText ?? null,
+                input.categoryId ?? null,
+                input.tags ? JSON.stringify(input.tags) : null,
+            ]
         );
 
         return getPostById(result.insertId);
@@ -339,7 +358,10 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     if (!db) return posts;
 
     try {
-        const [tagRows] = await db.execute<RowDataPacket[]>(`SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`, uniqueIds);
+        const [tagRows] = await db.execute<RowDataPacket[]>(
+            `SELECT id, name, slug FROM zhijian_blog_tags WHERE id IN (${uniqueIds.map(() => '?').join(', ')})`,
+            uniqueIds
+        );
 
         const tagMap = new Map<number, { id: number; name: string; slug: string }>();
         for (const row of tagRows) {
@@ -348,7 +370,11 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
 
         return posts.map((post) => ({
             ...post,
-            tagNames: post.tags.map((id) => tagMap.get(id)).filter(Boolean) as { id: number; name: string; slug: string }[],
+            tagNames: post.tags.map((id) => tagMap.get(id)).filter(Boolean) as {
+                id: number;
+                name: string;
+                slug: string;
+            }[],
         }));
     } catch (error) {
         console.error('Failed to enrich posts with tag names.', { error });

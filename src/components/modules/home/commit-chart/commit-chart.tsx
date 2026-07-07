@@ -81,7 +81,13 @@ export function CommitChart({ data }: CommitChartProps) {
                                     const count = dayMap.get(day.date) || 0;
                                     const label = `${formatDate(day.date)}: ${count} 次提交`;
                                     return (
-                                        <button aria-label={label} className={`${styles.cell} ${styles[day.level]}`} key={di} onClick={() => setSelected({ date: day.date, count })} type="button" />
+                                        <button
+                                            aria-label={label}
+                                            className={`${styles.cell} ${styles[day.level]}`}
+                                            key={di}
+                                            onClick={() => setSelected({ date: day.date, count })}
+                                            type="button"
+                                        />
                                     );
                                 })}
                             </div>

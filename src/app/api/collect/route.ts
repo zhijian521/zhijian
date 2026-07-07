@@ -129,7 +129,10 @@ export async function POST(request: NextRequest) {
         }
 
         if (events.length > MAX_EVENTS_PER_REQUEST) {
-            return NextResponse.json(fail(40000, `单次最多 ${MAX_EVENTS_PER_REQUEST} 条事件`), { status: 400, headers: corsHeaders });
+            return NextResponse.json(fail(40000, `单次最多 ${MAX_EVENTS_PER_REQUEST} 条事件`), {
+                status: 400,
+                headers: corsHeaders,
+            });
         }
 
         /*-- 限流 --*/
@@ -143,7 +146,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(fail(50000, '服务暂不可用'), { status: 500, headers: corsHeaders });
         }
 
-        const [siteRows] = await db.execute('SELECT id FROM zhijian_track_sites WHERE id = ? AND status = ?', [siteId, 'active']);
+        const [siteRows] = await db.execute('SELECT id FROM zhijian_track_sites WHERE id = ? AND status = ?', [
+            siteId,
+            'active',
+        ]);
         if ((siteRows as any[]).length === 0) {
             return NextResponse.json(fail(40400, '站点未注册或已停用'), { status: 404, headers: corsHeaders });
         }

@@ -70,8 +70,16 @@ export default function BookmarkLink({
                 onDragEnd={onDragEnd}
             >
                 <button className={styles.item} onClick={() => setOpen((v) => !v)} type="button">
-                    <svg className={styles.folderIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 6.5C2 5.67 2.67 5 3.5 5H9.29a1 1 0 0 1 .7.29L12 7.3h7.5c.83 0 1.5.67 1.5 1.5v9.7c0 .83-.67 1.5-1.5 1.5h-16c-.83 0-1.5-.67-1.5-1.5V6.5Z" fill="#FFB300" />
+                    <svg
+                        className={styles.folderIcon}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M2 6.5C2 5.67 2.67 5 3.5 5H9.29a1 1 0 0 1 .7.29L12 7.3h7.5c.83 0 1.5.67 1.5 1.5v9.7c0 .83-.67 1.5-1.5 1.5h-16c-.83 0-1.5-.67-1.5-1.5V6.5Z"
+                            fill="#FFB300"
+                        />
                         <path d="M2 8.5h19v10c0 .83-.67 1.5-1.5 1.5h-16c-.83 0-1.5-.67-1.5-1.5v-10Z" fill="#FFCA28" />
                     </svg>
                     <span className={styles.name}>{bookmark.name}</span>
@@ -104,7 +112,11 @@ export default function BookmarkLink({
                                     }}
                                     onDragEnd={onDragEnd}
                                 >
-                                    <FaviconImg className={styles.favicon} fallbackChar={child.name[0]} url={child.url} />
+                                    <FaviconImg
+                                        className={styles.favicon}
+                                        fallbackChar={child.name[0]}
+                                        url={child.url}
+                                    />
                                     <span className={styles.name}>{child.name}</span>
                                 </a>
                             );

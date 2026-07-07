@@ -65,7 +65,9 @@ export default function UploadManagement() {
         async (p: number) => {
             setLoading(true);
             try {
-                const res = await api.get<{ data: UploadItem[]; total: number }>(`/admin/uploads?page=${p}&pageSize=${pageSize}`);
+                const res = await api.get<{ data: UploadItem[]; total: number }>(
+                    `/admin/uploads?page=${p}&pageSize=${pageSize}`
+                );
                 if (res.code === 0 && res.data) {
                     setUploads(res.data.data);
                     setTotal(res.data.total);
@@ -147,7 +149,12 @@ export default function UploadManagement() {
                 tag={`${total} 张图片`}
                 title="图片管理"
                 action={
-                    <GhostButton asButton icon={<DownloadIcon className={shared.btnIcon} />} onClick={() => setSyncOpen(true)} size="small">
+                    <GhostButton
+                        asButton
+                        icon={<DownloadIcon className={shared.btnIcon} />}
+                        onClick={() => setSyncOpen(true)}
+                        size="small"
+                    >
                         同步到本地
                     </GhostButton>
                 }
@@ -174,15 +181,34 @@ export default function UploadManagement() {
                                     >
                                         <PencilIcon className={styles.iconSmall} />
                                     </button>
-                                    <button aria-label="复制 Markdown" className={styles.iconBtn} onClick={() => handleCopy(upload)} type="button">
-                                        {copiedId === upload.id ? <CheckIcon className={styles.iconSmall} /> : <CopyIcon className={styles.iconSmall} />}
+                                    <button
+                                        aria-label="复制 Markdown"
+                                        className={styles.iconBtn}
+                                        onClick={() => handleCopy(upload)}
+                                        type="button"
+                                    >
+                                        {copiedId === upload.id ? (
+                                            <CheckIcon className={styles.iconSmall} />
+                                        ) : (
+                                            <CopyIcon className={styles.iconSmall} />
+                                        )}
                                     </button>
-                                    <button aria-label="删除图片" className={`${styles.iconBtn} ${styles.iconBtnDanger}`} onClick={() => setDeleteTarget(upload)} type="button">
+                                    <button
+                                        aria-label="删除图片"
+                                        className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                                        onClick={() => setDeleteTarget(upload)}
+                                        type="button"
+                                    >
                                         <Trash2Icon className={styles.iconSmall} />
                                     </button>
                                 </div>
                                 {/* eslint-disable-next-line @next/next/no-img-element -- 上传缩略图不走 next/image 优化 */}
-                                <img alt={upload.alt || upload.original} className={styles.thumbnail} loading="lazy" src={upload.path} />
+                                <img
+                                    alt={upload.alt || upload.original}
+                                    className={styles.thumbnail}
+                                    loading="lazy"
+                                    src={upload.path}
+                                />
                                 <div className={styles.info}>
                                     <span className={styles.filename} title={upload.original}>
                                         {upload.original}
@@ -226,7 +252,8 @@ export default function UploadManagement() {
             <Dialog onClose={() => setSyncOpen(false)} open={syncOpen} title="同步到本地">
                 <div className={styles.syncBody}>
                     <p className={styles.syncDesc}>
-                        将服务器上的图片文件同步到本地 <code className={styles.syncCode}>public/uploads/</code> 目录，用于开发环境预览。
+                        将服务器上的图片文件同步到本地 <code className={styles.syncCode}>public/uploads/</code>{' '}
+                        目录，用于开发环境预览。
                     </p>
                     <p className={styles.syncStep}>在项目根目录运行以下命令：</p>
                     <div className={styles.syncCmdRow}>
@@ -241,12 +268,17 @@ export default function UploadManagement() {
                             }}
                             type="button"
                         >
-                            {syncCopied ? <CheckIcon className={styles.syncCopyIcon} /> : <CopyIcon className={styles.syncCopyIcon} />}
+                            {syncCopied ? (
+                                <CheckIcon className={styles.syncCopyIcon} />
+                            ) : (
+                                <CopyIcon className={styles.syncCopyIcon} />
+                            )}
                         </button>
                     </div>
                     <p className={styles.syncHint}>
                         可选参数：<code className={styles.syncCode}>--server &lt;url&gt;</code> 指定服务器地址，
-                        <code className={styles.syncCode}>--username</code> / <code className={styles.syncCode}>--password</code> 跳过交互式输入。
+                        <code className={styles.syncCode}>--username</code> /{' '}
+                        <code className={styles.syncCode}>--password</code> 跳过交互式输入。
                     </p>
                 </div>
             </Dialog>
@@ -260,7 +292,14 @@ export default function UploadManagement() {
                         handleRename();
                     }}
                 >
-                    <TextInput id="rename-original" label="文件名" onChange={(e) => setRenameValue(e.target.value)} placeholder="输入新名称" required value={renameValue} />
+                    <TextInput
+                        id="rename-original"
+                        label="文件名"
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        placeholder="输入新名称"
+                        required
+                        value={renameValue}
+                    />
                     <div className={shared.formActions}>
                         <GhostButton asButton onClick={() => setRenameTarget(null)}>
                             取消

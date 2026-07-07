@@ -21,7 +21,8 @@ function extractText(node: React.ReactNode): string {
     if (typeof node === 'number') return String(node);
     if (!node) return '';
     if (Array.isArray(node)) return node.map(extractText).join('');
-    if (React.isValidElement(node)) return extractText((node.props as Record<string, unknown>).children as React.ReactNode);
+    if (React.isValidElement(node))
+        return extractText((node.props as Record<string, unknown>).children as React.ReactNode);
     return '';
 }
 
@@ -42,7 +43,10 @@ export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据'
     /* scrollable 模式：colgroup 声明列宽 + table min-width 保证可滚动 */
     const colWidths = scrollable ? columns.map((col) => col.width || 'auto') : null;
 
-    const tableMinWidth = scrollable && colWidths ? colWidths.reduce((sum, w) => sum + (w === 'auto' ? 80 : Number(w.replace('px', ''))), 0) : 0;
+    const tableMinWidth =
+        scrollable && colWidths
+            ? colWidths.reduce((sum, w) => sum + (w === 'auto' ? 80 : Number(w.replace('px', ''))), 0)
+            : 0;
 
     /* scrollable 模式下，有 width 的列自动打点+hover */
     function hasEllipsis(col: DataColumn<T>) {
@@ -51,7 +55,10 @@ export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据'
 
     return (
         <div className={styles.tableWrapper}>
-            <table className={scrollable ? `${styles.table} ${styles.tableFixed}` : styles.table} style={scrollable ? { minWidth: `${tableMinWidth}px` } : undefined}>
+            <table
+                className={scrollable ? `${styles.table} ${styles.tableFixed}` : styles.table}
+                style={scrollable ? { minWidth: `${tableMinWidth}px` } : undefined}
+            >
                 {scrollable && colWidths && (
                     <colgroup>
                         {colWidths.map((w, i) => (

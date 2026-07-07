@@ -24,7 +24,13 @@ function ApiRow({ entry }: { entry: ApiEntry }) {
 
     return (
         <div className={styles.apiRow}>
-            <button type="button" className={styles.apiHeader} onClick={() => setOpen((v) => !v)} disabled={!hasDetail} aria-expanded={open}>
+            <button
+                type="button"
+                className={styles.apiHeader}
+                onClick={() => setOpen((v) => !v)}
+                disabled={!hasDetail}
+                aria-expanded={open}
+            >
                 <div className={styles.apiMain}>
                     <span className={styles.apiName}>{entry.name}</span>
                     <code className={styles.apiPath}>/api/{entry.path}</code>
@@ -90,7 +96,13 @@ function FieldTable({ fields }: { fields: NonNullable<ApiEntry['params']> }) {
 }
 
 /*== 接口列表容器：按 group 渲染，每个条目可展开。 ==*/
-export function ApiList({ groups, groupLabels }: { groups: Record<string, ApiEntry[]>; groupLabels: Record<string, string> }) {
+export function ApiList({
+    groups,
+    groupLabels,
+}: {
+    groups: Record<string, ApiEntry[]>;
+    groupLabels: Record<string, string>;
+}) {
     return (
         <>
             {Object.entries(groups).map(([group, entries]) => (

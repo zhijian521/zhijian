@@ -21,7 +21,8 @@ import { withAdmin } from '@/lib/core/with-admin';
 export const PUT = withAdmin(async (request, _admin, { params }) => {
     const { id } = await params;
     const categoryId = Number(id);
-    if (!Number.isFinite(categoryId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的分类 ID。'), { status: 400 });
+    if (!Number.isFinite(categoryId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的分类 ID。'), { status: 400 });
 
     const existing = await getCategoryById(categoryId);
     if (!existing) return NextResponse.json(fail(BizCode.CATEGORY_NOT_FOUND, '分类不存在。'), { status: 404 });
@@ -53,7 +54,8 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
         const updated = await updateCategory(categoryId, fields);
         return NextResponse.json(success({ category: updated }, '分类更新成功。'));
     } catch (err: any) {
-        if (err.code === 'ER_DUP_ENTRY') return NextResponse.json(fail(BizCode.CATEGORY_EXISTS, 'Slug 已被占用。'), { status: 409 });
+        if (err.code === 'ER_DUP_ENTRY')
+            return NextResponse.json(fail(BizCode.CATEGORY_EXISTS, 'Slug 已被占用。'), { status: 409 });
         console.error('更新分类失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新分类失败。'), { status: 500 });
     }
@@ -63,7 +65,8 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
 export const DELETE = withAdmin(async (_request, _admin, { params }) => {
     const { id } = await params;
     const categoryId = Number(id);
-    if (!Number.isFinite(categoryId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的分类 ID。'), { status: 400 });
+    if (!Number.isFinite(categoryId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的分类 ID。'), { status: 400 });
 
     try {
         const deleted = await deleteCategory(categoryId);

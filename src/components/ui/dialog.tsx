@@ -79,7 +79,14 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
     return (
         <div className={styles.overlay}>
             <div className={styles.backdrop} onClick={onClose} />
-            <div className={styles.panel} ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="dialog-title" style={maxWidth ? { maxWidth } : undefined}>
+            <div
+                className={styles.panel}
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="dialog-title"
+                style={maxWidth ? { maxWidth } : undefined}
+            >
                 <div className={styles.header}>
                     <h3 className={styles.title} id="dialog-title">
                         {title}

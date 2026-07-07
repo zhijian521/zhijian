@@ -10,7 +10,21 @@ import { NextResponse } from 'next/server';
 
 import { BizCode, fail, success } from '@/lib/core/api-response';
 import { withAdmin } from '@/lib/core/with-admin';
-import { getOverview, getTrend, getPageRank, getSources, getDevices, getLanguages, getBrowsers, getOS, getCountries, getRegions, getEntryPages, getExitPages, ensureAggregated } from '@/lib/domain/analytics';
+import {
+    getOverview,
+    getTrend,
+    getPageRank,
+    getSources,
+    getDevices,
+    getLanguages,
+    getBrowsers,
+    getOS,
+    getCountries,
+    getRegions,
+    getEntryPages,
+    getExitPages,
+    ensureAggregated,
+} from '@/lib/domain/analytics';
 import type { DateRange } from '@/lib/domain/analytics';
 
 /*== 仪表盘概览数据 API ==*/
@@ -32,7 +46,20 @@ export const GET = withAdmin(async (request) => {
         await ensureAggregated(siteId, range);
 
         // 聚合后所有查询互不依赖，并行执行
-        const [overview, trend, pages, sources, devices, languages, countries, regions, browsers, os, entryPages, exitPages] = await Promise.all([
+        const [
+            overview,
+            trend,
+            pages,
+            sources,
+            devices,
+            languages,
+            countries,
+            regions,
+            browsers,
+            os,
+            entryPages,
+            exitPages,
+        ] = await Promise.all([
             getOverview(siteId, range, true),
             getTrend(siteId, range, true),
             getPageRank(siteId, range, 10, true),

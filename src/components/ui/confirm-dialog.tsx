@@ -24,7 +24,16 @@ interface ConfirmDialogProps {
 }
 
 /*== 确认弹窗：遮罩 + 居中面板，直角边框匹配后台表格风格。 ==*/
-export default function ConfirmDialog({ open, title, message, confirmLabel = '确认', cancelLabel = '取消', onConfirm, onCancel, loading = false }: ConfirmDialogProps) {
+export default function ConfirmDialog({
+    open,
+    title,
+    message,
+    confirmLabel = '确认',
+    cancelLabel = '取消',
+    onConfirm,
+    onCancel,
+    loading = false,
+}: ConfirmDialogProps) {
     return (
         <Dialog onClose={onCancel} open={open} title={title}>
             <div className={styles.content}>

@@ -66,7 +66,10 @@ export async function getUserByUsername(username: string): Promise<(User & { pas
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute('SELECT id, username, email, password_hash, role, status, created_at, updated_at FROM zhijian_users WHERE username = ?', [username]);
+    const [rows] = await db.execute(
+        'SELECT id, username, email, password_hash, role, status, created_at, updated_at FROM zhijian_users WHERE username = ?',
+        [username]
+    );
     const list = rows as any[];
     if (list.length === 0) return null;
     const row = list[0];
@@ -78,13 +81,21 @@ export async function getUserById(id: number): Promise<User | null> {
     const db = getDb();
     if (!db) return null;
 
-    const [rows] = await db.execute('SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users WHERE id = ?', [id]);
+    const [rows] = await db.execute(
+        'SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users WHERE id = ?',
+        [id]
+    );
     const list = rows as any[];
     return list.length > 0 ? toUser(list[0]) : null;
 }
 
 /*== 用户字段校验，返回错误消息或 null。 ==*/
-export function validateUserFields(username: string, email: string, password: string, requireEmailAt = true): string | null {
+export function validateUserFields(
+    username: string,
+    email: string,
+    password: string,
+    requireEmailAt = true
+): string | null {
     if (!username || username.length < 2 || username.length > 50) return '用户名需在 2-50 个字符之间。';
     if (username.includes(':')) return '用户名不能包含特殊字符。';
     if (!email || (requireEmailAt && !email.includes('@')) || email.length > 255) return '请输入有效的邮箱地址。';
@@ -93,16 +104,19 @@ export function validateUserFields(username: string, email: string, password: st
 }
 
 /*== 创建用户，返回新用户（不含密码哈希）。 调用方负责先 hash 密码。 ==*/
-export async function createUser(params: { username: string; email: string; passwordHash: string; role?: UserRole }): Promise<User> {
+export async function createUser(params: {
+    username: string;
+    email: string;
+    passwordHash: string;
+    role?: UserRole;
+}): Promise<User> {
     const db = getDb();
     if (!db) throw new Error('数据库未配置');
 
-    const [result] = await db.execute('INSERT INTO zhijian_users (username, email, password_hash, role) VALUES (?, ?, ?, ?)', [
-        params.username,
-        params.email,
-        params.passwordHash,
-        params.role || 'user',
-    ]);
+    const [result] = await db.execute(
+        'INSERT INTO zhijian_users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
+        [params.username, params.email, params.passwordHash, params.role || 'user']
+    );
     const insertResult = result as any;
     return (await getUserById(insertResult.insertId))!;
 }
@@ -162,7 +176,11 @@ export async function deleteUser(id: number): Promise<boolean> {
 }
 
 /*== 用户列表（分页 + 搜索）。 ==*/
-export async function listUsers(params: { page?: number; pageSize?: number; search?: string }): Promise<{ users: User[]; total: number }> {
+export async function listUsers(params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+}): Promise<{ users: User[]; total: number }> {
     const db = getDb();
     if (!db) return { users: [], total: 0 };
 
@@ -182,11 +200,10 @@ export async function listUsers(params: { page?: number; pageSize?: number; sear
     const [countRows] = await db.execute(`SELECT COUNT(*) AS total FROM zhijian_users ${where}`, values);
     const total = (countRows as any[])[0].total as number;
 
-    const [rows] = await db.execute(`SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`, [
-        ...values,
-        pageSize,
-        offset,
-    ]);
+    const [rows] = await db.execute(
+        `SELECT id, username, email, role, status, created_at, updated_at FROM zhijian_users ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+        [...values, pageSize, offset]
+    );
 
     return {
         users: (rows as any[]).map(toUser),
@@ -200,7 +217,9 @@ export async function countUsersByRole(): Promise<{ admin: number; user: number 
     if (!db) return { admin: 0, user: 0 };
 
     try {
-        const [rows] = await db.execute(`SELECT role, COUNT(*) AS cnt FROM zhijian_users WHERE status = 'active' GROUP BY role`);
+        const [rows] = await db.execute(
+            `SELECT role, COUNT(*) AS cnt FROM zhijian_users WHERE status = 'active' GROUP BY role`
+        );
         const counts: Record<string, number> = {};
         for (const row of rows as any[]) {
             counts[row.role] = row.cnt;

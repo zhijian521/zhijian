@@ -1,4 +1,17 @@
-import { LayoutDashboardIcon, BookOpenIcon, BookIcon, FileTextIcon, FolderTreeIcon, UsersIcon, SettingsIcon, WrenchIcon, ActivityIcon, ImageIcon, CodeIcon, type IconComponent } from '@/components/ui/icons';
+import {
+    LayoutDashboardIcon,
+    BookOpenIcon,
+    BookIcon,
+    FileTextIcon,
+    FolderTreeIcon,
+    UsersIcon,
+    SettingsIcon,
+    WrenchIcon,
+    ActivityIcon,
+    ImageIcon,
+    CodeIcon,
+    type IconComponent,
+} from '@/components/ui/icons';
 
 /*============================================================================
   站点全局配置
@@ -28,7 +41,8 @@ export const SITE_METADATA = {
     /*-- 品牌标题，主页 <title> 直接使用，根布局 template 后缀，改此一处全站生效 --*/
     brandTitle: 'Zhijian博客 - 简静造物',
     /*-- 全局描述，主页 <meta description> / OG / Twitter / JSON-LD --*/
-    description: 'Zhijian的个人技术博客 — 追求简洁设计与美好事物，以代码与文字安静造物。涵盖前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、全栈实践与Agent开发。',
+    description:
+        'Zhijian的个人技术博客 — 追求简洁设计与美好事物，以代码与文字安静造物。涵盖前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、全栈实践与Agent开发。',
     /*-- 站点 URL，读 NEXT_PUBLIC_SITE_URL，用于 canonical / OG url / sitemap --*/
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
     /*-- OG / Twitter 区域标识 --*/
@@ -40,7 +54,8 @@ export const SITE_METADATA = {
     /*-- 文章列表页标题前缀，拼接：blogTitle - [分类] - [标签] - brandTitle --*/
     blogTitle: '文章',
     /*-- 文章列表页描述，/blog 页 <meta description> / OG / Twitter --*/
-    blogDescription: 'Zhijian的技术博客，追求简洁设计与美好事物，安静造物。分享前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、Agent开发与全栈实践。',
+    blogDescription:
+        'Zhijian的技术博客，追求简洁设计与美好事物，安静造物。分享前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、Agent开发与全栈实践。',
     /*-- 全站关键词，详情页自动追加文章标签和分类名 --*/
     keywords: [
         '简静造物',

@@ -131,7 +131,9 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
             const currentDragState = dragStateRef.current;
             if (!currentDragState || currentDragState.dragId === id || !currentDragState.position) return;
 
-            persist(reorder(notesRef.current, currentDragState.dragId, id, currentDragState.position as 'before' | 'after'));
+            persist(
+                reorder(notesRef.current, currentDragState.dragId, id, currentDragState.position as 'before' | 'after')
+            );
             setDragState(null);
             justDraggedRef.current = true;
             setTimeout(() => {
@@ -221,7 +223,12 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                 <ul className={styles.list}>
                     {notes.map((note) => {
                         const dragPosition = dragState?.overId === note.id ? dragState.position : null;
-                        const dragClass = dragPosition === 'before' ? styles.dragOverBefore : dragPosition === 'after' ? styles.dragOverAfter : '';
+                        const dragClass =
+                            dragPosition === 'before'
+                                ? styles.dragOverBefore
+                                : dragPosition === 'after'
+                                  ? styles.dragOverAfter
+                                  : '';
 
                         return (
                             <li
@@ -270,14 +277,26 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                         value={editTitle}
                                     />
                                 ) : null}
-                                <p className={`${styles.detailMeta} ${viewMode === 'preview' ? styles.detailMetaPreview : ''}`}>上次更新 {updatedLabel}</p>
+                                <p
+                                    className={`${styles.detailMeta} ${viewMode === 'preview' ? styles.detailMetaPreview : ''}`}
+                                >
+                                    上次更新 {updatedLabel}
+                                </p>
                             </div>
 
                             <div className={styles.viewTabs}>
-                                <button className={`${styles.viewTab} ${viewMode === 'edit' ? styles.viewTabActive : ''}`} onClick={() => handleViewModeChange('edit')} type="button">
+                                <button
+                                    className={`${styles.viewTab} ${viewMode === 'edit' ? styles.viewTabActive : ''}`}
+                                    onClick={() => handleViewModeChange('edit')}
+                                    type="button"
+                                >
                                     编辑
                                 </button>
-                                <button className={`${styles.viewTab} ${viewMode === 'preview' ? styles.viewTabActive : ''}`} onClick={() => handleViewModeChange('preview')} type="button">
+                                <button
+                                    className={`${styles.viewTab} ${viewMode === 'preview' ? styles.viewTabActive : ''}`}
+                                    onClick={() => handleViewModeChange('preview')}
+                                    type="button"
+                                >
                                     预览
                                 </button>
                             </div>
@@ -285,7 +304,11 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
 
                         <div className={styles.detailContent}>
                             {viewMode === 'edit' ? (
-                                <NoteMarkdownEditor content={editContent} onBlur={handleDraftBlur} onContentChange={setEditContent} />
+                                <NoteMarkdownEditor
+                                    content={editContent}
+                                    onBlur={handleDraftBlur}
+                                    onContentChange={setEditContent}
+                                />
                             ) : (
                                 <div className={styles.previewPane}>
                                     <ArticleView content={editContent} fullWidth />

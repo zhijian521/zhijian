@@ -21,7 +21,8 @@ import { withAdmin } from '@/lib/core/with-admin';
 export const PUT = withAdmin(async (request, _admin, { params }) => {
     const { id } = await params;
     const tagId = Number(id);
-    if (!Number.isFinite(tagId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的标签 ID。'), { status: 400 });
+    if (!Number.isFinite(tagId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的标签 ID。'), { status: 400 });
 
     const existing = await getTagById(tagId);
     if (!existing) return NextResponse.json(fail(BizCode.TAG_NOT_FOUND, '标签不存在。'), { status: 404 });
@@ -50,7 +51,8 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
         const updated = await updateTag(tagId, fields);
         return NextResponse.json(success({ tag: updated }, '标签更新成功。'));
     } catch (err: any) {
-        if (err.code === 'ER_DUP_ENTRY') return NextResponse.json(fail(BizCode.TAG_EXISTS, 'Slug 已被占用。'), { status: 409 });
+        if (err.code === 'ER_DUP_ENTRY')
+            return NextResponse.json(fail(BizCode.TAG_EXISTS, 'Slug 已被占用。'), { status: 409 });
         console.error('更新标签失败：', err);
         return NextResponse.json(fail(BizCode.INTERNAL, '更新标签失败。'), { status: 500 });
     }
@@ -60,7 +62,8 @@ export const PUT = withAdmin(async (request, _admin, { params }) => {
 export const DELETE = withAdmin(async (_request, _admin, { params }) => {
     const { id } = await params;
     const tagId = Number(id);
-    if (!Number.isFinite(tagId)) return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的标签 ID。'), { status: 400 });
+    if (!Number.isFinite(tagId))
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '无效的标签 ID。'), { status: 400 });
 
     try {
         const deleted = await deleteTag(tagId);

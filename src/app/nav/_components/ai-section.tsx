@@ -21,7 +21,12 @@ interface AiSectionProps {
 }
 
 function formatTime(ts: number): string {
-    return new Date(ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return new Date(ts).toLocaleDateString('zh-CN', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 }
 
 function titleFromMessage(text: string): string {
@@ -29,7 +34,14 @@ function titleFromMessage(text: string): string {
     return t ? t.slice(0, 24) : '新对话';
 }
 
-export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireLogin, initialQuery, onConsumedInitialQuery }: AiSectionProps) {
+export default function AiSection({
+    isLoggedIn,
+    dataVersion,
+    loading,
+    onRequireLogin,
+    initialQuery,
+    onConsumedInitialQuery,
+}: AiSectionProps) {
     const [conversations, setConversations] = useState<ChatConversation[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [input, setInput] = useState('');
@@ -167,7 +179,9 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
 
             /*-- 构造发给 API 的 messages（仅 role/content，不带本地 id） --*/
             const activeConv = baseConvs.find((c) => c.id === convId);
-            const apiMessages = activeConv ? activeConv.messages.map((m) => ({ role: m.role, content: m.content })) : [];
+            const apiMessages = activeConv
+                ? activeConv.messages.map((m) => ({ role: m.role, content: m.content }))
+                : [];
 
             const controller = new AbortController();
             abortRef.current = controller;
@@ -234,7 +248,9 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
                     content: acc || '（无回复）',
                     createdAt: Date.now(),
                 };
-                const finalConvs = conversationsRef.current.map((c) => (c.id === convId ? { ...c, messages: [...c.messages, assistantMsg], updatedAt: Date.now() } : c));
+                const finalConvs = conversationsRef.current.map((c) =>
+                    c.id === convId ? { ...c, messages: [...c.messages, assistantMsg], updatedAt: Date.now() } : c
+                );
                 persist(finalConvs);
             } catch (e) {
                 if ((e as Error).name === 'AbortError') return;
@@ -334,14 +350,23 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
             <aside className={styles.sidebar}>
                 <div className={styles.sidebarHeader}>
                     <h2 className={styles.title}>对话</h2>
-                    <button aria-label="新建对话" className={styles.addBtn} onClick={handleCreateConversation} type="button">
+                    <button
+                        aria-label="新建对话"
+                        className={styles.addBtn}
+                        onClick={handleCreateConversation}
+                        type="button"
+                    >
                         <PlusIcon style={{ width: '0.75rem', height: '0.75rem' }} />
                     </button>
                 </div>
 
                 <ul className={styles.list}>
                     {conversations.map((c) => (
-                        <li key={c.id} className={`${styles.convItem} ${c.id === activeId ? styles.convItemActive : ''}`} onClick={() => handleSelect(c.id)}>
+                        <li
+                            key={c.id}
+                            className={`${styles.convItem} ${c.id === activeId ? styles.convItemActive : ''}`}
+                            onClick={() => handleSelect(c.id)}
+                        >
                             <div className={styles.convInfo}>
                                 <p className={styles.convTitle}>{c.title || '新对话'}</p>
                                 <p className={styles.convMeta}>{formatTime(c.updatedAt)}</p>
@@ -368,13 +393,22 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
                     <div className={styles.detailRight}>
                         {models.length > 0 ? (
                             <div ref={modelDropdownRef} className={styles.modelAnchor}>
-                                <button className={styles.modelBtn} onClick={() => setModelOpen((v) => !v)} type="button">
+                                <button
+                                    className={styles.modelBtn}
+                                    onClick={() => setModelOpen((v) => !v)}
+                                    type="button"
+                                >
                                     {model || '默认模型'}
                                 </button>
                                 {modelOpen ? (
                                     <div className={styles.modelDropdown}>
                                         {models.map((m) => (
-                                            <button key={m} className={`${styles.modelOption} ${m === model ? styles.modelOptionActive : ''}`} onClick={() => handleModelChange(m)} type="button">
+                                            <button
+                                                key={m}
+                                                className={`${styles.modelOption} ${m === model ? styles.modelOptionActive : ''}`}
+                                                onClick={() => handleModelChange(m)}
+                                                type="button"
+                                            >
                                                 {m}
                                             </button>
                                         ))}
@@ -382,7 +416,9 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
                                 ) : null}
                             </div>
                         ) : null}
-                        <span className={styles.detailMeta}>{messages.length > 0 ? `${messages.length} 条消息` : ''}</span>
+                        <span className={styles.detailMeta}>
+                            {messages.length > 0 ? `${messages.length} 条消息` : ''}
+                        </span>
                     </div>
                 </div>
 
@@ -395,8 +431,13 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
                     ) : null}
 
                     {messages.map((m) => (
-                        <div key={m.id} className={`${styles.msg} ${m.role === 'user' ? styles.msgUser : styles.msgAssistant}`}>
-                            <div className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}>
+                        <div
+                            key={m.id}
+                            className={`${styles.msg} ${m.role === 'user' ? styles.msgUser : styles.msgAssistant}`}
+                        >
+                            <div
+                                className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}
+                            >
                                 {m.role === 'assistant' ? (
                                     <div className={styles.bubbleAssistantContent}>
                                         <MarkdownArticle content={m.content} />
@@ -431,7 +472,13 @@ export default function AiSection({ isLoggedIn, dataVersion, loading, onRequireL
                             value={input}
                         />
                     </div>
-                    <button aria-label="发送" className={styles.sendBtn} disabled={streaming || !input.trim()} onClick={() => send(input)} type="button">
+                    <button
+                        aria-label="发送"
+                        className={styles.sendBtn}
+                        disabled={streaming || !input.trim()}
+                        onClick={() => send(input)}
+                        type="button"
+                    >
                         <ArrowUpIcon className={styles.sendIcon} />
                     </button>
                 </div>

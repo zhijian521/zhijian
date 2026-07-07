@@ -72,7 +72,9 @@ export const API_REGISTRY: ApiEntry[] = [
             { method: 'GET', desc: '获取全部文章（含草稿）' },
             { method: 'POST', desc: '创建草稿' },
         ],
-        params: [{ name: 'title', type: 'string', required: false, desc: '文章标题（POST 创建草稿，默认"无标题草稿"）' }],
+        params: [
+            { name: 'title', type: 'string', required: false, desc: '文章标题（POST 创建草稿，默认"无标题草稿"）' },
+        ],
         response: [
             { name: 'id', type: 'number', desc: '文章 ID' },
             { name: 'title', type: 'string', desc: '文章标题' },
@@ -385,7 +387,9 @@ export const API_REGISTRY: ApiEntry[] = [
         group: 'admin',
         auth: 'admin',
         methods: [{ method: 'POST', desc: '将已发布文章 URL 推送到搜索引擎' }],
-        params: [{ name: 'urls', type: 'string[]', required: false, desc: '指定 URL 列表（不传则自动取全部已发布文章）' }],
+        params: [
+            { name: 'urls', type: 'string[]', required: false, desc: '指定 URL 列表（不传则自动取全部已发布文章）' },
+        ],
         response: [{ name: '(空)', type: 'null', desc: '成功返回 code:0, data:null' }],
     },
 
@@ -531,10 +535,21 @@ export const API_REGISTRY: ApiEntry[] = [
         auth: 'user',
         methods: [{ method: 'POST', desc: '发送消息到 AI，流式返回（SSE）' }],
         params: [
-            { name: 'messages', type: 'Message[]', required: true, desc: '消息数组（含 role: user/assistant/system, content）' },
+            {
+                name: 'messages',
+                type: 'Message[]',
+                required: true,
+                desc: '消息数组（含 role: user/assistant/system, content）',
+            },
             { name: 'model', type: 'string', required: false, desc: '模型名称' },
         ],
-        response: [{ name: '(SSE)', type: 'text/event-stream', desc: '流式返回，每条 data: {content:"..."}，结束 data: [DONE]' }],
+        response: [
+            {
+                name: '(SSE)',
+                type: 'text/event-stream',
+                desc: '流式返回，每条 data: {content:"..."}，结束 data: [DONE]',
+            },
+        ],
     },
     {
         path: 'ai/models',

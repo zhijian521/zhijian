@@ -68,7 +68,11 @@ export async function getAllNavData(userId: number): Promise<{
     todos: TodoItem[] | null;
     notes: NoteItem[] | null;
 }> {
-    const [bookmarks, todos, notes] = await Promise.all([getBookmarksDb(userId), getTodosDb(userId), getNotesDb(userId)]);
+    const [bookmarks, todos, notes] = await Promise.all([
+        getBookmarksDb(userId),
+        getTodosDb(userId),
+        getNotesDb(userId),
+    ]);
     return { bookmarks, todos, notes };
 }
 

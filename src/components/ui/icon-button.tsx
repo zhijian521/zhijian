@@ -26,7 +26,9 @@ export function IconButton({
     href,
     className,
     ...props
-}: IconButtonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'> & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'size'>) {
+}: IconButtonProps &
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'> &
+    Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'size'>) {
     const variantClass = variant === 'default' ? '' : ` ${styles[variant]}`;
     const sizeClass = SIZE_CLASS[size];
     const cls = `${styles.button}${variantClass}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`;

@@ -16,10 +16,28 @@ export interface MarkdownPreviewProps {
 }
 
 /*== MarkdownPreview 编辑器实时预览区 — 复用 ArticleView 组件 ==*/
-export function MarkdownPreview({ content, title, summary, coverImage, altText, categoryName, tagNames, publishedAt }: MarkdownPreviewProps) {
+export function MarkdownPreview({
+    content,
+    title,
+    summary,
+    coverImage,
+    altText,
+    categoryName,
+    tagNames,
+    publishedAt,
+}: MarkdownPreviewProps) {
     return (
         <div className={styles.preview}>
-            <ArticleView altText={altText} categoryName={categoryName} content={content} coverImage={coverImage} publishedAt={publishedAt} summary={summary} tagNames={tagNames} title={title} />
+            <ArticleView
+                altText={altText}
+                categoryName={categoryName}
+                content={content}
+                coverImage={coverImage}
+                publishedAt={publishedAt}
+                summary={summary}
+                tagNames={tagNames}
+                title={title}
+            />
         </div>
     );
 }

@@ -55,10 +55,13 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         getBookmarks(isLoggedIn).then(setBookmarks);
     }, [isLoggedIn, dataVersion]);
 
-    const persist = useCallback((updated: Bookmark[]) => {
-        setBookmarks(updated);
-        saveBookmarks(updated, isLoggedIn);
-    }, [isLoggedIn]);
+    const persist = useCallback(
+        (updated: Bookmark[]) => {
+            setBookmarks(updated);
+            saveBookmarks(updated, isLoggedIn);
+        },
+        [isLoggedIn]
+    );
 
     /*== 右键菜单 ==*/
     const handleContextMenu = useCallback((e: React.MouseEvent, bookmark: Bookmark, parentFolderId?: string) => {
@@ -68,8 +71,15 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
 
         if (isBookmarkFolder(bookmark)) {
             actions.push(
-                { label: '修改', onClick: () => setEditMode({ type: 'editFolder', id: bookmark.id, name: bookmark.name }) },
-                { label: '删除', onClick: () => setEditMode({ type: 'delete', id: bookmark.id, name: bookmark.name }), danger: true },
+                {
+                    label: '修改',
+                    onClick: () => setEditMode({ type: 'editFolder', id: bookmark.id, name: bookmark.name }),
+                },
+                {
+                    label: '删除',
+                    onClick: () => setEditMode({ type: 'delete', id: bookmark.id, name: bookmark.name }),
+                    danger: true,
+                },
                 { label: '新增书签', onClick: () => setEditMode({ type: 'addBookmark', afterId: bookmark.id }) },
                 { label: '新增文件夹', onClick: () => setEditMode({ type: 'addFolder', afterId: bookmark.id }) },
                 { label: '新增下级书签', onClick: () => setEditMode({ type: 'addBookmark', folderId: bookmark.id }) }
@@ -77,9 +87,26 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         } else {
             const bm = bookmark as BookmarkItem;
             actions.push(
-                { label: '修改', onClick: () => setEditMode({ type: 'editBookmark', id: bm.id, name: bm.name, url: bm.url, folderId: parentFolderId }) },
-                { label: '删除', onClick: () => setEditMode({ type: 'delete', id: bm.id, name: bm.name, folderId: parentFolderId }), danger: true },
-                { label: '新增书签', onClick: () => setEditMode({ type: 'addBookmark', afterId: bm.id, folderId: parentFolderId }) },
+                {
+                    label: '修改',
+                    onClick: () =>
+                        setEditMode({
+                            type: 'editBookmark',
+                            id: bm.id,
+                            name: bm.name,
+                            url: bm.url,
+                            folderId: parentFolderId,
+                        }),
+                },
+                {
+                    label: '删除',
+                    onClick: () => setEditMode({ type: 'delete', id: bm.id, name: bm.name, folderId: parentFolderId }),
+                    danger: true,
+                },
+                {
+                    label: '新增书签',
+                    onClick: () => setEditMode({ type: 'addBookmark', afterId: bm.id, folderId: parentFolderId }),
+                },
                 { label: '新增文件夹', onClick: () => setEditMode({ type: 'addFolder', afterId: bm.id }) }
             );
         }
@@ -126,38 +153,41 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         setDragState((prev) => (prev ? { ...prev, overId: id, position } : prev));
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent, targetId: string, targetFolderId?: string) => {
-        e.preventDefault();
-        const ds = dragStateRef.current;
-        if (!ds || ds.dragId === targetId || !ds.position) return;
+    const handleDrop = useCallback(
+        (e: React.DragEvent, targetId: string, targetFolderId?: string) => {
+            e.preventDefault();
+            const ds = dragStateRef.current;
+            if (!ds || ds.dragId === targetId || !ds.position) return;
 
-        const bm = bookmarksRef.current;
-        const target = bm.find((b) => b.id === targetId);
-        const targetIsFolder = target ? isBookmarkFolder(target) : false;
-        const position = ds.position;
+            const bm = bookmarksRef.current;
+            const target = bm.find((b) => b.id === targetId);
+            const targetIsFolder = target ? isBookmarkFolder(target) : false;
+            const position = ds.position;
 
-        /*-- 先从原位置移除 --*/
-        const { tree, removed } = removeFromTree(bm, ds.dragId);
-        if (!removed) {
+            /*-- 先从原位置移除 --*/
+            const { tree, removed } = removeFromTree(bm, ds.dragId);
+            if (!removed) {
+                setDragState(null);
+                return;
+            }
+
+            /*-- 规格守卫：文件夹不能进入任何文件夹（inside 或跨层进 children） --*/
+            if (isBookmarkFolder(removed) && (targetIsFolder ? position === 'inside' : Boolean(targetFolderId))) {
+                setDragState(null);
+                return;
+            }
+            /*-- 不能拖进自己 --*/
+            if (removed.id === targetId) {
+                setDragState(null);
+                return;
+            }
+
+            /*-- 统一插入：inside=追加进文件夹末尾，before/after=插到目标项旁 --*/
+            persist(insertIntoTree(tree, removed, targetId, position, targetFolderId));
             setDragState(null);
-            return;
-        }
-
-        /*-- 规格守卫：文件夹不能进入任何文件夹（inside 或跨层进 children） --*/
-        if (isBookmarkFolder(removed) && (targetIsFolder ? position === 'inside' : Boolean(targetFolderId))) {
-            setDragState(null);
-            return;
-        }
-        /*-- 不能拖进自己 --*/
-        if (removed.id === targetId) {
-            setDragState(null);
-            return;
-        }
-
-        /*-- 统一插入：inside=追加进文件夹末尾，before/after=插到目标项旁 --*/
-        persist(insertIntoTree(tree, removed, targetId, position, targetFolderId));
-        setDragState(null);
-    }, [persist]);
+        },
+        [persist]
+    );
 
     const handleDragEnd = useCallback(() => {
         setDragState(null);
@@ -168,16 +198,30 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         if (!editMode) return;
 
         if (editMode.type === 'addBookmark') {
-            const newItem: BookmarkItem = { id: `bm-${genId()}`, name: formName.trim() || '未命名', url: formUrl.trim() || 'https://' };
+            const newItem: BookmarkItem = {
+                id: `bm-${genId()}`,
+                name: formName.trim() || '未命名',
+                url: formUrl.trim() || 'https://',
+            };
             if (editMode.folderId) {
-                persist(bookmarks.map((b) => (b.id === editMode.folderId && isBookmarkFolder(b) ? { ...b, children: insertAfter(b.children, newItem, editMode.afterId) } : b)));
+                persist(
+                    bookmarks.map((b) =>
+                        b.id === editMode.folderId && isBookmarkFolder(b)
+                            ? { ...b, children: insertAfter(b.children, newItem, editMode.afterId) }
+                            : b
+                    )
+                );
             } else if (editMode.afterId) {
                 persist(insertAfter(bookmarks, newItem, editMode.afterId));
             } else {
                 persist([...bookmarks, newItem]);
             }
         } else if (editMode.type === 'addFolder') {
-            const newFolder: BookmarkFolder = { id: `bf-${genId()}`, name: formName.trim() || '新文件夹', children: [] };
+            const newFolder: BookmarkFolder = {
+                id: `bf-${genId()}`,
+                name: formName.trim() || '新文件夹',
+                children: [],
+            };
             if (editMode.afterId) {
                 persist(insertAfter(bookmarks, newFolder, editMode.afterId));
             } else {
@@ -188,18 +232,41 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                 persist(
                     bookmarks.map((b) =>
                         isBookmarkFolder(b) && b.id === editMode.folderId
-                            ? { ...b, children: b.children.map((c) => (c.id === editMode.id ? { ...c, name: formName.trim() || c.name, url: formUrl.trim() || c.url } : c)) }
+                            ? {
+                                  ...b,
+                                  children: b.children.map((c) =>
+                                      c.id === editMode.id
+                                          ? { ...c, name: formName.trim() || c.name, url: formUrl.trim() || c.url }
+                                          : c
+                                  ),
+                              }
                             : b
                     )
                 );
             } else {
-                persist(bookmarks.map((b) => (!isBookmarkFolder(b) && b.id === editMode.id ? { ...b, name: formName.trim() || b.name, url: formUrl.trim() || b.url } : b)));
+                persist(
+                    bookmarks.map((b) =>
+                        !isBookmarkFolder(b) && b.id === editMode.id
+                            ? { ...b, name: formName.trim() || b.name, url: formUrl.trim() || b.url }
+                            : b
+                    )
+                );
             }
         } else if (editMode.type === 'editFolder') {
-            persist(bookmarks.map((b) => (isBookmarkFolder(b) && b.id === editMode.id ? { ...b, name: formName.trim() || b.name } : b)));
+            persist(
+                bookmarks.map((b) =>
+                    isBookmarkFolder(b) && b.id === editMode.id ? { ...b, name: formName.trim() || b.name } : b
+                )
+            );
         } else if (editMode.type === 'delete') {
             if (editMode.folderId) {
-                persist(bookmarks.map((b) => (isBookmarkFolder(b) && b.id === editMode.folderId ? { ...b, children: b.children.filter((c) => c.id !== editMode.id) } : b)));
+                persist(
+                    bookmarks.map((b) =>
+                        isBookmarkFolder(b) && b.id === editMode.folderId
+                            ? { ...b, children: b.children.filter((c) => c.id !== editMode.id) }
+                            : b
+                    )
+                );
             } else {
                 persist(bookmarks.filter((b) => b.id !== editMode.id));
             }
@@ -228,7 +295,12 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
         if (!editMode) return { title: '', showForm: false, showUrl: false, showDelete: false };
         switch (editMode.type) {
             case 'addBookmark':
-                return { title: editMode.folderId ? '文件夹内新增书签' : '新增书签', showForm: true, showUrl: true, showDelete: false };
+                return {
+                    title: editMode.folderId ? '文件夹内新增书签' : '新增书签',
+                    showForm: true,
+                    showUrl: true,
+                    showDelete: false,
+                };
             case 'addFolder':
                 return { title: '新增文件夹', showForm: true, showUrl: false, showDelete: false };
             case 'editBookmark':
@@ -266,7 +338,9 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                     {config.showDelete && (
                         <p className={styles.deleteText}>
                             确定删除「{editMode.type === 'delete' ? editMode.name : ''}」？
-                            {editMode.type === 'delete' && bookmarks.find((b) => b.id === editMode.id && isBookmarkFolder(b)) && '文件夹内的书签也会一起删除。'}
+                            {editMode.type === 'delete' &&
+                                bookmarks.find((b) => b.id === editMode.id && isBookmarkFolder(b)) &&
+                                '文件夹内的书签也会一起删除。'}
                         </p>
                     )}
                     {config.showForm && (
@@ -305,7 +379,11 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                         <button className={styles.cancelBtn} onClick={() => setEditMode(null)} type="button">
                             取消
                         </button>
-                        <button className={`${styles.confirmBtn} ${config.showDelete ? styles.confirmBtnDanger : ''}`} onClick={handleSave} type="button">
+                        <button
+                            className={`${styles.confirmBtn} ${config.showDelete ? styles.confirmBtnDanger : ''}`}
+                            onClick={handleSave}
+                            type="button"
+                        >
                             {config.showDelete ? '删除' : '保存'}
                         </button>
                     </div>

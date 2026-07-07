@@ -79,7 +79,8 @@ export const GET = withAdmin(async (request) => {
         const mdContent = `---\n${frontMatter}\n---\n\n${content}\n`;
 
         /* 文件名：标题去非法字符，冲突追加 id */
-        const rawName = (post.title || `untitled-${post.id}`).replace(/[\/\\:*?"<>|]/g, '-').trim() || `untitled-${post.id}`;
+        const rawName =
+            (post.title || `untitled-${post.id}`).replace(/[\/\\:*?"<>|]/g, '-').trim() || `untitled-${post.id}`;
 
         let fileName = rawName;
         const count = usedTitles.get(rawName) ?? 0;

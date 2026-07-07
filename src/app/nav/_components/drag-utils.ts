@@ -10,7 +10,12 @@ export interface DragState {
 }
 
 /*-- 同层重排序 --*/
-export function reorder<T extends { id: string }>(list: T[], dragId: string, targetId: string, position: 'before' | 'after'): T[] {
+export function reorder<T extends { id: string }>(
+    list: T[],
+    dragId: string,
+    targetId: string,
+    position: 'before' | 'after'
+): T[] {
     const fromIdx = list.findIndex((b) => b.id === dragId);
     const toIdx = list.findIndex((b) => b.id === targetId);
     if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return list;
@@ -23,7 +28,12 @@ export function reorder<T extends { id: string }>(list: T[], dragId: string, tar
 }
 
 /*-- 在指定项旁插入新项（before=插到 targetId 前，after=插到后） --*/
-export function insertAt<T extends { id: string }>(list: T[], item: T, targetId: string, position: 'before' | 'after'): T[] {
+export function insertAt<T extends { id: string }>(
+    list: T[],
+    item: T,
+    targetId: string,
+    position: 'before' | 'after'
+): T[] {
     const idx = list.findIndex((b) => b.id === targetId);
     if (idx === -1) return [...list, item];
     const updated = [...list];
@@ -63,10 +73,18 @@ export function removeFromTree(bookmarks: Bookmark[], id: string): { tree: Bookm
 /*-- 把 item 插入树的目标层 --*/
 /*-- inside：targetId 是文件夹，item 追加进其 children 末尾 --*/
 /*-- before/after：targetId 是同层某项，插到其旁；targetFolderId 省略=一级，否则=所在文件夹 --*/
-export function insertIntoTree(tree: Bookmark[], item: Bookmark, targetId: string, position: 'before' | 'after' | 'inside', targetFolderId?: string): Bookmark[] {
+export function insertIntoTree(
+    tree: Bookmark[],
+    item: Bookmark,
+    targetId: string,
+    position: 'before' | 'after' | 'inside',
+    targetFolderId?: string
+): Bookmark[] {
     /*-- 放进文件夹（targetId 即文件夹 id） --*/
     if (position === 'inside') {
-        return tree.map((b) => (isBookmarkFolder(b) && b.id === targetId ? { ...b, children: [...b.children, item as BookmarkItem] } : b));
+        return tree.map((b) =>
+            isBookmarkFolder(b) && b.id === targetId ? { ...b, children: [...b.children, item as BookmarkItem] } : b
+        );
     }
     /*-- 一级排序 --*/
     if (!targetFolderId) {

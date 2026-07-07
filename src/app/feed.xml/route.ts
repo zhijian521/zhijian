@@ -11,7 +11,9 @@ export async function GET() {
         .map((post) => {
             const link = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
             const pubDate = parsePostDate(post.publishedAt)?.toUTCString();
-            const categoryXml = (post.tagNames ?? []).map((tag) => `      <category>${escapeXml(tag.name)}</category>`).join('\n');
+            const categoryXml = (post.tagNames ?? [])
+                .map((tag) => `      <category>${escapeXml(tag.name)}</category>`)
+                .join('\n');
 
             return [
                 `    <item>`,

@@ -1,8 +1,32 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import type { DateRange, OverviewData, TrendPoint, PageRankItem, SourceItem, DeviceItem, LanguageItem, GeoItem, BrowserItem, OSItem, EntryExitItem, VisitRecord } from '@/lib/domain/analytics';
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    PieChart,
+    Pie,
+    Cell,
+    ResponsiveContainer,
+} from 'recharts';
+import type {
+    DateRange,
+    OverviewData,
+    TrendPoint,
+    PageRankItem,
+    SourceItem,
+    DeviceItem,
+    LanguageItem,
+    GeoItem,
+    BrowserItem,
+    OSItem,
+    EntryExitItem,
+    VisitRecord,
+} from '@/lib/domain/analytics';
 
 import { TrendingUpIcon, TrendingDownIcon, CopyIcon, Trash2Icon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
@@ -89,7 +113,11 @@ function ChangeIndicator({ value }: { value: number }) {
     const isUp = value > 0;
     return (
         <span className={`${styles.change} ${isUp ? styles.changeUp : styles.changeDown}`}>
-            {isUp ? <TrendingUpIcon className={styles.changeIcon} /> : <TrendingDownIcon className={styles.changeIcon} />}
+            {isUp ? (
+                <TrendingUpIcon className={styles.changeIcon} />
+            ) : (
+                <TrendingDownIcon className={styles.changeIcon} />
+            )}
             {isUp ? '+' : ''}
             {value}%
         </span>
@@ -110,14 +138,29 @@ function DonutChart({ data, palette }: { data: DonutEntry[]; palette: string[] }
             <div className={styles.donutSvg}>
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie data={data} cx="50%" cy="50%" innerRadius="52%" outerRadius="78%" dataKey="value" nameKey="name" stroke="none" paddingAngle={1}>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius="52%"
+                            outerRadius="78%"
+                            dataKey="value"
+                            nameKey="name"
+                            stroke="none"
+                            paddingAngle={1}
+                        >
                             {data.map((_, i) => (
                                 <Cell key={i} fill={palette[i % palette.length]} />
                             ))}
                         </Pie>
                         <Tooltip
                             formatter={(val: any, name: any) => [formatNum(Number(val)), String(name)]}
-                            contentStyle={{ border: '1px solid #e7ddd1', background: '#fbf9f9', fontSize: 12, padding: '4px 8px' }}
+                            contentStyle={{
+                                border: '1px solid #e7ddd1',
+                                background: '#fbf9f9',
+                                fontSize: 12,
+                                padding: '4px 8px',
+                            }}
                         />
                     </PieChart>
                 </ResponsiveContainer>
@@ -325,8 +368,16 @@ export default function AnalyticsDashboard() {
         },
         { header: '位置', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.location}</span> },
         { header: 'IP', width: '150px', render: (v) => <span className={styles.visitMuted}>{v.ip}</span> },
-        { header: '停留', width: '100px', render: (v) => <span className={styles.visitMuted}>{v.duration != null ? `${v.duration}s` : '-'}</span> },
-        { header: '时间', width: '150px', render: (v) => <span className={styles.visitMuted}>{formatVisitTime(v.createdAt)}</span> },
+        {
+            header: '停留',
+            width: '100px',
+            render: (v) => <span className={styles.visitMuted}>{v.duration != null ? `${v.duration}s` : '-'}</span>,
+        },
+        {
+            header: '时间',
+            width: '150px',
+            render: (v) => <span className={styles.visitMuted}>{formatVisitTime(v.createdAt)}</span>,
+        },
     ];
 
     /* 入口/出口页面表格列 */
@@ -353,19 +404,42 @@ export default function AnalyticsDashboard() {
 
     return (
         <>
-            <AdminPageHeader description="查看站点访问数据，了解流量趋势和用户行为。" eyebrow="Analytics" tag={sites.length > 0 ? `${sites.length} 个站点` : undefined} title="网站统计" />
+            <AdminPageHeader
+                description="查看站点访问数据，了解流量趋势和用户行为。"
+                eyebrow="Analytics"
+                tag={sites.length > 0 ? `${sites.length} 个站点` : undefined}
+                title="网站统计"
+            />
 
             {/* 控制栏 */}
             <div className={styles.controls}>
                 <div className={styles.siteSelect}>
-                    <Select options={sites.map((s) => ({ value: s.id, label: `${s.name} (${s.id})` }))} value={siteId} onChange={setSiteId} placeholder="暂无站点" size="medium" />
+                    <Select
+                        options={sites.map((s) => ({ value: s.id, label: `${s.name} (${s.id})` }))}
+                        value={siteId}
+                        onChange={setSiteId}
+                        placeholder="暂无站点"
+                        size="medium"
+                    />
                     {siteId && (
-                        <GhostButton asButton icon={<CopyIcon />} onClick={copyEmbedCode} size="small" title="复制接入代码">
+                        <GhostButton
+                            asButton
+                            icon={<CopyIcon />}
+                            onClick={copyEmbedCode}
+                            size="small"
+                            title="复制接入代码"
+                        >
                             接入代码
                         </GhostButton>
                     )}
                     {siteId && (
-                        <GhostButton asButton icon={<Trash2Icon />} onClick={() => setClearOpen(true)} size="small" title="清空该站点全部统计记录">
+                        <GhostButton
+                            asButton
+                            icon={<Trash2Icon />}
+                            onClick={() => setClearOpen(true)}
+                            size="small"
+                            title="清空该站点全部统计记录"
+                        >
                             清空记录
                         </GhostButton>
                     )}
@@ -448,10 +522,18 @@ export default function AnalyticsDashboard() {
                                 <h3 className={styles.cardTitle}>流量趋势</h3>
                                 <div className={styles.legend}>
                                     <span className={styles.legendItem}>
-                                        <span className={styles.legendLine} style={{ background: CHART_COLORS.primary }} /> 浏览量
+                                        <span
+                                            className={styles.legendLine}
+                                            style={{ background: CHART_COLORS.primary }}
+                                        />{' '}
+                                        浏览量
                                     </span>
                                     <span className={styles.legendItem}>
-                                        <span className={`${styles.legendLine} ${styles.legendLineDashed}`} style={{ background: CHART_COLORS.muted }} /> 访客数
+                                        <span
+                                            className={`${styles.legendLine} ${styles.legendLineDashed}`}
+                                            style={{ background: CHART_COLORS.muted }}
+                                        />{' '}
+                                        访客数
                                     </span>
                                 </div>
                             </div>
@@ -467,10 +549,30 @@ export default function AnalyticsDashboard() {
                                                 axisLine={{ stroke: CHART_COLORS.mutedSubtle }}
                                                 tickLine={false}
                                             />
-                                            <YAxis tick={{ fontSize: 12, fill: CHART_COLORS.muted }} axisLine={false} tickLine={false} tickFormatter={formatNum} />
+                                            <YAxis
+                                                tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tickFormatter={formatNum}
+                                            />
                                             <Tooltip content={<ChartTooltip />} />
-                                            <Area type="monotone" dataKey="pv" name="pv" stroke={CHART_COLORS.primary} fill={CHART_COLORS.primarySubtle} strokeWidth={2} />
-                                            <Area type="monotone" dataKey="uv" name="uv" stroke={CHART_COLORS.muted} fill="none" strokeWidth={1.5} strokeDasharray="4 2" />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="pv"
+                                                name="pv"
+                                                stroke={CHART_COLORS.primary}
+                                                fill={CHART_COLORS.primarySubtle}
+                                                strokeWidth={2}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="uv"
+                                                name="uv"
+                                                stroke={CHART_COLORS.muted}
+                                                fill="none"
+                                                strokeWidth={1.5}
+                                                strokeDasharray="4 2"
+                                            />
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 ) : (
@@ -491,10 +593,14 @@ export default function AnalyticsDashboard() {
                                                 <div className={styles.rankBody}>
                                                     <span className={styles.rankLabel}>{page.path}</span>
                                                     <div className={styles.barTrack}>
-                                                        <div className={styles.barFill} style={{ width: `${(page.pv / maxPagePv) * 100}%` }} />
+                                                        <div
+                                                            className={styles.barFill}
+                                                            style={{ width: `${(page.pv / maxPagePv) * 100}%` }}
+                                                        />
                                                     </div>
                                                     <span className={styles.rankMeta}>
-                                                        跳出 {page.bounceRate}% · 停留 {formatDuration(page.avgDuration)}
+                                                        跳出 {page.bounceRate}% · 停留{' '}
+                                                        {formatDuration(page.avgDuration)}
                                                     </span>
                                                 </div>
                                                 <span className={styles.rankNum}>{formatNum(page.pv)}</span>
@@ -514,7 +620,10 @@ export default function AnalyticsDashboard() {
                                             <div key={src.source} className={styles.sourceRow}>
                                                 <span className={styles.sourceName}>{src.source}</span>
                                                 <div className={styles.sourceBarTrack}>
-                                                    <div className={styles.sourceBarFill} style={{ width: `${src.percent}%` }} />
+                                                    <div
+                                                        className={styles.sourceBarFill}
+                                                        style={{ width: `${src.percent}%` }}
+                                                    />
                                                 </div>
                                                 <span className={styles.sourcePct}>{src.percent}%</span>
                                             </div>
@@ -530,7 +639,10 @@ export default function AnalyticsDashboard() {
                         <div className={styles.cardThird}>
                             <h3 className={styles.cardTitle}>设备分布</h3>
                             {devices.length > 0 ? (
-                                <DonutChart data={devices.map((d) => ({ name: d.device, value: d.count, percent: d.percent }))} palette={DEVICE_PALETTE} />
+                                <DonutChart
+                                    data={devices.map((d) => ({ name: d.device, value: d.count, percent: d.percent }))}
+                                    palette={DEVICE_PALETTE}
+                                />
                             ) : (
                                 <div className={styles.chartEmpty}>暂无数据</div>
                             )}
@@ -539,7 +651,14 @@ export default function AnalyticsDashboard() {
                         <div className={styles.cardThird}>
                             <h3 className={styles.cardTitle}>浏览器</h3>
                             {browsers.length > 0 ? (
-                                <DonutChart data={browsers.map((b) => ({ name: b.browser, value: b.count, percent: b.percent }))} palette={BROWSER_PALETTE} />
+                                <DonutChart
+                                    data={browsers.map((b) => ({
+                                        name: b.browser,
+                                        value: b.count,
+                                        percent: b.percent,
+                                    }))}
+                                    palette={BROWSER_PALETTE}
+                                />
                             ) : (
                                 <div className={styles.chartEmpty}>暂无数据</div>
                             )}
@@ -548,7 +667,10 @@ export default function AnalyticsDashboard() {
                         <div className={styles.cardThird}>
                             <h3 className={styles.cardTitle}>操作系统</h3>
                             {osList.length > 0 ? (
-                                <DonutChart data={osList.map((o) => ({ name: o.os, value: o.count, percent: o.percent }))} palette={OS_PALETTE} />
+                                <DonutChart
+                                    data={osList.map((o) => ({ name: o.os, value: o.count, percent: o.percent }))}
+                                    palette={OS_PALETTE}
+                                />
                             ) : (
                                 <div className={styles.chartEmpty}>暂无数据</div>
                             )}
@@ -612,12 +734,22 @@ export default function AnalyticsDashboard() {
                         <div className={styles.rowPair}>
                             <div className={styles.pairCard}>
                                 <h3 className={styles.cardTitle}>入口页面 TOP 10</h3>
-                                <DataTable columns={entryExitColumns} emptyText="暂无数据" rowKey={(r) => r.path} rows={entryPages} />
+                                <DataTable
+                                    columns={entryExitColumns}
+                                    emptyText="暂无数据"
+                                    rowKey={(r) => r.path}
+                                    rows={entryPages}
+                                />
                             </div>
 
                             <div className={styles.pairCard}>
                                 <h3 className={styles.cardTitle}>出口页面 TOP 10</h3>
-                                <DataTable columns={entryExitColumns} emptyText="暂无数据" rowKey={(r) => r.path} rows={exitPages} />
+                                <DataTable
+                                    columns={entryExitColumns}
+                                    emptyText="暂无数据"
+                                    rowKey={(r) => r.path}
+                                    rows={exitPages}
+                                />
                             </div>
                         </div>
                     </div>
@@ -633,7 +765,13 @@ export default function AnalyticsDashboard() {
                     </div>
                 ) : (
                     <>
-                        <DataTable scrollable columns={visitColumns} emptyText={visitsLoading ? '加载中...' : '暂无访问记录'} rowKey={(v) => v.id} rows={visits.data} />
+                        <DataTable
+                            scrollable
+                            columns={visitColumns}
+                            emptyText={visitsLoading ? '加载中...' : '暂无访问记录'}
+                            rowKey={(v) => v.id}
+                            rows={visits.data}
+                        />
                         <Pagination
                             current={visitsPage}
                             onPageChange={setVisitsPage}

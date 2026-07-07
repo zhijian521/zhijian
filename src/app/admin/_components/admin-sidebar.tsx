@@ -52,7 +52,14 @@ export default function AdminSidebar() {
         <aside className={styles.sidebar}>
             {/* 品牌区 */}
             <div className={styles.brand}>
-                <Image alt="Zhijian Admin" className={styles.logo} height={52} priority src="/images/logo.webp" width={52} />
+                <Image
+                    alt="Zhijian Admin"
+                    className={styles.logo}
+                    height={52}
+                    priority
+                    src="/images/logo.webp"
+                    width={52}
+                />
                 <div className={styles.brandText}>
                     <h2 className={styles.brandTitle}>{SITE_METADATA.adminName}</h2>
                     <p className={styles.brandSubtitle}>Content Management</p>
@@ -93,7 +100,11 @@ export default function AdminSidebar() {
                             const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
                             const Icon = item.icon;
                             return (
-                                <Link className={cn(styles.navItem, isActive && styles.navActive)} href={item.href} key={item.href}>
+                                <Link
+                                    className={cn(styles.navItem, isActive && styles.navActive)}
+                                    href={item.href}
+                                    key={item.href}
+                                >
                                     <Icon className={styles.navIcon} />
                                     <span>{item.label}</span>
                                 </Link>
@@ -107,18 +118,30 @@ export default function AdminSidebar() {
 
                     return (
                         <div className={styles.navGroup} key={group.key}>
-                            <button className={styles.groupHeader} onClick={() => toggleGroup(group.key)} type="button" aria-expanded={open}>
+                            <button
+                                className={styles.groupHeader}
+                                onClick={() => toggleGroup(group.key)}
+                                type="button"
+                                aria-expanded={open}
+                            >
                                 {GroupIcon && <GroupIcon className={styles.groupIcon} />}
                                 <span>{group.label}</span>
                                 <ChevronRightIcon className={cn(styles.groupArrow, open && styles.groupArrowOpen)} />
                             </button>
 
-                            <div className={styles.subNav} style={{ maxHeight: open ? `${group.items.length * 50}px` : '0' }}>
+                            <div
+                                className={styles.subNav}
+                                style={{ maxHeight: open ? `${group.items.length * 50}px` : '0' }}
+                            >
                                 {group.items.map((item) => {
                                     const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
                                     const Icon = item.icon;
                                     return (
-                                        <Link className={cn(styles.subNavItem, isActive && styles.subNavActive)} href={item.href} key={item.href}>
+                                        <Link
+                                            className={cn(styles.subNavItem, isActive && styles.subNavActive)}
+                                            href={item.href}
+                                            key={item.href}
+                                        >
                                             <Icon className={styles.navIcon} />
                                             <span>{item.label}</span>
                                         </Link>
@@ -136,7 +159,12 @@ export default function AdminSidebar() {
                     <UserCircle2Icon className={styles.navIcon} />
                     <span>个人资料</span>
                 </button>
-                <button className={cn(styles.footerButton, styles.navItem, styles.footerDanger)} disabled={isLoggingOut} onClick={handleLogout} type="button">
+                <button
+                    className={cn(styles.footerButton, styles.navItem, styles.footerDanger)}
+                    disabled={isLoggingOut}
+                    onClick={handleLogout}
+                    type="button"
+                >
                     <LogOutIcon className={styles.navIcon} />
                     <span>{isLoggingOut ? '退出中...' : '退出登录'}</span>
                 </button>

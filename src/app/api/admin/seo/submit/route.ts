@@ -19,7 +19,11 @@ export const POST = withAdmin(async () => {
     try {
         const posts = await getPublishedPosts();
 
-        const urls = [SITE_METADATA.siteUrl, `${SITE_METADATA.siteUrl}/blog`, ...posts.map((post) => `${SITE_METADATA.siteUrl}/blog/${post.slug}`)];
+        const urls = [
+            SITE_METADATA.siteUrl,
+            `${SITE_METADATA.siteUrl}/blog`,
+            ...posts.map((post) => `${SITE_METADATA.siteUrl}/blog/${post.slug}`),
+        ];
 
         const result = await submitUrlsToSearchEngines(urls);
 

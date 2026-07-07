@@ -23,14 +23,23 @@ const SIZE_CLASS: Record<string, string | undefined> = {
 };
 
 /*== GhostButton 幽灵按钮 — 边框按钮+图标，hover 变暖 ==*/
-export function GhostButton({ icon, variant = 'default', size = 'medium', asButton, className, children, ...props }: GhostButtonProps) {
+export function GhostButton({
+    icon,
+    variant = 'default',
+    size = 'medium',
+    asButton,
+    className,
+    children,
+    ...props
+}: GhostButtonProps) {
     const sizeClass = SIZE_CLASS[size];
     const classes = `${styles.button} ${styles[variant]}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`;
     const iconEl = icon ? <span className={styles.icon}>{icon}</span> : null;
 
     if (asButton) {
         /*-- 过滤掉 a 标签专属属性 --*/
-        const { href, target, rel, ...rest } = props as React.AnchorHTMLAttributes<HTMLAnchorElement> & Record<string, unknown>;
+        const { href, target, rel, ...rest } = props as React.AnchorHTMLAttributes<HTMLAnchorElement> &
+            Record<string, unknown>;
         const buttonProps = rest as React.ButtonHTMLAttributes<HTMLButtonElement>;
         return (
             <button className={classes} type="button" {...buttonProps}>

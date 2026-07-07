@@ -37,7 +37,17 @@ interface BlogListClientProps {
     totalPages: number;
 }
 
-export default function BlogListClient({ activeCategorySlug, activeFilterChips, activeTagSlugs, categoryOptions, currentPage, paginationHrefs, posts, tagOptions, totalPages }: BlogListClientProps) {
+export default function BlogListClient({
+    activeCategorySlug,
+    activeFilterChips,
+    activeTagSlugs,
+    categoryOptions,
+    currentPage,
+    paginationHrefs,
+    posts,
+    tagOptions,
+    totalPages,
+}: BlogListClientProps) {
     const [filterOpen, setFilterOpen] = useState(false);
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -75,7 +85,12 @@ export default function BlogListClient({ activeCategorySlug, activeFilterChips, 
                             {hasActiveFilters ? (
                                 <div className={styles.activeFilters}>
                                     {activeFilterChips.map((chip, i) => (
-                                        <button className={styles.activeFilterChip} onClick={() => navigateTo(chip.removeHref)} key={`${i}-${chip.label}`} type="button">
+                                        <button
+                                            className={styles.activeFilterChip}
+                                            onClick={() => navigateTo(chip.removeHref)}
+                                            key={`${i}-${chip.label}`}
+                                            type="button"
+                                        >
                                             {chip.label}
                                             <XIcon className={styles.activeFilterClose} />
                                         </button>
@@ -146,7 +161,9 @@ export default function BlogListClient({ activeCategorySlug, activeFilterChips, 
                                             <h2 className={styles.itemTitle}>{post.title}</h2>
                                             <p className={styles.itemSummary}>{post.summary}</p>
                                             <div className={styles.itemMeta}>
-                                                {post.categoryName ? <span className={styles.itemCategory}>{post.categoryName}</span> : null}
+                                                {post.categoryName ? (
+                                                    <span className={styles.itemCategory}>{post.categoryName}</span>
+                                                ) : null}
                                                 {post.tagNames && post.tagNames.length > 0 ? (
                                                     <div className={styles.itemTags}>
                                                         {post.tagNames.map((tag) => (
@@ -156,7 +173,9 @@ export default function BlogListClient({ activeCategorySlug, activeFilterChips, 
                                                         ))}
                                                     </div>
                                                 ) : null}
-                                                <span className={styles.itemDate}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
+                                                <span className={styles.itemDate}>
+                                                    {formatPostDate(post.updatedAt || post.publishedAt)}
+                                                </span>
                                             </div>
                                         </div>
                                         {post.coverImage ? (
@@ -172,11 +191,25 @@ export default function BlogListClient({ activeCategorySlug, activeFilterChips, 
                                     </Link>
                                 ))
                             ) : (
-                                <p style={{ color: 'var(--muted-foreground)', padding: '2rem 0', fontSize: '0.9375rem' }}>没有匹配的文章。</p>
+                                <p
+                                    style={{
+                                        color: 'var(--muted-foreground)',
+                                        padding: '2rem 0',
+                                        fontSize: '0.9375rem',
+                                    }}
+                                >
+                                    没有匹配的文章。
+                                </p>
                             )}
                         </div>
 
-                        {totalPages > 1 ? <Pagination current={currentPage} getHref={(page) => paginationHrefs[page] ?? '/blog'} total={totalPages} /> : null}
+                        {totalPages > 1 ? (
+                            <Pagination
+                                current={currentPage}
+                                getHref={(page) => paginationHrefs[page] ?? '/blog'}
+                                total={totalPages}
+                            />
+                        ) : null}
                     </section>
 
                     <aside className={styles.sidebar}>

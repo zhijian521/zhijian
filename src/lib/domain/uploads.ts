@@ -121,7 +121,13 @@ export async function saveUpload(file: File): Promise<Upload | null> {
         const [result] = await db.execute<ResultSetHeader>(
             `INSERT INTO zhijian_blog_uploads (filename, original, path, size, mime, alt, created_at)
              VALUES (?, ?, ?, ?, ?, '', NOW())`,
-            [filename, shouldConvert ? file.name.replace(/\.[^.]+$/, '.webp') : file.name, relativePath, actualSize, outputMime]
+            [
+                filename,
+                shouldConvert ? file.name.replace(/\.[^.]+$/, '.webp') : file.name,
+                relativePath,
+                actualSize,
+                outputMime,
+            ]
         );
 
         return getUploadById(result.insertId);
@@ -191,7 +197,10 @@ export async function listUploads(page: number, pageSize: number): Promise<{ dat
 /*== 更新 ==*/
 
 /*== 更新上传记录的名称和/或 alt。 返回更新后的记录，失败返回 null。 ==*/
-export async function updateUploadById(id: number, fields: { original?: string; alt?: string }): Promise<Upload | null> {
+export async function updateUploadById(
+    id: number,
+    fields: { original?: string; alt?: string }
+): Promise<Upload | null> {
     const db = getDb();
     if (!db) return null;
 
@@ -212,7 +221,10 @@ export async function updateUploadById(id: number, fields: { original?: string; 
     values.push(id);
 
     try {
-        const [result] = await db.execute<ResultSetHeader>(`UPDATE zhijian_blog_uploads SET ${sets.join(', ')} WHERE id = ?`, values);
+        const [result] = await db.execute<ResultSetHeader>(
+            `UPDATE zhijian_blog_uploads SET ${sets.join(', ')} WHERE id = ?`,
+            values
+        );
         if (result.affectedRows === 0) return null;
         return getUploadById(id);
     } catch (err) {

@@ -177,7 +177,12 @@ export default function SiteManagement() {
             render: (site) => (
                 <span className={styles.idCell}>
                     {site.id}
-                    <IconButton icon={<CopyIcon />} onClick={() => copyEmbedCode(site.id)} size="small" title="复制接入代码" />
+                    <IconButton
+                        icon={<CopyIcon />}
+                        onClick={() => copyEmbedCode(site.id)}
+                        size="small"
+                        title="复制接入代码"
+                    />
                 </span>
             ),
         },
@@ -193,7 +198,14 @@ export default function SiteManagement() {
                         size="medium"
                         title={site.status === 'active' ? '暂停' : '启用'}
                     />
-                    <IconButton icon={<Trash2Icon />} onClick={() => setDeleteTarget({ id: site.id, name: site.name })} size="medium" title="删除" variant="danger" disabled={deleting === site.id} />
+                    <IconButton
+                        icon={<Trash2Icon />}
+                        onClick={() => setDeleteTarget({ id: site.id, name: site.name })}
+                        size="medium"
+                        title="删除"
+                        variant="danger"
+                        disabled={deleting === site.id}
+                    />
                 </div>
             ),
         },
@@ -201,15 +213,31 @@ export default function SiteManagement() {
 
     return (
         <>
-            <AdminPageHeader description="管理监控站点，获取接入代码嵌入目标网站即可开始采集数据。" eyebrow="Analytics" tag={`${data.total} 个站点`} title="站点管理" />
+            <AdminPageHeader
+                description="管理监控站点，获取接入代码嵌入目标网站即可开始采集数据。"
+                eyebrow="Analytics"
+                tag={`${data.total} 个站点`}
+                title="站点管理"
+            />
 
             <div className={styles.toolbar}>
-                <GhostButton asButton icon={<PlusIcon className={shared.btnIcon} />} onClick={openCreateForm} size="medium" variant="primary">
+                <GhostButton
+                    asButton
+                    icon={<PlusIcon className={shared.btnIcon} />}
+                    onClick={openCreateForm}
+                    size="medium"
+                    variant="primary"
+                >
                     新增站点
                 </GhostButton>
             </div>
 
-            <DataTable columns={columns} emptyText={loading ? '加载中...' : '暂无站点'} rowKey={(site) => site.id} rows={data.data} />
+            <DataTable
+                columns={columns}
+                emptyText={loading ? '加载中...' : '暂无站点'}
+                rowKey={(site) => site.id}
+                rows={data.data}
+            />
 
             <ConfirmDialog
                 confirmLabel="删除"
@@ -222,10 +250,28 @@ export default function SiteManagement() {
             />
 
             {/* 新增/编辑弹窗 */}
-            <Dialog onClose={() => setFormOpen(false)} open={formOpen} title={formMode === 'create' ? '新增站点' : `编辑站点：${editingSite?.name || ''}`}>
+            <Dialog
+                onClose={() => setFormOpen(false)}
+                open={formOpen}
+                title={formMode === 'create' ? '新增站点' : `编辑站点：${editingSite?.name || ''}`}
+            >
                 <form className={shared.form} onSubmit={handleSubmit}>
-                    <TextInput id="site-name" label="站点名称" onChange={(e) => setFormName(e.target.value)} placeholder="如：主站、博客" required value={formName} />
-                    <TextInput id="site-domain" label="站点域名" onChange={(e) => setFormDomain(e.target.value)} placeholder="如：yuwb.cn" required value={formDomain} />
+                    <TextInput
+                        id="site-name"
+                        label="站点名称"
+                        onChange={(e) => setFormName(e.target.value)}
+                        placeholder="如：主站、博客"
+                        required
+                        value={formName}
+                    />
+                    <TextInput
+                        id="site-domain"
+                        label="站点域名"
+                        onChange={(e) => setFormDomain(e.target.value)}
+                        placeholder="如：yuwb.cn"
+                        required
+                        value={formDomain}
+                    />
                     <div className={shared.formActions}>
                         <GhostButton asButton onClick={() => setFormOpen(false)}>
                             取消
@@ -250,7 +296,13 @@ export default function SiteManagement() {
                         <code>{getEmbedScript(codeDialogSiteId)}</code>
                     </div>
                     <div className={styles.codeActions}>
-                        <GhostButton asButton icon={<CopyIcon />} onClick={() => copyEmbedCode(codeDialogSiteId)} size="medium" variant="primary">
+                        <GhostButton
+                            asButton
+                            icon={<CopyIcon />}
+                            onClick={() => copyEmbedCode(codeDialogSiteId)}
+                            size="medium"
+                            variant="primary"
+                        >
                             复制代码
                         </GhostButton>
                     </div>

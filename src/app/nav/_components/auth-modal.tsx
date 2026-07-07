@@ -81,10 +81,18 @@ export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLog
             title={tab === 'login' ? '登录' : '注册'}
         >
             <div className={styles.tabs}>
-                <button className={`${styles.tab} ${tab === 'login' ? styles.tabActive : ''}`} onClick={() => switchTab('login')} type="button">
+                <button
+                    className={`${styles.tab} ${tab === 'login' ? styles.tabActive : ''}`}
+                    onClick={() => switchTab('login')}
+                    type="button"
+                >
                     登录
                 </button>
-                <button className={`${styles.tab} ${tab === 'register' ? styles.tabActive : ''}`} onClick={() => switchTab('register')} type="button">
+                <button
+                    className={`${styles.tab} ${tab === 'register' ? styles.tabActive : ''}`}
+                    onClick={() => switchTab('register')}
+                    type="button"
+                >
                     注册
                 </button>
             </div>
@@ -92,19 +100,40 @@ export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLog
             <form onSubmit={tab === 'login' ? handleLogin : handleRegister}>
                 <label className={styles.fieldLabel}>
                     用户名
-                    <input className={styles.fieldInput} onChange={(e) => setUsername(e.target.value)} placeholder="用户名" required type="text" value={username} />
+                    <input
+                        className={styles.fieldInput}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="用户名"
+                        required
+                        type="text"
+                        value={username}
+                    />
                 </label>
 
                 {tab === 'register' && (
                     <label className={styles.fieldLabel}>
                         邮箱
-                        <input className={styles.fieldInput} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" required type="email" value={email} />
+                        <input
+                            className={styles.fieldInput}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="email@example.com"
+                            required
+                            type="email"
+                            value={email}
+                        />
                     </label>
                 )}
 
                 <label className={styles.fieldLabel}>
                     密码
-                    <input className={styles.fieldInput} onChange={(e) => setPassword(e.target.value)} placeholder="至少 6 位" required type="password" value={password} />
+                    <input
+                        className={styles.fieldInput}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="至少 6 位"
+                        required
+                        type="password"
+                        value={password}
+                    />
                 </label>
 
                 {error && <p className={styles.error}>{error}</p>}

@@ -52,10 +52,13 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         getTodos(isLoggedIn).then(setTodos);
     }, [isLoggedIn, dataVersion]);
 
-    const persist = useCallback((updated: TodoItem[]) => {
-        setTodos(updated);
-        saveTodos(updated, isLoggedIn);
-    }, [isLoggedIn]);
+    const persist = useCallback(
+        (updated: TodoItem[]) => {
+            setTodos(updated);
+            saveTodos(updated, isLoggedIn);
+        },
+        [isLoggedIn]
+    );
 
     function todosOf(q: Quadrant): TodoItem[] {
         return todos.filter((t) => t.important === q.important && t.urgent === q.urgent);
@@ -89,49 +92,52 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         }
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent, q: Quadrant) => {
-        e.preventDefault();
-        const dt = dropTargetRef.current;
-        if (!dt || !dt.qKey) {
-            setDropTarget(null);
-            return;
-        }
-        if (dt.dragId === dt.overCardId) {
-            setDropTarget(null);
-            return;
-        }
-
-        const list = todosRef.current;
-        const dragged = list.find((t) => t.id === dt.dragId);
-        if (!dragged) {
-            setDropTarget(null);
-            return;
-        }
-
-        const moved: TodoItem = { ...dragged, important: q.important, urgent: q.urgent };
-        const without = list.filter((t) => t.id !== dt.dragId);
-
-        let insertIdx = without.length;
-        if (dt.overCardId) {
-            const overIdx = without.findIndex((t) => t.id === dt.overCardId);
-            if (overIdx !== -1) insertIdx = overIdx;
-        } else {
-            let lastQIdx = -1;
-            for (let i = without.length - 1; i >= 0; i--) {
-                const t = without[i];
-                if (t.important === q.important && t.urgent === q.urgent) {
-                    lastQIdx = i;
-                    break;
-                }
+    const handleDrop = useCallback(
+        (e: React.DragEvent, q: Quadrant) => {
+            e.preventDefault();
+            const dt = dropTargetRef.current;
+            if (!dt || !dt.qKey) {
+                setDropTarget(null);
+                return;
             }
-            insertIdx = lastQIdx + 1;
-        }
+            if (dt.dragId === dt.overCardId) {
+                setDropTarget(null);
+                return;
+            }
 
-        const next = [...without];
-        next.splice(insertIdx, 0, moved);
-        persist(next);
-        setDropTarget(null);
-    }, [persist]);
+            const list = todosRef.current;
+            const dragged = list.find((t) => t.id === dt.dragId);
+            if (!dragged) {
+                setDropTarget(null);
+                return;
+            }
+
+            const moved: TodoItem = { ...dragged, important: q.important, urgent: q.urgent };
+            const without = list.filter((t) => t.id !== dt.dragId);
+
+            let insertIdx = without.length;
+            if (dt.overCardId) {
+                const overIdx = without.findIndex((t) => t.id === dt.overCardId);
+                if (overIdx !== -1) insertIdx = overIdx;
+            } else {
+                let lastQIdx = -1;
+                for (let i = without.length - 1; i >= 0; i--) {
+                    const t = without[i];
+                    if (t.important === q.important && t.urgent === q.urgent) {
+                        lastQIdx = i;
+                        break;
+                    }
+                }
+                insertIdx = lastQIdx + 1;
+            }
+
+            const next = [...without];
+            next.splice(insertIdx, 0, moved);
+            persist(next);
+            setDropTarget(null);
+        },
+        [persist]
+    );
 
     const handleDragEnd = useCallback(() => {
         setDropTarget(null);
@@ -180,12 +186,22 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                     const items = todosOf(q);
                     const isOver = dropTarget?.qKey === q.key;
                     return (
-                        <div key={q.key} className={`${styles.quadrant} ${q.cls} ${isOver ? styles.dragOver : ''}`} onDragOver={(e) => handleQDragOver(e, q)} onDrop={(e) => handleDrop(e, q)}>
+                        <div
+                            key={q.key}
+                            className={`${styles.quadrant} ${q.cls} ${isOver ? styles.dragOver : ''}`}
+                            onDragOver={(e) => handleQDragOver(e, q)}
+                            onDrop={(e) => handleDrop(e, q)}
+                        >
                             <div className={styles.qHeader}>
                                 <span className={styles.qDot} />
                                 <span className={styles.qTitle}>{q.label}</span>
                                 <span className={styles.qCount}>{items.length}</span>
-                                <button aria-label="新增" className={styles.qAdd} onClick={() => handleAddInQuadrant(q)} type="button">
+                                <button
+                                    aria-label="新增"
+                                    className={styles.qAdd}
+                                    onClick={() => handleAddInQuadrant(q)}
+                                    type="button"
+                                >
                                     <PlusIcon style={{ width: '0.875rem', height: '0.875rem' }} />
                                 </button>
                             </div>
@@ -209,7 +225,13 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                                 if (!isEditing) setEditingId(t.id);
                                             }}
                                         >
-                                            <input checked={t.done} className={styles.cardCheckbox} onChange={() => handleToggle(t.id)} onClick={(e) => e.stopPropagation()} type="checkbox" />
+                                            <input
+                                                checked={t.done}
+                                                className={styles.cardCheckbox}
+                                                onChange={() => handleToggle(t.id)}
+                                                onClick={(e) => e.stopPropagation()}
+                                                type="checkbox"
+                                            />
                                             {isEditing ? (
                                                 <textarea
                                                     autoFocus
@@ -233,7 +255,11 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                                     onClick={(e) => e.stopPropagation()}
                                                 />
                                             ) : (
-                                                <div className={`${styles.cardText} ${t.done ? styles.cardTextDone : ''}`}>{t.text || '（空）'}</div>
+                                                <div
+                                                    className={`${styles.cardText} ${t.done ? styles.cardTextDone : ''}`}
+                                                >
+                                                    {t.text || '（空）'}
+                                                </div>
                                             )}
                                             <button
                                                 aria-label="删除"
