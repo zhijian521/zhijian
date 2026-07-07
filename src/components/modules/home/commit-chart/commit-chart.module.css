@@ -54,7 +54,7 @@
     border-radius: 0;
     padding: 0;
     cursor: pointer;
-    transition: outline var(--transition-fas);
+    transition: outline var(--transition-fast);
 }
 
 .cell:focus-visible {
