@@ -4,6 +4,7 @@
     width: 100%;
     min-height: 100vh;
     background: url('/images/bg-ink.webp') center / cover no-repeat fixed;
+    padding-top: 4rem ;
 }
 
 /*== 文章容器 ==*/
@@ -12,7 +13,7 @@
     z-index: 1;
     max-width: 56rem;
     margin: 0 auto;
-    padding: 8rem 1.5rem 4rem;
+    padding: 4rem 1.5rem 4rem;
     background: color-mix(in srgb, var(--muted) 50%, transparent);
 }
 
