@@ -1,16 +1,15 @@
 import { unstable_noStore as noStore } from 'next/cache';
-import { getDb } from '../core/db';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-export type { PostStatus } from './post-shared';
-export type { Post } from './post-shared';
-export { parsePostDate, toPostIsoDateTime, formatPostDate, formatPostDateTime, toDateTimeLocalValue, splitPostContent } from './post-shared';
-
+/*== 数据与配置 ==*/
+import { getDb } from '@/lib/core/db';
 import type { Post, PostStatus } from './post-shared';
+export type { Post, PostStatus } from './post-shared';
+export { formatPostDate, formatPostDateTime, parsePostDate, splitPostContent, toDateTimeLocalValue, toPostIsoDateTime } from './post-shared';
 
 /*== 类型定义 ==*/
 
-/*== 更新文章的输入参数，由后台编辑表单提交后传入。 ==*/
+/*-- 更新文章的输入参数，由后台编辑表单提交后传入 --*/
 export interface UpdatePostInput {
     slug?: string;
     title?: string;
@@ -24,7 +23,7 @@ export interface UpdatePostInput {
     tags?: number[];
 }
 
-/*== 创建新文章的输入参数，仅需提供标题即可生成草稿。 ==*/
+/*-- 创建新文章的输入参数，仅需提供标题即可生成草稿 --*/
 export interface CreatePostInput {
     slug: string;
     title: string;
@@ -36,14 +35,14 @@ export interface CreatePostInput {
     tags?: number[];
 }
 
-/*== 前台文章列表查询参数：支持分类、标签服务端过滤和数量限制。 ==*/
+/*-- 前台文章列表查询参数：支持分类、标签服务端过滤和数量限制 --*/
 export interface PublishedPostFilter {
     categorySlug?: string;
     tagSlugs?: string[];
     limit?: number;
 }
 
-/*== 内部查询选项，统一数据库读取时的条件组合逻辑。 ==*/
+/*-- 内部查询选项，统一数据库读取时的条件组合逻辑 --*/
 interface ReadPostsOptions {
     includeDrafts: boolean;
     id?: number;
@@ -53,7 +52,7 @@ interface ReadPostsOptions {
     limit?: number;
 }
 
-/*== MySQL 查询返回的原始行类型，字段名与数据库列名保持一致。 ==*/
+/*-- MySQL 查询返回的原始行类型，字段名与数据库列名保持一致 --*/
 interface PostRow extends RowDataPacket {
     id: number;
     slug: string;
@@ -76,7 +75,7 @@ const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
 
 /*== 公开查询 ==*/
 
-/*== 获取已发布文章列表。 ==*/
+/*-- 获取已发布文章列表 --*/
 export async function getPublishedPosts(filter: PublishedPostFilter = {}): Promise<Post[]> {
     noStore();
     const posts = await readPostsFromDatabase({
@@ -88,34 +87,32 @@ export async function getPublishedPosts(filter: PublishedPostFilter = {}): Promi
     return enrichPostsWithTagNames(posts);
 }
 
-/*== 获取全部文章（含草稿），供后台管理列表使用。 ==*/
+/*-- 获取全部文章（含草稿），供后台管理列表使用 --*/
 export async function getAllPosts(): Promise<Post[]> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true });
     return enrichPostsWithTagNames(posts);
 }
 
-/*== 按 Slug 获取单篇已发布文章，用于前台详情页。 @param slug - 文章的唯一标识符 @returns 匹配的文章，未找到时返回 null ==*/
+/*-- 按 Slug 获取单篇已发布文章，用于前台详情页。未找到时返回 null --*/
 export async function getPostBySlug(slug: string): Promise<Post | null> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: false, slug });
     if (posts.length === 0) return null;
-    if (posts[0].tags.length === 0) return posts[0];
     return (await enrichPostsWithTagNames([posts[0]]))[0] ?? null;
 }
 
-/*== 按 ID 获取单篇文章（含草稿），供后台编辑页使用。 @param id - 文章主键 ID @returns 匹配的文章，未找到时返回 null ==*/
+/*-- 按 ID 获取单篇文章（含草稿），供后台编辑页使用。未找到时返回 null --*/
 export async function getPostById(id: number): Promise<Post | null> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true, id });
     if (posts.length === 0) return null;
-    if (posts[0].tags.length === 0) return posts[0];
     return (await enrichPostsWithTagNames([posts[0]]))[0] ?? null;
 }
 
 /*== 写入操作 ==*/
 
-/*== 更新指定文章。采用动态 SET 子句，仅更新传入的字段。 ==*/
+/*-- 更新指定文章。采用动态 SET 子句，仅更新传入的字段 --*/
 export async function updatePostById(id: number, input: UpdatePostInput): Promise<Post | null> {
     const db = getDb();
 
@@ -190,7 +187,7 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
     }
 }
 
-/*== 创建草稿文章。新文章默认先保存为 draft，降低后台误发布风险。 ==*/
+/*-- 创建草稿文章。新文章默认先保存为 draft，降低后台误发布风险 --*/
 export async function createPost(input: CreatePostInput): Promise<Post | null> {
     const db = getDb();
 
@@ -215,7 +212,7 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
     }
 }
 
-/*== 删除指定文章。 ==*/
+/*-- 删除指定文章 --*/
 export async function deletePostById(id: number): Promise<boolean> {
     const db = getDb();
     if (!db) return false;
@@ -225,7 +222,7 @@ export async function deletePostById(id: number): Promise<boolean> {
 
 /*== 内部查询 ==*/
 
-/*== 统一读取文章数据。 includeDrafts、slug、id、分类、标签等条件都在这一层组合。 ==*/
+/*-- 统一读取文章数据。includeDrafts、slug、id、分类、标签等条件都在这一层组合 --*/
 async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]> {
     const db = getDb();
 
@@ -269,7 +266,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-    const limitClause = options.limit && options.limit > 0 ? `LIMIT ${Math.floor(options.limit)}` : '';
+    const limitClause = options.limit && options.limit > 0 ? `LIMIT ${options.limit}` : '';
 
     try {
         const [rows] = await db.query<PostRow[]>(
@@ -332,7 +329,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
     }
 }
 
-/*== 批量查询标签名称，拼装到文章的 tagNames 字段中。查询失败时静默回退，不影响文章列表返回。 ==*/
+/*-- 批量查询标签名称，拼装到文章的 tagNames 字段中。查询失败时静默回退，不影响文章列表返回 --*/
 async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     const allTagIds = posts.flatMap((post) => post.tags).filter(Boolean);
     if (allTagIds.length === 0) return posts;
@@ -361,35 +358,27 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
 
 /*== 内部工具 ==*/
 
-/*== 判断值是否为合法的文章发布状态。 ==*/
+/*-- 判断值是否为合法的文章发布状态 --*/
 export function isPostStatus(value: unknown): value is PostStatus {
     return value === 'draft' || value === 'published';
 }
 
-/*== 根据文章状态规范化发布时间。 ==*/
+/*-- 根据文章状态规范化发布时间 --*/
 function normalizePublishedAt(value: string | null, status: PostStatus): string | null {
     if (!value && status === 'draft') return null;
     if (!value && status === 'published') return formatSqlDate(new Date());
-    const normalized = value!.replace('T', ' ');
-    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(normalized)) {
-        return normalized;
-    }
+    const normalized = (value as string).replace('T', ' ');
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(normalized)) return normalized;
     return normalized + ':00';
 }
 
-/*== 把 JS Date 格式化成 MySQL DATETIME 字符串。 ==*/
+/*-- 把 JS Date 格式化成 MySQL DATETIME 字符串（本地时间） --*/
 function formatSqlDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const day = `${date.getDate()}`.padStart(2, '0');
-    const hours = `${date.getHours()}`.padStart(2, '0');
-    const minutes = `${date.getMinutes()}`.padStart(2, '0');
-    const seconds = `${date.getSeconds()}`.padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
-/*== 从 Markdown 正文中提取所有 /uploads/ 图片路径并去重。 ==*/
+/*-- 从 Markdown 正文中提取所有 /uploads/ 图片路径并去重 --*/
 export function extractImagePaths(content: string): string[] {
     const regex = /!\[.*?\]\((\/uploads\/[^\s)]+)\)/g;
     const paths: string[] = [];
