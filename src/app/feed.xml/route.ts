@@ -1,8 +1,13 @@
-import { getPublishedPosts } from '@/lib/domain/posts';
-import { parsePostDate } from '@/lib/domain/posts';
-import { SITE_METADATA } from '@/lib/core/site';
+/*============================================================================
+  feed.xml — RSS 2.0 Feed
 
-/*== RSS 2.0 Feed — 输出全站已发布文章供 RSS 阅读器订阅 ==*/
+  输出全站已发布文章供 RSS 阅读器订阅。
+  路由 /feed.xml，通过根布局 alternates.types 自动发现。
+============================================================================*/
+
+/*== 数据与配置 ==*/
+import { SITE_METADATA } from '@/lib/core/site';
+import { getPublishedPosts, parsePostDate } from '@/lib/domain/posts';
 
 export async function GET() {
     const posts = await getPublishedPosts();
@@ -50,7 +55,7 @@ ${items}
     });
 }
 
-/*== XML 特殊字符转义，用于 channel 级 title/description 等非 CDATA 区域 ==*/
+/*-- XML 特殊字符转义，用于 channel 级 title/description 等非 CDATA 区域 --*/
 function escapeXml(str: string): string {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

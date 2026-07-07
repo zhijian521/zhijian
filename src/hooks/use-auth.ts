@@ -1,7 +1,15 @@
+/*============================================================================
+  use-auth — 前端鉴权 Hook
+
+  客户端认证状态管理，提供登录/注册/登出/用户信息查询。
+  导航页 AuthModal 使用。
+============================================================================*/
+
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+/*== 类型定义 ==*/
 export interface AuthUser {
     id: number;
     username: string;
@@ -9,6 +17,7 @@ export interface AuthUser {
     role: string;
 }
 
+/*== useAuth — 返回 user / isLoggedIn / loading / login / register / logout ==*/
 export function useAuth() {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);

@@ -1,3 +1,4 @@
+/*== 全屏居中加载态 ==*/
 .root {
     position: fixed;
     inset: 0;
@@ -5,45 +6,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem;
+    gap: var(--space-1);
     background: var(--background);
 }
 
 .text {
     font-family: var(--font-serif);
-    font-size: 1rem;
-    letter-spacing: 0.15em;
+    font-size: var(--text-base);
+    letter-spacing: var(--tracking-wide);
     color: var(--primary);
 }
 
 .dots i {
     display: inline-block;
     font-style: normal;
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
     color: var(--primary);
     animation: fade 1.4s ease-in-out infinite;
 }
 
-.dots i:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.dots i:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dots i:nth-child(3) {
-    animation-delay: 0.4s;
-}
+.dots i:nth-child(1) { animation-delay: 0s; }
+.dots i:nth-child(2) { animation-delay: var(--transition); }
+.dots i:nth-child(3) { animation-delay: var(--transition-slow); /* ponytail: 0.4s，最近 --transition-slow=280ms */ }
 
 @keyframes fade {
-    0%,
-    100% {
-        opacity: 0.2;
-    }
-    50% {
-        opacity: 1;
-    }
+    0%, 100% { opacity: var(--opacity-20); }
+    50%      { opacity: var(--opacity-100); }
 }
 
 @media (prefers-reduced-motion: reduce) {
