@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const projectRoot = resolve(__dirname, '..', '..');
+const projectRoot = resolve(__dirname, '..');
 
 /*== session cookie 名称，与 src/lib/auth.ts 保持一致 ==*/
 const SESSION_COOKIE_NAME = 'zhijian_session';
