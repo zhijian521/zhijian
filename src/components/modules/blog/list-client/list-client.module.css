@@ -1,0 +1,78 @@
+/*== 页面容器 ==*/
+.page {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: url('/images/bg-ink.webp') center / cover no-repeat fixed;
+}
+
+/*== 页面内容区 ==*/
+.pageContent {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
+    max-width: 72rem;
+    padding: var(--space-8) var(--space-6);
+}
+
+@media (min-width: 768px) {
+    .pageContent {
+        padding: var(--space-10) var(--space-7);
+    }
+}
+
+/*== 加载遮罩 ==*/
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.loadingBar {
+    height: 2px;
+    background: var(--primary);
+    animation: loadingSlide 1s ease-in-out infinite;
+}
+
+@keyframes loadingSlide {
+    0% {
+        width: 0;
+        margin-left: 0;
+    }
+    50% {
+        width: 40%;
+        margin-left: 30%;
+    }
+    100% {
+        width: 0;
+        margin-left: 100%;
+    }
+}
+
+/*== 主布局 ==*/
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+}
+
+@media (min-width: 768px) {
+    .layout {
+        flex-direction: row;
+        gap: var(--space-8);
+    }
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+}
+
+/*== 文章列表 ==*/
+.list {
+    display: flex;
+    flex-direction: column;
+}

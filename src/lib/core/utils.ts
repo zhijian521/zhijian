@@ -1,5 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 
+import { SITE_METADATA } from '@/lib/core/site';
+
 /*== 合并 CSS 类名，通过 clsx 解析条件类。用于组件中动态组合 className。 ==*/
 export function cn(...inputs: ClassValue[]) {
     return clsx(inputs);
@@ -42,4 +44,26 @@ export function toAbsoluteUrl(value: string | null | undefined): string | undefi
 export function getEmbedScript(siteId: string): string {
     const base = getScriptUrl();
     return `<script async src="${base}/script.js" data-site-id="${siteId}"></script>`;
+}
+
+/*== 构建博客列表 URL（带筛选参数）。 ==*/
+export function buildBlogUrl(filters: {
+    categorySlug?: string;
+    page?: number;
+    siteUrl?: boolean;
+    tagSlugs?: string[];
+}): string {
+    const params = new URLSearchParams();
+    if (filters.categorySlug) params.set('category', filters.categorySlug);
+    if (filters.tagSlugs && filters.tagSlugs.length > 0) params.set('tags', filters.tagSlugs.join(','));
+    if (filters.page && filters.page > 1) params.set('page', String(filters.page));
+    const query = params.toString();
+    const path = query ? '/blog?' + query : '/blog';
+    return filters.siteUrl ? SITE_METADATA.siteUrl + path : path;
+}
+
+/*== 判断分类是否激活 ==*/
+export function isCategoryActive(activeCategorySlug: string | undefined, slug: string): boolean {
+    if (!activeCategorySlug) return !slug;
+    return activeCategorySlug === slug;
 }

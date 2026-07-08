@@ -1,0 +1,121 @@
+.item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.15s;
+}
+
+.item:first-child {
+    padding-top: 0;
+}
+
+.item:hover {
+    border-color: var(--primary);
+}
+
+@media (min-width: 641px) {
+    .item {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+.body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cover {
+    flex-shrink: 0;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--muted);
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (min-width: 641px) {
+    .cover {
+        width: 180px;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+}
+
+.title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 0.15s;
+}
+
+.item:hover .title {
+    color: var(--primary);
+}
+
+.summary {
+    margin: var(--space-2) 0 var(--space-3);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: var(--space-3);
+    row-gap: var(--space-2);
+    overflow: hidden;
+}
+
+.category {
+    font-size: var(--text-sm);
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.date {
+    margin-left: auto;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    flex-basis: 100%;
+    order: 1;
+}
+
+@media (min-width: 641px) {
+    .tags {
+        flex-basis: auto;
+        order: 0;
+    }
+}

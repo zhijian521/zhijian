@@ -1,0 +1,5 @@
+.empty {
+    color: var(--muted-foreground);
+    padding: var(--space-6) 0;
+    font-size: var(--text-base);
+}

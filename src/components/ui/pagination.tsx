@@ -1,6 +1,8 @@
 import Link from 'next/link';
 
 import { Select } from '@/components/ui/select';
+import { cn } from '@/lib/core/utils';
+
 import styles from './pagination.module.css';
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
@@ -66,14 +68,18 @@ export function Pagination({
 
     function renderPageButton(page: number, isNav = false, label?: string) {
         const text = label ?? String(page);
-        const buttonClass = `${styles.btn}${page === current && !isNav ? ` ${styles.active}` : ''}${isNav ? ` ${styles.navBtn}` : ''}`;
+        const buttonClass = cn(
+            styles.btn,
+            page === current && !isNav && styles.active,
+            isNav && styles.navBtn,
+        );
 
         if (getHref) {
             const isDisabled =
                 isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
             if (isDisabled) {
                 return (
-                    <span aria-disabled="true" className={`${buttonClass} ${styles.disabledLink}`}>
+                    <span aria-disabled="true" className={cn(buttonClass, styles.disabledLink)}>
                         {text}
                     </span>
                 );
@@ -114,7 +120,7 @@ export function Pagination({
     const sizeValue = String(pageSize ?? 10);
 
     return (
-        <nav aria-label="分页导航" className={`${styles.root}${className ? ` ${className}` : ''}`} {...props}>
+        <nav aria-label="分页导航" className={cn(styles.root, className)} {...props}>
             {onPageSizeChange && (
                 <div className={styles.sizeSelector}>
                     <span className={styles.sizeLabel}>每页</span>

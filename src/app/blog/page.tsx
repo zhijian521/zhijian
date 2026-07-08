@@ -1,12 +1,17 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 
+/*== 组件导入 ==*/
+import ListClient from '@/components/modules/blog/list-client/list-client';
+import type { ActiveFilterChip } from '@/components/modules/blog/header/header';
+import type { FilterOption } from '@/components/modules/blog/filter-sidebar/filter-sidebar';
+import { buildBlogUrl } from '@/lib/core/utils';
+
+/*== 数据与配置 ==*/
+import { SITE_METADATA } from '@/lib/core/site';
 import { listCategories } from '@/lib/domain/categories';
 import { getPublishedPosts } from '@/lib/domain/posts';
-import { SITE_METADATA } from '@/lib/core/site';
 import { listTags } from '@/lib/domain/tags';
-
-import BlogListClient from './_components/blog-list-client';
 
 const PAGE_SIZE = 10;
 
@@ -15,6 +20,7 @@ const cachedCategories = cache(listCategories);
 const cachedTags = cache(listTags);
 const cachedPublishedPosts = cache(getPublishedPosts);
 
+/*== 类型定义 ==*/
 interface BlogPageProps {
     searchParams: Promise<{ category?: string; page?: string; tags?: string }>;
 }
@@ -25,12 +31,20 @@ interface BlogFilters {
     tagSlugs: string[];
 }
 
-interface FilterOption {
-    href: string;
-    label: string;
-    slug: string;
+interface FilterState {
+    activeCategoryLabel: string;
+    activeCategorySlug: string | undefined;
+    activeFilterChips: ActiveFilterChip[];
+    activeTagNames: string[];
+    activeTagSlugs: string[];
 }
 
+interface PaginationInfo {
+    currentPage: number;
+    totalPages: number;
+}
+
+/*== 参数解析 ==*/
 function normalizePageNumber(value: string | undefined): number {
     const page = Number(value);
     if (!Number.isFinite(page) || page < 1) {
@@ -66,37 +80,12 @@ async function resolveBlogFilters(searchParams: BlogPageProps['searchParams']): 
     };
 }
 
-function buildBlogUrl(filters: {
-    categorySlug?: string;
-    page?: number;
-    siteUrl?: boolean;
-    tagSlugs?: string[];
-}): string {
-    const params = new URLSearchParams();
-
-    if (filters.categorySlug) {
-        params.set('category', filters.categorySlug);
-    }
-
-    if (filters.tagSlugs && filters.tagSlugs.length > 0) {
-        params.set('tags', filters.tagSlugs.join(','));
-    }
-
-    if (filters.page && filters.page > 1) {
-        params.set('page', String(filters.page));
-    }
-
-    const query = params.toString();
-    const path = query ? `/blog?${query}` : '/blog';
-
-    return filters.siteUrl ? `${SITE_METADATA.siteUrl}${path}` : path;
-}
-
+/*== 筛选状态计算 ==*/
 function resolveFilterState(
     filters: BlogFilters,
     categories: Awaited<ReturnType<typeof listCategories>>,
     tags: Awaited<ReturnType<typeof listTags>>
-) {
+): FilterState {
     const categoryMap = new Map(categories.map((category) => [category.slug, category]));
     const tagMap = new Map(tags.map((tag) => [tag.slug, tag]));
 
@@ -106,8 +95,8 @@ function resolveFilterState(
     const activeTagSlugs = filters.tagSlugs.filter((tagSlug) => tagMap.has(tagSlug));
     const activeTagNames = activeTagSlugs.map((tagSlug) => tagMap.get(tagSlug)!.name);
 
-    /* 预计算筛选标签 chip 的移除 URL，避免客户端重建 URL 逻辑 */
-    const activeFilterChips: { label: string; removeHref: string }[] = [];
+    /*-- 预计算筛选标签 chip 的移除 URL，避免客户端重建 URL 逻辑 --*/
+    const activeFilterChips: ActiveFilterChip[] = [];
     if (activeCategorySlug) {
         activeFilterChips.push({
             label: categoryMap.get(activeCategorySlug)!.name,
@@ -133,6 +122,7 @@ function resolveFilterState(
     };
 }
 
+/*== 筛选选项构建 ==*/
 function buildFilterOptions(options: {
     activeCategorySlug?: string;
     activeTagSlugs: string[];
@@ -140,7 +130,6 @@ function buildFilterOptions(options: {
     tags: Awaited<ReturnType<typeof listTags>>;
 }): {
     categoryOptions: FilterOption[];
-    paginationHrefs: Record<number, string>;
     tagOptions: FilterOption[];
 } {
     const categoryOptions: FilterOption[] = [
@@ -178,32 +167,55 @@ function buildFilterOptions(options: {
 
     return {
         categoryOptions,
-        paginationHrefs: {},
         tagOptions,
     };
 }
 
-function buildPaginationHrefs(options: {
-    activeCategorySlug?: string;
-    activeTagSlugs: string[];
-    totalPages: number;
-}): Record<number, string> {
-    return Object.fromEntries(
-        Array.from({ length: options.totalPages }, (_, index) => {
-            const page = index + 1;
-
-            return [
-                page,
-                buildBlogUrl({
-                    categorySlug: options.activeCategorySlug,
-                    page,
-                    tagSlugs: options.activeTagSlugs,
-                }),
-            ];
-        })
-    );
+/*== 共享计算：分页、标题、描述 ==*/
+function computePagination(totalPosts: number, requestedPage: number): PaginationInfo {
+    const totalPages = Math.max(1, Math.ceil(totalPosts / PAGE_SIZE));
+    const currentPage = Math.min(requestedPage, totalPages);
+    return { currentPage, totalPages };
 }
 
+function buildPageTitle(
+    activeCategorySlug: string | undefined,
+    activeCategoryLabel: string,
+    activeTagNames: string[],
+    currentPage: number
+): string {
+    return [
+        SITE_METADATA.blogTitle,
+        ...(activeCategorySlug ? [activeCategoryLabel] : []),
+        ...(activeTagNames.length > 0 ? [activeTagNames.join(' / ')] : []),
+        ...(currentPage > 1 ? [`第 ${currentPage} 页`] : []),
+    ].join(' - ');
+}
+
+function buildPageDescription(
+    activeCategorySlug: string | undefined,
+    activeCategoryLabel: string,
+    activeTagNames: string[],
+    currentPage: number
+): string {
+    const segments: string[] = [SITE_METADATA.blogDescription];
+
+    if (activeCategorySlug) {
+        segments.push(`当前分类：${activeCategoryLabel}。`);
+    }
+
+    if (activeTagNames.length > 0) {
+        segments.push(`当前标签：${activeTagNames.join('、')}。`);
+    }
+
+    if (currentPage > 1) {
+        segments.push(`当前为第 ${currentPage} 页。`);
+    }
+
+    return segments.join(' ');
+}
+
+/*== 元数据 ==*/
 export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
     const [filters, categories, tags] = await Promise.all([
         resolveBlogFilters(searchParams),
@@ -220,39 +232,19 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         tagSlugs: activeTagSlugs,
     });
     const hasFilterState = Boolean(activeCategorySlug) || activeTagSlugs.length > 0;
-    const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
-    const currentPage = Math.min(filters.currentPage, totalPages);
+    const { currentPage, totalPages } = computePagination(posts.length, filters.currentPage);
     const canonical = buildBlogUrl({
         categorySlug: activeCategorySlug,
         page: currentPage,
         siteUrl: true,
         tagSlugs: activeTagSlugs,
     });
-    const titleSegments = [
-        SITE_METADATA.blogTitle,
-        ...(activeCategorySlug ? [activeCategoryLabel] : []),
-        ...(activeTagNames.length > 0 ? [activeTagNames.join(' / ')] : []),
-        ...(currentPage > 1 ? [`第 ${currentPage} 页`] : []),
-    ];
-    const descriptionSegments: string[] = [SITE_METADATA.blogDescription];
-
-    if (activeCategorySlug) {
-        descriptionSegments.push(`当前分类：${activeCategoryLabel}。`);
-    }
-
-    if (activeTagNames.length > 0) {
-        descriptionSegments.push(`当前标签：${activeTagNames.join('、')}。`);
-    }
-
-    if (currentPage > 1) {
-        descriptionSegments.push(`当前为第 ${currentPage} 页。`);
-    }
-
-    const pageTitle = titleSegments.join(' - ');
+    const pageTitle = buildPageTitle(activeCategorySlug, activeCategoryLabel, activeTagNames, currentPage);
+    const pageDescription = buildPageDescription(activeCategorySlug, activeCategoryLabel, activeTagNames, currentPage);
 
     return {
         title: pageTitle,
-        description: descriptionSegments.join(' '),
+        description: pageDescription,
         keywords: [...activeTagNames, ...(activeCategorySlug ? [activeCategoryLabel] : []), ...SITE_METADATA.keywords],
         robots: hasFilterState
             ? {
@@ -285,19 +277,20 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         },
         openGraph: {
             title: pageTitle,
-            description: descriptionSegments.join(' '),
+            description: pageDescription,
             url: canonical,
             images: [{ url: SITE_METADATA.ogImage, alt: SITE_METADATA.blogTitle }],
         },
         twitter: {
             card: 'summary_large_image',
             title: pageTitle,
-            description: descriptionSegments.join(' '),
+            description: pageDescription,
             images: [SITE_METADATA.ogImage],
         },
     };
 }
 
+/*== 服务端渲染 ==*/
 export const dynamic = 'force-dynamic';
 
 export default async function BlogListPage({ searchParams }: BlogPageProps) {
@@ -312,33 +305,24 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
     });
-    const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
-    const currentPage = Math.min(filters.currentPage, totalPages);
+    const { currentPage, totalPages } = computePagination(filteredPosts.length, filters.currentPage);
     const pagedPosts = filteredPosts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-    const pageUrl = buildBlogUrl({
-        categorySlug: activeCategorySlug,
-        page: currentPage,
-        siteUrl: true,
-        tagSlugs: activeTagSlugs,
-    });
     const { categoryOptions, tagOptions } = buildFilterOptions({
         activeCategorySlug,
         activeTagSlugs,
         categories,
         tags,
     });
-    const paginationHrefs = buildPaginationHrefs({
-        activeCategorySlug,
-        activeTagSlugs,
-        totalPages,
+
+    /*-- 结构化数据 --*/
+    const pageUrl = buildBlogUrl({
+        categorySlug: activeCategorySlug,
+        page: currentPage,
+        siteUrl: true,
+        tagSlugs: activeTagSlugs,
     });
+    const pageName = buildPageTitle(activeCategorySlug, activeCategoryLabel, activeTagNames, currentPage);
     const listStartIndex = (currentPage - 1) * PAGE_SIZE;
-    const pageName = [
-        SITE_METADATA.blogTitle,
-        ...(activeCategorySlug ? [activeCategoryLabel] : []),
-        ...(activeTagNames.length > 0 ? [activeTagNames.join(' / ')] : []),
-        ...(currentPage > 1 ? [`第 ${currentPage} 页`] : []),
-    ].join(' - ');
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -370,13 +354,12 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
     return (
         <>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <BlogListClient
+            <ListClient
                 activeCategorySlug={activeCategorySlug || undefined}
                 activeFilterChips={activeFilterChips}
                 activeTagSlugs={activeTagSlugs}
                 categoryOptions={categoryOptions}
                 currentPage={currentPage}
-                paginationHrefs={paginationHrefs}
                 posts={pagedPosts}
                 tagOptions={tagOptions}
                 totalPages={totalPages}
