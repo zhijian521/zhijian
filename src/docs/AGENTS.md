@@ -237,8 +237,8 @@ refactor: 中文描述
 | 图标库 | `src/components/ui/icons.tsx` |
 | Toast | `src/components/ui/toast.tsx` + `use-toast.ts` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
-| 导航栏组件 | `src/components/site/site-header/site-header.tsx` |
-| 标题组件 | `src/components/site/section-heading/section-heading.tsx` |
+| 导航栏组件 | `src/components/site/site-header.tsx` |
+| 标题组件 | `src/components/site/section-heading.tsx` |
 | 后台壳 | `src/app/admin/layout.tsx` + `_components/admin-shell.tsx` |
 | 公开壳 | `src/components/site/public-chrome.tsx` |
 | 埋点脚本 | `public/script.js` |

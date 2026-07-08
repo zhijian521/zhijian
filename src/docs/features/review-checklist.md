@@ -11,7 +11,7 @@
 |------|------|
 | 页面 | `src/app/page.tsx` |
 | 模块 | `src/components/modules/home/hero-section/`, `profile-section/`, `profile-card/`, `commit-chart/`, `posts-section/`, `post-card/`, `projects-section/`, `project-card/` |
-| 共享组件 | `src/components/site/section-heading/`, `src/components/site/content-image.tsx`, `src/components/site/rss-copy-button.tsx` |
+| 共享组件 | `src/components/site/section-heading.tsx`, `src/components/site/content-image.tsx`, `src/components/site/rss-copy-button.tsx` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/domain/github.ts`, `src/lib/core/site.ts` |
 | UI 组件 | `src/components/ui/ghost-button.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/text-link.tsx` |
 
@@ -270,11 +270,13 @@
 | TextLink | `src/components/ui/text-link.tsx` |
 | Toast | `src/components/ui/toast.tsx` + `use-toast.ts` |
 
-### `components/site/` — 前台展示组件（7 个）
+### `components/site/` — 前台展示组件（9 个）
 | 组件 | 文件 |
 |------|------|
 | AppFrame | `src/components/site/app-frame.tsx` |
 | PublicChrome | `src/components/site/public-chrome.tsx` |
+| SiteHeader | `src/components/site/site-header.tsx` |
+| SectionHeading | `src/components/site/section-heading.tsx` |
 | ArticleView | `src/components/site/article-view.tsx` |
 | MarkdownArticle | `src/components/site/markdown-article.tsx` |
 | CodeBlock | `src/components/site/code-block.tsx` |

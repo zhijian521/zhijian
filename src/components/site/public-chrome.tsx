@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 
 import { APP_ROUTES, SITE_METADATA } from '@/lib/core/site';
-import { SiteHeader } from '@/components/site/site-header/site-header';
+import { SiteHeader } from '@/components/site/site-header';
 import styles from './public-chrome.module.css';
 
 interface PublicChromeProps {

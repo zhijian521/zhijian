@@ -1,7 +1,7 @@
 /*== 组件导入 ==*/
 import { ProfileCard } from '@/components/modules/home/profile-card/profile-card';
 import { CommitChart } from '@/components/modules/home/commit-chart/commit-chart';
-import { SectionHeading } from '@/components/site/section-heading/section-heading';
+import { SectionHeading } from '@/components/site/section-heading';
 
 /*== 数据与配置 ==*/
 import type { DailyCommits } from '@/lib/domain/github';

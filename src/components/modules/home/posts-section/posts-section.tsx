@@ -1,7 +1,7 @@
 /*== 组件导入 ==*/
 import { ContentImage } from '@/components/site/content-image';
 import { PostCard } from '@/components/modules/home/post-card/post-card';
-import { SectionHeading } from '@/components/site/section-heading/section-heading';
+import { SectionHeading } from '@/components/site/section-heading';
 import { TextLink } from '@/components/ui/text-link';
 
 /*== 数据与配置 ==*/

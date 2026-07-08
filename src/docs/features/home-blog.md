@@ -566,7 +566,7 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | `src/components/modules/home/post-card/` | 文章卡片 |
 | `src/components/modules/home/projects-section/` | 开源项目区 |
 | `src/components/modules/home/project-card/` | 项目卡片 |
-| `src/components/site/section-heading/` | 通用区域标题组件 |
+| `src/components/site/section-heading.tsx` | 通用区域标题组件 |
 | `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮 |
 | `src/lib/domain/posts.ts` | 文章数据层 |
 | `src/lib/domain/post-shared.ts` | Post 类型 + 日期工具 |
