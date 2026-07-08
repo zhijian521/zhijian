@@ -3,16 +3,16 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 /*== 组件导入 ==*/
-import { EmptyState } from '@/components/modules/blog/empty-state/empty-state';
-import { FilterDialog } from '@/components/modules/blog/filter-dialog/filter-dialog';
-import { FilterSidebar } from '@/components/modules/blog/filter-sidebar/filter-sidebar';
-import { Header } from '@/components/modules/blog/header/header';
-import { PostItem } from '@/components/modules/blog/post-item/post-item';
+import { EmptyState } from '@/components/modules/blog/empty-state';
+import { FilterDialog } from '@/components/modules/blog/filter-dialog';
+import { FilterSidebar } from '@/components/modules/blog/filter-sidebar';
+import { Header } from '@/components/modules/blog/header';
+import { PostItem } from '@/components/modules/blog/post-item';
 import { Pagination } from '@/components/ui/pagination';
 
 /*== 数据与配置 ==*/
-import type { ActiveFilterChip } from '@/components/modules/blog/header/header';
-import type { FilterOption } from '@/components/modules/blog/filter-sidebar/filter-sidebar';
+import type { ActiveFilterChip } from '@/components/modules/blog/header';
+import type { FilterOption } from '@/components/modules/blog/filter-sidebar';
 import type { Post } from '@/lib/domain/post-shared';
 import { buildBlogUrl } from '@/lib/core/utils';
 

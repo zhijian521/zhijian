@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { cache } from 'react';
 
 /*== 组件导入 ==*/
-import ListClient from '@/components/modules/blog/list-client/list-client';
-import type { ActiveFilterChip } from '@/components/modules/blog/header/header';
-import type { FilterOption } from '@/components/modules/blog/filter-sidebar/filter-sidebar';
+import ListClient from '@/components/modules/blog/list-client';
+import type { ActiveFilterChip } from '@/components/modules/blog/header';
+import type { FilterOption } from '@/components/modules/blog/filter-sidebar';
 import { buildBlogUrl } from '@/lib/core/utils';
 
 /*== 数据与配置 ==*/
