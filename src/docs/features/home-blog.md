@@ -235,7 +235,7 @@ Client Component，三个 `<IconButton>`：
 
 ### PostCard
 
-**文件**：`src/components/modules/home/post-card/post-card.tsx`
+**文件**：`src/components/modules/home/post-card.tsx`
 
 文章卡片，用于首页「最新文章」区域。
 
@@ -558,14 +558,14 @@ Markdown 渲染区域（`.body`）遵循「水墨宣纸 · 温润雅致」设计
 | 文件 | 说明 |
 |------|------|
 | `src/app/page.tsx` | 首页（HeroSection + ProfileSection + PostsSection + ProjectsSection） |
-| `src/components/modules/home/hero-section/` | Hero 首屏（标题+CTA） |
-| `src/components/modules/home/profile-section/` | 个人信息区（含 ProfileCard + CommitChart） |
-| `src/components/modules/home/profile-card/` | 个人信息卡片（头像+简介+社交按钮） |
-| `src/components/modules/home/commit-chart/` | Git 提交热力图 |
-| `src/components/modules/home/posts-section/` | 最新文章区 |
-| `src/components/modules/home/post-card/` | 文章卡片 |
-| `src/components/modules/home/projects-section/` | 开源项目区 |
-| `src/components/modules/home/project-card/` | 项目卡片 |
+| `src/components/modules/home/hero-section.tsx` | Hero 首屏（标题+CTA） |
+| `src/components/modules/home/profile-section.tsx` | 个人信息区（含 ProfileCard + CommitChart） |
+| `src/components/modules/home/profile-card.tsx` | 个人信息卡片（头像+简介+社交按钮） |
+| `src/components/modules/home/commit-chart.tsx` | Git 提交热力图 |
+| `src/components/modules/home/posts-section.tsx` | 最新文章区 |
+| `src/components/modules/home/post-card.tsx` | 文章卡片 |
+| `src/components/modules/home/projects-section.tsx` | 开源项目区 |
+| `src/components/modules/home/project-card.tsx` | 项目卡片 |
 | `src/components/site/section-heading.tsx` | 通用区域标题组件 |
 | `src/components/site/rss-copy-button.tsx` | RSS 订阅按钮 |
 | `src/lib/domain/posts.ts` | 文章数据层 |

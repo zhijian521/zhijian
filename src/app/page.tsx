@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 
 /*== 组件导入 ==*/
-import { HeroSection } from '@/components/modules/home/hero-section/hero-section';
-import { ProfileSection } from '@/components/modules/home/profile-section/profile-section';
-import { PostsSection } from '@/components/modules/home/posts-section/posts-section';
-import { ProjectsSection } from '@/components/modules/home/projects-section/projects-section';
+import { HeroSection } from '@/components/modules/home/hero-section';
+import { ProfileSection } from '@/components/modules/home/profile-section';
+import { PostsSection } from '@/components/modules/home/posts-section';
+import { ProjectsSection } from '@/components/modules/home/projects-section';
 import { BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon } from '@/components/ui/icons';
 
 /*== 数据与配置 ==*/

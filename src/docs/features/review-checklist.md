@@ -10,7 +10,7 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/page.tsx` |
-| 模块 | `src/components/modules/home/hero-section/`, `profile-section/`, `profile-card/`, `commit-chart/`, `posts-section/`, `post-card/`, `projects-section/`, `project-card/` |
+| 模块 | `src/components/modules/home/hero-section.tsx`, `profile-section.tsx`, `profile-card.tsx`, `commit-chart.tsx`, `posts-section.tsx`, `post-card.tsx`, `projects-section.tsx`, `project-card.tsx` |
 | 共享组件 | `src/components/site/section-heading.tsx`, `src/components/site/content-image.tsx`, `src/components/site/rss-copy-button.tsx` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/domain/github.ts`, `src/lib/core/site.ts` |
 | UI 组件 | `src/components/ui/ghost-button.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/text-link.tsx` |
@@ -287,14 +287,14 @@
 | 组件 | 文件 |
 |------|------|
 | AdminPageHeader | `src/components/modules/admin/admin-page-header/admin-page-header.tsx` |
-| HeroSection | `src/components/modules/home/hero-section/hero-section.tsx` |
-| ProfileSection | `src/components/modules/home/profile-section/profile-section.tsx` |
-| ProfileCard | `src/components/modules/home/profile-card/profile-card.tsx` |
-| CommitChart | `src/components/modules/home/commit-chart/commit-chart.tsx` |
-| PostsSection | `src/components/modules/home/posts-section/posts-section.tsx` |
-| PostCard | `src/components/modules/home/post-card/post-card.tsx` |
-| ProjectsSection | `src/components/modules/home/projects-section/projects-section.tsx` |
-| ProjectCard | `src/components/modules/home/project-card/project-card.tsx` |
+| HeroSection | `src/components/modules/home/hero-section.tsx` |
+| ProfileSection | `src/components/modules/home/profile-section.tsx` |
+| ProfileCard | `src/components/modules/home/profile-card.tsx` |
+| CommitChart | `src/components/modules/home/commit-chart.tsx` |
+| PostsSection | `src/components/modules/home/posts-section.tsx` |
+| PostCard | `src/components/modules/home/post-card.tsx` |
+| ProjectsSection | `src/components/modules/home/projects-section.tsx` |
+| ProjectCard | `src/components/modules/home/project-card.tsx` |
 
 ---
 
