@@ -1,0 +1,60 @@
+.hero {
+    position: relative;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--primary);
+    padding: var(--space-8) var(--space-5);
+}
+
+.heroBg {
+    object-fit: cover;
+    object-position: center;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay-gradient);
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    max-width: 52rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: var(--weight-semibold);
+    font-size: clamp(2.75rem, 6vw, 4.75rem);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--foreground);
+}
+
+.sub {
+    margin: var(--space-3) 0 0;
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wider);
+    color: var(--primary);
+}
+
+.copy {
+    max-width: 36rem;
+    margin: var(--space-5) 0 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+}
+
+.cta {
+    margin-top: var(--space-6);
+}
