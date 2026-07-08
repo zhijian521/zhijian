@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
@@ -9,12 +9,18 @@ import { SITE_METADATA } from '@/lib/core/site';
 /*== RSS 订阅按钮 — 点击复制 feed 地址到剪贴板，短暂显示「已复制」反馈 ==*/
 export function RssCopyButton() {
     const [copied, setCopied] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const feedUrl = `${SITE_METADATA.siteUrl}/feed.xml`;
 
     function handleClick() {
-        navigator.clipboard.writeText(feedUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
+        navigator.clipboard.writeText(feedUrl).then(
+            () => {
+                setCopied(true);
+                clearTimeout(timerRef.current);
+                timerRef.current = setTimeout(() => setCopied(false), 1500);
+            },
+            () => {},
+        );
     }
 
     return (

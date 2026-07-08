@@ -1,3 +1,4 @@
+import { cn } from '@/lib/core/utils';
 import styles from './tag.module.css';
 
 export interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -16,11 +17,15 @@ const SIZE_CLASS: Record<string, string | undefined> = {
 };
 
 export function Tag({ variant = 'default', size = 'medium', className, ...props }: TagProps) {
-    const variantClass = variant === 'default' ? '' : ` ${styles[variant]}`;
     const sizeClass = SIZE_CLASS[size];
     return (
         <span
-            className={`${styles.tag}${variantClass}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`}
+            className={cn(
+                styles.tag,
+                variant !== 'default' && styles[variant],
+                sizeClass && styles[sizeClass],
+                className,
+            )}
             {...props}
         />
     );

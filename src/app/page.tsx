@@ -63,9 +63,11 @@ const PROJECTS = [
 ];
 
 export default async function HomePage() {
-    /*-- 获取文章与提交记录 --*/
-    const posts = await getPublishedPosts({ limit: 3 });
-    const commitData = await fetchCommitHistory();
+    /*-- 获取文章与提交记录（互不依赖，并行请求） --*/
+    const [posts, commitData] = await Promise.all([
+        getPublishedPosts({ limit: 3 }),
+        fetchCommitHistory(),
+    ]);
 
     /*-- 结构化数据 --*/
     const homeJsonLd = {

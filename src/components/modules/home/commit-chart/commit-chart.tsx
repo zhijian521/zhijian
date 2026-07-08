@@ -15,6 +15,15 @@ interface CommitChartProps {
 
 const LEVELS = ['l0', 'l1', 'l2', 'l3', 'l4'] as const;
 
+/*-- 根据提交次数和最大值计算热度等级 --*/
+function getLevel(count: number, max: number): number {
+    if (count === 0) return 0;
+    if (count <= max * 0.25) return 1;
+    if (count <= max * 0.5) return 2;
+    if (count <= max * 0.75) return 3;
+    return 4;
+}
+
 function buildWeeks(data: Map<string, number>, max: number) {
     const now = new Date();
     const end = new Date(now);
@@ -29,8 +38,7 @@ function buildWeeks(data: Map<string, number>, max: number) {
         for (let i = 0; i < 7; i++) {
             const ds = d.toISOString().slice(0, 10);
             const c = data.get(ds) || 0;
-            const lvl = c === 0 ? 0 : c <= max * 0.25 ? 1 : c <= max * 0.5 ? 2 : c <= max * 0.75 ? 3 : 4;
-            week.push({ date: ds, level: LEVELS[lvl] });
+            week.push({ date: ds, level: LEVELS[getLevel(c, max)] });
             d.setDate(d.getDate() + 1);
         }
         weeks.push(week);
@@ -76,15 +84,15 @@ export function CommitChart({ data }: CommitChartProps) {
                     </div>
                     <div className={styles.cells}>
                         {weeks.map((w, wi) => (
-                            <div className={styles.col} key={wi}>
-                                {w.map((day, di) => {
+                            <div className={styles.col} key={w[0]?.date ?? wi}>
+                                {w.map((day) => {
                                     const count = dayMap.get(day.date) || 0;
                                     const label = `${formatDate(day.date)}: ${count} 次提交`;
                                     return (
                                         <button
                                             aria-label={label}
                                             className={`${styles.cell} ${styles[day.level]}`}
-                                            key={di}
+                                            key={day.date}
                                             onClick={() => setSelected({ date: day.date, count })}
                                             type="button"
                                         />

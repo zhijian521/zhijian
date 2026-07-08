@@ -1,4 +1,5 @@
 /*== 样式 ==*/
+import { cn } from '@/lib/core/utils';
 import styles from './ghost-button.module.css';
 
 /*== 类型定义 ==*/
@@ -33,7 +34,7 @@ export function GhostButton({
     ...props
 }: GhostButtonProps) {
     const sizeClass = SIZE_CLASS[size];
-    const classes = `${styles.button} ${styles[variant]}${sizeClass ? ` ${styles[sizeClass]}` : ''}${className ? ` ${className}` : ''}`;
+    const classes = cn(styles.button, styles[variant], sizeClass && styles[sizeClass], className);
     const iconEl = icon ? <span className={styles.icon}>{icon}</span> : null;
 
     if (asButton) {
