@@ -25,3 +25,18 @@
     align-items: center;
     gap: var(--space-2);
 }
+
+/*-- 代码块：展示组件用法、尺寸、变体 --*/
+.codeBlock {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    color: var(--muted-foreground);
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    white-space: pre;
+    font-family: var(--font-mono, 'Consolas', 'Monaco', monospace);
+}

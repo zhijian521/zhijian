@@ -33,7 +33,7 @@ export default function ShowcaseComponentsPage() {
                             <article key={entry.name} className={styles.card}>
                                 <header className={styles.cardHeader}>
                                     <h3 className={styles.cardTitle}>{entry.name}</h3>
-                                    <span className={styles.cardDesc}>{entry.description}</span>
+                                    {entry.description && <span className={styles.cardDesc}>{entry.description}</span>}
                                     <code className={styles.cardSource}>{entry.source}</code>
                                 </header>
                                 <Demo />

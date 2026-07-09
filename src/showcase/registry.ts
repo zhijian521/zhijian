@@ -9,7 +9,7 @@
 import type { ComponentType } from 'react';
 
 /*== 组件导入 ==*/
-import { GhostButtonDemo, IconButtonDemo, SubmitButtonDemo, TagDemo, TextLinkDemo } from './demos';
+import { GhostButtonDemo, IconButtonDemo, PillSelectDemo, SelectDemo, SubmitButtonDemo, TagDemo, TextInputDemo, TextLinkDemo } from './demos';
 
 /*== 类型定义 ==*/
 export interface ShowcaseExample {
@@ -24,8 +24,8 @@ export interface ShowcaseExample {
 export interface ShowcaseEntry {
     /*-- 组件名，用于锚点和搜索 --*/
     name: string;
-    /*-- 一句话说明 --*/
-    description: string;
+    /*-- 一句话说明（可选） --*/
+    description?: string;
     /*-- 所属模块，用于分组 --*/
     module: 'ui' | 'site' | 'nav' | 'blog' | 'admin';
     /*-- 源码路径，仅展示 --*/
@@ -43,37 +43,50 @@ const demo = (C: ComponentType<Record<string, unknown>>): ShowcaseExample => ({
 export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [
     {
         name: 'Tag',
-        description: '标签，3 种变体 × 4 种尺寸',
         module: 'ui',
         source: 'src/components/ui/tag.tsx',
         examples: [demo(TagDemo)],
     },
     {
         name: 'GhostButton',
-        description: '幽灵按钮，2 变体 × 4 尺寸 + 图标 + asButton + 禁用态',
         module: 'ui',
         source: 'src/components/ui/ghost-button.tsx',
         examples: [demo(GhostButtonDemo)],
     },
     {
         name: 'SubmitButton',
-        description: '提交按钮，朱砂红主按钮，3 尺寸 + 禁用态',
         module: 'ui',
         source: 'src/components/ui/submit-button.tsx',
         examples: [demo(SubmitButtonDemo)],
     },
     {
         name: 'IconButton',
-        description: '图标按钮，2 变体 × 4 尺寸（mini/small/medium/default）+ 禁用态',
         module: 'ui',
         source: 'src/components/ui/icon-button.tsx',
         examples: [demo(IconButtonDemo)],
     },
     {
         name: 'TextLink',
-        description: '纯文字链接，朱砂红+箭头，hover 淡出',
         module: 'ui',
         source: 'src/components/ui/text-link.tsx',
         examples: [demo(TextLinkDemo)],
+    },
+    {
+        name: 'Select',
+        module: 'ui',
+        source: 'src/components/ui/select.tsx',
+        examples: [demo(SelectDemo)],
+    },
+    {
+        name: 'TextInput',
+        module: 'ui',
+        source: 'src/components/ui/text-input.tsx',
+        examples: [demo(TextInputDemo)],
+    },
+    {
+        name: 'PillSelect',
+        module: 'ui',
+        source: 'src/components/ui/pill-select.tsx',
+        examples: [demo(PillSelectDemo)],
     },
 ];

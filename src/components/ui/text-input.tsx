@@ -1,11 +1,21 @@
+/*============================================================================
+  text-input — 文本输入框
+
+  后台通用输入框，支持标签（label）和左侧图标。
+  small / medium / default 三尺寸，图标自动适配内边距。
+============================================================================*/
+
+/*== 样式导入 ==*/
+import { cn } from '@/lib/core/utils';
 import styles from './text-input.module.css';
 
+/*== 类型定义 ==*/
 export interface TextInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
-    /** 栓签文字 */
+    /*-- 标签文字 --*/
     label?: string;
-    /** 左侧图标，传入 SVG 元素 */
+    /*-- 左侧图标，传入 SVG 元素 --*/
     icon?: React.ReactNode;
-    /** 输入框尺寸：small 紧凑 / medium 中等 / default 默认 */
+    /*-- 输入框尺寸：small 紧凑 / medium 中等 / default 默认 --*/
     inputSize?: 'small' | 'medium' | 'default';
 }
 
@@ -28,14 +38,14 @@ export function TextInput({ label, icon, inputSize = 'medium', className, id, ..
     return (
         <div className={styles.fieldset}>
             {label ? (
-                <label className={`${styles.label}${labelClass ? ` ${styles[labelClass]}` : ''}`} htmlFor={id}>
+                <label className={cn(styles.label, labelClass && styles[labelClass])} htmlFor={id}>
                     {label}
                 </label>
             ) : null}
             <div className={styles.inputWrap}>
                 {icon ? <span className={styles.iconSlot}>{icon}</span> : null}
                 <input
-                    className={`${styles.input}${sizeClass ? ` ${sizeClass}` : ''}${iconPadClass ? ` ${styles[iconPadClass]}` : ''}${className ? ` ${className}` : ''}`}
+                    className={cn(styles.input, sizeClass, iconPadClass && styles[iconPadClass], className)}
                     id={id}
                     {...props}
                 />

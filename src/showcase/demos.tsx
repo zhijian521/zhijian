@@ -7,12 +7,18 @@
 
 'use client';
 
+/*== 依赖导入 ==*/
+import { useState } from 'react';
+
 /*== 组件导入 ==*/
 import { GhostButton } from '@/components/ui/ghost-button';
 import { IconButton } from '@/components/ui/icon-button';
 import { PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
+import { PillSelect } from '@/components/ui/pill-select';
+import { Select } from '@/components/ui/select';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Tag } from '@/components/ui/tag';
+import { TextInput } from '@/components/ui/text-input';
 import { TextLink } from '@/components/ui/text-link';
 
 /*== 样式导入 ==*/
@@ -28,7 +34,6 @@ export function TagDemo() {
                     <Tag size="mini">mini</Tag>
                     <Tag size="small">small</Tag>
                     <Tag size="medium">medium</Tag>
-                    <Tag>default</Tag>
                 </div>
             </div>
             {/*-- 变体 — medium 尺寸下展示全部变体 --*/}
@@ -40,6 +45,15 @@ export function TagDemo() {
                     <Tag size="medium" variant="outlined">outlined</Tag>
                 </div>
             </div>
+
+            {/*-- 代码块 — 尺寸/变体 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：mini | small | medium（默认）
+// 变体：default（默认）| primary | outlined
+
+// 使用方式
+<Tag size="medium">标签</Tag>
+<Tag size="medium" variant="primary">主色</Tag>
+<Tag size="medium" variant="outlined">描边</Tag>`}</code></pre>
         </div>
     );
 }
@@ -53,7 +67,6 @@ export function SubmitButtonDemo() {
                 <div className={styles.items}>
                     <SubmitButton size="small">small</SubmitButton>
                     <SubmitButton size="medium">medium</SubmitButton>
-                    <SubmitButton>default</SubmitButton>
                 </div>
             </div>
             {/*-- 禁用态 --*/}
@@ -63,6 +76,13 @@ export function SubmitButtonDemo() {
                     <SubmitButton disabled>禁用态</SubmitButton>
                 </div>
             </div>
+
+            {/*-- 代码块 — 尺寸/状态 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
+// 状态：disabled
+
+// 使用方式
+<SubmitButton size="medium">提交</SubmitButton>`}</code></pre>
         </div>
     );
 }
@@ -77,7 +97,6 @@ export function IconButtonDemo() {
                     <IconButton icon={<SearchIcon />} size="mini" />
                     <IconButton icon={<SearchIcon />} size="small" />
                     <IconButton icon={<SearchIcon />} size="medium" />
-                    <IconButton icon={<SearchIcon />} />
                 </div>
             </div>
             {/*-- 变体 — medium 尺寸下展示全部变体 --*/}
@@ -96,6 +115,15 @@ export function IconButtonDemo() {
                     <IconButton icon={<Trash2Icon />} disabled variant="danger" />
                 </div>
             </div>
+
+            {/*-- 代码块 — 尺寸/变体/状态 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：mini | small | medium（默认）
+// 变体：default（默认）| danger
+// disabled
+
+// 使用方式
+<IconButton icon={<SearchIcon />} size="medium" />
+<IconButton icon={<Trash2Icon />} size="medium" variant="danger" />`}</code></pre>
         </div>
     );
 }
@@ -117,6 +145,13 @@ export function TextLinkDemo() {
                     <TextLink href="#" showArrow={false}>查看更多</TextLink>
                 </div>
             </div>
+
+            {/*-- 代码块 — 配置 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// showArrow：默认 true
+
+// 使用方式
+<TextLink href="#">阅读全文</TextLink>
+<TextLink href="#" showArrow={false}>查看更多</TextLink>`}</code></pre>
         </div>
     );
 }
@@ -130,7 +165,6 @@ export function GhostButtonDemo() {
                 <div className={styles.items}>
                     <GhostButton href="#" size="small">small</GhostButton>
                     <GhostButton href="#" size="medium">medium</GhostButton>
-                    <GhostButton href="#">default</GhostButton>
                     <GhostButton href="#" size="large">large</GhostButton>
                 </div>
             </div>
@@ -158,6 +192,146 @@ export function GhostButtonDemo() {
                     <GhostButton asButton disabled variant="primary">禁用主色</GhostButton>
                 </div>
             </div>
+
+            {/*-- 代码块 — 尺寸/变体/模式 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）| large
+// 变体：default（默认）| primary
+// asButton 模式渲染 <button>，disabled 仅 asButton 生效
+
+// 使用方式
+<GhostButton href="#" size="medium">按钮</GhostButton>
+<GhostButton href="#" size="medium" variant="primary">主色</GhostButton>
+<GhostButton href="#" size="medium" icon={<PlusIcon />}>图标</GhostButton>`}</code></pre>
+        </div>
+    );
+}
+
+export function SelectDemo() {
+    const [val1, setVal1] = useState('a');
+    const [val2, setVal2] = useState('a');
+
+    const options = [
+        { value: 'a', label: '选项 A' },
+        { value: 'b', label: '选项 B' },
+        { value: 'c', label: '选项 C' },
+    ];
+
+    return (
+        <div className={styles.demo}>
+            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>尺寸</span>
+                <div className={styles.items}>
+                    <Select options={options} value={val1} onChange={setVal1} size="small" placeholder="small" />
+                    <Select options={options} value={val2} onChange={setVal2} size="medium" placeholder="medium" />
+                </div>
+            </div>
+            {/*-- 禁用态 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>禁用</span>
+                <div className={styles.items}>
+                    <Select options={options} value="a" onChange={() => {}} disabled />
+                </div>
+            </div>
+
+            {/*-- 代码块 — 尺寸/状态 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
+// disabled
+
+// 使用方式
+const [value, setValue] = useState('a');
+const options = [
+  { value: 'a', label: '选项 A' },
+  { value: 'b', label: '选项 B' },
+];
+
+<Select
+  options={options}
+  value={value}
+  onChange={setValue}
+  size="medium"
+  placeholder="请选择"
+/>`}</code></pre>
+        </div>
+    );
+}
+
+export function TextInputDemo() {
+    return (
+        <div className={styles.demo}>
+            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>尺寸</span>
+                <div className={styles.items}>
+                    <TextInput inputSize="small" placeholder="small" />
+                    <TextInput inputSize="medium" placeholder="medium" />
+                </div>
+            </div>
+            {/*-- 标签 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>标签</span>
+                <div className={styles.items}>
+                    <TextInput label="标题" inputSize="medium" placeholder="带标签输入" />
+                </div>
+            </div>
+            {/*-- 图标 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>图标</span>
+                <div className={styles.items}>
+                    <TextInput icon={<SearchIcon />} inputSize="small" placeholder="搜索..." />
+                    <TextInput icon={<SearchIcon />} inputSize="medium" placeholder="搜索..." />
+                </div>
+            </div>
+
+            {/*-- 代码块 — 尺寸 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
+
+// 使用方式
+<TextInput inputSize="medium" placeholder="输入..." />
+<TextInput label="标题" inputSize="medium" placeholder="带标签" />
+<TextInput icon={<SearchIcon />} inputSize="medium" placeholder="搜索..." />`}</code></pre>
+        </div>
+    );
+}
+
+export function PillSelectDemo() {
+    const [val1, setVal1] = useState('all');
+    const [val2, setVal2] = useState('all');
+
+    const options = [
+        { value: 'all', label: '全部' },
+        { value: 'published', label: '已发布' },
+        { value: 'draft', label: '草稿' },
+    ];
+
+    return (
+        <div className={styles.demo}>
+            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>尺寸</span>
+                <div className={styles.items}>
+                    <PillSelect options={options} value={val1} onChange={setVal1} name="ps1" size="small" />
+                    <PillSelect options={options} value={val2} onChange={setVal2} name="ps2" size="medium" />
+                </div>
+            </div>
+
+            {/*-- 代码块 — 尺寸 + 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
+
+// 使用方式
+const [value, setValue] = useState('all');
+const options = [
+  { value: 'all', label: '全部' },
+  { value: 'published', label: '已发布' },
+];
+
+<PillSelect
+  options={options}
+  value={value}
+  onChange={setValue}
+  name="filter"
+  size="medium"
+/>`}</code></pre>
         </div>
     );
 }
