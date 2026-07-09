@@ -1,29 +1,42 @@
+/*============================================================================
+  confirm-dialog — 二次确认弹窗
+
+  基于 Dialog 组件，图标（AlertTriangleIcon）+ 消息 + 双按钮（取消/确认），
+  确认按钮带 loading 态，用于删除等不可逆操作。
+============================================================================*/
+
 'use client';
 
-import { AlertTriangleIcon } from '@/components/ui/icons';
+/*== 组件导入 ==*/
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { AlertTriangleIcon } from '@/components/ui/icons';
 
+/*== 样式导入 ==*/
 import styles from './confirm-dialog.module.css';
 
-/*============================================================================
-  ConfirmDialog — 二次确认弹窗，基于 Dialog 组件。
-  按钮沿用自建 GhostButton + SubmitButton 组件。
-============================================================================*/
-
+/*== 类型定义 ==*/
 interface ConfirmDialogProps {
+    /*-- 是否打开弹窗 --*/
     open: boolean;
+    /*-- 弹窗标题 --*/
     title: string;
+    /*-- 提示消息 --*/
     message: string;
+    /*-- 确认按钮文字，默认"确认" --*/
     confirmLabel?: string;
+    /*-- 取消按钮文字，默认"取消" --*/
     cancelLabel?: string;
+    /*-- 确认回调 --*/
     onConfirm: () => void;
+    /*-- 取消/关闭回调 --*/
     onCancel: () => void;
+    /*-- 确认按钮 loading 态 --*/
     loading?: boolean;
 }
 
-/*== 确认弹窗：遮罩 + 居中面板，直角边框匹配后台表格风格。 ==*/
+/*== ConfirmDialog 二次确认弹窗 — 图标+消息+双按钮 ==*/
 export default function ConfirmDialog({
     open,
     title,

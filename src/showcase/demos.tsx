@@ -20,6 +20,8 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { TextLink } from '@/components/ui/text-link';
+import Dialog from '@/components/ui/dialog';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 
 /*== 样式导入 ==*/
 import styles from './demos.module.css';
@@ -331,6 +333,93 @@ const options = [
   onChange={setValue}
   name="filter"
   size="medium"
+/>`}</code></pre>
+        </div>
+    );
+}
+
+export function DialogDemo() {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className={styles.demo}>
+            {/*-- 触发按钮 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>弹窗</span>
+                <div className={styles.items}>
+                    <GhostButton asButton onClick={() => setOpen(true)} size="medium">
+                        打开弹窗
+                    </GhostButton>
+                </div>
+            </div>
+            {/*-- 基础弹窗 --*/}
+            <Dialog open={open} title="弹窗标题" onClose={() => setOpen(false)}>
+                <p className={styles.dialogContent}>这是弹窗内容区域，可以放入任意 React 节点。</p>
+            </Dialog>
+
+            {/*-- 代码块 — 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 使用方式
+const [open, setOpen] = useState(false);
+
+<Dialog
+  open={open}
+  title="弹窗标题"
+  onClose={() => setOpen(false)}
+  maxWidth="28rem"  // 可选
+>
+  {/* 任意内容 */}
+</Dialog>`}</code></pre>
+        </div>
+    );
+}
+
+export function ConfirmDialogDemo() {
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleConfirm = () => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            setOpen(false);
+        }, 1500);
+    };
+
+    return (
+        <div className={styles.demo}>
+            {/*-- 触发按钮 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>弹窗</span>
+                <div className={styles.items}>
+                    <GhostButton asButton onClick={() => setOpen(true)} size="medium">
+                        打开确认弹窗
+                    </GhostButton>
+                </div>
+            </div>
+            {/*-- 确认弹窗 — 含 loading 态 --*/}
+            <ConfirmDialog
+                open={open}
+                title="确认删除"
+                message="删除后不可恢复，确定要删除吗？"
+                confirmLabel="删除"
+                loading={loading}
+                onConfirm={handleConfirm}
+                onCancel={() => setOpen(false)}
+            />
+
+            {/*-- 代码块 — 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 使用方式
+const [open, setOpen] = useState(false);
+const [loading, setLoading] = useState(false);
+
+<ConfirmDialog
+  open={open}
+  title="确认删除"
+  message="删除后不可恢复，确定要删除吗？"
+  confirmLabel="删除"
+  loading={loading}
+  onConfirm={handleConfirm}
+  onCancel={() => setOpen(false)}
 />`}</code></pre>
         </div>
     );

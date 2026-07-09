@@ -9,7 +9,18 @@
 import type { ComponentType } from 'react';
 
 /*== 组件导入 ==*/
-import { GhostButtonDemo, IconButtonDemo, PillSelectDemo, SelectDemo, SubmitButtonDemo, TagDemo, TextInputDemo, TextLinkDemo } from './demos';
+import {
+    ConfirmDialogDemo,
+    DialogDemo,
+    GhostButtonDemo,
+    IconButtonDemo,
+    PillSelectDemo,
+    SelectDemo,
+    SubmitButtonDemo,
+    TagDemo,
+    TextInputDemo,
+    TextLinkDemo,
+} from './demos';
 
 /*== 类型定义 ==*/
 export interface ShowcaseExample {
@@ -88,5 +99,17 @@ export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [
         module: 'ui',
         source: 'src/components/ui/pill-select.tsx',
         examples: [demo(PillSelectDemo)],
+    },
+    {
+        name: 'Dialog',
+        module: 'ui',
+        source: 'src/components/ui/dialog.tsx',
+        examples: [demo(DialogDemo)],
+    },
+    {
+        name: 'ConfirmDialog',
+        module: 'ui',
+        source: 'src/components/ui/confirm-dialog.tsx',
+        examples: [demo(ConfirmDialogDemo)],
     },
 ];

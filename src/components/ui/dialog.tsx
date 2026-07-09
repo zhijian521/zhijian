@@ -1,25 +1,40 @@
+/*============================================================================
+  dialog — 通用弹窗
+
+  遮罩 + 居中面板，支持焦点陷阱（Tab/Shift+Tab 循环）、Escape 关闭、
+  外部点击关闭、打开时禁止 body 滚动。直角边框匹配后台风格。
+============================================================================*/
+
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { XIcon } from '@/components/ui/icons';
-import { IconButton } from '@/components/ui/icon-button';
 
+/*== 组件导入 ==*/
+import { IconButton } from '@/components/ui/icon-button';
+import { XIcon } from '@/components/ui/icons';
+
+/*== 样式导入 ==*/
 import styles from './dialog.module.css';
 
-/*== Dialog 通用弹窗 — 遮罩 + 居中面板，直角边框匹配后台风格 ==*/
+/*== 类型定义 ==*/
 interface DialogProps {
+    /*-- 是否打开弹窗 --*/
     open: boolean;
+    /*-- 弹窗标题 --*/
     title: string;
+    /*-- 关闭回调 --*/
     onClose: () => void;
+    /*-- 弹窗内容 --*/
     children: React.ReactNode;
-    /** 面板最大宽度，默认 28rem */
+    /*-- 面板最大宽度，默认 28rem --*/
     maxWidth?: string;
 }
 
+/*== Dialog 通用弹窗 — 遮罩+居中面板，焦点陷阱+Escape关闭 ==*/
 export default function Dialog({ open, title, onClose, children, maxWidth }: DialogProps) {
     const panelRef = useRef<HTMLDivElement>(null);
 
-    /* 焦点陷阱：Tab / Shift+Tab 循环在面板内 */
+    /*-- 焦点陷阱：Tab / Shift+Tab 在面板内循环 --*/
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -47,6 +62,7 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
         [onClose]
     );
 
+    /*-- 打开时禁止 body 滚动 + 绑定键盘事件 --*/
     useEffect(() => {
         if (!open) return;
 
@@ -60,7 +76,7 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
         };
     }, [open, handleKeyDown]);
 
-    /* 仅在弹窗打开瞬间自动聚焦第一个元素，后续重渲染不抢焦点 */
+    /*-- 打开瞬间自动聚焦第一个可聚焦元素，后续重渲染不抢焦点 --*/
     const prevOpenRef = useRef(false);
     useEffect(() => {
         if (open && !prevOpenRef.current) {
@@ -80,18 +96,18 @@ export default function Dialog({ open, title, onClose, children, maxWidth }: Dia
         <div className={styles.overlay}>
             <div className={styles.backdrop} onClick={onClose} />
             <div
+                aria-labelledby="dialog-title"
+                aria-modal="true"
                 className={styles.panel}
                 ref={panelRef}
                 role="dialog"
-                aria-modal="true"
-                aria-labelledby="dialog-title"
                 style={maxWidth ? { maxWidth } : undefined}
             >
                 <div className={styles.header}>
                     <h3 className={styles.title} id="dialog-title">
                         {title}
                     </h3>
-                    <IconButton icon={<XIcon />} onClick={onClose} size="small" aria-label="关闭" />
+                    <IconButton aria-label="关闭" icon={<XIcon />} onClick={onClose} size="small" />
                 </div>
                 <div className={styles.body}>{children}</div>
             </div>

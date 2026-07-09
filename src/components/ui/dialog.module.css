@@ -1,5 +1,6 @@
 /*== Dialog 通用弹窗 — 遮罩 + 居中面板，直角边框 ==*/
 
+/*-- 遮罩层：固定全屏 --*/
 .overlay {
     position: fixed;
     inset: 0;
@@ -9,37 +10,41 @@
     justify-content: center;
 }
 
+/*-- 半透明背景遮罩 --*/
 .backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--overlay);
 }
 
+/*-- 面板：直角边框+朱砂红描边 --*/
 .panel {
     position: relative;
     z-index: 10;
     width: 100%;
     max-width: 28rem;
-    margin: 0 1rem;
+    margin: 0 var(--space-4);
     border: 1px solid var(--primary);
     background: var(--background);
-    padding: 1.5rem;
+    padding: var(--space-5);
 }
 
+/*-- 标题栏：标题左 + 关闭按钮右 --*/
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.25rem;
+    margin-bottom: var(--space-5);
 }
 
 .title {
-    font-size: 1rem;
-    font-weight: 400;
+    font-size: var(--text-base);
+    font-weight: var(--weight-normal);
     color: var(--foreground);
     margin: 0;
 }
 
+/*-- 内容区 --*/
 .body {
     min-width: 0;
 }

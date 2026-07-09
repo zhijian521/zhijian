@@ -26,12 +26,18 @@
     gap: var(--space-2);
 }
 
-/*-- 代码块：展示组件用法、尺寸、变体 --*/
+/*-- 弹窗内容区文字样式 --*/
+.dialogContent {
+    margin: 0;
+    font-size: var(--comp-text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+}
 .codeBlock {
     margin: 0;
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-xs);
-    line-height: 1.7;
+    line-height: var(--leading-relaxed);
     color: var(--muted-foreground);
     background: var(--muted);
     border: 1px solid var(--border);
