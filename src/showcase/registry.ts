@@ -9,7 +9,7 @@
 import type { ComponentType } from 'react';
 
 /*== 组件导入 ==*/
-import { TagDemo } from './demos';
+import { GhostButtonDemo, TagDemo } from './demos';
 
 /*== 类型定义 ==*/
 export interface ShowcaseExample {
@@ -47,5 +47,12 @@ export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [
         module: 'ui',
         source: 'src/components/ui/tag.tsx',
         examples: [demo(TagDemo)],
+    },
+    {
+        name: 'GhostButton',
+        description: '幽灵按钮，2 变体 × 4 尺寸 + 图标 + asButton + 禁用态',
+        module: 'ui',
+        source: 'src/components/ui/ghost-button.tsx',
+        examples: [demo(GhostButtonDemo)],
     },
 ];

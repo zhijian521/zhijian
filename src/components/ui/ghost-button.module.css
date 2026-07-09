@@ -14,9 +14,9 @@
     text-decoration: none;
     cursor: pointer;
     transition:
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background-color 0.2s ease;
+        color var(--transition),
+        border-color var(--transition),
+        background-color var(--transition);
 }
 
 /*== 尺寸变体（仅 non-default，default 已在 .button 基础样式中） ==*/
@@ -52,6 +52,12 @@
 .primary:hover {
     background: var(--primary);
     color: var(--primary-foreground);
+}
+
+/*== 焦点轮廓 ==*/
+.button:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
 }
 
 .icon {
