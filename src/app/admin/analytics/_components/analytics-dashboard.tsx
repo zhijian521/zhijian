@@ -446,7 +446,6 @@ export default function AnalyticsDashboard() {
                 </div>
                 <div className={styles.rightControls}>
                     <PillSelect
-                        name="range"
                         onChange={(v) => setRange(v as DateRange)}
                         options={[
                             { value: '7d', label: '7 天' },
@@ -456,7 +455,6 @@ export default function AnalyticsDashboard() {
                         value={range}
                     />
                     <PillSelect
-                        name="analytics-tab"
                         onChange={(v) => {
                             setTab(v as 'overview' | 'visits');
                             setVisitsPage(1);

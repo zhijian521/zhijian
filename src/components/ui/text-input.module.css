@@ -71,7 +71,7 @@
 /*== 焦点轮廓 ==*/
 .input:focus-visible {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--ring-subtle);
+    box-shadow: var(--ring);
 }
 
 /*== 尺寸变体（仅 non-default，default 已在 .input 基础样式中） ==*/
@@ -85,15 +85,7 @@
     font-size: var(--comp-text-sm);
 }
 
-/*== 图标左侧间距（仅在有 icon 时应用） ==*/
+/*== 图标左侧间距 ==*/
 .hasIcon {
-    padding-left: var(--space-6);
-}
-
-.hasIconMedium {
-    padding-left: var(--space-6);
-}
-
-.hasIconSmall {
     padding-left: var(--space-6);
 }

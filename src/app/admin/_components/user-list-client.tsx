@@ -327,7 +327,6 @@ export default function UserListClient() {
                     <div className={styles.field}>
                         <span className={styles.fieldLabel}>角色</span>
                         <PillSelect
-                            name="role"
                             onChange={(v) => handleFormChange('role', v)}
                             options={[
                                 { value: 'user', label: '普通用户' },
@@ -342,7 +341,6 @@ export default function UserListClient() {
                         <div className={styles.field}>
                             <span className={styles.fieldLabel}>状态</span>
                             <PillSelect
-                                name="status"
                                 onChange={(v) => handleFormChange('status', v)}
                                 options={[
                                     { value: 'active', label: '正常' },

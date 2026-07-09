@@ -62,7 +62,7 @@ export function IconButton({
     );
 
     /*-- Link 模式 --*/
-    if ('href' in props && props.href !== undefined) {
+    if (props.href !== undefined) {
         return (
             <Link className={cls} {...props}>
                 {icon}

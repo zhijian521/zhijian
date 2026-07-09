@@ -181,7 +181,6 @@ export function MetadataPanel({
             <div className={styles.field}>
                 <span className={styles.fieldLabel}>状态</span>
                 <PillSelect
-                    name="post-status"
                     onChange={onStatusChange}
                     options={STATUS_OPTIONS}
                     size="small"

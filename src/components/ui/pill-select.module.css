@@ -2,7 +2,6 @@
 
 .group {
     display: inline-flex;
-    gap: 0;
     border: 1px solid var(--border);
     background: var(--muted);
 }
@@ -29,14 +28,6 @@
     background: var(--background);
     color: var(--primary);
     box-shadow: inset 0 -2px 0 var(--primary);
-}
-
-.input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
 }
 
 /*== 尺寸变体（仅 non-default，default 已在 .pill 基础样式中） ==*/

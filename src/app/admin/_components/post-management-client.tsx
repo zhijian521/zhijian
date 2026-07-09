@@ -233,7 +233,6 @@ export default function PostManagementClient() {
                         value={keyword}
                     />
                     <PillSelect
-                        name="status"
                         onChange={(v) => {
                             setStatus(v as 'all' | 'draft' | 'published');
                             setPage(1);

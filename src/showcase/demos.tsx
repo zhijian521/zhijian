@@ -315,8 +315,8 @@ export function PillSelectDemo() {
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
-                    <PillSelect options={options} value={val1} onChange={setVal1} name="ps1" size="small" />
-                    <PillSelect options={options} value={val2} onChange={setVal2} name="ps2" size="medium" />
+                    <PillSelect options={options} value={val1} onChange={setVal1} size="small" />
+                    <PillSelect options={options} value={val2} onChange={setVal2} size="medium" />
                 </div>
             </div>
 
@@ -334,7 +334,6 @@ const options = [
   options={options}
   value={value}
   onChange={setValue}
-  name="filter"
   size="medium"
 />`}</code></pre>
         </div>

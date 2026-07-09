@@ -47,21 +47,21 @@ function buildPageNumbers(current: number, total: number): (number | 'ellipsis')
     const rangeStart = Math.max(2, current - 1);
     const rangeEnd = Math.min(total - 1, current + 1);
 
-    if (rangeStart > 2) {
-        pages.push('ellipsis');
-    }
+    if (rangeStart > 2) pages.push('ellipsis');
 
-    for (let i = rangeStart; i <= rangeEnd; i++) {
-        pages.push(i);
-    }
+    for (let i = rangeStart; i <= rangeEnd; i++) pages.push(i);
 
-    if (rangeEnd < total - 1) {
-        pages.push('ellipsis');
-    }
+    if (rangeEnd < total - 1) pages.push('ellipsis');
 
     pages.push(total);
 
     return pages;
+}
+
+/*== 判断翻页按钮是否禁用 ==*/
+function isNavDisabled(isNav: boolean, label: string | undefined, current: number, total: number): boolean {
+    if (!isNav || !label) return false;
+    return (label === '上一页' && current <= 1) || (label === '下一页' && current >= total);
 }
 
 /*== Pagination 分页：支持服务端链接模式和客户端回调模式 ==*/
@@ -80,16 +80,11 @@ export function Pagination({
 
     function renderPageButton(page: number, isNav = false, label?: string) {
         const text = label ?? String(page);
-        const buttonClass = cn(
-            styles.btn,
-            page === current && !isNav && styles.active,
-            isNav && styles.navBtn,
-        );
+        const buttonClass = cn(styles.btn, page === current && !isNav && styles.active, isNav && styles.navBtn);
+        const disabled = isNavDisabled(isNav, label, current, total);
 
         if (getHref) {
-            const isDisabled =
-                isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
-            if (isDisabled) {
+            if (disabled) {
                 return (
                     <span aria-disabled="true" className={cn(buttonClass, styles.disabledLink)}>
                         {text}
@@ -108,17 +103,13 @@ export function Pagination({
             );
         }
 
-        if (!onPageChange) {
-            return null;
-        }
-
-        const isDisabled = isNav && ((label === '上一页' && current <= 1) || (label === '下一页' && current >= total));
+        if (!onPageChange) return null;
 
         return (
             <button
                 aria-current={page === current && !isNav ? 'page' : undefined}
                 className={buttonClass}
-                disabled={isDisabled}
+                disabled={disabled}
                 onClick={() => onPageChange(page)}
                 type="button"
             >

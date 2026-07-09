@@ -25,8 +25,8 @@ const LABEL_CLASS: Record<string, string> = {
 };
 
 const ICON_PADDING_CLASS: Record<string, string> = {
-    small: 'hasIconSmall',
-    medium: 'hasIconMedium',
+    small: 'hasIcon',
+    medium: 'hasIcon',
     default: 'hasIcon',
 };
 

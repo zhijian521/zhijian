@@ -47,11 +47,10 @@ export function GhostButton({
 
     if (asButton) {
         /*-- 过滤掉 a 标签专属属性 --*/
-        const { href, target, rel, ...rest } = props as React.AnchorHTMLAttributes<HTMLAnchorElement> &
-            Record<string, unknown>;
-        const buttonProps = rest as React.ButtonHTMLAttributes<HTMLButtonElement>;
+        const { href, target, rel, disabled, ...buttonProps } = props as React.AnchorHTMLAttributes<HTMLAnchorElement> &
+            React.ButtonHTMLAttributes<HTMLButtonElement>;
         return (
-            <button className={classes} type="button" {...buttonProps}>
+            <button className={classes} disabled={disabled} type="button" {...buttonProps}>
                 {iconEl}
                 {children}
             </button>
