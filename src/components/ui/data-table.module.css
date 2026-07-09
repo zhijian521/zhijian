@@ -1,5 +1,6 @@
-/*== DataTable 通用数据表格 — 匹配博客表格风格 ==*/
+/*== DataTable 通用数据表格 — 直角边框匹配后台风格 ==*/
 
+/*-- 表格容器：朱砂红外框 --*/
 .tableWrapper {
     border: 1px solid var(--primary);
     overflow-x: auto;
@@ -11,25 +12,26 @@
     border-collapse: collapse;
 }
 
-/* 可横向滚动模式：colgroup 控制列宽，table-layout:fixed 让宽度生效 */
+/*-- 可横向滚动模式：colgroup 控制列宽 --*/
 .tableFixed {
     width: auto;
     table-layout: fixed;
 }
 
+/*-- 表头 --*/
 .thead {
     border-bottom: 1px solid var(--primary);
     background: color-mix(in srgb, var(--muted) 60%, var(--background));
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-tight);
     text-transform: uppercase;
     color: var(--muted-foreground);
 }
 
 .th {
     text-align: left;
-    padding: 0.75rem 1rem;
-    font-weight: 500;
+    padding: var(--space-3) var(--space-4);
+    font-weight: var(--weight-medium);
     border-right: 1px solid var(--border);
 }
 
@@ -37,12 +39,13 @@
     border-right: none;
 }
 
+/*-- 数据行 --*/
 .row {
     border-bottom: 1px solid var(--border);
 }
 
 .td {
-    padding: 0.75rem 1rem;
+    padding: var(--space-3) var(--space-4);
     border-right: 1px solid var(--border);
     white-space: nowrap;
 }
@@ -51,27 +54,22 @@
     border-right: none;
 }
 
-/* 超宽打点列 */
+/*-- 超宽打点列 --*/
 .ellipsisCol {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/*-- 空态 --*/
 .emptyRow {
-    padding: 3rem 1rem;
+    padding: var(--space-7) var(--space-4);
     text-align: center;
     color: var(--muted-foreground);
 }
 
-/* 响应式隐藏 */
-.hideBelowSm {
-    display: none;
-}
-
-.hideBelowMd {
-    display: none;
-}
-
+/*-- 响应式隐藏 --*/
+.hideBelowSm,
+.hideBelowMd,
 .hideBelowLg {
     display: none;
 }

@@ -1,26 +1,38 @@
+/*============================================================================
+  pagination — 分页组件
+
+  支持服务端链接模式（getHref）和客户端回调模式（onPageChange），
+  带可选每页条数选择器。当前页朱砂红实色，省略号自适应。
+============================================================================*/
+
+/*== 组件导入 ==*/
 import Link from 'next/link';
 
 import { Select } from '@/components/ui/select';
+
+/*== 数据与配置 ==*/
 import { cn } from '@/lib/core/utils';
 
+/*== 样式导入 ==*/
 import styles from './pagination.module.css';
 
+/*== 类型定义 ==*/
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
-    /** 当前页码，1-based */
+    /*-- 当前页码，1-based --*/
     current: number;
-    /** 总页数 */
+    /*-- 总页数 --*/
     total: number;
-    /** 目标页链接生成函数 */
+    /*-- 目标页链接生成函数（服务端链接模式） --*/
     getHref?: (page: number) => string;
-    /** 页码变更回调 */
+    /*-- 页码变更回调（客户端回调模式） --*/
     onPageChange?: (page: number) => void;
-    /** 每页条数 */
+    /*-- 每页条数 --*/
     pageSize?: number;
-    /** 每页条数变更回调 */
+    /*-- 每页条数变更回调 --*/
     onPageSizeChange?: (size: number) => void;
-    /** 可选的每页条数选项，默认 [10, 20, 50, 100] */
+    /*-- 可选的每页条数选项，默认 [10, 20, 50, 100] --*/
     pageSizeOptions?: number[];
 }
 

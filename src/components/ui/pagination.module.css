@@ -1,20 +1,21 @@
 /*== Pagination 分页 — 朱砂红当前页 + 描边翻页按钮 ==*/
+
+/*-- 根容器：右对齐 --*/
 .root {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.375rem;
-    margin-top: 3rem;
-    margin-bottom: 1rem;
+    gap: var(--space-1);
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-4);
 }
 
-/*== 每页条数选择器 ==*/
-
+/*-- 每页条数选择器 --*/
 .sizeSelector {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-    margin-right: 0.75rem;
+    gap: var(--space-1);
+    margin-right: var(--space-3);
 }
 
 .sizeLabel {
@@ -22,14 +23,14 @@
     color: var(--muted-foreground);
 }
 
-/*== 通用按钮基础 ==*/
+/*-- 通用按钮基础 --*/
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 2.25rem;
     height: 2.25rem;
-    padding: 0 0.5rem;
+    padding: 0 var(--space-2);
     border: 1px solid var(--border);
     background: transparent;
     font-family: var(--font-sans);
@@ -37,9 +38,9 @@
     color: var(--muted-foreground);
     cursor: pointer;
     transition:
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background-color 0.2s ease;
+        color var(--transition),
+        border-color var(--transition),
+        background-color var(--transition);
 }
 
 .btn:hover:not(:disabled) {
@@ -52,28 +53,28 @@
 }
 
 .btn:disabled {
-    opacity: 0.35;
+    opacity: var(--opacity-40);
     cursor: default;
 }
 
 .disabledLink {
-    opacity: 0.35;
+    opacity: var(--opacity-40);
     cursor: default;
     pointer-events: none;
 }
 
-/*== 翻页按钮（上一页/下一页） ==*/
+/*-- 翻页按钮（上一页/下一页） --*/
 .navBtn {
-    padding: 0 0.75rem;
+    padding: 0 var(--space-3);
     font-size: var(--comp-text-sm);
 }
 
-/*== 当前页 — 朱砂红实色 ==*/
+/*-- 当前页 — 朱砂红实色 --*/
 .active {
     border-color: var(--primary);
     background: var(--primary);
     color: var(--primary-foreground);
-    font-weight: 500;
+    font-weight: var(--weight-medium);
 }
 
 .active:hover:not(:disabled) {
@@ -82,7 +83,7 @@
     filter: brightness(1.1);
 }
 
-/*== 省略号 ==*/
+/*-- 省略号 --*/
 .ellipsis {
     min-width: 2.25rem;
     height: 2.25rem;
@@ -91,6 +92,5 @@
     justify-content: center;
     font-size: var(--comp-text-base);
     color: var(--muted-foreground);
-    letter-spacing: 0.1em;
     user-select: none;
 }

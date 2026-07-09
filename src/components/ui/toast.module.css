@@ -1,34 +1,38 @@
 /*== Toast 提示 — 固定右上角，匹配文人书斋风格 ==*/
 
+/*-- 容器：固定右上角 --*/
 .container {
     position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
+    top: var(--space-5);
+    right: var(--space-5);
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2);
     pointer-events: none;
 }
 
+/*-- 单条提示 --*/
 .item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
     max-width: 20rem;
-    padding: 0.625rem 0.75rem;
+    padding: var(--space-2) var(--space-3);
     border-radius: var(--radius);
     font-size: var(--comp-text-base);
     pointer-events: auto;
-    animation: toastIn 0.2s ease;
+    animation: toastIn var(--transition-fast) ease;
 }
 
+/*-- 成功：朱砂红边框 --*/
 .success {
     border: 1px solid var(--primary);
     background: var(--background);
     color: var(--primary);
 }
 
+/*-- 错误：危险红边框 --*/
 .error {
     border: 1px solid var(--destructive);
     background: var(--background);
@@ -43,31 +47,10 @@
 
 .message {
     flex: 1;
-    line-height: 1.4;
+    line-height: var(--leading-normal);
 }
 
-.closeBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.125rem;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    color: inherit;
-    opacity: 0.5;
-    transition: opacity 0.15s;
-}
-
-.closeBtn:hover {
-    opacity: 1;
-}
-
-.closeIcon {
-    width: 0.875rem;
-    height: 0.875rem;
-}
-
+/*-- 入场动画 --*/
 @keyframes toastIn {
     from {
         opacity: 0;

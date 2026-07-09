@@ -1,18 +1,41 @@
+/*============================================================================
+  data-table — 通用数据表格
+
+  后台表格组件，支持列定义（响应式隐藏/列宽/对齐）、空态展示、
+  可横向滚动模式（scrollable）。直角边框匹配后台风格。
+============================================================================*/
+
+/*== 依赖导入 ==*/
 import React from 'react';
+
+/*== 样式导入 ==*/
 import styles from './data-table.module.css';
 
-/*== DataTable 列定义 ==*/
+/*== 类型定义 ==*/
 export interface DataColumn<T> {
-    /** 列标题 */
+    /*-- 列标题 --*/
     header: string;
-    /** 数据字段访问器或自定义渲染 */
+    /*-- 数据字段访问器或自定义渲染 --*/
     render: (row: T, index: number) => React.ReactNode;
-    /** 响应式隐藏断点 */
+    /*-- 响应式隐藏断点 --*/
     hideBelow?: 'sm' | 'md' | 'lg';
-    /** 列宽（scrollable 模式下用于 colgroup，同时自动启用打点+hover） */
+    /*-- 列宽（scrollable 模式用于 colgroup，同时自动启用打点+hover） --*/
     width?: string;
-    /** 列对齐方式，默认 left */
+    /*-- 列对齐方式，默认 left --*/
     align?: 'left' | 'center' | 'right';
+}
+
+interface DataTableProps<T> {
+    /*-- 列定义 --*/
+    columns: DataColumn<T>[];
+    /*-- 数据行 --*/
+    rows: T[];
+    /*-- 行唯一键提取函数 --*/
+    rowKey: (row: T) => string | number;
+    /*-- 空态文案，默认"暂无数据" --*/
+    emptyText?: string;
+    /*-- 列多可横向滚动：colgroup + table-layout:fixed --*/
+    scrollable?: boolean;
 }
 
 /*== 从 React 渲染内容提取纯文本，用于 td 的 title 属性 ==*/
@@ -26,17 +49,7 @@ function extractText(node: React.ReactNode): string {
     return '';
 }
 
-/*== DataTable 属性 ==*/
-interface DataTableProps<T> {
-    columns: DataColumn<T>[];
-    rows: T[];
-    rowKey: (row: T) => string | number;
-    emptyText?: string;
-    /** 列多可横向滚动：colgroup + table-layout:fixed，列宽由 width 精确控制 */
-    scrollable?: boolean;
-}
-
-/*== 通用数据表格 ==*/
+/*== DataTable 通用数据表格 ==*/
 export function DataTable<T>({ columns, rows, rowKey, emptyText = '暂无数据', scrollable = false }: DataTableProps<T>) {
     const safeRows = rows ?? [];
 

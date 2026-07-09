@@ -268,7 +268,7 @@
 | Tag | `src/components/ui/tag.tsx` |
 | TextInput | `src/components/ui/text-input.tsx` |
 | TextLink | `src/components/ui/text-link.tsx` |
-| Toast | `src/components/ui/toast.tsx` + `use-toast.ts` |
+| Toast | `src/components/ui/toast.tsx` + `src/lib/core/toast-store.ts` |
 
 ### `components/site/` — 前台展示组件（9 个）
 | 组件 | 文件 |

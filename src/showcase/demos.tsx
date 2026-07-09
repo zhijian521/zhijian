@@ -22,6 +22,9 @@ import { TextInput } from '@/components/ui/text-input';
 import { TextLink } from '@/components/ui/text-link';
 import Dialog from '@/components/ui/dialog';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import { DataTable, type DataColumn } from '@/components/ui/data-table';
+import { Pagination } from '@/components/ui/pagination';
+import { ToastContainer, toast } from '@/components/ui/toast';
 
 /*== 样式导入 ==*/
 import styles from './demos.module.css';
@@ -421,6 +424,145 @@ const [loading, setLoading] = useState(false);
   onConfirm={handleConfirm}
   onCancel={() => setOpen(false)}
 />`}</code></pre>
+        </div>
+    );
+}
+
+export function StatusPageDemo() {
+    return (
+        <div className={styles.demo}>
+            <p className={styles.dialogContent}>
+                状态页为全屏固定定位组件，请在 <code>/404</code> 或 <code>/forbidden</code> 页面查看实际效果。
+            </p>
+            <pre className={styles.codeBlock}><code>{`// 使用方式
+<StatusPage
+  code={404}
+  title="此页云深不知处，且向别处寻芳踪。"
+  subtitle="页面不存在或已被移除"
+/>`}</code></pre>
+        </div>
+    );
+}
+
+export function ToastDemo() {
+    return (
+        <div className={styles.demo}>
+            {/*-- 触发按钮 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>类型</span>
+                <div className={styles.items}>
+                    <GhostButton asButton onClick={() => toast.success('操作成功')} size="medium">
+                        成功提示
+                    </GhostButton>
+                    <GhostButton asButton onClick={() => toast.error('操作失败')} size="medium">
+                        错误提示
+                    </GhostButton>
+                </div>
+            </div>
+            {/*-- Toast 容器 --*/}
+            <ToastContainer />
+
+            {/*-- 代码块 — 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 使用方式
+import { toast, ToastContainer } from '@/components/ui/toast';
+
+// 在布局中挂载容器
+<ToastContainer />
+
+// 任意位置调用
+toast.success('操作成功');
+toast.error('操作失败');`}</code></pre>
+        </div>
+    );
+}
+
+export function PaginationDemo() {
+    const [page, setPage] = useState(3);
+    const [pageSize, setPageSize] = useState(10);
+
+    return (
+        <div className={styles.demo}>
+            {/*-- 客户端回调模式 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>回调</span>
+                <div className={styles.items}>
+                    <Pagination
+                        current={page}
+                        total={10}
+                        onPageChange={setPage}
+                        pageSize={pageSize}
+                        onPageSizeChange={setPageSize}
+                    />
+                </div>
+            </div>
+            {/*-- 服务端链接模式 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>链接</span>
+                <div className={styles.items}>
+                    <Pagination current={1} getHref={(p) => `?page=${p}`} total={5} />
+                </div>
+            </div>
+
+            {/*-- 代码块 — 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 客户端回调模式
+const [page, setPage] = useState(1);
+<Pagination
+  current={page}
+  total={10}
+  onPageChange={setPage}
+  pageSize={pageSize}
+  onPageSizeChange={setPageSize}
+/>
+
+// 服务端链接模式
+<Pagination current={1} total={5} getHref={(p) => \`?page=\${p}\`} />`}</code></pre>
+        </div>
+    );
+}
+
+export function DataTableDemo() {
+    interface DemoRow {
+        id: number;
+        name: string;
+        role: string;
+        date: string;
+    }
+
+    const columns: DataColumn<DemoRow>[] = [
+        { header: 'ID', render: (r) => r.id, width: '60px' },
+        { header: '名称', render: (r) => r.name, width: '120px' },
+        { header: '角色', render: (r) => <Tag size="mini">{r.role}</Tag>, hideBelow: 'sm' },
+        { header: '日期', render: (r) => r.date, hideBelow: 'md' },
+    ];
+
+    const rows: DemoRow[] = [
+        { id: 1, name: '张三', role: 'admin', date: '2026-07-01' },
+        { id: 2, name: '李四', role: 'user', date: '2026-07-02' },
+        { id: 3, name: '王五', role: 'user', date: '2026-07-03' },
+    ];
+
+    return (
+        <div className={styles.demo}>
+            {/*-- 基础表格 --*/}
+            <DataTable columns={columns} rowKey={(r) => r.id} rows={rows} />
+            {/*-- 空态 --*/}
+            <div style={{ marginTop: 'var(--space-4)' }}>
+                <DataTable columns={columns} rowKey={(r) => r.id} rows={[]} emptyText="暂无记录" />
+            </div>
+
+            {/*-- 代码块 — 使用方式 --*/}
+            <pre className={styles.codeBlock}><code>{`// 使用方式
+interface Row { id: number; name: string; role: string; date: string; }
+
+const columns: DataColumn<Row>[] = [
+  { header: 'ID', render: (r) => r.id, width: '60px' },
+  { header: '名称', render: (r) => r.name, width: '120px' },
+  { header: '角色', render: (r) => <Tag size="mini">{r.role}</Tag>, hideBelow: 'sm' },
+  { header: '日期', render: (r) => r.date, hideBelow: 'md' },
+];
+
+<DataTable columns={columns} rowKey={(r) => r.id} rows={rows} />
+<DataTable columns={columns} rowKey={(r) => r.id} rows={[]} emptyText="暂无记录" />`}</code></pre>
         </div>
     );
 }

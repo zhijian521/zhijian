@@ -11,15 +11,19 @@ import type { ComponentType } from 'react';
 /*== 组件导入 ==*/
 import {
     ConfirmDialogDemo,
+    DataTableDemo,
     DialogDemo,
     GhostButtonDemo,
     IconButtonDemo,
+    PaginationDemo,
     PillSelectDemo,
     SelectDemo,
+    StatusPageDemo,
     SubmitButtonDemo,
     TagDemo,
     TextInputDemo,
     TextLinkDemo,
+    ToastDemo,
 } from './demos';
 
 /*== 类型定义 ==*/
@@ -111,5 +115,29 @@ export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [
         module: 'ui',
         source: 'src/components/ui/confirm-dialog.tsx',
         examples: [demo(ConfirmDialogDemo)],
+    },
+    {
+        name: 'StatusPage',
+        module: 'ui',
+        source: 'src/components/ui/status-page.tsx',
+        examples: [demo(StatusPageDemo)],
+    },
+    {
+        name: 'Toast',
+        module: 'ui',
+        source: 'src/components/ui/toast.tsx',
+        examples: [demo(ToastDemo)],
+    },
+    {
+        name: 'Pagination',
+        module: 'ui',
+        source: 'src/components/ui/pagination.tsx',
+        examples: [demo(PaginationDemo)],
+    },
+    {
+        name: 'DataTable',
+        module: 'ui',
+        source: 'src/components/ui/data-table.tsx',
+        examples: [demo(DataTableDemo)],
     },
 ];

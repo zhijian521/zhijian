@@ -235,7 +235,7 @@ refactor: 中文描述
 | Nav 存储 | `src/lib/domain/nav-storage.ts` |
 | Git 提交记录 | `src/lib/domain/github.ts` |
 | 图标库 | `src/components/ui/icons.tsx` |
-| Toast | `src/components/ui/toast.tsx` + `use-toast.ts` |
+| Toast | `src/components/ui/toast.tsx` + `src/lib/core/toast-store.ts` |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
 | 导航栏组件 | `src/components/site/site-header.tsx` |
 | 标题组件 | `src/components/site/section-heading.tsx` |
