@@ -18,7 +18,6 @@ export function ProfileSection({ commitData }: ProfileSectionProps) {
     return (
         <section className={styles.section} id="about-me">
             <SectionHeading>个人信息</SectionHeading>
-
             <div className={styles.row}>
                 <ProfileCard />
                 <div className={styles.commitCol}>

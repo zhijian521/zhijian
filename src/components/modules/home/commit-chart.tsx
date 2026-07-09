@@ -14,15 +14,7 @@ interface CommitChartProps {
 }
 
 const LEVELS = ['l0', 'l1', 'l2', 'l3', 'l4'] as const;
-
-/*-- 根据提交次数和最大值计算热度等级 --*/
-function getLevel(count: number, max: number): number {
-    if (count === 0) return 0;
-    if (count <= max * 0.25) return 1;
-    if (count <= max * 0.5) return 2;
-    if (count <= max * 0.75) return 3;
-    return 4;
-}
+const THRESHOLDS = [0, 0.25, 0.5, 0.75, Infinity] as const;
 
 function buildWeeks(data: Map<string, number>, max: number) {
     const now = new Date();
@@ -38,7 +30,8 @@ function buildWeeks(data: Map<string, number>, max: number) {
         for (let i = 0; i < 7; i++) {
             const ds = d.toISOString().slice(0, 10);
             const c = data.get(ds) || 0;
-            week.push({ date: ds, level: LEVELS[getLevel(c, max)] });
+            const idx = THRESHOLDS.findIndex((t) => c <= max * t);
+            week.push({ date: ds, level: LEVELS[idx] });
             d.setDate(d.getDate() + 1);
         }
         weeks.push(week);
@@ -49,6 +42,25 @@ function buildWeeks(data: Map<string, number>, max: number) {
 function formatDate(dateStr: string): string {
     const d = new Date(dateStr + 'T00:00:00');
     return `${d.getMonth() + 1}月${d.getDate()}日`;
+}
+
+/*-- DayCell 单日单元格 — 点击显示提交次数 --*/
+interface DayCellProps {
+    day: { date: string; level: (typeof LEVELS)[number] };
+    count: number;
+    onClick: (date: string, count: number) => void;
+}
+
+function DayCell({ day, count, onClick }: DayCellProps) {
+    const label = `${formatDate(day.date)}: ${count} 次提交`;
+    return (
+        <button
+            aria-label={label}
+            className={`${styles.cell} ${styles[day.level]}`}
+            onClick={() => onClick(day.date, count)}
+            type="button"
+        />
+    );
 }
 
 export function CommitChart({ data }: CommitChartProps) {
@@ -66,8 +78,7 @@ export function CommitChart({ data }: CommitChartProps) {
                 项目提交记录
                 {selected ? (
                     <span className={styles.tip}>
-                        {' '}
-                        — {formatDate(selected.date)} · {selected.count} 次提交
+                        {' '} — {formatDate(selected.date)} · {selected.count} 次提交
                     </span>
                 ) : null}
             </p>
@@ -87,16 +98,7 @@ export function CommitChart({ data }: CommitChartProps) {
                             <div className={styles.col} key={w[0]?.date ?? wi}>
                                 {w.map((day) => {
                                     const count = dayMap.get(day.date) || 0;
-                                    const label = `${formatDate(day.date)}: ${count} 次提交`;
-                                    return (
-                                        <button
-                                            aria-label={label}
-                                            className={`${styles.cell} ${styles[day.level]}`}
-                                            key={day.date}
-                                            onClick={() => setSelected({ date: day.date, count })}
-                                            type="button"
-                                        />
-                                    );
+                                    return <DayCell key={day.date} day={day} count={count} onClick={(d, c) => setSelected({ date: d, count: c })} />;
                                 })}
                             </div>
                         ))}

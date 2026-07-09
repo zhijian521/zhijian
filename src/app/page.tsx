@@ -64,10 +64,7 @@ const PROJECTS = [
 
 export default async function HomePage() {
     /*-- 获取文章与提交记录（互不依赖，并行请求） --*/
-    const [posts, commitData] = await Promise.all([
-        getPublishedPosts({ limit: 3 }),
-        fetchCommitHistory(),
-    ]);
+    const [posts, commitData] = await Promise.all([getPublishedPosts({ limit: 3 }), fetchCommitHistory()]);
 
     /*-- 结构化数据 --*/
     const homeJsonLd = {
@@ -116,8 +113,11 @@ export default async function HomePage() {
     /*-- 首页页面 --*/
     return (
         <main>
+            {/*结构化数据*/}
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
+            {/*首屏封面*/}
             <HeroSection />
+            {/*简介&文章&项目*/}
             <div className="page-content">
                 <ProfileSection commitData={commitData} />
                 <PostsSection posts={posts} />

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 /*== 组件导入 ==*/
-import { ProjectCard, type ProjectAction } from '@/components/modules/home/project-card';
 import { SectionHeading } from '@/components/site/section-heading';
+import { ProjectCard, type ProjectAction } from '@/components/modules/home/project-card';
 
 /*== 样式导入 ==*/
 import styles from './projects-section.module.css';

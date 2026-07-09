@@ -1,4 +1,5 @@
 /*== 组件导入 ==*/
+import { Show } from '@/components/ui/show';
 import { Tag } from '@/components/ui/tag';
 import { GhostButton } from '@/components/ui/ghost-button';
 
@@ -31,26 +32,30 @@ export function ProjectCard({ icon, title, description, tags, actions }: Project
         <div className={styles.card}>
             <div className={styles.header}>
                 <div className={styles.titleRow}>
-                    {icon ? <span className={styles.icon}>{icon}</span> : null}
+                    <Show when={icon}>
+                        <span className={styles.icon}>{icon}</span>
+                    </Show>
                     <h3 className={styles.title}>{title}</h3>
                 </div>
             </div>
 
-            {description ? <p className={styles.copy}>{description}</p> : null}
+            <Show when={description}>
+                <p className={styles.copy}>{description}</p>
+            </Show>
 
-            {tags && tags.length > 0 ? (
+            <Show when={tags && tags.length > 0}>
                 <div className={styles.tags}>
-                    {tags.map((tag) => (
+                    {tags!.map((tag) => (
                         <Tag key={tag} size="mini">
                             {tag}
                         </Tag>
                     ))}
                 </div>
-            ) : null}
+            </Show>
 
-            {actions && actions.length > 0 ? (
+            <Show when={actions && actions.length > 0}>
                 <div className={styles.actions}>
-                    {actions.map((action) => (
+                    {actions!.map((action) => (
                         <GhostButton
                             href={action.href}
                             icon={action.icon}
@@ -63,7 +68,7 @@ export function ProjectCard({ icon, title, description, tags, actions }: Project
                         </GhostButton>
                     ))}
                 </div>
-            ) : null}
+            </Show>
         </div>
     );
 }

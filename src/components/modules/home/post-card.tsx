@@ -1,58 +1,63 @@
 /*== 组件导入 ==*/
+import { ContentImage } from '@/components/site/content-image';
+import { Show } from '@/components/ui/show';
 import { Tag } from '@/components/ui/tag';
 import { TextLink } from '@/components/ui/text-link';
 
 /*== 数据与配置 ==*/
 import { cn } from '@/lib/core/utils';
+import { formatPostDate } from '@/lib/domain/posts';
+import type { Post } from '@/lib/domain/posts';
 
 /*== 样式导入 ==*/
 import styles from './post-card.module.css';
 
 export interface PostCardProps {
-    /*-- 卡片顶部视觉区内容，传入渐变 div 或图片。不传则为纯文字卡片 --*/
-    visual?: React.ReactNode;
-    /*-- 标签文字 --*/
-    tag?: string;
+    /*-- 文章数据 --*/
+    post: Post;
     /*-- 标签变体 --*/
     tagVariant?: 'default' | 'primary';
-    /*-- 日期文字 --*/
-    date?: string;
-    /*-- 文章标题 --*/
-    title: string;
-    /*-- 文章摘要 --*/
-    summary?: string;
-    /*-- 文章链接 --*/
-    href: string;
 }
 
 /*== PostCard 文章卡片 — 有封面图时展示图片+渐变，内容区统一样式 ==*/
-export function PostCard({ visual, tag, tagVariant = 'default', date, title, summary, href }: PostCardProps) {
-    const hasVisual = !!visual;
+export function PostCard({ post, tagVariant = 'default' }: PostCardProps) {
+    const hasVisual = !!post.coverImage;
 
     return (
         <article className={styles.card}>
-            {hasVisual ? (
+            {/*文章封面图*/}
+            <Show when={hasVisual}>
                 <div className={styles.visualCard}>
-                    <div className={styles.visualImage}>{visual}</div>
+                    <div className={styles.visualImage}>
+                        <ContentImage
+                            alt={post.altText || post.title}
+                            sizes="(min-width: 1024px) 22rem, 100vw"
+                            src={post.coverImage!}
+                        />
+                    </div>
                     <div className={styles.visualGradient} />
                 </div>
-            ) : null}
+            </Show>
+            {/*文章简要*/}
             <div className={cn(styles.body, hasVisual && styles.hasVisual)}>
                 <div className={styles.bodyContent}>
-                    <h3 className={styles.title}>{title}</h3>
+                    <h3 className={styles.title}>{post.title}</h3>
                     <div className={styles.metaRow}>
-                        {tag ? (
+                        <Show when={post.categoryName}>
                             <Tag variant={tagVariant} size="mini">
-                                {tag}
+                                {post.categoryName}
                             </Tag>
-                        ) : null}
-                        {date ? <span className={styles.date}>{date}</span> : null}
+                        </Show>
+                        <span className={styles.date}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
                     </div>
-                    {summary ? <p className={styles.summary}>{summary}</p> : null}
+                    <Show when={post.summary}>
+                        <p className={styles.summary}>{post.summary}</p>
+                    </Show>
                 </div>
             </div>
+            {/*查看按钮*/}
             <div className={styles.linkWrap}>
-                <TextLink href={href}>阅读更多</TextLink>
+                <TextLink href={`/blog/${post.slug}`}>阅读更多</TextLink>
             </div>
         </article>
     );
