@@ -9,7 +9,7 @@
 import type { ComponentType } from 'react';
 
 /*== 组件导入 ==*/
-import { GhostButtonDemo, TagDemo } from './demos';
+import { GhostButtonDemo, IconButtonDemo, SubmitButtonDemo, TagDemo, TextLinkDemo } from './demos';
 
 /*== 类型定义 ==*/
 export interface ShowcaseExample {
@@ -54,5 +54,26 @@ export const SHOWCASE_REGISTRY: ShowcaseEntry[] = [
         module: 'ui',
         source: 'src/components/ui/ghost-button.tsx',
         examples: [demo(GhostButtonDemo)],
+    },
+    {
+        name: 'SubmitButton',
+        description: '提交按钮，朱砂红主按钮，3 尺寸 + 禁用态',
+        module: 'ui',
+        source: 'src/components/ui/submit-button.tsx',
+        examples: [demo(SubmitButtonDemo)],
+    },
+    {
+        name: 'IconButton',
+        description: '图标按钮，2 变体 × 4 尺寸（mini/small/medium/default）+ 禁用态',
+        module: 'ui',
+        source: 'src/components/ui/icon-button.tsx',
+        examples: [demo(IconButtonDemo)],
+    },
+    {
+        name: 'TextLink',
+        description: '纯文字链接，朱砂红+箭头，hover 淡出',
+        module: 'ui',
+        source: 'src/components/ui/text-link.tsx',
+        examples: [demo(TextLinkDemo)],
     },
 ];

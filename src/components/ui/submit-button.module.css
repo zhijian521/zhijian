@@ -2,31 +2,38 @@
 .button {
     padding: var(--comp-py-base) var(--comp-px-base);
     font-size: var(--comp-text-base);
-    line-height: 1.4;
-    font-weight: 500;
+    line-height: var(--leading-normal);
+    font-weight: var(--weight-medium);
     border: 1px solid var(--primary);
     background: var(--primary);
     color: var(--primary-foreground);
     cursor: pointer;
     transition:
-        background-color 0.2s ease,
-        transform 0.2s ease;
+        background-color var(--transition),
+        transform var(--transition);
 }
 
 .button:hover {
-    background: var(--primary-hover);
+    background: color-mix(in srgb, var(--primary) 88%, black);
 }
 
 .button:active {
+    background: var(--primary-active);
     transform: scale(0.98);
 }
 
+/*== 焦点轮廓 ==*/
+.button:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
 .button:disabled {
-    opacity: 0.5;
+    opacity: var(--opacity-40);
     cursor: not-allowed;
 }
 
-/* 尺寸变体（仅 non-default，default 已在 .button 基础样式中） */
+/*== 尺寸变体（仅 non-default，default 已在 .button 基础样式中） ==*/
 .medium {
     padding: var(--comp-py-md) var(--comp-px-md);
     font-size: var(--comp-text-md);

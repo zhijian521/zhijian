@@ -9,8 +9,11 @@
 
 /*== 组件导入 ==*/
 import { GhostButton } from '@/components/ui/ghost-button';
-import { PlusIcon } from '@/components/ui/icons';
+import { IconButton } from '@/components/ui/icon-button';
+import { PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { Tag } from '@/components/ui/tag';
+import { TextLink } from '@/components/ui/text-link';
 
 /*== 样式导入 ==*/
 import styles from './demos.module.css';
@@ -35,6 +38,83 @@ export function TagDemo() {
                     <Tag size="medium">default</Tag>
                     <Tag size="medium" variant="primary">primary</Tag>
                     <Tag size="medium" variant="outlined">outlined</Tag>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function SubmitButtonDemo() {
+    return (
+        <div className={styles.demo}>
+            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>尺寸</span>
+                <div className={styles.items}>
+                    <SubmitButton size="small">small</SubmitButton>
+                    <SubmitButton size="medium">medium</SubmitButton>
+                    <SubmitButton>default</SubmitButton>
+                </div>
+            </div>
+            {/*-- 禁用态 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>禁用</span>
+                <div className={styles.items}>
+                    <SubmitButton disabled>禁用态</SubmitButton>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function IconButtonDemo() {
+    return (
+        <div className={styles.demo}>
+            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>尺寸</span>
+                <div className={styles.items}>
+                    <IconButton icon={<SearchIcon />} size="mini" />
+                    <IconButton icon={<SearchIcon />} size="small" />
+                    <IconButton icon={<SearchIcon />} size="medium" />
+                    <IconButton icon={<SearchIcon />} />
+                </div>
+            </div>
+            {/*-- 变体 — medium 尺寸下展示全部变体 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>变体</span>
+                <div className={styles.items}>
+                    <IconButton icon={<SearchIcon />} size="medium" />
+                    <IconButton icon={<Trash2Icon />} size="medium" variant="danger" />
+                </div>
+            </div>
+            {/*-- 禁用态 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>禁用</span>
+                <div className={styles.items}>
+                    <IconButton icon={<SearchIcon />} disabled />
+                    <IconButton icon={<Trash2Icon />} disabled variant="danger" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function TextLinkDemo() {
+    return (
+        <div className={styles.demo}>
+            {/*-- 带箭头（默认） --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>默认</span>
+                <div className={styles.items}>
+                    <TextLink href="#">阅读全文</TextLink>
+                </div>
+            </div>
+            {/*-- 无箭头 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>无箭头</span>
+                <div className={styles.items}>
+                    <TextLink href="#" showArrow={false}>查看更多</TextLink>
                 </div>
             </div>
         </div>

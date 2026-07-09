@@ -2,20 +2,26 @@
 .link {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: var(--space-1);
     font-size: var(--comp-text-base);
-    line-height: 1.4;
-    font-weight: 500;
+    line-height: var(--leading-normal);
+    font-weight: var(--weight-medium);
     color: var(--primary);
-    transition: opacity 0.2s ease;
+    transition: opacity var(--transition);
 }
 
 .link:hover {
-    opacity: 0.7;
+    opacity: var(--opacity-60);
+}
+
+/*== 焦点轮廓 ==*/
+.link:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
 }
 
 .icon {
-    width: 1rem;
-    height: 1rem;
+    width: 1em;
+    height: 1em;
     flex-shrink: 0;
 }

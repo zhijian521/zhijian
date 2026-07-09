@@ -13,7 +13,7 @@ import { cn } from '@/lib/core/utils';
 import styles from './text-link.module.css';
 
 export interface TextLinkProps extends React.ComponentProps<typeof Link> {
-    /** 是否显示右侧箭头图标，默认 true */
+    /*-- 是否显示右侧箭头图标，默认 true --*/
     showArrow?: boolean;
 }
 
