@@ -32,8 +32,8 @@
 
 /*== large 变体：hero 等大标题场景，icon 同步放大 ==*/
 .large {
-    padding: var(--space-3) var(--space-6);
-    font-size: var(--text-sm);
+    padding: var(--comp-py-large) var(--comp-px-large);
+    font-size: var(--comp-text-large);
 }
 
 .button:hover {

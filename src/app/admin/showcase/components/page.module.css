@@ -1,22 +1,14 @@
-/* 顶部样式见 ../shared.module.css */
-
 .section {
     margin-bottom: var(--space-7);
 }
 
 .moduleTitle {
     font-size: var(--text-sm);
-    font-weight: 400;
+    font-weight: var(--weight-normal);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: var(--tracking-wide);
     color: var(--muted-foreground);
     margin-bottom: var(--space-3);
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
 }
 
 .card {
@@ -27,14 +19,16 @@
 
 .cardHeader {
     display: flex;
-    justify-content: space-between;
     align-items: baseline;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
 }
 
 .cardTitle {
+    margin: 0;
     font-size: var(--text-lg);
+    font-weight: var(--weight-medium);
 }
 
 .cardSource {
@@ -45,25 +39,10 @@
 .cardDesc {
     font-size: var(--text-sm);
     color: var(--muted-foreground);
-    margin-bottom: var(--space-4);
+    margin: 0;
 }
 
-.examples {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--border);
-}
-
-.example {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-}
-
-.exampleLabel {
-    font-size: var(--text-xs);
-    color: var(--muted-foreground);
-    min-width: 5rem;
+.cardDesc::before {
+    content: '— ';
+    color: var(--border);
 }

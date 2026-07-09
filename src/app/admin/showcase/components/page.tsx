@@ -1,5 +1,10 @@
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+
+/*== 数据与配置 ==*/
 import { SHOWCASE_REGISTRY } from '@/showcase/registry';
+
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
 export const metadata = { title: '组件预览 - 知简' };
@@ -22,28 +27,19 @@ export default function ShowcaseComponentsPage() {
             {Object.entries(byModule).map(([module, entries]) => (
                 <section key={module} className={styles.section}>
                     <h2 className={styles.moduleTitle}>{module}</h2>
-                    <div className={styles.grid}>
-                        {entries.map((entry) => (
+                    {entries.map((entry) => {
+                        const Demo = entry.examples[0].Component;
+                        return (
                             <article key={entry.name} className={styles.card}>
                                 <header className={styles.cardHeader}>
                                     <h3 className={styles.cardTitle}>{entry.name}</h3>
+                                    <span className={styles.cardDesc}>{entry.description}</span>
                                     <code className={styles.cardSource}>{entry.source}</code>
                                 </header>
-                                <p className={styles.cardDesc}>{entry.description}</p>
-                                <div className={styles.examples}>
-                                    {entry.examples.map((ex) => {
-                                        const Example = ex.Component;
-                                        return (
-                                            <div key={ex.label} className={styles.example}>
-                                                <span className={styles.exampleLabel}>{ex.label}</span>
-                                                <Example {...ex.props} />
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                <Demo />
                             </article>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </section>
             ))}
         </div>

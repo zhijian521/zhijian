@@ -34,16 +34,6 @@
     --weight-semibold: 600;  /* 标题/区域名 */
     --weight-bold:     700;  /* 强强调 */
 
-    /*== 组件密度 — UI 组件内边距和字号阶梯（比页面 text/space 更细粒度） ==*/
-    --comp-text-sm:   0.8125rem;   /* 13px  small */
-    --comp-text-md:   0.84375rem;  /* 13.5px medium */
-    --comp-text-base: 0.875rem;    /* 14px  default */
-    --comp-py-sm:     0.375rem;    /* 6px  small */
-    --comp-py-md:     0.5rem;      /* 8px  medium */
-    --comp-py-base:   0.625rem;    /* 10px default */
-    --comp-px-sm:     0.75rem;     /* 12px small */
-    --comp-px-md:     0.8125rem;   /* 13px medium */
-    --comp-px-base:   0.875rem;    /* 14px default */
 
     /*== 字距阶梯 · 文人书斋舒朗节奏 ==*/
     --tracking-normal: 0;          /* 正文 */
@@ -77,4 +67,27 @@
     --transition-fast: 120ms ease;
     --transition: 180ms ease;
     --transition-slow: 280ms ease;
+
+
+    /*== 组件密度 — UI 组件内边距和字号阶梯（自成体系，不混用 space） ==*/
+    /* mini（极小，Tag 等） */
+    --comp-text-mini:  0.75rem;     /* 12px */
+    --comp-py-mini:    0.275rem;    /* 4.4px */
+    --comp-px-mini:    0.7rem;      /* 11.2px */
+    /* small */
+    --comp-text-sm:    0.8125rem;   /* 13px */
+    --comp-py-sm:      0.375rem;    /* 6px */
+    --comp-px-sm:      0.75rem;     /* 12px */
+    /* medium */
+    --comp-text-md:    0.84375rem;  /* 13.5px */
+    --comp-py-md:      0.5rem;      /* 8px */
+    --comp-px-md:      0.8125rem;   /* 13px */
+    /* default（基准） */
+    --comp-text-base:  0.875rem;    /* 14px */
+    --comp-py-base:    0.625rem;    /* 10px */
+    --comp-px-base:    0.875rem;    /* 14px */
+    /* large（大尺寸，hero 等大标题场景） */
+    --comp-text-large: 0.875rem;    /* 14px */
+    --comp-py-large:   0.75rem;     /* 12px */
+    --comp-px-large:   2rem;        /* 32px */
 }
