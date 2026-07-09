@@ -1,3 +1,11 @@
+/*============================================================================
+  ghost-button — 幽灵按钮
+
+  边框按钮 + 可选图标，支持 default / primary 双变体，
+  small / medium / default / large 四尺寸。
+  asButton 模式渲染 <button>（弹窗等非链接场景），否则渲染 <a>。
+============================================================================*/
+
 /*== 样式 ==*/
 import { cn } from '@/lib/core/utils';
 import styles from './ghost-button.module.css';

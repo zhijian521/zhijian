@@ -1,3 +1,11 @@
+/*============================================================================
+  content-image — 内容图片
+
+  本地资源走 next/image 优化（含 lazy / responsive sizes），
+  外链与运行时上传图片（/uploads/）回退原生 <img>，
+  统一 alt / className / style 接口。
+============================================================================*/
+
 import Image from 'next/image';
 
 interface ContentImageProps {

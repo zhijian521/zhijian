@@ -1,3 +1,10 @@
+/*============================================================================
+  profile-section — 个人信息区
+
+  组合 ProfileCard + CommitChart 两大子组件，
+  展示个人简介与 GitHub 提交热力图。
+============================================================================*/
+
 /*== 组件导入 ==*/
 import { ProfileCard } from '@/components/modules/home/profile-card';
 import { CommitChart } from '@/components/modules/home/commit-chart';

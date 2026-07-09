@@ -1,3 +1,11 @@
+/*============================================================================
+  page — 首页
+
+  服务端组件，并行获取最新文章与 GitHub 提交记录，
+  组合 HeroSection + ProfileSection + PostsSection + ProjectsSection。
+  注入 JSON-LD 结构化数据（WebSite / Person / CollectionPage / ItemList）。
+============================================================================*/
+
 import type { Metadata } from 'next';
 
 /*== 组件导入 ==*/
