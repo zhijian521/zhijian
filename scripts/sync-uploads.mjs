@@ -1,5 +1,8 @@
-/*==
-  图片同步脚本 — 将服务器上的图片文件增量同步到本地 public/uploads/ 目录。
+/*============================================================================
+  sync-uploads — 服务器图片增量同步到本地
+
+  将服务器上的 uploads 图片文件增量同步到本地 public/uploads/ 目录。
+  通过比对文件大小跳过已存在的图片，支持并发下载。
 
   用法：
     node scripts/sync-uploads.mjs
@@ -7,7 +10,7 @@
     node scripts/sync-uploads.mjs --server https://yuwb.dev --username admin --password xxx
 
   自动加载项目根目录的 .env.local 和 .env 获取 NEXT_PUBLIC_SITE_URL。
-==*/
+============================================================================*/
 
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
@@ -17,10 +20,16 @@ import { createInterface } from 'node:readline';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, '..');
 
-/*== session cookie 名称，与 src/lib/auth.ts 保持一致 ==*/
+/*== session cookie 名称，与 src/lib/core/auth.ts 保持一致 ==*/
 const SESSION_COOKIE_NAME = 'zhijian_session';
 
-/*== 加载 .env 文件（与 seed-admin.mjs 保持一致） ==*/
+/*== 并发下载数 ==*/
+const CONCURRENCY = 3;
+
+/*============================================================================
+  环境变量加载
+============================================================================*/
+
 for (const envFile of ['.env', '.env.local']) {
     try {
         const content = readFileSync(resolve(projectRoot, envFile), 'utf-8');
@@ -40,7 +49,10 @@ for (const envFile of ['.env', '.env.local']) {
     }
 }
 
-/*== 解析命令行参数 ==*/
+/*============================================================================
+  工具函数
+============================================================================*/
+
 function parseArgs() {
     const args = process.argv.slice(2);
     const parsed = {};
@@ -53,7 +65,12 @@ function parseArgs() {
     return parsed;
 }
 
-/*== 交互式输入 ==*/
+function formatSize(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 async function prompt(question) {
     const rl = createInterface({ input: process.stdin, output: process.stdout });
     return new Promise((resolve) => {
@@ -64,25 +81,21 @@ async function prompt(question) {
     });
 }
 
-/*== 交互式密码输入（隐藏输入） ==*/
 async function promptPassword(question) {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
     return new Promise((resolve) => {
         process.stdout.write(question);
         const stdin = process.stdin;
-        const wasRaw = stdin.isRaw;
+        const wasRaw = stdin.isTTY ? stdin.isRaw : false;
+
         if (stdin.isTTY) stdin.setRawMode(true);
 
         let password = '';
         const onData = (ch) => {
             const c = ch.toString();
             if (c === '\n' || c === '\r') {
-                if (stdin.isTTY) stdin.setRawMode(wasRaw ?? false);
-                stdin.removeListener('data', onData);
-                rl.close();
-                process.stdout.write('\n');
+                cleanup();
                 resolve(password);
-            } else if (c === '' || c === '\b') {
+            } else if (c === '\x7f' || c === '\b') {
                 if (password.length > 0) {
                     password = password.slice(0, -1);
                     process.stdout.write('\b \b');
@@ -92,32 +105,29 @@ async function promptPassword(question) {
                 process.stdout.write('*');
             }
         };
+
+        function cleanup() {
+            if (stdin.isTTY) stdin.setRawMode(wasRaw);
+            stdin.removeListener('data', onData);
+            process.stdout.write('\n');
+        }
+
         stdin.on('data', onData);
     });
 }
 
-/*== 格式化文件大小 ==*/
-function formatSize(bytes) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 /*== 从登录响应中提取 session cookie ==*/
 function extractSessionCookie(res) {
-    /* 优先用 getSetCookie()（Node 20.2+） */
-    const setCookieHeaders = res.headers.getSetCookie?.() || [];
+    const setCookieHeaders = res.headers.getSetCookie?.() ?? [];
     for (const header of setCookieHeaders) {
         if (header.startsWith(`${SESSION_COOKIE_NAME}=`)) {
             return header.split(';')[0];
         }
     }
 
-    /* 兜底：从 set-cookie header 手动解析 */
+    /*-- 兜底：从 set-cookie header 手动解析 --*/
     const setCookie = res.headers.get('set-cookie');
     if (setCookie) {
-        /* 多个 cookie 可能用逗号拼接，但 cookie 值内也可能含逗号（如 Expires 日期），
-           这里只找 zhijian_session= 开头的部分 */
         const match = setCookie.match(new RegExp(`${SESSION_COOKIE_NAME}=[^;]+`));
         if (match) return match[0];
     }
@@ -125,7 +135,10 @@ function extractSessionCookie(res) {
     return null;
 }
 
-/*== 登录并返回 cookie 字符串 ==*/
+/*============================================================================
+  登录
+============================================================================*/
+
 async function login(server, username, password) {
     const loginRes = await fetch(`${server}/api/auth/login`, {
         method: 'POST',
@@ -140,14 +153,90 @@ async function login(server, username, password) {
         if (body?.code !== 0) {
             throw new Error(body?.message || '登录失败');
         }
-        /* 登录成功但没拿到 cookie — 可能是 HTTPS same-site 限制 */
         throw new Error('登录成功但未获取到 session cookie，请检查服务器 Cookie 策略');
     }
 
     return cookie;
 }
 
-/*== 主流程 ==*/
+/*============================================================================
+  下载与同步
+============================================================================*/
+
+async function downloadFile(file, cookie, server) {
+    const localPath = join(projectRoot, 'public', file.path);
+    const localDir = dirname(localPath);
+
+    /*-- 比对：已存在且大小一致则跳过 --*/
+    if (existsSync(localPath)) {
+        try {
+            if (statSync(localPath).size === file.size) {
+                return { status: 'skipped' };
+            }
+        } catch {
+            /* stat 失败则重新下载 */
+        }
+    }
+
+    /*-- 下载文件 --*/
+    const fileRes = await fetch(`${server}${file.path}`);
+    if (!fileRes.ok) {
+        return { status: 'failed', reason: `HTTP ${fileRes.status}` };
+    }
+
+    const buffer = Buffer.from(await fileRes.arrayBuffer());
+    mkdirSync(localDir, { recursive: true });
+    writeFileSync(localPath, buffer);
+
+    return { status: existsSync(localPath) ? 'updated' : 'added' };
+}
+
+async function syncFiles(files, cookie, server) {
+    let added = 0;
+    let updated = 0;
+    let skipped = 0;
+    let failed = 0;
+
+    const queue = [...files];
+
+    async function worker() {
+        while (queue.length > 0) {
+            const file = queue.shift();
+            if (!file) break;
+
+            const result = await downloadFile(file, cookie, server);
+
+            switch (result.status) {
+                case 'skipped':
+                    skipped++;
+                    console.log(`· ${file.path} (已存在)`);
+                    break;
+                case 'added':
+                    added++;
+                    console.log(`✓ ${file.path} (${formatSize(file.size)})`);
+                    break;
+                case 'updated':
+                    updated++;
+                    console.log(`↻ ${file.path} (${formatSize(file.size)})`);
+                    break;
+                case 'failed':
+                    failed++;
+                    console.error(`✗ ${file.path} (${result.reason})`);
+                    break;
+            }
+        }
+    }
+
+    const workers = Array.from({ length: CONCURRENCY }, () => worker());
+    await Promise.all(workers);
+
+    return { added, updated, skipped, failed };
+}
+
+/*============================================================================
+  主流程
+============================================================================*/
+
 async function main() {
     const args = parseArgs();
     const server = args.server || process.env.NEXT_PUBLIC_SITE_URL || 'https://zhijian.yuwb.cn';
@@ -191,8 +280,7 @@ async function main() {
         process.exit(1);
     }
 
-    const files = syncData.data.files;
-    const total = syncData.data.total;
+    const { files, total } = syncData.data;
 
     if (total === 0) {
         console.log('服务器无图片，无需同步。');
@@ -203,67 +291,7 @@ async function main() {
     console.log('');
 
     /*-- 增量比对与下载 --*/
-    let added = 0;
-    let updated = 0;
-    let skipped = 0;
-    let failed = 0;
-
-    /* 并发控制：同时下载 3 个 */
-    const CONCURRENCY = 3;
-    const queue = [...files];
-
-    async function downloadWorker() {
-        while (queue.length > 0) {
-            const file = queue.shift();
-            if (!file) break;
-
-            const localPath = join(projectRoot, 'public', file.path);
-            const localDir = dirname(localPath);
-
-            /* 比对：已存在且大小一致则跳过 */
-            const localExists = existsSync(localPath);
-            if (localExists) {
-                try {
-                    const localStat = statSync(localPath);
-                    if (localStat.size === file.size) {
-                        console.log(`· ${file.path} (已存在)`);
-                        skipped++;
-                        continue;
-                    }
-                } catch {
-                    /* stat 失败则重新下载 */
-                }
-            }
-
-            /* 下载文件 */
-            try {
-                const fileRes = await fetch(`${server}${file.path}`);
-                if (!fileRes.ok) {
-                    console.error(`✗ ${file.path} (HTTP ${fileRes.status})`);
-                    failed++;
-                    continue;
-                }
-                const buffer = Buffer.from(await fileRes.arrayBuffer());
-
-                mkdirSync(localDir, { recursive: true });
-                writeFileSync(localPath, buffer);
-
-                if (localExists) {
-                    updated++;
-                    console.log(`↻ ${file.path} (${formatSize(file.size)})`);
-                } else {
-                    added++;
-                    console.log(`✓ ${file.path} (${formatSize(file.size)})`);
-                }
-            } catch (err) {
-                console.error(`✗ ${file.path} (${err.message})`);
-                failed++;
-            }
-        }
-    }
-
-    const workers = Array.from({ length: CONCURRENCY }, () => downloadWorker());
-    await Promise.all(workers);
+    const { added, updated, skipped, failed } = await syncFiles(files, cookie, server);
 
     console.log('');
     console.log(`同步完成：新增 ${added} 张，更新 ${updated} 张，跳过 ${skipped} 张，失败 ${failed} 张`);
