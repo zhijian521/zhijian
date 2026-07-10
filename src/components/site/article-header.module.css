@@ -1,0 +1,55 @@
+/*== ArticleHeader 文章头部信息 ==*/
+
+/*-- 头部容器 --*/
+.header {
+    margin: 0 auto var(--space-8);
+    padding: var(--space-5) var(--space-4);
+    text-align: center;
+}
+
+/*-- 文章标题 --*/
+.title {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--foreground);
+    margin: 0 0 var(--space-3);
+    line-height: var(--leading-tight);
+}
+
+/*-- 文章摘要 --*/
+.summary {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    font-style: italic;
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+    margin: 0 0 var(--space-4);
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*-- 元信息栏 --*/
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+/*-- 日期 --*/
+.date {
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+}
+
+/*-- 封面图 --*/
+.coverImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: var(--space-4);
+}

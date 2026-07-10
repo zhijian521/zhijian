@@ -262,16 +262,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
 
                             {/* 预览区 */}
                             <div className={styles.previewPane}>
-                                <MarkdownPreview
-                                    categoryName={categoryName}
-                                    content={formData.content}
-                                    coverImage={formData.coverImage}
-                                    publishedAt={formData.publishedAt}
-                                    summary={formData.summary}
-                                    tagNames={tagNames}
-                                    title={formData.title}
-                                    altText={formData.altText}
-                                />
+                                <MarkdownPreview content={formData.content} />
                             </div>
                         </div>
                     </>
@@ -334,16 +325,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                 {/* 预览模式：全宽预览 */}
                 {viewMode === 'preview' && (
                     <div className={styles.contentPreview}>
-                        <MarkdownPreview
-                            categoryName={categoryName}
-                            content={formData.content}
-                            coverImage={formData.coverImage}
-                            publishedAt={formData.publishedAt}
-                            summary={formData.summary}
-                            tagNames={tagNames}
-                            title={formData.title}
-                            altText={formData.altText}
-                        />
+                        <MarkdownPreview content={formData.content} />
                     </div>
                 )}
             </div>

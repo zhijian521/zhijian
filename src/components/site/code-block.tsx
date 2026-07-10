@@ -1,11 +1,22 @@
 'use client';
 
+/*============================================================================
+  code-block — 代码块渲染组件
+
+  react-markdown 的 pre 自定义渲染。
+  语法高亮 + 右上角悬浮复制按钮。
+============================================================================*/
+
+/*== 依赖导入 ==*/
 import { useCallback, useState } from 'react';
+
+/*== 组件导入 ==*/
 import { CheckIcon, CopyIcon } from '@/components/ui/icons';
 
+/*== 样式导入 ==*/
 import styles from './code-block.module.css';
 
-/*== 从 React children 中提取纯文本 ==*/
+/*== 从 React children 中递归提取纯文本 ==*/
 function extractText(children: React.ReactNode): string {
     if (typeof children === 'string') return children;
     if (Array.isArray(children)) return children.map(extractText).join('');

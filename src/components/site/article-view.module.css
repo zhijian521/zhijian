@@ -7,78 +7,10 @@
     max-width: none;
 }
 
-/* 文章头部 — 封面图+标题+摘要+元信息，居中对齐 */
-.header {
-    margin: 0 auto var(--space-8);
-    padding: var(--space-5) var(--space-4);
-    text-align: center;
-}
-
-.headerTitle {
-    font-family: var(--font-serif);
-    font-size: var(--text-3xl);
-    font-weight: var(--weight-bold);
-    color: var(--foreground);
-    margin: 0 0 var(--space-3);
-    line-height: var(--leading-tight);
-}
-
-.headerSummary {
-    font-family: var(--font-serif);
-    font-size: var(--text-base);
-    font-style: italic;
-    line-height: var(--leading-relaxed);
-    color: var(--muted-foreground);
-    margin: 0 0 var(--space-4);
-    max-width: 42rem;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.headerMeta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0;
-}
-
-.category {
-    display: inline-block;
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wide);
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    background: var(--primary-subtle-soft);
-}
-
-.tag {
-    display: inline-block;
-    padding: 0.125rem var(--space-2);
-    font-size: var(--text-xs);
-    color: var(--muted-foreground);
-    background: var(--secondary);
-}
-
-.date {
-    font-size: var(--text-xs);
-    color: var(--muted-foreground);
-}
-
 .updatedDate {
-    margin: 5rem auto 0;
+    margin: var(--space-8) auto 0;
     max-width: 42rem;
     text-align: right;
-    font-size: 0.75rem;
+    font-size: var(--text-xs);
     color: var(--muted-foreground);
-}
-
-/* 封面图：头部最顶部，与标题之间留间距 */
-.coverImage {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin-bottom: 1rem;
 }

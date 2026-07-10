@@ -1,23 +1,38 @@
+/*============================================================================
+  page — 博客详情页
+
+  服务端组件，按 slug 获取文章，渲染面包屑 + ArticleView + 底部标签 + 相关推荐。
+  服务端生成 metadata（title/description/OG/JSON-LD）。
+============================================================================*/
+
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
+/*== 组件导入 ==*/
+import { Show } from '@/components/ui/show';
+import { ArticleFooter } from '@/components/site/article-footer';
 import { ArticleView } from '@/components/site/article-view';
-import { getPostBySlug, getPublishedPosts } from '@/lib/domain/posts';
-import { formatPostDate, toPostIsoDateTime } from '@/lib/domain/posts';
+import { Breadcrumb } from '@/components/site/breadcrumb';
+import { RelatedPosts } from '@/components/modules/blog/related-posts';
+
+/*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
 import { toAbsoluteUrl } from '@/lib/core/utils';
+import { getPostBySlug, getPublishedPosts, toPostIsoDateTime } from '@/lib/domain/posts';
 
-import { ArticleFooterActions } from './_components/article-footer-actions';
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
+/*== 类型定义 ==*/
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+/*== 数据获取（cache 包裹，generateMetadata 与 render 共享查询） ==*/
 const getBlogPost = cache(async (slug: string) => getPostBySlug(slug));
 
+/*== 工具函数 ==*/
 function estimateReadingMinutes(content: string): number {
     const plainTextLength = content.replace(/\s+/g, '').length;
     return Math.max(1, Math.ceil(plainTextLength / 450));
@@ -25,6 +40,7 @@ function estimateReadingMinutes(content: string): number {
 
 export const dynamic = 'force-dynamic';
 
+/*== generateMetadata — 服务端生成 SEO 元数据 ==*/
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const post = await getBlogPost(slug);
@@ -77,6 +93,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
+/*== BlogPostPage — 服务端渲染：面包屑 + 正文 + 标签 + 相关推荐 ==*/
 export default async function BlogPostPage({ params }: PageProps) {
     const { slug } = await params;
     const post = await getBlogPost(slug);
@@ -85,19 +102,22 @@ export default async function BlogPostPage({ params }: PageProps) {
         notFound();
     }
 
-    /* 相关文章：查同标签文章，排除当前文章，最多 3 篇 */
+    /*-- 相关文章：查同标签文章，排除当前文章，最多 3 篇 --*/
     const tagSlugs = post.tagNames?.map((t) => t.slug) ?? [];
     const relatedPosts =
         tagSlugs.length > 0
             ? (await getPublishedPosts({ tagSlugs, limit: 5 })).filter((p) => p.id !== post.id).slice(0, 3)
             : [];
 
+    /*-- 元数据预计算 --*/
     const canonical = `${SITE_METADATA.siteUrl}/blog/${post.slug}`;
     const articleImage = toAbsoluteUrl(post.coverImage);
     const publishedTime = toPostIsoDateTime(post.publishedAt);
     const modifiedTime = toPostIsoDateTime(post.updatedAt);
     const readingMinutes = estimateReadingMinutes(post.content);
     const wordCount = post.content.trim().length;
+
+    /*-- JSON-LD 结构化数据 --*/
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -180,87 +200,29 @@ export default async function BlogPostPage({ params }: PageProps) {
     return (
         <main className={styles.page}>
             <div className="bg-overlay" />
+            {/*-- JSON-LD 结构化数据 --*/}
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <article className={styles.article}>
-                {/* 面包屑导航 */}
-                <nav aria-label="面包屑" className={styles.breadcrumb}>
-                    <ol className={styles.breadcrumbList}>
-                        <li className={styles.breadcrumbItem}>
-                            <Link className={styles.breadcrumbLink} href="/">
-                                {SITE_METADATA.title}
-                            </Link>
-                        </li>
-                        <li className={styles.breadcrumbItem}>
-                            <span className={styles.breadcrumbSep} aria-hidden>
-                                /
-                            </span>
-                            <Link className={styles.breadcrumbLink} href="/blog">
-                                文章
-                            </Link>
-                        </li>
-                        <li className={styles.breadcrumbItem}>
-                            <span className={styles.breadcrumbSep} aria-hidden>
-                                /
-                            </span>
-                            <span className={styles.breadcrumbCurrent} aria-current="page" title={post.title}>
-                                {post.title}
-                            </span>
-                        </li>
-                    </ol>
-                </nav>
-
-                <ArticleView
-                    altText={post.altText}
-                    categoryName={post.categoryName}
-                    content={post.content}
-                    coverImage={post.coverImage}
-                    publishedAt={post.publishedAt}
-                    summary={post.summary}
-                    tagNames={post.tagNames}
-                    title={post.title}
-                    updatedAt={post.updatedAt}
+                {/*-- 面包屑导航 --*/}
+                <Breadcrumb
+                    items={[
+                        { label: SITE_METADATA.title, href: '/' },
+                        { label: '文章', href: '/blog' },
+                        { label: post.title },
+                    ]}
                 />
 
-                <footer className={styles.footer}>
-                    <div className={styles.footerTags}>
-                        {post.tagNames?.map((tag) => (
-                            <span className={styles.footerTag} key={tag.id}>
-                                {tag.name}
-                            </span>
-                        ))}
-                    </div>
-                    <ArticleFooterActions />
-                </footer>
+                {/*-- 文章正文 --*/}
+                <ArticleView post={post} />
+
+                {/*-- 底部：标签 + 操作按钮 --*/}
+                <ArticleFooter post={post} />
             </article>
 
             {/* 相关文章推荐 */}
-            {relatedPosts.length > 0 ? (
-                <section className={styles.related}>
-                    <h2 className={styles.relatedTitle}>相关文章</h2>
-                    <div className={styles.relatedGrid}>
-                        {relatedPosts.map((rp) => (
-                            <Link className={styles.relatedCard} href={`/blog/${rp.slug}`} key={rp.id}>
-                                <h3 className={styles.relatedCardTitle}>{rp.title}</h3>
-                                {rp.tagNames && rp.tagNames.length > 0 ? (
-                                    <div className={styles.relatedCardTags}>
-                                        {rp.tagNames.slice(0, 3).map((tag) => (
-                                            <span className={styles.relatedCardTag} key={tag.id}>
-                                                {tag.name}
-                                            </span>
-                                        ))}
-                                    </div>
-                                ) : null}
-                                <div className={styles.relatedCardMeta}>
-                                    {rp.categoryName ? (
-                                        <span className={styles.relatedCardCategory}>{rp.categoryName}</span>
-                                    ) : null}
-                                    <span>{formatPostDate(rp.publishedAt)}</span>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
-            ) : null}
+            <Show when={relatedPosts.length > 0}>
+                <RelatedPosts posts={relatedPosts} />
+            </Show>
         </main>
     );
 }
