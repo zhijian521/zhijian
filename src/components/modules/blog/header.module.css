@@ -1,81 +1,38 @@
+/*== Header 博客列表页头部 — 标题 + 筛选标签 + 移动端筛选按钮 ==*/
+
+/*-- 头部容器 --*/
 .header {
-    margin-bottom: 3.5rem;
+    margin-bottom: var(--space-5);
 }
 
+/*-- 标题行 --*/
 .headerRow {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: var(--space-4);
 }
 
+/*-- 移动端筛选按钮 — md 起隐藏 --*/
+@media (min-width: 768px) {
+    .filterBtnMobile {
+        display: none;
+    }
+}
+
+/*-- 页面标题 --*/
 .title {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: 2.25rem;
+    font-size: var(--text-3xl);
     color: var(--foreground);
 }
 
-/*== 当前筛选标签 ==*/
-
+/*-- 筛选标签容器 --*/
 .activeFilters {
-    margin-top: 0.75rem;
+    margin-top: var(--space-3);
     display: flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: var(--space-2);
     flex-wrap: wrap;
-}
-
-.activeFilterChip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.125rem 0.5rem;
-    border: 1px solid var(--primary);
-    background: transparent;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: var(--primary);
-    cursor: pointer;
-    transition: background 0.15s;
-}
-
-.activeFilterChip:hover {
-    background: color-mix(in srgb, var(--primary) 15%, transparent);
-}
-
-.activeFilterClose {
-    width: 0.625rem;
-    height: 0.625rem;
-    opacity: 0.7;
-    transition: opacity 0.15s;
-}
-
-.activeFilterChip:hover .activeFilterClose {
-    opacity: 1;
-}
-
-/*== 筛选按钮：仅手机端可见 ==*/
-
-.filterBtn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--primary);
-    background: transparent;
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    color: var(--primary);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.filterBtn:hover {
-    background: var(--primary-subtle);
-}
-
-@media (min-width: 768px) {
-    .filterBtn {
-        display: none;
-    }
 }

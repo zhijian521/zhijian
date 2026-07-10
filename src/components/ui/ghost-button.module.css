@@ -20,6 +20,16 @@
 }
 
 /*== 尺寸变体（仅 non-default，default 已在 .button 基础样式中） ==*/
+.mini {
+    padding: var(--comp-py-mini) var(--comp-px-mini);
+    font-size: var(--comp-text-mini);
+}
+
+.mini .icon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
 .medium {
     padding: var(--comp-py-md) var(--comp-px-md);
     font-size: var(--comp-text-md);
@@ -52,6 +62,19 @@
 .primary:hover {
     background: var(--primary);
     color: var(--primary-foreground);
+}
+
+/*== 选中态：主色边框+文字 + muted 背景，hover 不变化 ==*/
+.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--muted);
+}
+
+.active:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--muted);
 }
 
 /*== 焦点轮廓 ==*/

@@ -1,14 +1,23 @@
 'use client';
+
+/*============================================================================
+  list-client — 博客列表页客户端容器
+
+  组合 Header、FilterSidebar、FilterDialog、PostItem、Pagination。
+  通过 useTransition 管理筛选导航的加载状态。
+============================================================================*/
+
+/*== 依赖导入 ==*/
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 /*== 组件导入 ==*/
-import { EmptyState } from '@/components/modules/blog/empty-state';
 import { FilterDialog } from '@/components/modules/blog/filter-dialog';
 import { FilterSidebar } from '@/components/modules/blog/filter-sidebar';
 import { Header } from '@/components/modules/blog/header';
 import { PostItem } from '@/components/modules/blog/post-item';
 import { Pagination } from '@/components/ui/pagination';
+import { Show } from '@/components/ui/show';
 
 /*== 数据与配置 ==*/
 import type { ActiveFilterChip } from '@/components/modules/blog/header';
@@ -21,13 +30,21 @@ import styles from './list-client.module.css';
 
 /*== 类型定义 ==*/
 interface ListClientProps {
+    /*-- 当前激活的分类 slug --*/
     activeCategorySlug?: string;
+    /*-- 当前激活的筛选标签列表 --*/
     activeFilterChips: ActiveFilterChip[];
+    /*-- 当前激活的标签 slug 列表 --*/
     activeTagSlugs: string[];
+    /*-- 可选分类列表 --*/
     categoryOptions: FilterOption[];
+    /*-- 当前页码 --*/
     currentPage: number;
+    /*-- 文章列表数据 --*/
     posts: Post[];
+    /*-- 可选标签列表 --*/
     tagOptions: FilterOption[];
+    /*-- 总页数 --*/
     totalPages: number;
 }
 
@@ -66,14 +83,15 @@ export default function ListClient({
     return (
         <main className={styles.page}>
             <div className="bg-overlay" />
-            {/* 导航加载遮罩 */}
-            {isPending ? (
+            {/*-- 导航加载遮罩 --*/}
+            <Show when={isPending}>
                 <div className={styles.loadingOverlay} role="status" aria-live="polite">
                     <div className={styles.loadingBar} />
                 </div>
-            ) : null}
+            </Show>
 
             <div className={styles.pageContent}>
+                {/*-- 页头：标题 + 筛选标签 --*/}
                 <Header
                     activeFilterChips={activeFilterChips}
                     hasFilters={hasFilters}
@@ -81,6 +99,7 @@ export default function ListClient({
                     onOpenFilter={() => setFilterOpen(true)}
                 />
 
+                {/*-- 移动端筛选弹窗 --*/}
                 <FilterDialog
                     activeCategorySlug={activeCategorySlug}
                     activeTagSlugs={activeTagSlugs}
@@ -94,25 +113,25 @@ export default function ListClient({
                     tagOptions={tagOptions}
                 />
 
+                {/*-- 主布局：列表 + 侧边栏 --*/}
                 <div className={styles.layout}>
                     <section className={styles.main}>
+                        {/*-- 文章列表 --*/}
                         <div className={styles.list}>
-                            {posts.length > 0 ? (
-                                posts.map((post) => <PostItem key={post.id} post={post} />)
-                            ) : (
-                                <EmptyState />
-                            )}
+                            <Show when={posts.length > 0} fallback={<p className={styles.empty}>没有匹配的文章。</p>}>
+                                {posts.map((post) => (
+                                    <PostItem key={post.id} post={post} />
+                                ))}
+                            </Show>
                         </div>
 
-                        {totalPages > 1 ? (
-                            <Pagination
-                                current={currentPage}
-                                getHref={getPaginationHref}
-                                total={totalPages}
-                            />
-                        ) : null}
+                        {/*-- 分页 --*/}
+                        <Show when={totalPages > 1}>
+                            <Pagination current={currentPage} getHref={getPaginationHref} total={totalPages} />
+                        </Show>
                     </section>
 
+                    {/*-- 桌面端筛选侧边栏 --*/}
                     <FilterSidebar
                         activeCategorySlug={activeCategorySlug}
                         activeTagSlugs={activeTagSlugs}

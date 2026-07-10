@@ -1,3 +1,6 @@
+/*== FilterSidebar 桌面端筛选侧边栏 — 分类 + 标签 ==*/
+
+/*-- 侧边栏容器（仅桌面端显示） --*/
 .sidebar {
     display: none;
 }
@@ -6,7 +9,7 @@
     .sidebar {
         display: flex;
         flex-direction: column;
-        gap: 1.75rem;
+        gap: var(--space-5);
         width: 240px;
         flex-shrink: 0;
     }
@@ -14,85 +17,39 @@
 
 /*== 侧边栏卡片 ==*/
 
+/*-- 卡片容器 --*/
 .card {
-    padding: 1.375rem;
+    padding: var(--space-4);
     border: 1px solid var(--primary);
     background: transparent;
 }
 
+/*-- 卡片标题 --*/
 .cardTitle {
-    margin: 0 0 1rem;
+    margin: 0 0 var(--space-4);
     font-family: var(--font-serif);
-    font-size: 0.9375rem;
+    font-size: var(--text-base);
     color: var(--foreground);
-    padding-bottom: 0.625rem;
+    padding-bottom: var(--space-2);
     border-bottom: 1px solid var(--border);
 }
 
 /*== 分类按钮 ==*/
 
+/*-- 分类列表 --*/
 .categories {
     display: flex;
-    flex-direction: column;
-    max-height: 16rem;
-    overflow-y: auto;
-}
-
-.catBtn {
-    padding: 0.5rem 0.625rem;
-    border: none;
-    background: transparent;
-    font-size: 0.875rem;
-    color: var(--muted-foreground);
-    cursor: pointer;
-    text-align: left;
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease;
-}
-
-.catBtn:hover {
-    color: var(--primary);
-    background: var(--muted);
-}
-
-.catActive {
-    color: var(--primary);
-    font-weight: 500;
-    background: var(--muted);
+    flex-wrap: wrap;
+    gap: var(--space-2);
 }
 
 /*== 标签筛选 ==*/
 
+/*-- 标签列表 --*/
 .tagFilter {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
     max-height: 12rem;
     overflow-y: auto;
-}
-
-.tagBtn {
-    padding: 0.375rem 0.625rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    cursor: pointer;
-    transition:
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background-color 0.2s ease;
-}
-
-.tagBtn:hover {
-    color: var(--primary);
-    border-color: var(--primary);
-    background: var(--muted);
-}
-
-.tagActive {
-    color: var(--primary);
-    border-color: var(--primary);
-    background: var(--muted);
 }

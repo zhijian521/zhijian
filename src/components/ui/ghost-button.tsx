@@ -2,7 +2,7 @@
   ghost-button — 幽灵按钮
 
   边框按钮 + 可选图标，支持 default / primary 双变体，
-  small / medium / default / large 四尺寸。
+  mini / small / medium / default / large 五尺寸。
   asButton 模式渲染 <button>（弹窗等非链接场景），否则渲染 <a>。
 ============================================================================*/
 
@@ -16,15 +16,18 @@ export interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorE
     icon?: React.ReactNode;
     /*-- 按钮变体：default 默认边框 / primary 主色边框+hover 反色 --*/
     variant?: 'default' | 'primary';
-    /*-- 按钮尺寸：small 紧凑 / medium 中等 / default 默认 / large 大（hero 等大标题场景） --*/
-    size?: 'small' | 'medium' | 'default' | 'large';
+    /*-- 按钮尺寸：mini 极小 / small 紧凑 / medium 中等 / default 默认 / large 大（hero 等大标题场景） --*/
+    size?: 'mini' | 'small' | 'medium' | 'default' | 'large';
     /*-- 渲染为 button 标签（用于弹窗等非链接场景） --*/
     asButton?: boolean;
+    /*-- 选中态，用于筛选/切换场景的激活标记 --*/
+    active?: boolean;
     /*-- 禁用态（仅 asButton 模式生效） --*/
     disabled?: boolean;
 }
 
 const SIZE_CLASS: Record<string, string | undefined> = {
+    mini: 'mini',
     small: 'small',
     medium: 'medium',
     large: 'large',
@@ -37,12 +40,13 @@ export function GhostButton({
     variant = 'default',
     size = 'medium',
     asButton,
+    active,
     className,
     children,
     ...props
 }: GhostButtonProps) {
     const sizeClass = SIZE_CLASS[size];
-    const classes = cn(styles.button, styles[variant], sizeClass && styles[sizeClass], className);
+    const classes = cn(styles.button, styles[variant], sizeClass && styles[sizeClass], active && styles.active, className);
     const iconEl = icon ? <span className={styles.icon}>{icon}</span> : null;
 
     if (asButton) {

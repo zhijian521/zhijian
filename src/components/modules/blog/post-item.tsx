@@ -1,7 +1,16 @@
-/*== 组件导入 ==*/
+/*============================================================================
+  post-item — 博客列表文章卡片
+
+  展示文章标题、摘要、分类、标签、日期，可带封面图。
+  整卡可点击跳转到文章详情。
+============================================================================*/
+
+/*== 依赖导入 ==*/
 import Link from 'next/link';
 
+/*== 组件导入 ==*/
 import { ContentImage } from '@/components/site/content-image';
+import { Show } from '@/components/ui/show';
 import { Tag } from '@/components/ui/tag';
 
 /*== 数据与配置 ==*/
@@ -13,6 +22,7 @@ import styles from './post-item.module.css';
 
 /*== 类型定义 ==*/
 interface PostItemProps {
+    /*-- 文章数据 --*/
     post: Post;
 }
 
@@ -23,32 +33,34 @@ export function PostItem({ post }: PostItemProps) {
             <div className={styles.body}>
                 <h2 className={styles.title}>{post.title}</h2>
                 <p className={styles.summary}>{post.summary}</p>
+                {/*-- 元数据栏 --*/}
                 <div className={styles.meta}>
-                    {post.categoryName ? (
+                    <Show when={post.categoryName}>
                         <span className={styles.category}>{post.categoryName}</span>
-                    ) : null}
-                    {post.tagNames && post.tagNames.length > 0 ? (
+                    </Show>
+                    <Show when={post.tagNames && post.tagNames.length > 0}>
                         <div className={styles.tags}>
-                            {post.tagNames.map((tag) => (
+                            {post.tagNames!.map((tag) => (
                                 <Tag key={tag.id} size="mini" variant="outlined">
                                     {tag.name}
                                 </Tag>
                             ))}
                         </div>
-                    ) : null}
+                    </Show>
                     <span className={styles.date}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
                 </div>
             </div>
-            {post.coverImage ? (
+            {/*-- 封面图 --*/}
+            <Show when={post.coverImage}>
                 <div className={styles.cover}>
                     <ContentImage
                         alt={post.altText || post.title}
                         sizes="(max-width: 640px) 100vw, 180px"
-                        src={post.coverImage}
+                        src={post.coverImage!}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                 </div>
-            ) : null}
+            </Show>
         </Link>
     );
 }

@@ -1,4 +1,6 @@
-/*== 页面容器 ==*/
+/*== ListClient 博客列表页客户端容器 — 页面容器 + 加载遮罩 + 主布局 ==*/
+
+/*-- 页面容器 --*/
 .page {
     position: relative;
     width: 100%;
@@ -6,7 +8,7 @@
     background: url('/images/bg-ink.webp') center / cover no-repeat fixed;
 }
 
-/*== 页面内容区 ==*/
+/*-- 页面内容区 --*/
 .pageContent {
     position: relative;
     z-index: 1;
@@ -21,7 +23,7 @@
     }
 }
 
-/*== 加载遮罩 ==*/
+/*-- 加载遮罩 --*/
 .loadingOverlay {
     position: fixed;
     top: 0;
@@ -31,6 +33,7 @@
     pointer-events: none;
 }
 
+/*-- 加载进度条 --*/
 .loadingBar {
     height: 2px;
     background: var(--primary);
@@ -52,7 +55,7 @@
     }
 }
 
-/*== 主布局 ==*/
+/*-- 主布局 --*/
 .layout {
     display: flex;
     flex-direction: column;
@@ -66,13 +69,21 @@
     }
 }
 
+/*-- 主内容区 --*/
 .main {
     flex: 1;
     min-width: 0;
 }
 
-/*== 文章列表 ==*/
+/*-- 文章列表容器 --*/
 .list {
     display: flex;
     flex-direction: column;
+}
+
+/*-- 空状态提示文字 --*/
+.empty {
+    color: var(--muted-foreground);
+    padding: var(--space-6) 0;
+    font-size: var(--text-base);
 }

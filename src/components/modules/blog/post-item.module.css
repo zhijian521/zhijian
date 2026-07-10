@@ -1,10 +1,13 @@
+/*== PostItem 文章列表项 — 标题 + 摘要 + 元数据 + 可选封面图 ==*/
+
+/*-- 列表项容器 --*/
 .item {
     display: flex;
     flex-direction: column-reverse;
-    gap: 1rem;
-    padding: 1.75rem 0;
+    gap: var(--space-4);
+    padding: var(--space-7) 0;
     border-bottom: 1px solid var(--border);
-    transition: border-color 0.15s;
+    transition: border-color var(--transition);
 }
 
 .item:first-child {
@@ -18,10 +21,11 @@
 @media (min-width: 641px) {
     .item {
         flex-direction: row;
-        gap: 2rem;
+        gap: var(--space-6);
     }
 }
 
+/*-- 正文区 --*/
 .body {
     flex: 1;
     min-width: 0;
@@ -30,6 +34,7 @@
     justify-content: center;
 }
 
+/*-- 封面图容器 --*/
 .cover {
     flex-shrink: 0;
     width: 100%;
@@ -52,6 +57,7 @@
     }
 }
 
+/*-- 文章标题 --*/
 .title {
     margin: 0;
     font-family: var(--font-serif);
@@ -62,13 +68,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    transition: color 0.15s;
+    transition: color var(--transition);
 }
 
 .item:hover .title {
     color: var(--primary);
 }
 
+/*-- 文章摘要 --*/
 .summary {
     margin: var(--space-2) 0 var(--space-3);
     font-size: var(--text-sm);
@@ -80,6 +87,7 @@
     overflow: hidden;
 }
 
+/*-- 元数据栏 --*/
 .meta {
     display: flex;
     align-items: center;
@@ -89,14 +97,16 @@
     overflow: hidden;
 }
 
+/*-- 分类标签 --*/
 .category {
     font-size: var(--text-sm);
-    letter-spacing: 0.1em;
+    letter-spacing: var(--tracking-wide);
     color: var(--primary);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
+/*-- 日期 --*/
 .date {
     margin-left: auto;
     font-size: var(--text-sm);
@@ -105,6 +115,7 @@
     flex-shrink: 0;
 }
 
+/*-- 标签组 --*/
 .tags {
     display: flex;
     flex-wrap: wrap;

@@ -168,6 +168,7 @@ export function GhostButtonDemo() {
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
+                    <GhostButton href="#" size="mini">mini</GhostButton>
                     <GhostButton href="#" size="small">small</GhostButton>
                     <GhostButton href="#" size="medium">medium</GhostButton>
                     <GhostButton href="#" size="large">large</GhostButton>
@@ -197,16 +198,27 @@ export function GhostButtonDemo() {
                     <GhostButton asButton disabled variant="primary">禁用主色</GhostButton>
                 </div>
             </div>
+            {/*-- 选中态 — asButton 模式，用于筛选/切换场景 --*/}
+            <div className={styles.row}>
+                <span className={styles.label}>选中</span>
+                <div className={styles.items}>
+                    <GhostButton asButton size="mini" active>mini 选中</GhostButton>
+                    <GhostButton asButton size="small" active>small 选中</GhostButton>
+                    <GhostButton asButton active variant="primary">主色选中</GhostButton>
+                </div>
+            </div>
 
             {/*-- 代码块 — 尺寸/变体/模式 + 使用方式 --*/}
-            <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）| large
+            <pre className={styles.codeBlock}><code>{`// 尺寸：mini | small | medium（默认）| large
 // 变体：default（默认）| primary
 // asButton 模式渲染 <button>，disabled 仅 asButton 生效
+// active 选中态，用于筛选/切换场景
 
 // 使用方式
 <GhostButton href="#" size="medium">按钮</GhostButton>
 <GhostButton href="#" size="medium" variant="primary">主色</GhostButton>
-<GhostButton href="#" size="medium" icon={<PlusIcon />}>图标</GhostButton>`}</code></pre>
+<GhostButton href="#" size="medium" icon={<PlusIcon />}>图标</GhostButton>
+<GhostButton asButton active size="mini">选中</GhostButton>`}</code></pre>
         </div>
     );
 }
