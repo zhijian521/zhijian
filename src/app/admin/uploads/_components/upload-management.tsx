@@ -11,7 +11,7 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/core/http-client';
 import { toast } from '@/components/ui/toast';
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 
 import styles from './upload-management.module.css';
 import shared from '@/app/admin/_components/admin-shared.module.css';

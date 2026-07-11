@@ -258,7 +258,7 @@ Client Component，直角风格登录表单：
 
 ### AdminPageHeader
 
-**文件**：`src/components/modules/admin/admin-page-header/admin-page-header.tsx`
+**文件**：`src/components/modules/admin/page-header.tsx`
 
 后台页面统一头部，匹配博客衬线标题风格。
 
@@ -294,7 +294,7 @@ interface AdminPageHeaderProps {
 | `src/app/admin/_components/admin-shell.tsx` | 布局壳（侧边栏 + 主内容区） |
 | `src/app/admin/_components/admin-sidebar.tsx` | 侧边栏导航 |
 | `src/app/admin/_components/admin-login-card.tsx` | 登录表单卡片 |
-| `src/components/modules/admin/admin-page-header/admin-page-header.tsx` | 页面统一头部 |
+| `src/components/modules/admin/page-header.tsx` | 页面统一头部 |
 | `src/app/admin/_components/admin-shared.module.css` | 后台共享样式 |
 | `src/app/admin/page.tsx` | 概览页 |
 | `src/app/admin/login/page.tsx` | 登录页 |

@@ -5,7 +5,7 @@ import { ArrowRightIcon, Edit3Icon, FileTextIcon, UsersIcon } from '@/components
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { IconButton } from '@/components/ui/icon-button';
 import { Tag } from '@/components/ui/tag';
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 import { countUsersByRole } from '@/lib/core/auth';
 import type { Post } from '@/lib/domain/posts';
 import { formatPostDate } from '@/lib/domain/posts';

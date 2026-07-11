@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 import UserListClient from '@/app/admin/_components/user-list-client';
 
 export const dynamic = 'force-dynamic';

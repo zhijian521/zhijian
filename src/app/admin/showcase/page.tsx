@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 import styles from './page.module.css';
 
 export const metadata = { title: '展示中心 - 知简' };

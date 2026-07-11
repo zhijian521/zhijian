@@ -1,5 +1,5 @@
 /*== 组件导入 ==*/
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 
 /*== 数据与配置 ==*/
 import { SHOWCASE_REGISTRY } from '@/showcase/registry';

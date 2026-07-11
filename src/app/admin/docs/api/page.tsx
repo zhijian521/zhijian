@@ -1,4 +1,4 @@
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 import { API_REGISTRY } from '@/docs/api/_registry';
 import { ApiList } from './api-list';
 

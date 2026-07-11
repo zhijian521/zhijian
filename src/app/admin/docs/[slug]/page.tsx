@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 import { MarkdownArticle } from '@/components/site/markdown-article';
 import { DOC_REGISTRY } from '@/docs/features/_registry';
 import styles from './page.module.css';

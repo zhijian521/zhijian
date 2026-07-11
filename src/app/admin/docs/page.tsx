@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import AdminPageHeader from '@/components/modules/admin/admin-page-header/admin-page-header';
+import AdminPageHeader from '@/components/modules/admin/page-header';
 import { DOC_REGISTRY, type DocEntry } from '@/docs/features/_registry';
 import styles from './page.module.css';
 

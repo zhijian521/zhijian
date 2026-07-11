@@ -106,7 +106,7 @@
 | 页面 | `src/app/admin/page.tsx` |
 | 样式 | `src/app/admin/page.module.css` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/core/auth.ts`, `src/lib/core/site.ts` |
-| 共享组件 | `src/components/modules/admin/admin-page-header/admin-page-header.tsx` |
+| 共享组件 | `src/components/modules/admin/page-header.tsx` |
 | UI 组件 | `src/components/ui/data-table.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/icon-button.tsx`, `src/components/ui/tag.tsx` |
 
 ### 文章管理 `/admin/posts`
@@ -286,7 +286,7 @@
 ### `components/modules/` — 业务模块组件（9 个）
 | 组件 | 文件 |
 |------|------|
-| AdminPageHeader | `src/components/modules/admin/admin-page-header/admin-page-header.tsx` |
+| AdminPageHeader | `src/components/modules/admin/page-header.tsx` |
 | HeroSection | `src/components/modules/home/hero-section.tsx` |
 | ProfileSection | `src/components/modules/home/profile-section.tsx` |
 | ProfileCard | `src/components/modules/home/profile-card.tsx` |
