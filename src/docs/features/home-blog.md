@@ -62,9 +62,9 @@
 ## 文章列表页
 
 **文件**：`src/app/blog/page.tsx`（服务端逻辑）  
-**展示组件**：`src/app/blog/_components/blog-list-client.tsx`  
+**展示组件**：`src/components/modules/blog/list-client.tsx`  
 **路由**：`/blog`、`/blog?category=tech`、`/blog?tags=react,nextjs`、`/blog?category=tech&tags=react&page=2`  
-**组件类型**：Server Component（page）+ Client Component（blog-list-client，含 `useTransition` + `router.push` 加载追踪）
+**组件类型**：Server Component（page）+ Client Component（ListClient，含 `useTransition` + `router.push` 加载追踪）
 
 ### URL 参数
 

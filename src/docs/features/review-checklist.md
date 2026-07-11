@@ -19,22 +19,22 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/blog/page.tsx` |
-| 私有组件 | `src/app/blog/_components/blog-list-client.tsx` |
+| 模块 | `src/components/modules/blog/list-client.tsx`, `header.tsx`, `filter-sidebar.tsx`, `filter-dialog.tsx`, `post-item.tsx`, `empty-state.tsx` |
 | 样式 | `src/app/blog/page.module.css` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/domain/categories.ts`, `src/lib/domain/tags.ts`, `src/lib/domain/post-shared.ts`, `src/lib/core/site.ts` |
 | 共享组件 | `src/components/site/content-image.tsx` |
-| UI 组件 | `src/components/ui/dialog.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/pagination.tsx`, `src/components/ui/tag.tsx` |
+| UI 组件 | `src/components/ui/dialog.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/pagination.tsx`, `src/components/ui/tag.tsx`, `src/components/ui/show.tsx` |
 
 ### 文章详情 `/blog/[slug]`
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/blog/[slug]/page.tsx` |
-| 私有组件 | `src/app/blog/[slug]/_components/article-footer-actions.tsx` |
+| 模块 | `src/components/modules/blog/related-posts.tsx`, `article-footer-actions.tsx` |
 | 加载态 | `src/app/blog/[slug]/loading.tsx` |
 | 样式 | `src/app/blog/[slug]/page.module.css` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/core/site.ts`, `src/lib/core/utils.ts` |
-| 共享组件 | `src/components/site/article-view.tsx` → `src/components/site/markdown-article.tsx` → `src/components/site/code-block.tsx`, `src/components/site/content-image.tsx` |
-| UI 组件 | `src/components/ui/icon-button.tsx`, `src/components/ui/icons.tsx` |
+| 共享组件 | `src/components/site/article-view.tsx`, `article-footer.tsx`, `article-header.tsx`, `breadcrumb.tsx`, `markdown-article.tsx`, `code-block.tsx`, `content-image.tsx` |
+| UI 组件 | `src/components/ui/icon-button.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/show.tsx` |
 
 ### RSS / Sitemap / Robots
 | 功能 | 文件 | 数据层 |
@@ -48,7 +48,7 @@
 |------|------|
 | 根布局 | `src/app/layout.tsx` |
 | 全局样式 | `src/app/globals.css`, `src/app/theme.css`, `src/app/tokens.css` |
-| 共享组件 | `src/components/site/app-frame.tsx`, `src/components/site/public-chrome.tsx` |
+| 共享组件 | `src/components/site/app-frame.tsx`, `public-chrome.tsx`, `site-header.tsx` |
 | 数据层 | `src/lib/core/site.ts`, `src/lib/core/utils.ts` |
 
 ### 错误/状态页
@@ -251,18 +251,19 @@
 
 ## 5. 组件层
 
-### `components/ui/` — 通用 UI 组件（15 个）
+### `components/ui/` — 通用 UI 组件（16 个）
 | 组件 | 文件 |
 |------|------|
+| ConfirmDialog | `src/components/ui/confirm-dialog.tsx` |
 | DataTable | `src/components/ui/data-table.tsx` |
 | Dialog | `src/components/ui/dialog.tsx` |
-| ConfirmDialog | `src/components/ui/confirm-dialog.tsx` |
 | GhostButton | `src/components/ui/ghost-button.tsx` |
 | IconButton | `src/components/ui/icon-button.tsx` |
 | Icons | `src/components/ui/icons.tsx` |
 | Pagination | `src/components/ui/pagination.tsx` |
 | PillSelect | `src/components/ui/pill-select.tsx` |
 | Select | `src/components/ui/select.tsx` |
+| Show | `src/components/ui/show.tsx` |
 | StatusPage | `src/components/ui/status-page.tsx` |
 | SubmitButton | `src/components/ui/submit-button.tsx` |
 | Tag | `src/components/ui/tag.tsx` |
@@ -270,31 +271,41 @@
 | TextLink | `src/components/ui/text-link.tsx` |
 | Toast | `src/components/ui/toast.tsx` + `src/lib/core/toast-store.ts` |
 
-### `components/site/` — 前台展示组件（9 个）
+### `components/site/` — 前台展示组件（12 个）
 | 组件 | 文件 |
 |------|------|
 | AppFrame | `src/components/site/app-frame.tsx` |
-| PublicChrome | `src/components/site/public-chrome.tsx` |
-| SiteHeader | `src/components/site/site-header.tsx` |
-| SectionHeading | `src/components/site/section-heading.tsx` |
+| ArticleFooter | `src/components/site/article-footer.tsx` |
+| ArticleHeader | `src/components/site/article-header.tsx` |
 | ArticleView | `src/components/site/article-view.tsx` |
-| MarkdownArticle | `src/components/site/markdown-article.tsx` |
+| Breadcrumb | `src/components/site/breadcrumb.tsx` |
 | CodeBlock | `src/components/site/code-block.tsx` |
 | ContentImage | `src/components/site/content-image.tsx` |
+| MarkdownArticle | `src/components/site/markdown-article.tsx` |
+| PublicChrome | `src/components/site/public-chrome.tsx` |
 | RssCopyButton | `src/components/site/rss-copy-button.tsx` |
+| SectionHeading | `src/components/site/section-heading.tsx` |
+| SiteHeader | `src/components/site/site-header.tsx` |
 
-### `components/modules/` — 业务模块组件（9 个）
+### `components/modules/` — 业务模块组件（16 个）
 | 组件 | 文件 |
 |------|------|
 | AdminPageHeader | `src/components/modules/admin/page-header.tsx` |
-| HeroSection | `src/components/modules/home/hero-section.tsx` |
-| ProfileSection | `src/components/modules/home/profile-section.tsx` |
-| ProfileCard | `src/components/modules/home/profile-card.tsx` |
 | CommitChart | `src/components/modules/home/commit-chart.tsx` |
-| PostsSection | `src/components/modules/home/posts-section.tsx` |
+| EmptyState | `src/components/modules/blog/empty-state.tsx` |
+| FilterDialog | `src/components/modules/blog/filter-dialog.tsx` |
+| FilterSidebar | `src/components/modules/blog/filter-sidebar.tsx` |
+| Header | `src/components/modules/blog/header.tsx` |
+| HeroSection | `src/components/modules/home/hero-section.tsx` |
+| ListClient | `src/components/modules/blog/list-client.tsx` |
 | PostCard | `src/components/modules/home/post-card.tsx` |
-| ProjectsSection | `src/components/modules/home/projects-section.tsx` |
+| PostItem | `src/components/modules/blog/post-item.tsx` |
+| PostsSection | `src/components/modules/home/posts-section.tsx` |
+| ProfileCard | `src/components/modules/home/profile-card.tsx` |
+| ProfileSection | `src/components/modules/home/profile-section.tsx` |
 | ProjectCard | `src/components/modules/home/project-card.tsx` |
+| ProjectsSection | `src/components/modules/home/projects-section.tsx` |
+| RelatedPosts | `src/components/modules/blog/related-posts.tsx` |
 
 ---
 
