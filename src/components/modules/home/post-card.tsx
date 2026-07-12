@@ -34,7 +34,6 @@ export function PostCard({ post, tagVariant = 'default' }: PostCardProps) {
         <article className={styles.card}>
             {/*文章封面图*/}
             <Show when={hasVisual}>
-                <div className={styles.visualCard}>
                     <div className={styles.visualImage}>
                         <ContentImage
                             alt={post.altText || post.title}
@@ -43,8 +42,7 @@ export function PostCard({ post, tagVariant = 'default' }: PostCardProps) {
                         />
                     </div>
                     <div className={styles.visualGradient} />
-                </div>
-            </Show>
+                </Show>
             {/*文章简要*/}
             <div className={cn(styles.body, hasVisual && styles.hasVisual)}>
                 <div className={styles.bodyContent}>

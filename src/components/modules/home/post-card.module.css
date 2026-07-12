@@ -9,13 +9,7 @@
     background: var(--background);
 }
 
-/*== 封面图 + 渐变叠层卡片 ==*/
-.visualCard {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
+/*== 封面图 + 渐变叠层 ==*/
 .visualImage {
     position: relative;
     height: 14rem;

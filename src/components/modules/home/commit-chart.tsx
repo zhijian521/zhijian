@@ -55,16 +55,16 @@ function formatDate(dateStr: string): string {
 interface DayCellProps {
     day: { date: string; level: (typeof LEVELS)[number] };
     count: number;
-    onClick: (date: string, count: number) => void;
+    onSelect: (date: string, count: number) => void;
 }
 
-function DayCell({ day, count, onClick }: DayCellProps) {
+function DayCell({ day, count, onSelect }: DayCellProps) {
     const label = `${formatDate(day.date)}: ${count} 次提交`;
     return (
         <button
             aria-label={label}
             className={`${styles.cell} ${styles[day.level]}`}
-            onClick={() => onClick(day.date, count)}
+            onClick={() => onSelect(day.date, count)}
             type="button"
         />
     );
@@ -105,7 +105,7 @@ export function CommitChart({ data }: CommitChartProps) {
                             <div className={styles.col} key={w[0]?.date ?? wi}>
                                 {w.map((day) => {
                                     const count = dayMap.get(day.date) || 0;
-                                    return <DayCell key={day.date} day={day} count={count} onClick={(d, c) => setSelected({ date: d, count: c })} />;
+                                    return <DayCell key={day.date} day={day} count={count} onSelect={(d, c) => setSelected({ date: d, count: c })} />;
                                 })}
                             </div>
                         ))}
