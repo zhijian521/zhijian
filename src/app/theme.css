@@ -19,10 +19,8 @@
 
     /*== 语义色 · 印章/竹青/靛蓝，呼应书斋意象 ==*/
     --success: #2f6b3e;
-    --success-foreground: #ffffff;
     --success-subtle: color-mix(in srgb, var(--success) 10%, transparent);
     --warning: #b87333;
-    --warning-foreground: #ffffff;
     --warning-subtle: color-mix(in srgb, var(--warning) 10%, transparent);
     --info: #345b8a;
     --info-subtle: color-mix(in srgb, var(--info) 10%, transparent);

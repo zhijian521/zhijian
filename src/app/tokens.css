@@ -55,7 +55,7 @@
     --blur-md: blur(16px);
 
     /*== 透明度阶梯 · 百分比语义 ==*/
-    --opacity-0:   0;
+    --opacity-10:  0.1;
     --opacity-20:  0.2;
     --opacity-30:  0.3;
     --opacity-40:  0.4;
