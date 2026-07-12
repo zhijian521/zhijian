@@ -10,10 +10,14 @@
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 
+/*== 数据与配置 ==*/
 import { APP_ROUTES, SITE_METADATA } from '@/lib/core/site';
 import { SiteHeader } from '@/components/site/site-header';
+
+/*== 样式导入 ==*/
 import styles from './public-chrome.module.css';
 
+/*== 类型定义 ==*/
 interface PublicChromeProps {
     children: React.ReactNode;
 }
@@ -25,8 +29,10 @@ export default function PublicChrome({ children }: PublicChromeProps) {
 
     return (
         <div className={`${styles.root} ${transparent ? styles.rootTransparent : ''}`}>
+            {/* 网站导航 */}
             <SiteHeader transparent={transparent} />
 
+            {/* 渲染出口 */}
             <div className={styles.main}>{children}</div>
 
             {/* 页脚 */}

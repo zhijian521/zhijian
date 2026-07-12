@@ -121,11 +121,11 @@ export default async function HomePage() {
     /*-- 首页页面 --*/
     return (
         <main>
-            {/*结构化数据*/}
+            {/* 结构化数据 */}
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
-            {/*首屏封面*/}
+            {/* 首屏封面 */}
             <HeroSection />
-            {/*简介&文章&项目*/}
+            {/* 简介&文章&项目 */}
             <div className="page-content">
                 <ProfileSection commitData={commitData} />
                 <PostsSection posts={posts} />

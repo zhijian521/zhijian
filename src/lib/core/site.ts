@@ -44,7 +44,7 @@ export const SITE_METADATA = {
     description:
         'Zhijian的个人技术博客 — 追求简洁设计与美好事物，以代码与文字安静造物。涵盖前端开发、React、Next.js、TypeScript、AI编程、Vibe Coding、全栈实践与Agent开发。',
     /*-- 站点 URL，读 NEXT_PUBLIC_SITE_URL，用于 canonical / OG url / sitemap --*/
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://yuwb.dev',
     /*-- OG / Twitter 区域标识 --*/
     locale: 'zh_CN',
     /*-- OG 默认分享图（相对路径，metadataBase 自动补全绝对 URL） --*/

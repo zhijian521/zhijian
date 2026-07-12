@@ -10,9 +10,11 @@
 
 import { usePathname } from 'next/navigation';
 
+/*== 数据与配置 ==*/
 import { APP_ROUTES } from '@/lib/core/site';
 import PublicChrome from '@/components/site/public-chrome';
 
+/*== 类型定义 ==*/
 interface AppFrameProps {
     children: React.ReactNode;
 }

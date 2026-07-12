@@ -14,6 +14,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /*== 组件导入 ==*/
+import { Show } from '@/components/ui/show';
 import { MenuIcon, XIcon } from '@/components/ui/icons';
 
 /*== 数据与配置 ==*/
@@ -87,6 +88,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
     return (
         <header className={headerClass}>
             <div className={styles.headerContainer}>
+                {/* 主站Logo */}
                 <Link className={styles.brand} href={APP_ROUTES.home}>
                     <Image alt={SITE_METADATA.name} height={32} src="/images/logo.webp" width={32} />
                     <span className={styles.brandText}>{SITE_METADATA.name}</span>
@@ -124,7 +126,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                             <MenuIcon className={styles.mobileMenuIcon} />
                         </button>
 
-                        {isMobileNavOpen ? (
+                        <Show when={isMobileNavOpen}>
                             <div
                                 aria-label="移动端导航菜单"
                                 className={styles.mobilePanel}
@@ -158,7 +160,7 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
                                     ))}
                                 </nav>
                             </div>
-                        ) : null}
+                        </Show>
                     </div>
                 </div>
             </div>
