@@ -39,7 +39,7 @@ export function Header({ activeFilterChips, hasFilters, onNavigate, onOpenFilter
         <header className={styles.header}>
             <div className={styles.headerRow}>
                 <h1 className={styles.title}>文章</h1>
-                {/*-- 移动端筛选按钮 --*/}
+                {/* 移动端筛选按钮 */}
                 <Show when={hasFilters}>
                     <GhostButton
                         asButton
@@ -52,7 +52,7 @@ export function Header({ activeFilterChips, hasFilters, onNavigate, onOpenFilter
                     </GhostButton>
                 </Show>
             </div>
-            {/*-- 当前激活的筛选标签 --*/}
+            {/* 当前激活的筛选标签 */}
             <Show when={hasActiveFilters}>
                 <div className={styles.activeFilters}>
                     {activeFilterChips.map((chip) => (

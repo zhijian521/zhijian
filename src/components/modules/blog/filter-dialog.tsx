@@ -50,7 +50,7 @@ export function FilterDialog({
     return (
         <Dialog maxWidth="20rem" onClose={onClose} open={open} title="筛选">
             <div className={styles.body}>
-                {/*-- 分类筛选 --*/}
+                {/* 分类筛选 */}
                 <Show when={categoryOptions.length > 1}>
                     <div className={styles.block}>
                         <h3 className={styles.blockTitle}>分类</h3>
@@ -71,7 +71,7 @@ export function FilterDialog({
                     </div>
                 </Show>
 
-                {/*-- 标签筛选 --*/}
+                {/* 标签筛选 */}
                 <Show when={tagOptions.length > 0}>
                     <div className={styles.block}>
                         <h3 className={styles.blockTitle}>标签</h3>

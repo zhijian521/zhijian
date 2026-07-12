@@ -32,7 +32,7 @@ import styles from './demos.module.css';
 export function TagDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 默认变体下展示全部尺寸 --*/}
+            {/* 尺寸 — 默认变体下展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -41,7 +41,7 @@ export function TagDemo() {
                     <Tag size="medium">medium</Tag>
                 </div>
             </div>
-            {/*-- 变体 — medium 尺寸下展示全部变体 --*/}
+            {/* 变体 — medium 尺寸下展示全部变体 */}
             <div className={styles.row}>
                 <span className={styles.label}>变体</span>
                 <div className={styles.items}>
@@ -51,7 +51,7 @@ export function TagDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸/变体 + 使用方式 --*/}
+            {/* 代码块 — 尺寸/变体 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：mini | small | medium（默认）
 // 变体：default（默认）| primary | outlined
 
@@ -66,7 +66,7 @@ export function TagDemo() {
 export function SubmitButtonDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            {/* 尺寸 — 展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -74,7 +74,7 @@ export function SubmitButtonDemo() {
                     <SubmitButton size="medium">medium</SubmitButton>
                 </div>
             </div>
-            {/*-- 禁用态 --*/}
+            {/* 禁用态 */}
             <div className={styles.row}>
                 <span className={styles.label}>禁用</span>
                 <div className={styles.items}>
@@ -82,7 +82,7 @@ export function SubmitButtonDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸/状态 + 使用方式 --*/}
+            {/* 代码块 — 尺寸/状态 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
 // 状态：disabled
 
@@ -95,7 +95,7 @@ export function SubmitButtonDemo() {
 export function IconButtonDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            {/* 尺寸 — 展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -104,7 +104,7 @@ export function IconButtonDemo() {
                     <IconButton icon={<SearchIcon />} size="medium" />
                 </div>
             </div>
-            {/*-- 变体 — medium 尺寸下展示全部变体 --*/}
+            {/* 变体 — medium 尺寸下展示全部变体 */}
             <div className={styles.row}>
                 <span className={styles.label}>变体</span>
                 <div className={styles.items}>
@@ -112,7 +112,7 @@ export function IconButtonDemo() {
                     <IconButton icon={<Trash2Icon />} size="medium" variant="danger" />
                 </div>
             </div>
-            {/*-- 禁用态 --*/}
+            {/* 禁用态 */}
             <div className={styles.row}>
                 <span className={styles.label}>禁用</span>
                 <div className={styles.items}>
@@ -121,7 +121,7 @@ export function IconButtonDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸/变体/状态 + 使用方式 --*/}
+            {/* 代码块 — 尺寸/变体/状态 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：mini | small | medium（默认）
 // 变体：default（默认）| danger
 // disabled
@@ -136,14 +136,14 @@ export function IconButtonDemo() {
 export function TextLinkDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 带箭头（默认） --*/}
+            {/* 带箭头（默认） */}
             <div className={styles.row}>
                 <span className={styles.label}>默认</span>
                 <div className={styles.items}>
                     <TextLink href="#">阅读全文</TextLink>
                 </div>
             </div>
-            {/*-- 无箭头 --*/}
+            {/* 无箭头 */}
             <div className={styles.row}>
                 <span className={styles.label}>无箭头</span>
                 <div className={styles.items}>
@@ -151,7 +151,7 @@ export function TextLinkDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 配置 + 使用方式 --*/}
+            {/* 代码块 — 配置 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// showArrow：默认 true
 
 // 使用方式
@@ -164,7 +164,7 @@ export function TextLinkDemo() {
 export function GhostButtonDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 默认变体下展示全部尺寸 --*/}
+            {/* 尺寸 — 默认变体下展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -174,7 +174,7 @@ export function GhostButtonDemo() {
                     <GhostButton href="#" size="large">large</GhostButton>
                 </div>
             </div>
-            {/*-- 变体 — medium 尺寸下展示全部变体 --*/}
+            {/* 变体 — medium 尺寸下展示全部变体 */}
             <div className={styles.row}>
                 <span className={styles.label}>变体</span>
                 <div className={styles.items}>
@@ -182,7 +182,7 @@ export function GhostButtonDemo() {
                     <GhostButton href="#" size="medium" variant="primary">primary</GhostButton>
                 </div>
             </div>
-            {/*-- 图标 — medium 尺寸带图标 --*/}
+            {/* 图标 — medium 尺寸带图标 */}
             <div className={styles.row}>
                 <span className={styles.label}>图标</span>
                 <div className={styles.items}>
@@ -190,7 +190,7 @@ export function GhostButtonDemo() {
                     <GhostButton href="#" icon={<PlusIcon />} size="medium" variant="primary">新增</GhostButton>
                 </div>
             </div>
-            {/*-- 禁用态 — asButton 模式 --*/}
+            {/* 禁用态 — asButton 模式 */}
             <div className={styles.row}>
                 <span className={styles.label}>禁用</span>
                 <div className={styles.items}>
@@ -198,7 +198,7 @@ export function GhostButtonDemo() {
                     <GhostButton asButton disabled variant="primary">禁用主色</GhostButton>
                 </div>
             </div>
-            {/*-- 选中态 — asButton 模式，用于筛选/切换场景 --*/}
+            {/* 选中态 — asButton 模式，用于筛选/切换场景 */}
             <div className={styles.row}>
                 <span className={styles.label}>选中</span>
                 <div className={styles.items}>
@@ -208,7 +208,7 @@ export function GhostButtonDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸/变体/模式 + 使用方式 --*/}
+            {/* 代码块 — 尺寸/变体/模式 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：mini | small | medium（默认）| large
 // 变体：default（默认）| primary
 // asButton 模式渲染 <button>，disabled 仅 asButton 生效
@@ -235,7 +235,7 @@ export function SelectDemo() {
 
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            {/* 尺寸 — 展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -243,7 +243,7 @@ export function SelectDemo() {
                     <Select options={options} value={val2} onChange={setVal2} size="medium" placeholder="medium" />
                 </div>
             </div>
-            {/*-- 禁用态 --*/}
+            {/* 禁用态 */}
             <div className={styles.row}>
                 <span className={styles.label}>禁用</span>
                 <div className={styles.items}>
@@ -251,7 +251,7 @@ export function SelectDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸/状态 + 使用方式 --*/}
+            {/* 代码块 — 尺寸/状态 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
 // disabled
 
@@ -276,7 +276,7 @@ const options = [
 export function TextInputDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            {/* 尺寸 — 展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -284,14 +284,14 @@ export function TextInputDemo() {
                     <TextInput inputSize="medium" placeholder="medium" />
                 </div>
             </div>
-            {/*-- 标签 --*/}
+            {/* 标签 */}
             <div className={styles.row}>
                 <span className={styles.label}>标签</span>
                 <div className={styles.items}>
                     <TextInput label="标题" inputSize="medium" placeholder="带标签输入" />
                 </div>
             </div>
-            {/*-- 图标 --*/}
+            {/* 图标 */}
             <div className={styles.row}>
                 <span className={styles.label}>图标</span>
                 <div className={styles.items}>
@@ -300,7 +300,7 @@ export function TextInputDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸 + 使用方式 --*/}
+            {/* 代码块 — 尺寸 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
 
 // 使用方式
@@ -323,7 +323,7 @@ export function PillSelectDemo() {
 
     return (
         <div className={styles.demo}>
-            {/*-- 尺寸 — 展示全部尺寸 --*/}
+            {/* 尺寸 — 展示全部尺寸 */}
             <div className={styles.row}>
                 <span className={styles.label}>尺寸</span>
                 <div className={styles.items}>
@@ -332,7 +332,7 @@ export function PillSelectDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 尺寸 + 使用方式 --*/}
+            {/* 代码块 — 尺寸 + 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 尺寸：small | medium（默认）
 
 // 使用方式
@@ -357,7 +357,7 @@ export function DialogDemo() {
 
     return (
         <div className={styles.demo}>
-            {/*-- 触发按钮 --*/}
+            {/* 触发按钮 */}
             <div className={styles.row}>
                 <span className={styles.label}>弹窗</span>
                 <div className={styles.items}>
@@ -366,12 +366,12 @@ export function DialogDemo() {
                     </GhostButton>
                 </div>
             </div>
-            {/*-- 基础弹窗 --*/}
+            {/* 基础弹窗 */}
             <Dialog open={open} title="弹窗标题" onClose={() => setOpen(false)}>
                 <p className={styles.dialogContent}>这是弹窗内容区域，可以放入任意 React 节点。</p>
             </Dialog>
 
-            {/*-- 代码块 — 使用方式 --*/}
+            {/* 代码块 — 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 使用方式
 const [open, setOpen] = useState(false);
 
@@ -401,7 +401,7 @@ export function ConfirmDialogDemo() {
 
     return (
         <div className={styles.demo}>
-            {/*-- 触发按钮 --*/}
+            {/* 触发按钮 */}
             <div className={styles.row}>
                 <span className={styles.label}>弹窗</span>
                 <div className={styles.items}>
@@ -410,7 +410,7 @@ export function ConfirmDialogDemo() {
                     </GhostButton>
                 </div>
             </div>
-            {/*-- 确认弹窗 — 含 loading 态 --*/}
+            {/* 确认弹窗 — 含 loading 态 */}
             <ConfirmDialog
                 open={open}
                 title="确认删除"
@@ -421,7 +421,7 @@ export function ConfirmDialogDemo() {
                 onCancel={() => setOpen(false)}
             />
 
-            {/*-- 代码块 — 使用方式 --*/}
+            {/* 代码块 — 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 使用方式
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState(false);
@@ -458,7 +458,7 @@ export function StatusPageDemo() {
 export function ToastDemo() {
     return (
         <div className={styles.demo}>
-            {/*-- 触发按钮 --*/}
+            {/* 触发按钮 */}
             <div className={styles.row}>
                 <span className={styles.label}>类型</span>
                 <div className={styles.items}>
@@ -470,10 +470,10 @@ export function ToastDemo() {
                     </GhostButton>
                 </div>
             </div>
-            {/*-- Toast 容器 --*/}
+            {/* Toast 容器 */}
             <ToastContainer />
 
-            {/*-- 代码块 — 使用方式 --*/}
+            {/* 代码块 — 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 使用方式
 import { toast, ToastContainer } from '@/components/ui/toast';
 
@@ -493,7 +493,7 @@ export function PaginationDemo() {
 
     return (
         <div className={styles.demo}>
-            {/*-- 客户端回调模式 --*/}
+            {/* 客户端回调模式 */}
             <div className={styles.row}>
                 <span className={styles.label}>回调</span>
                 <div className={styles.items}>
@@ -506,7 +506,7 @@ export function PaginationDemo() {
                     />
                 </div>
             </div>
-            {/*-- 服务端链接模式 --*/}
+            {/* 服务端链接模式 */}
             <div className={styles.row}>
                 <span className={styles.label}>链接</span>
                 <div className={styles.items}>
@@ -514,7 +514,7 @@ export function PaginationDemo() {
                 </div>
             </div>
 
-            {/*-- 代码块 — 使用方式 --*/}
+            {/* 代码块 — 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 客户端回调模式
 const [page, setPage] = useState(1);
 <Pagination
@@ -554,14 +554,14 @@ export function DataTableDemo() {
 
     return (
         <div className={styles.demo}>
-            {/*-- 基础表格 --*/}
+            {/* 基础表格 */}
             <DataTable columns={columns} rowKey={(r) => r.id} rows={rows} />
-            {/*-- 空态 --*/}
+            {/* 空态 */}
             <div style={{ marginTop: 'var(--space-4)' }}>
                 <DataTable columns={columns} rowKey={(r) => r.id} rows={[]} emptyText="暂无记录" />
             </div>
 
-            {/*-- 代码块 — 使用方式 --*/}
+            {/* 代码块 — 使用方式 */}
             <pre className={styles.codeBlock}><code>{`// 使用方式
 interface Row { id: number; name: string; role: string; date: string; }
 

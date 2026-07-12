@@ -28,15 +28,15 @@ export interface StatusPageProps {
 export function StatusPage({ code, title, subtitle }: StatusPageProps) {
     return (
         <main className={styles.page}>
-            {/*-- 水墨背景图 --*/}
+            {/* 水墨背景图 */}
             <div className={styles.bg} />
-            {/*-- 半透明遮罩层 --*/}
+            {/* 半透明遮罩层 */}
             <div className={styles.overlay} />
-            {/*-- 大号水印状态码 --*/}
+            {/* 大号水印状态码 */}
             <span aria-hidden className={styles.watermark}>
                 {code}
             </span>
-            {/*-- 毛玻璃卡片 --*/}
+            {/* 毛玻璃卡片 */}
             <div className={styles.card}>
                 <div className={styles.cardBody}>
                     <Image alt="纸笺" className={styles.logo} height={80} src="/images/logo.webp" width={80} />

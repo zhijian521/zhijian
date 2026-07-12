@@ -83,7 +83,7 @@ export default function ListClient({
     return (
         <main className={styles.page}>
             <div className="bg-overlay" />
-            {/*-- 导航加载遮罩 --*/}
+            {/* 导航加载遮罩 */}
             <Show when={isPending}>
                 <div className={styles.loadingOverlay} role="status" aria-live="polite">
                     <div className={styles.loadingBar} />
@@ -91,7 +91,7 @@ export default function ListClient({
             </Show>
 
             <div className={styles.pageContent}>
-                {/*-- 页头：标题 + 筛选标签 --*/}
+                {/* 页头：标题 + 筛选标签 */}
                 <Header
                     activeFilterChips={activeFilterChips}
                     hasFilters={hasFilters}
@@ -99,7 +99,7 @@ export default function ListClient({
                     onOpenFilter={() => setFilterOpen(true)}
                 />
 
-                {/*-- 移动端筛选弹窗 --*/}
+                {/* 移动端筛选弹窗 */}
                 <FilterDialog
                     activeCategorySlug={activeCategorySlug}
                     activeTagSlugs={activeTagSlugs}
@@ -113,10 +113,10 @@ export default function ListClient({
                     tagOptions={tagOptions}
                 />
 
-                {/*-- 主布局：列表 + 侧边栏 --*/}
+                {/* 主布局：列表 + 侧边栏 */}
                 <div className={styles.layout}>
                     <section className={styles.main}>
-                        {/*-- 文章列表 --*/}
+                        {/* 文章列表 */}
                         <div className={styles.list}>
                             <Show when={posts.length > 0} fallback={<p className={styles.empty}>没有匹配的文章。</p>}>
                                 {posts.map((post) => (
@@ -125,13 +125,13 @@ export default function ListClient({
                             </Show>
                         </div>
 
-                        {/*-- 分页 --*/}
+                        {/* 分页 */}
                         <Show when={totalPages > 1}>
                             <Pagination current={currentPage} getHref={getPaginationHref} total={totalPages} />
                         </Show>
                     </section>
 
-                    {/*-- 桌面端筛选侧边栏 --*/}
+                    {/* 桌面端筛选侧边栏 */}
                     <FilterSidebar
                         activeCategorySlug={activeCategorySlug}
                         activeTagSlugs={activeTagSlugs}

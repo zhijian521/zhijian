@@ -329,10 +329,10 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                 ))}
             </div>
 
-            {/*-- 右键菜单 --*/}
+            {/* 右键菜单 */}
             {menu && <BookmarkContextMenu actions={menu.actions} onClose={() => setMenu(null)} x={menu.x} y={menu.y} />}
 
-            {/*-- 编辑/新增/删除弹窗 --*/}
+            {/* 编辑/新增/删除弹窗 */}
             {editMode && (
                 <Dialog onClose={() => setEditMode(null)} open title={config.title}>
                     {config.showDelete && (

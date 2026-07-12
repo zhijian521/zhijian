@@ -48,7 +48,7 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
     return (
         <aside className={styles.sidebar}>
-            {/*-- 分类筛选 --*/}
+            {/* 分类筛选 */}
             <Show when={categoryOptions.length > 1}>
                 <div className={styles.card}>
                     <h3 className={styles.cardTitle}>分类</h3>
@@ -69,7 +69,7 @@ export function FilterSidebar({
                 </div>
             </Show>
 
-            {/*-- 标签筛选 --*/}
+            {/* 标签筛选 */}
             <Show when={tagOptions.length > 0}>
                 <div className={styles.card}>
                     <h3 className={styles.cardTitle}>标签</h3>

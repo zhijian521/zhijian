@@ -215,7 +215,7 @@ export default function TaxonomyManagement() {
             />
 
             <div className={styles.columns}>
-                {/*-- 左栏：分类 --*/}
+                {/* 左栏：分类 */}
                 <div className={styles.column}>
                     <div className={styles.columnHeader}>
                         <div className={styles.columnLabel}>
@@ -253,7 +253,7 @@ export default function TaxonomyManagement() {
                     </div>
                 </div>
 
-                {/*-- 右栏：标签 --*/}
+                {/* 右栏：标签 */}
                 <div className={styles.column}>
                     <div className={styles.columnHeader}>
                         <div className={styles.columnLabel}>
@@ -291,7 +291,7 @@ export default function TaxonomyManagement() {
                 </div>
             </div>
 
-            {/*-- 分类 Dialog --*/}
+            {/* 分类 Dialog */}
             <Dialog
                 onClose={() => setCatFormOpen(false)}
                 open={catFormOpen}
@@ -337,7 +337,7 @@ export default function TaxonomyManagement() {
                 </form>
             </Dialog>
 
-            {/*-- 标签 Dialog --*/}
+            {/* 标签 Dialog */}
             <Dialog
                 onClose={() => setTagFormOpen(false)}
                 open={tagFormOpen}
@@ -375,7 +375,7 @@ export default function TaxonomyManagement() {
                 </form>
             </Dialog>
 
-            {/*-- 删除确认 --*/}
+            {/* 删除确认 */}
             <ConfirmDialog
                 confirmLabel="删除"
                 message={`确定要删除「${deleteTarget?.name ?? ''}」吗？此操作不可撤销。`}

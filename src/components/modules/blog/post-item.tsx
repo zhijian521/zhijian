@@ -33,7 +33,7 @@ export function PostItem({ post }: PostItemProps) {
             <div className={styles.body}>
                 <h2 className={styles.title}>{post.title}</h2>
                 <p className={styles.summary}>{post.summary}</p>
-                {/*-- 元数据栏 --*/}
+                {/* 元数据栏 */}
                 <div className={styles.meta}>
                     <Show when={post.categoryName}>
                         <span className={styles.category}>{post.categoryName}</span>
@@ -50,7 +50,7 @@ export function PostItem({ post }: PostItemProps) {
                     <span className={styles.date}>{formatPostDate(post.updatedAt || post.publishedAt)}</span>
                 </div>
             </div>
-            {/*-- 封面图 --*/}
+            {/* 封面图 */}
             <Show when={post.coverImage}>
                 <div className={styles.cover}>
                     <ContentImage

@@ -200,10 +200,10 @@ export default async function BlogPostPage({ params }: PageProps) {
     return (
         <main className={styles.page}>
             <div className="bg-overlay" />
-            {/*-- JSON-LD 结构化数据 --*/}
+            {/* JSON-LD 结构化数据 */}
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <article className={styles.article}>
-                {/*-- 面包屑导航 --*/}
+                {/* 面包屑导航 */}
                 <Breadcrumb
                     items={[
                         { label: SITE_METADATA.title, href: '/' },
@@ -212,10 +212,10 @@ export default async function BlogPostPage({ params }: PageProps) {
                     ]}
                 />
 
-                {/*-- 文章正文 --*/}
+                {/* 文章正文 */}
                 <ArticleView post={post} />
 
-                {/*-- 底部：标签 + 操作按钮 --*/}
+                {/* 底部：标签 + 操作按钮 */}
                 <ArticleFooter post={post} />
             </article>
 

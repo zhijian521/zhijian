@@ -33,15 +33,15 @@ export function ArticleView({ post, fullWidth = false, content }: ArticleViewPro
 
     return (
         <div className={cn(styles.article, fullWidth && styles.articleWide)}>
-            {/*-- 文章头部（仅详情页） --*/}
+            {/* 文章头部（仅详情页） */}
             <Show when={!!post}>
                 <ArticleHeader post={post!} />
             </Show>
 
-            {/*-- 文章正文 --*/}
+            {/* 文章正文 */}
             <MarkdownArticle content={displayContent} fullWidth={fullWidth} />
 
-            {/*-- 更新日期（仅详情页） --*/}
+            {/* 更新日期（仅详情页） */}
             <Show when={post?.updatedAt && post.updatedAt !== post.publishedAt}>
                 <div className={styles.updatedDate}>最后更新于：{formatPostDate(post!.updatedAt!)}</div>
             </Show>
