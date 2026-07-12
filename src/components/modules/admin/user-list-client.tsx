@@ -17,7 +17,7 @@ import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
 import styles from './user-list-client.module.css';
-import shared from './admin-shared.module.css';
+import shared from '@/components/modules/admin/admin-shared.module.css';
 
 interface UserItem {
     id: number;

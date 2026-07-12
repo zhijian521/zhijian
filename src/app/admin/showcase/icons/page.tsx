@@ -1,8 +1,18 @@
+/*============================================================================
+  page — 图标预览页
+
+  客户端组件，展示全部线框/填充图标，点击复制 import 用法到剪贴板。
+============================================================================*/
+
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/page-header';
 import { Icon, STROKE_ICONS, FILL_ICONS } from '@/components/ui/icons';
+
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
 const SECTIONS = [

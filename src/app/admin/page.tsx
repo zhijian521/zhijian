@@ -1,16 +1,26 @@
+/*============================================================================
+  page — 后台概览页
+
+  服务端获取文章统计与用户数据，渲染指标卡片 + 近期文章表格。
+============================================================================*/
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+/*== 组件导入 ==*/
 import { ArrowRightIcon, Edit3Icon, FileTextIcon, UsersIcon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import { IconButton } from '@/components/ui/icon-button';
 import { Tag } from '@/components/ui/tag';
 import AdminPageHeader from '@/components/modules/admin/page-header';
+
+/*== 数据与配置 ==*/
 import { countUsersByRole } from '@/lib/core/auth';
 import type { Post } from '@/lib/domain/posts';
-import { formatPostDate } from '@/lib/domain/posts';
-import { getAllPosts } from '@/lib/domain/posts';
+import { formatPostDate, getAllPosts } from '@/lib/domain/posts';
 import { APP_ROUTES } from '@/lib/core/site';
+
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
 export const metadata: Metadata = {

@@ -88,7 +88,7 @@
 | 布局（鉴权） | `src/app/admin/layout.tsx` |
 | Shell | `src/app/admin/_components/admin-shell.tsx` |
 | 侧边栏 | `src/app/admin/_components/admin-sidebar.tsx` |
-| 公共样式 | `src/app/admin/_components/admin-shared.module.css` |
+| 公共样式 | `src/components/modules/admin/admin-shared.module.css` |
 | 后台全局样式 | `src/app/admin/globals.css` |
 | 加载态 | `src/app/admin/loading.tsx` |
 

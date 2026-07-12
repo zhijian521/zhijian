@@ -1,19 +1,33 @@
+/*============================================================================
+  layout — 后台布局（鉴权 + 路由分发）
+
+  登录页直接渲染，编辑器页给全屏 + Toast，其余页面渲染侧边导航壳层。
+  通过 middleware 注入的 x-current-path 头区分路由模式。
+============================================================================*/
+
 import { headers } from 'next/headers';
 
-import AdminShell from '@/app/admin/_components/admin-shell';
+/*== 组件导入 ==*/
+import AdminSidebar from '@/components/modules/admin/admin-sidebar';
 import { ToastContainer } from '@/components/ui/toast';
+
+/*== 数据与配置 ==*/
 import { requireAdmin } from '@/lib/core/auth';
 import { APP_ROUTES } from '@/lib/core/site';
-import './globals.css';
 
+/*== 样式导入 ==*/
+import './globals.css';
+import styles from '@/components/modules/admin/admin-shell.module.css';
+
+/*== 类型定义 ==*/
 interface AdminLayoutProps {
     children: React.ReactNode;
 }
 
-/*== 编辑器路由：匹配 /admin/posts/:id 时脱离 AdminShell，全屏编辑。 ==*/
+/*== 编辑器路由：匹配 /admin/posts/:id 时脱离侧边栏，全屏编辑。 ==*/
 const EDITOR_PATTERN = /^\/admin\/posts\/\d+/;
 
-/*== 后台布局：登录页和编辑器页跳过后台壳层，其余页面统一做鉴权与侧边导航包裹。 ==*/
+/*== 后台布局：登录页直接渲染，编辑器页全屏+Toast，其余页面鉴权后走侧边导航壳层。 ==*/
 export default async function AdminLayout({ children }: AdminLayoutProps) {
     const headersList = await headers();
     const currentPath = headersList.get('x-current-path') || '/admin';
@@ -24,7 +38,6 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         return children;
     }
 
-    // requireAdmin：未登录 → /admin/login，非 admin → /forbidden
     await requireAdmin();
 
     if (isEditorRoute) {
@@ -36,5 +49,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         );
     }
 
-    return <AdminShell>{children}</AdminShell>;
+    return (
+        <main className={styles.layout}>
+            <AdminSidebar />
+            <section className={styles.main}>{children}</section>
+            <ToastContainer />
+        </main>
+    );
 }

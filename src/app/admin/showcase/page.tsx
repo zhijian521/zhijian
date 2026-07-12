@@ -1,5 +1,15 @@
+/*============================================================================
+  page — 展示中心首页
+
+  组件预览与图标预览两大入口，带 AdminPageHeader 标题和描述。
+============================================================================*/
+
 import Link from 'next/link';
+
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/page-header';
+
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
 export const metadata = { title: '展示中心 - 知简' };

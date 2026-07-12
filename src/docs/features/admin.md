@@ -295,7 +295,7 @@ interface AdminPageHeaderProps {
 | `src/app/admin/_components/admin-sidebar.tsx` | 侧边栏导航 |
 | `src/app/admin/_components/admin-login-card.tsx` | 登录表单卡片 |
 | `src/components/modules/admin/page-header.tsx` | 页面统一头部 |
-| `src/app/admin/_components/admin-shared.module.css` | 后台共享样式 |
+| `src/components/modules/admin/admin-shared.module.css` | 后台共享样式 |
 | `src/app/admin/page.tsx` | 概览页 |
 | `src/app/admin/login/page.tsx` | 登录页 |
 | `src/app/admin/posts/page.tsx` | 文章管理页 |

@@ -14,7 +14,7 @@ import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/components/modules/admin/page-header';
 
 import styles from './upload-management.module.css';
-import shared from '@/app/admin/_components/admin-shared.module.css';
+import shared from '@/components/modules/admin/admin-shared.module.css';
 
 interface UploadItem {
     id: number;

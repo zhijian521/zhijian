@@ -1,10 +1,20 @@
+/*============================================================================
+  page — 文章编辑器页
+
+  服务端获取文章、分类、标签数据，传入 PostEditor 客户端组件。
+  按文章 ID 生成动态页面标题。
+============================================================================*/
+
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+/*== 组件导入 ==*/
+import PostEditor from '@/components/modules/admin/post-editor';
+
+/*== 数据与配置 ==*/
 import { getPostById } from '@/lib/domain/posts';
 import { listCategories } from '@/lib/domain/categories';
 import { listTags } from '@/lib/domain/tags';
-import PostEditor from './_components/post-editor';
 
 interface PageProps {
     params: Promise<{ id: string }>;

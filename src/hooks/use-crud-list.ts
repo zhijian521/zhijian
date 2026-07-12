@@ -1,6 +1,15 @@
+/*============================================================================
+  use-crud-list — 通用 CRUD 列表 Hook
+
+  供分类/标签等管理页面复用的增删查 Hook。
+  入参 endpoint 和 labelName，返回数据/分页/删除状态。
+============================================================================*/
+
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+
+/*== 数据与配置 ==*/
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
 import { toast } from '@/components/ui/toast';

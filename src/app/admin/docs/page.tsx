@@ -1,7 +1,18 @@
+/*============================================================================
+  page — 项目文档中心首页
+
+  按 group 分组列出所有功能文档，点击进入详情渲染 markdown。
+============================================================================*/
+
 import Link from 'next/link';
 
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/page-header';
+
+/*== 数据与配置 ==*/
 import { DOC_REGISTRY, type DocEntry } from '@/docs/features/_registry';
+
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
 export const metadata = { title: '项目文档 - 知简' };

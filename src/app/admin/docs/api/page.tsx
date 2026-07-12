@@ -1,5 +1,16 @@
+/*============================================================================
+  page — 接口文档页
+
+  按 group 分组列出所有 API 接口，点击展开查看参数与响应。
+  数据源来自 src/docs/api/_registry.ts。
+============================================================================*/
+
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/page-header';
+
+/*== 数据与配置 ==*/
 import { API_REGISTRY } from '@/docs/api/_registry';
+
 import { ApiList } from './api-list';
 
 export const metadata = { title: '接口文档 - 知简' };

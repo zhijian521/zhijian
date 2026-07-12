@@ -17,7 +17,7 @@ import { api } from '@/lib/core/http-client';
 import { APP_ROUTES } from '@/lib/core/site';
 
 import styles from './post-management-client.module.css';
-import shared from '@/app/admin/_components/admin-shared.module.css';
+import shared from '@/components/modules/admin/admin-shared.module.css';
 
 /*== 文章列表项：API 返回的列表数据，不含 content（太重），含分类/标签名称。 ==*/
 interface PostListItem {

@@ -10,9 +10,9 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/components/modules/admin/page-header';
-import shared from '@/app/admin/_components/admin-shared.module.css';
+import shared from '@/components/modules/admin/admin-shared.module.css';
 import { api } from '@/lib/core/http-client';
-import { useCrudList } from '@/app/admin/_hooks/use-crud-list';
+import { useCrudList } from '@/hooks/use-crud-list';
 
 import TaxonomyCard from './taxonomy-card';
 import styles from './taxonomy-management.module.css';

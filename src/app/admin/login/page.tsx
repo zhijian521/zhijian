@@ -1,7 +1,17 @@
+/*============================================================================
+  login — 后台登录页
+
+  已登录 admin 重定向 /admin，普通用户重定向首页。
+  未登录渲染 AdminLoginCard 登录表单。
+============================================================================*/
+
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-import AdminLoginCard from '@/app/admin/_components/admin-login-card';
+/*== 组件导入 ==*/
+import AdminLoginCard from '@/components/modules/admin/admin-login-card';
+
+/*== 数据与配置 ==*/
 import { getSessionFromCookies } from '@/lib/core/auth';
 import { APP_ROUTES } from '@/lib/core/site';
 

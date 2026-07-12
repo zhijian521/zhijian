@@ -1,8 +1,17 @@
+/*============================================================================
+  page — 系统设置页
+
+  登录权限说明 + 项目约定 + SEO 推送三张卡片。
+============================================================================*/
+
 import type { Metadata } from 'next';
 
+/*== 组件导入 ==*/
 import { SearchIcon, ShieldIcon, WrenchIcon } from '@/components/ui/icons';
 import AdminPageHeader from '@/components/modules/admin/page-header';
-import { SettingsSubmitButton } from './_components/settings-submit-button';
+import { SettingsSubmitButton } from '@/components/modules/admin/settings-submit-button';
+
+/*== 样式导入 ==*/
 import styles from './settings.module.css';
 
 export const metadata: Metadata = {

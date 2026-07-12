@@ -19,7 +19,7 @@ import type { ListData } from '@/lib/core/api-response';
 import type { TrackSite } from '@/lib/domain/track-sites';
 
 import styles from './site-management.module.css';
-import shared from '@/app/admin/_components/admin-shared.module.css';
+import shared from '@/components/modules/admin/admin-shared.module.css';
 
 /*== 站点管理 ==*/
 export default function SiteManagement() {

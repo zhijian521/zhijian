@@ -1,10 +1,22 @@
+/*============================================================================
+  page — 功能文档详情页
+
+  读取 src/docs/features/ 下对应 markdown 文件，
+  用 MarkdownArticle 渲染，支持 generateStaticParams 预生成。
+============================================================================*/
+
 import { notFound } from 'next/navigation';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/page-header';
 import { MarkdownArticle } from '@/components/site/markdown-article';
+
+/*== 数据与配置 ==*/
 import { DOC_REGISTRY } from '@/docs/features/_registry';
+
+/*== 样式导入 ==*/
 import styles from './page.module.css';
 
 export const dynamicParams = false;

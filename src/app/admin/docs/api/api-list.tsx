@@ -1,8 +1,17 @@
+/*============================================================================
+  api-list — 接口文档列表
+
+  按 group 分组渲染 API 接口条目，点击展开查看参数与响应字段。
+============================================================================*/
+
 'use client';
 
 import { useState } from 'react';
 
+/*== 数据与配置 ==*/
 import type { ApiEntry } from '@/docs/api/_registry';
+
+/*== 样式导入 ==*/
 import styles from './api-list.module.css';
 
 const AUTH_LABEL: Record<string, string> = {

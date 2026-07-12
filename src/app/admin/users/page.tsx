@@ -1,7 +1,14 @@
+/*============================================================================
+  page — 用户管理页
+
+  渲染 UserListClient 客户端组件，承接用户列表 CRUD 交互。
+============================================================================*/
+
 import type { Metadata } from 'next';
 
+/*== 组件导入 ==*/
 import AdminPageHeader from '@/components/modules/admin/page-header';
-import UserListClient from '@/app/admin/_components/user-list-client';
+import UserListClient from '@/components/modules/admin/user-list-client';
 
 export const dynamic = 'force-dynamic';
 
