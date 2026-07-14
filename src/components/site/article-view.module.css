@@ -1,3 +1,25 @@
+.page {
+    --article-page-image: url('/images/bg-ink.webp');
+
+    position: relative;
+    width: 100%;
+    padding-top: var(--space-8);
+    background: var(--article-page-image) center / cover no-repeat fixed;
+}
+
+.pageViewport {
+    min-height: 100vh;
+}
+
+.surface {
+    position: relative;
+    z-index: 1;
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: var(--space-6) var(--space-5) var(--space-10);
+    background: color-mix(in srgb, var(--muted) 50%, transparent);
+}
+
 .article {
     max-width: 56rem;
     margin: 0 auto;

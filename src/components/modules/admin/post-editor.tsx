@@ -186,11 +186,20 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         };
     }, []);
 
-    /* 获取当前分类名称和标签名称，供预览使用 */
+    /* 预览直接消费文章模型，确保与博客详情页走同一渲染链。 */
     const categoryName = formData.categoryId
-        ? (categories.find((c) => c.id === formData.categoryId)?.name ?? null)
-        : null;
-    const tagNames = formData.tags.map((id) => tags.find((t) => t.id === id)?.name).filter(Boolean) as string[];
+        ? categories.find((category) => category.id === formData.categoryId)?.name
+        : undefined;
+    const tagNames = formData.tags
+        .map((id) => tags.find((tag) => tag.id === id))
+        .filter((tag): tag is Tag => tag !== undefined)
+        .map(({ id, name, slug }) => ({ id, name, slug }));
+    const previewPost: Post = {
+        ...post,
+        ...formData,
+        categoryName,
+        tagNames,
+    };
 
     return (
         <div className={styles.editor}>
@@ -262,7 +271,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
 
                             {/* 预览区 */}
                             <div className={styles.previewPane}>
-                                <MarkdownPreview content={formData.content} />
+                                <MarkdownPreview post={previewPost} />
                             </div>
                         </div>
                     </>
@@ -325,7 +334,7 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                 {/* 预览模式：全宽预览 */}
                 {viewMode === 'preview' && (
                     <div className={styles.contentPreview}>
-                        <MarkdownPreview content={formData.content} />
+                        <MarkdownPreview post={previewPost} />
                     </div>
                 )}
             </div>

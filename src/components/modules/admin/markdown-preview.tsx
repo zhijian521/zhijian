@@ -1,27 +1,32 @@
 /*============================================================================
   markdown-preview — 编辑器实时预览区
 
-  复用 ArticleView 渲染 Markdown 纯内容，不含文章头部信息。
+  使用编辑中的 Post 数据复用博客详情页画布与 ArticleView 渲染链。
 ============================================================================*/
 
 'use client';
 
 /*== 组件导入 ==*/
-import { ArticleView } from '@/components/site/article-view';
+import { ArticleDetail } from '@/components/site/article-view';
+
+/*== 数据与配置 ==*/
+import type { Post } from '@/lib/domain/post-shared';
 
 /*== 样式导入 ==*/
+import articleStyles from '@/components/site/article-view.module.css';
 import styles from './markdown-preview.module.css';
 
 export interface MarkdownPreviewProps {
-    content: string;
+    post: Post;
 }
 
-/*== MarkdownPreview 编辑器实时预览区 — 复用 ArticleView 组件 ==*/
-export function MarkdownPreview({ content }: MarkdownPreviewProps) {
-    // ponytail: 预览没有完整 Post 对象，仅传 content，标题等走 ArticleHeader 暂不渲染
+/*== MarkdownPreview 编辑器实时预览区 — 与博客详情页共享画布、文章容器和正文组件 ==*/
+export function MarkdownPreview({ post }: MarkdownPreviewProps) {
     return (
-        <div className={styles.preview}>
-            <ArticleView content={content} fullWidth />
+        <div className={`${articleStyles.page} ${styles.preview}`}>
+            <article className={articleStyles.surface}>
+                <ArticleDetail post={post} />
+            </article>
         </div>
     );
 }

@@ -11,9 +11,7 @@ import { cache } from 'react';
 
 /*== 组件导入 ==*/
 import { Show } from '@/components/ui/show';
-import { ArticleFooter } from '@/components/site/article-footer';
-import { ArticleView } from '@/components/site/article-view';
-import { Breadcrumb } from '@/components/site/breadcrumb';
+import { ArticleDetail } from '@/components/site/article-view';
 import { RelatedPosts } from '@/components/modules/blog/related-posts';
 
 /*== 数据与配置 ==*/
@@ -22,7 +20,7 @@ import { toAbsoluteUrl } from '@/lib/core/utils';
 import { getPostBySlug, getPublishedPosts, toPostIsoDateTime } from '@/lib/domain/posts';
 
 /*== 样式导入 ==*/
-import styles from './page.module.css';
+import styles from '@/components/site/article-view.module.css';
 
 /*== 类型定义 ==*/
 interface PageProps {
@@ -198,25 +196,12 @@ export default async function BlogPostPage({ params }: PageProps) {
     };
 
     return (
-        <main className={styles.page}>
+        <main className={`${styles.page} ${styles.pageViewport}`}>
             <div className="bg-overlay" />
             {/* JSON-LD 结构化数据 */}
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <article className={styles.article}>
-                {/* 面包屑导航 */}
-                <Breadcrumb
-                    items={[
-                        { label: SITE_METADATA.title, href: '/' },
-                        { label: '文章', href: '/blog' },
-                        { label: post.title },
-                    ]}
-                />
-
-                {/* 文章正文 */}
-                <ArticleView post={post} />
-
-                {/* 底部：标签 + 操作按钮 */}
-                <ArticleFooter post={post} />
+            <article className={styles.surface}>
+                <ArticleDetail post={post} />
             </article>
 
             {/* 相关文章推荐 */}

@@ -1,6 +1,8 @@
 .preview {
-    padding: 2rem;
-    overflow-y: auto;
     height: 100%;
-    background: var(--highlight);
+    min-height: 100%;
+    overflow-y: auto;
+    background:
+        var(--overlay-gradient) fixed,
+        var(--article-page-image) center / cover no-repeat fixed;
 }

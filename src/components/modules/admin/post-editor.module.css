@@ -28,8 +28,7 @@
 
 .previewPane {
     flex: 1;
-    overflow: auto;
-    padding: 0 1.5rem;
+    overflow: hidden;
 }
 
 .contentEdit {
@@ -41,8 +40,7 @@
 
 .contentPreview {
     flex: 1;
-    overflow: auto;
-    padding: 0 1.5rem;
+    overflow: hidden;
 }
 
 .sidePanel {

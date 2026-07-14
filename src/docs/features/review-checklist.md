@@ -31,7 +31,7 @@
 | 页面 | `src/app/blog/[slug]/page.tsx` |
 | 模块 | `src/components/modules/blog/related-posts.tsx`, `article-footer-actions.tsx` |
 | 加载态 | `src/app/blog/[slug]/loading.tsx` |
-| 样式 | `src/app/blog/[slug]/page.module.css` |
+| 样式 | `src/components/site/article-view.module.css`, `article-header.module.css`, `markdown-article.module.css` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/core/site.ts`, `src/lib/core/utils.ts` |
 | 共享组件 | `src/components/site/article-view.tsx`, `article-footer.tsx`, `article-header.tsx`, `breadcrumb.tsx`, `markdown-article.tsx`, `code-block.tsx`, `content-image.tsx` |
 | UI 组件 | `src/components/ui/icon-button.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/show.tsx` |
