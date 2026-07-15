@@ -93,9 +93,9 @@
 | 后台侧边栏 | `width: 16rem (256px)`, `fixed`, `border-right: 1px solid var(--border)`, `bg: var(--muted)` |
 | 后台主内容区 | `margin-left: 16rem`, `padding: 3rem`, `min-height: 100vh` |
 | 后台指标卡片网格 | `grid-template-columns: repeat(3, 1fr)`, `gap: 1rem` |
-| 后台编辑表单网格 | `grid: minmax(0, 1.1fr) 320px`（1024px+） |
-| 文章编辑器页面 | 全屏独立页面（脱离 AdminShell），`height: 100vh` |
-| 编辑器 — 分栏视图 | 左编辑 + 右预览 + 侧边元数据面板（320px） |
+| 后台编辑器元数据面板 | 左侧固定 `260px`，右侧为编辑/预览工作区 |
+| 文章编辑器页面 | 全屏独立页面（脱离标准侧边栏布局），`height: 100vh` |
+| 编辑器 — 分栏视图 | 左侧元数据面板（260px）+ 中间编辑 + 右侧真实详情预览 |
 | 编辑器 — 编辑视图 | 全宽编辑区 |
 | 编辑器 — 预览视图 | 全宽预览 |
 | 编辑器顶部工具栏 | `height: 3rem`, `border-bottom: 1px solid var(--border)` |
@@ -228,13 +228,13 @@
 
 | 元素 | 样式 |
 |------|------|
-| 页面容器 | 全屏独立页面，`height: 100vh`, 脱离 AdminShell |
+| 页面容器 | 全屏独立页面，`height: 100vh`，脱离标准侧边栏布局 |
 | 顶部工具栏 | `height: 3rem`, `border-bottom: 1px solid var(--border)`, `bg: var(--background)` |
 | 工具栏按钮 | `height: 1.75rem`, `padding: 0 0.5rem`, `bg: var(--muted)` |
 | 编辑区 | 等宽字体，`font-family: 'SF Mono', 'Menlo', monospace` |
 | 预览区 | 同文章详情排版规格（H2 红线、衬线标题等） |
-| 侧边元数据面板 | `width: 260px`, `border-left: 1px solid var(--border)`, `bg: var(--background)`, `overflow-y: auto` |
-| 分栏视图 | 左编辑 + 右预览，中间可拖拽分割线 |
+| 侧边元数据面板 | 左侧 `width: 260px`, `border-right: 1px solid var(--border)`, `bg: var(--background)`, `overflow-y: auto` |
+| 分栏视图 | 左侧元数据面板 + 中间编辑 + 右侧详情预览，三列按固定面板和弹性工作区组合 |
 
 ### 页面标题区
 

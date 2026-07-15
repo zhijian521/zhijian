@@ -71,4 +71,4 @@ $ node scripts/sync-uploads.mjs
 |------|------|
 | `scripts/sync-uploads.mjs` | 同步脚本 |
 | `src/app/api/admin/uploads/sync/route.ts` | 文件清单 API |
-| `src/app/admin/uploads/_components/upload-management.tsx` | 管理页同步按钮 |
+| `src/components/modules/admin/upload-management.tsx` | 管理页同步按钮 |

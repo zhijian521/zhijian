@@ -178,9 +178,12 @@ UA 解析 — parseUA() 提取 browser / os
 
 ## 统计概览页
 
-**文件**：`src/app/admin/analytics/page.tsx`（路由页）  
-**展示组件**：`src/app/admin/analytics/_components/analytics-dashboard.tsx`  
-**路由**：`/admin/analytics`  
+**文件**：`src/app/admin/analytics/page.tsx`（路由页）
+
+**展示组件**：`src/components/modules/admin/analytics-dashboard.tsx`
+
+**路由**：`/admin/analytics`
+
 **组件类型**：Server Component（page）+ Client Component（dashboard）
 
 ### 控制栏
@@ -285,9 +288,12 @@ fetchVisits() — GET /admin/analytics/visits?siteId=xxx&range=7d&page=1&pageSiz
 
 ## 站点管理页
 
-**文件**：`src/app/admin/analytics/sites/page.tsx`（路由页）  
-**展示组件**：`src/app/admin/analytics/sites/_components/site-management.tsx`  
-**路由**：`/admin/analytics/sites`  
+**文件**：`src/app/admin/analytics/sites/page.tsx`（路由页）
+
+**展示组件**：`src/components/modules/admin/site-management.tsx`
+
+**路由**：`/admin/analytics/sites`
+
 **组件类型**：Server Component（page）+ Client Component（site-management）
 
 ### 功能
@@ -543,11 +549,11 @@ interface UAInfo {
 | `public/script.js` | 数据采集嵌入脚本 |
 | `src/app/api/collect/route.ts` | 数据收集 API（无鉴权） |
 | `src/app/admin/analytics/page.tsx` | 统计概览路由页 |
-| `src/app/admin/analytics/_components/analytics-dashboard.tsx` | 统计概览展示组件 |
-| `src/app/admin/analytics/_components/analytics-dashboard.module.css` | 统计概览样式 |
+| `src/components/modules/admin/analytics-dashboard.tsx` | 统计概览展示组件 |
+| `src/components/modules/admin/analytics-dashboard.module.css` | 统计概览样式 |
 | `src/app/admin/analytics/sites/page.tsx` | 站点管理路由页 |
-| `src/app/admin/analytics/sites/_components/site-management.tsx` | 站点管理展示组件 |
-| `src/app/admin/analytics/sites/_components/site-management.module.css` | 站点管理样式 |
+| `src/components/modules/admin/site-management.tsx` | 站点管理展示组件 |
+| `src/components/modules/admin/site-management.module.css` | 站点管理样式 |
 | `src/app/api/admin/analytics/overview/route.ts` | 概览数据 API |
 | `src/app/api/admin/analytics/visits/route.ts` | 访问记录 API |
 | `src/app/api/admin/analytics/sites/route.ts` | 站点管理 CRUD API |

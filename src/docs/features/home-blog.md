@@ -183,17 +183,15 @@ post 存在 → 渲染页面
 
 ```
 <main>
-  ├── <article>
-  │    ├── <nav breadcrumb> — 面包屑导航（知简 / 文章 / 文章标题）
-  │    ├── <ArticleView />  — 文章头部 + 正文
-  │    │    ├── 封面图（可选）
-  │    │    ├── 标题
-  │    │    ├── 摘要（斜体）
-  │    │    ├── 元数据行（分类徽章 + 标签 + 日期）
-  │    │    └── <MarkdownArticle /> — Markdown 渲染
-  │    └── <footer>
-  │         ├── 标签列表
-  │         └── <ArticleFooterActions /> — 返回列表 / 返回主页 / 返回顶部
+  ├── <article className={articleStyles.surface}>
+  │    └── <ArticleDetail>
+  │         ├── <Breadcrumb /> — 面包屑导航（知简 / 文章 / 文章标题）
+  │         ├── <ArticleView /> — 文章头部 + 正文 + 最后更新时间
+  │         │    ├── <ArticleHeader /> — 封面、标题、摘要、分类、标签、日期
+  │         │    └── <MarkdownArticle /> — Markdown 渲染
+  │         └── <ArticleFooter />
+  │              ├── 标签列表
+  │              └── <ArticleFooterActions /> — 返回列表 / 返回主页 / 返回顶部
   └── <section related>       — 相关文章推荐（有相关文章时渲染）
        ├── 标题 "相关文章"
        └── 3 列卡片网格（响应式：≤640px 单列，641-899px 双列，≥900px 三列）
@@ -260,29 +258,30 @@ interface PostCardProps {
 | 视觉卡片 | `visual` 存在 | 图片区 + 渐变叠层 + 内容区上移 -2rem 覆盖图片底部 |
 | 纯文字卡片 | `visual` 不存在 | 纯文字内容 + 底部分割线 + 「阅读更多」链接 |
 
-### ArticleView
+### ArticleDetail / ArticleView
 
 **文件**：`src/components/site/article-view.tsx`
 
-文章渲染视图，博客详情页与后台编辑器预览共用。
+`ArticleDetail` 是博客详情主体的唯一组合入口，统一包含面包屑、文章头部、正文、最后更新时间和页尾操作。博客详情页与后台实时/放大预览都向它传入完整 `Post`，因此两处共享同一 DOM 结构和样式链。
+
+`ArticleView` 负责文章头部与正文，也保留仅传 `content` 的纯正文模式。
 
 ```typescript
 interface ArticleViewProps {
-    content: string;
-    title?: string;
-    summary?: string;
-    coverImage?: string | null;
-    altText?: string | null;
-    categoryName?: string | null;
-    tagNames?: { id: number; name: string; slug: string }[] | string[];
-    publishedAt?: string | null;
-    updatedAt?: string | null;
+    post?: Post;
+    fullWidth?: boolean;
+    content?: string;
+}
+
+interface ArticleDetailProps {
+    post: Post;
 }
 ```
 
-- `tagNames` 兼容对象数组和字符串数组
-- 无任何头部字段时，仅渲染正文（编辑器预览场景）
-- 分类徽章无 `font-weight` 加粗，与详情页相关文章卡片风格统一
+- `ArticleDetail`：`Breadcrumb` + `ArticleView` + `ArticleFooter`
+- `ArticleView` 传 `post` 时渲染完整头部；仅传 `content` 时只渲染 Markdown 正文
+- 已发布文章的 `updatedAt` 与 `publishedAt` 不同时，正文后显示最后更新时间
+- 详情画布与容器样式统一位于 `src/components/site/article-view.module.css`
 
 ### MarkdownArticle
 

@@ -29,8 +29,8 @@
 | 路由 | 模式 | 说明 |
 |------|------|------|
 | `/admin/login` | 裸渲染 | 不鉴权，直接渲染登录表单 |
-| `/admin/posts/:id` | 编辑器全屏 | 鉴权后渲染，脱离 AdminShell，仅附带 ToastContainer |
-| 其他 `/admin/*` | 标准后台 | 鉴权后由 AdminShell 包裹（侧边栏 + 主内容区） |
+| `/admin/posts/:id` | 编辑器全屏 | 鉴权后渲染，脱离标准侧边栏布局，仅附带 ToastContainer |
+| 其他 `/admin/*` | 标准后台 | 布局直接组合固定侧边栏和主内容区 |
 
 ```
 <AdminLayout>
@@ -38,16 +38,16 @@
   │
   ├── login → 裸渲染 <AdminLoginCard />
   ├── editor → <children> + <ToastContainer />
-  └── 其他 → <AdminShell>
+  └── 其他 → <main className={styles.layout}>
                 ├── <AdminSidebar /> — 16rem 固定侧边栏
-                └── <section main> — 可滚动主内容区
+                └── <section> — 带左边距的主内容区
 ```
 
 ### AdminSidebar
 
-**文件**：`src/app/admin/_components/admin-sidebar.tsx`
+**文件**：`src/components/modules/admin/admin-sidebar.tsx`
 
-数据驱动的二级折叠菜单，导航结构由 `SITE_METADATA.ADMIN_NAV_GROUPS` 配置。
+数据驱动的二级折叠菜单，导航结构由 `src/lib/core/site.ts` 导出的 `ADMIN_NAV_GROUPS` 配置。
 
 | 区域 | 内容 |
 |------|------|
@@ -64,7 +64,7 @@
 
 ## 登录页
 
-**文件**：`src/app/admin/login/page.tsx` + `admin-login-card.tsx`
+**文件**：`src/app/admin/login/page.tsx` + `src/components/modules/admin/admin-login-card.tsx`
 
 ### 服务端逻辑
 
@@ -114,7 +114,7 @@ Client Component，直角风格登录表单：
 
 ## 文章管理
 
-**文件**：`src/app/admin/posts/page.tsx` → `post-management-client.tsx`
+**文件**：`src/app/admin/posts/page.tsx` → `src/components/modules/admin/post-management-client.tsx`
 
 服务端仅渲染 `<PostManagementClient />`，所有数据和交互在客户端完成。
 
@@ -142,18 +142,18 @@ Client Component，直角风格登录表单：
 
 ## 文章编辑器
 
-**文件**：`src/app/admin/posts/[id]/page.tsx` → `_components/post-editor.tsx`
+**文件**：`src/app/admin/posts/[id]/page.tsx` → `src/components/modules/admin/post-editor.tsx`
 
-脱离 AdminShell 的独立全屏页面，路由 `/admin/posts/:id`。
+脱离标准侧边栏布局的独立全屏页面，路由 `/admin/posts/:id`。
 
-### 6 个子组件
+### 主要文件
 
 | 组件 | 说明 |
 |------|------|
 | `post-editor.tsx` | 编辑器主组件：视图切换 + 数据管理 + 自动保存 |
 | `editor-toolbar.tsx` | 顶部工具栏：编辑/预览/分栏视图切换 + 保存 + 返回 |
 | `markdown-editor.tsx` | Markdown 编辑区（textarea） |
-| `markdown-preview.tsx` | Markdown 预览区（复用 ArticleView） |
+| `markdown-preview.tsx` | Markdown 预览区（复用 ArticleDetail 完整详情结构） |
 | `metadata-panel.tsx` | 侧边元数据面板：分类选择 + 标签选择 + 封面图 + 摘要 |
 | `cover-upload.tsx` | 封面图上传区 |
 | `page.tsx` | 编辑器页面壳：加载数据 + 渲染 PostEditor |
@@ -163,24 +163,23 @@ Client Component，直角风格登录表单：
 ```
 ┌─ editor-toolbar ──────────────────────────────┐
 │ ← 返回  │ 编辑 │ 预览 │ 分栏 │    保存按钮    │
-├─────────┬──────────────────────┬───────────────┤
-│         │                      │ metadata-panel│
-│  分栏   │  markdown-editor     │ ├ 分类选择    │
-│  视图   │  (或 preview)        │ ├ 标签选择    │
-│         │                      │ ├ 封面图      │
-│         │                      │ └ 摘要        │
-└─────────┴──────────────────────┴───────────────┘
+├───────────────┬──────────────────────┬──────────────────────┤
+│ metadata-panel│ markdown-editor      │ markdown-preview     │
+│ 分类/标签     │ 标题 + 摘要 + 正文   │ ArticleDetail        │
+│ 封面/状态     │                      │ 面包屑 + 正文 + 页尾 │
+└───────────────┴──────────────────────┴──────────────────────┘
 ```
 
-- 三种视图：编辑（全宽 textarea）、预览（全宽 ArticleView）、分栏（左编辑 + 右预览 + 右侧面板 320px）
+- 三种视图：编辑（左侧 260px 元数据面板 + 编辑区）、预览（全宽真实详情结构）、分栏（左侧 260px 元数据面板 + 编辑区 + 预览区）
 - 自动保存：修改后 2 秒自动 PATCH
-- 图片插入：弹窗选择已上传图片，插入 Markdown 语法
+- 图片插入：工具栏选择、粘贴或拖拽图片后直接上传，并在光标位置插入 Markdown 语法
+- 预览数据：编辑器表单状态组装为完整 `Post`，实时预览和放大预览统一传给 `ArticleDetail`
 
 ---
 
 ## 分类标签管理
 
-**文件**：`src/app/admin/taxonomy/page.tsx` → `_components/taxonomy-management.tsx`
+**文件**：`src/app/admin/taxonomy/page.tsx` → `src/components/modules/admin/taxonomy-management.tsx`
 
 分类与标签合并管理页面，双栏布局。
 
@@ -197,7 +196,7 @@ Client Component，直角风格登录表单：
 
 ## 图片管理
 
-**文件**：`src/app/admin/uploads/page.tsx` → `_components/upload-management.tsx`
+**文件**：`src/app/admin/uploads/page.tsx` → `src/components/modules/admin/upload-management.tsx`
 
 图片上传、浏览、删除，支持本地同步。
 
@@ -216,7 +215,7 @@ Client Component，直角风格登录表单：
 
 ## 用户管理
 
-**文件**：`src/app/admin/users/page.tsx` → `_components/user-list-client.tsx`
+**文件**：`src/app/admin/users/page.tsx` → `src/components/modules/admin/user-list-client.tsx`
 
 用户 CRUD 管理页面。
 
@@ -245,12 +244,15 @@ Client Component，直角风格登录表单：
 
 **文件**：`src/app/admin/settings/page.tsx`
 
-静态信息页，无交互功能。两列卡片布局：
+三张卡片的响应式网格，其中搜索引擎提交卡片包含客户端操作：
 
 | 卡片 | 内容 |
 |------|------|
 | 登录与权限 | Cookie 登录态、bcrypt 加密、`ADMIN_SESSION_SECRET` 环境变量 |
 | 项目约定 | 统一视觉风格、扩展方式、`sql/init.sql` 初始化脚本 |
+| 搜索引擎提交 | 调用 `POST /api/admin/seo/submit`，将首页、文章列表和已发布文章提交到 IndexNow 与百度 |
+
+交互由 `src/components/modules/admin/settings-submit-button.tsx` 承接，结果展示提交 URL 总数以及各搜索引擎的成功/失败状态。
 
 ---
 
@@ -272,15 +274,15 @@ interface AdminPageHeaderProps {
 }
 ```
 
-### AdminShell
+### 后台壳层样式
 
-**文件**：`src/app/admin/_components/admin-shell.tsx`
+**文件**：`src/components/modules/admin/admin-shell.module.css`
 
-固定侧边栏 + 右侧主内容区布局壳。
+后台没有独立 `AdminShell` 组件；`src/app/admin/layout.tsx` 直接组合侧边栏和主内容区，并使用该 CSS Module 控制固定侧边栏偏移和页面内边距。
 
 ### AdminSidebar
 
-**文件**：`src/app/admin/_components/admin-sidebar.tsx`
+**文件**：`src/components/modules/admin/admin-sidebar.tsx`
 
 数据驱动二级折叠菜单，详见上方布局架构章节。
 
@@ -291,22 +293,28 @@ interface AdminPageHeaderProps {
 | 文件 | 说明 |
 |------|------|
 | `src/app/admin/layout.tsx` | 后台布局（鉴权 + 路由分发） |
-| `src/app/admin/_components/admin-shell.tsx` | 布局壳（侧边栏 + 主内容区） |
-| `src/app/admin/_components/admin-sidebar.tsx` | 侧边栏导航 |
-| `src/app/admin/_components/admin-login-card.tsx` | 登录表单卡片 |
+| `src/components/modules/admin/admin-shell.module.css` | 后台壳层样式（侧边栏偏移 + 主内容区） |
+| `src/components/modules/admin/admin-sidebar.tsx` | 侧边栏导航 |
+| `src/components/modules/admin/admin-login-card.tsx` | 登录表单卡片 |
 | `src/components/modules/admin/page-header.tsx` | 页面统一头部 |
 | `src/components/modules/admin/admin-shared.module.css` | 后台共享样式 |
 | `src/app/admin/page.tsx` | 概览页 |
 | `src/app/admin/login/page.tsx` | 登录页 |
 | `src/app/admin/posts/page.tsx` | 文章管理页 |
+| `src/components/modules/admin/post-management-client.tsx` | 文章列表交互 |
 | `src/app/admin/posts/[id]/page.tsx` | 文章编辑器页 |
-| `src/app/admin/posts/[id]/_components/post-editor.tsx` | 编辑器主组件 |
-| `src/app/admin/posts/[id]/_components/editor-toolbar.tsx` | 工具栏 |
-| `src/app/admin/posts/[id]/_components/markdown-editor.tsx` | Markdown 编辑区 |
-| `src/app/admin/posts/[id]/_components/markdown-preview.tsx` | Markdown 预览区 |
-| `src/app/admin/posts/[id]/_components/metadata-panel.tsx` | 元数据面板 |
-| `src/app/admin/posts/[id]/_components/cover-upload.tsx` | 封面图上传 |
+| `src/components/modules/admin/post-editor.tsx` | 编辑器主组件 |
+| `src/components/modules/admin/editor-toolbar.tsx` | 工具栏 |
+| `src/components/modules/admin/markdown-editor.tsx` | Markdown 编辑区 |
+| `src/components/modules/admin/markdown-preview.tsx` | Markdown 预览区 |
+| `src/components/modules/admin/metadata-panel.tsx` | 元数据面板 |
+| `src/components/modules/admin/cover-upload.tsx` | 封面图上传 |
 | `src/app/admin/taxonomy/page.tsx` | 分类标签管理页 |
+| `src/components/modules/admin/taxonomy-management.tsx` | 分类标签 CRUD 交互 |
+| `src/components/modules/admin/taxonomy-card.tsx` | 分类标签卡片 |
 | `src/app/admin/uploads/page.tsx` | 图片管理页 |
+| `src/components/modules/admin/upload-management.tsx` | 图片管理交互 |
 | `src/app/admin/users/page.tsx` | 用户管理页 |
+| `src/components/modules/admin/user-list-client.tsx` | 用户列表交互 |
 | `src/app/admin/settings/page.tsx` | 系统设置页 |
+| `src/components/modules/admin/settings-submit-button.tsx` | 搜索引擎提交操作 |

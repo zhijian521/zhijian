@@ -19,8 +19,8 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/blog/page.tsx` |
-| 模块 | `src/components/modules/blog/list-client.tsx`, `header.tsx`, `filter-sidebar.tsx`, `filter-dialog.tsx`, `post-item.tsx`, `empty-state.tsx` |
-| 样式 | `src/app/blog/page.module.css` |
+| 模块 | `src/components/modules/blog/list-client.tsx`, `header.tsx`, `filter-sidebar.tsx`, `filter-dialog.tsx`, `post-item.tsx` |
+| 样式 | `src/components/modules/blog/list-client.module.css`, `header.module.css`, `filter-sidebar.module.css`, `filter-dialog.module.css`, `post-item.module.css` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/domain/categories.ts`, `src/lib/domain/tags.ts`, `src/lib/domain/post-shared.ts`, `src/lib/core/site.ts` |
 | 共享组件 | `src/components/site/content-image.tsx` |
 | UI 组件 | `src/components/ui/dialog.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/pagination.tsx`, `src/components/ui/tag.tsx`, `src/components/ui/show.tsx` |
@@ -30,8 +30,7 @@
 |------|------|
 | 页面 | `src/app/blog/[slug]/page.tsx` |
 | 模块 | `src/components/modules/blog/related-posts.tsx`, `article-footer-actions.tsx` |
-| 加载态 | `src/app/blog/[slug]/loading.tsx` |
-| 样式 | `src/components/site/article-view.module.css`, `article-header.module.css`, `markdown-article.module.css` |
+| 样式 | `src/components/site/article-view.module.css`, `article-header.module.css`, `article-footer.module.css`, `breadcrumb.module.css`, `markdown-article.module.css`, `src/components/modules/blog/article-footer-actions.module.css`, `related-posts.module.css` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/core/site.ts`, `src/lib/core/utils.ts` |
 | 共享组件 | `src/components/site/article-view.tsx`, `article-footer.tsx`, `article-header.tsx`, `breadcrumb.tsx`, `markdown-article.tsx`, `code-block.tsx`, `content-image.tsx` |
 | UI 组件 | `src/components/ui/icon-button.tsx`, `src/components/ui/icons.tsx`, `src/components/ui/show.tsx` |
@@ -86,8 +85,8 @@
 | 类型 | 文件 |
 |------|------|
 | 布局（鉴权） | `src/app/admin/layout.tsx` |
-| Shell | `src/app/admin/_components/admin-shell.tsx` |
-| 侧边栏 | `src/app/admin/_components/admin-sidebar.tsx` |
+| Shell 样式 | `src/components/modules/admin/admin-shell.module.css` |
+| 侧边栏 | `src/components/modules/admin/admin-sidebar.tsx` |
 | 公共样式 | `src/components/modules/admin/admin-shared.module.css` |
 | 后台全局样式 | `src/app/admin/globals.css` |
 | 加载态 | `src/app/admin/loading.tsx` |
@@ -96,7 +95,7 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/admin/login/page.tsx` |
-| 登录卡片 | `src/app/admin/_components/admin-login-card.tsx` |
+| 登录卡片 | `src/components/modules/admin/admin-login-card.tsx` |
 | API | `POST /api/auth/login` |
 | 数据层 | `src/lib/core/auth.ts`, `src/lib/core/site.ts` |
 
@@ -113,15 +112,15 @@
 | 类型 | 文件 |
 |------|------|
 | 列表页 | `src/app/admin/posts/page.tsx` |
-| 列表组件 | `src/app/admin/_components/post-management-client.tsx` |
+| 列表组件 | `src/components/modules/admin/post-management-client.tsx` |
 | 编辑器页 | `src/app/admin/posts/[id]/page.tsx` |
 | 编辑器布局 | `src/app/admin/posts/[id]/layout.tsx` |
-| 编辑器组件 | `src/app/admin/posts/[id]/_components/post-editor.tsx` |
-| Markdown 编辑 | `src/app/admin/posts/[id]/_components/markdown-editor.tsx` |
-| Markdown 预览 | `src/app/admin/posts/[id]/_components/markdown-preview.tsx` |
-| 工具栏 | `src/app/admin/posts/[id]/_components/editor-toolbar.tsx` |
-| 元数据面板 | `src/app/admin/posts/[id]/_components/metadata-panel.tsx` |
-| 封面上传 | `src/app/admin/posts/[id]/_components/cover-upload.tsx` |
+| 编辑器组件 | `src/components/modules/admin/post-editor.tsx` |
+| Markdown 编辑 | `src/components/modules/admin/markdown-editor.tsx` |
+| Markdown 预览 | `src/components/modules/admin/markdown-preview.tsx` |
+| 工具栏 | `src/components/modules/admin/editor-toolbar.tsx` |
+| 元数据面板 | `src/components/modules/admin/metadata-panel.tsx` |
+| 封面上传 | `src/components/modules/admin/cover-upload.tsx` |
 | API | `GET/POST /api/admin/posts`, `PATCH/DELETE /api/admin/posts/[id]`, `GET /api/admin/posts/export` |
 | 数据层 | `src/lib/domain/posts.ts`, `src/lib/domain/categories.ts`, `src/lib/domain/tags.ts`, `src/lib/core/http-client.ts` |
 
@@ -129,9 +128,8 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/admin/taxonomy/page.tsx` |
-| 管理组件 | `src/app/admin/taxonomy/_components/taxonomy-management.tsx` |
-| 卡片组件 | `src/app/admin/taxonomy/_components/taxonomy-card.tsx` |
-| CRUD Hook | `src/app/admin/_hooks/use-crud-list.ts` |
+| 管理组件 | `src/components/modules/admin/taxonomy-management.tsx` |
+| 卡片组件 | `src/components/modules/admin/taxonomy-card.tsx` |
 | API | `GET/POST/PUT/DELETE /api/admin/categories`, `GET/POST/PUT/DELETE /api/admin/tags` |
 | 数据层 | `src/lib/core/http-client.ts` |
 
@@ -139,7 +137,7 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/admin/uploads/page.tsx` |
-| 管理组件 | `src/app/admin/uploads/_components/upload-management.tsx` |
+| 管理组件 | `src/components/modules/admin/upload-management.tsx` |
 | API | `GET /api/admin/uploads`, `PATCH/DELETE /api/admin/uploads/[id]`, `POST /api/admin/upload`, `GET /api/admin/uploads/sync` |
 | 数据层 | `src/lib/domain/uploads.ts`, `src/lib/core/http-client.ts` |
 
@@ -147,7 +145,7 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/admin/users/page.tsx` |
-| 列表组件 | `src/app/admin/_components/user-list-client.tsx` |
+| 列表组件 | `src/components/modules/admin/user-list-client.tsx` |
 | API | `GET/POST /api/admin/users`, `GET/PUT/DELETE /api/admin/users/[id]` |
 | 数据层 | `src/lib/core/auth.ts`, `src/lib/core/http-client.ts` |
 
@@ -155,9 +153,9 @@
 | 类型 | 文件 |
 |------|------|
 | 概览页 | `src/app/admin/analytics/page.tsx` |
-| 仪表盘 | `src/app/admin/analytics/_components/analytics-dashboard.tsx` |
+| 仪表盘 | `src/components/modules/admin/analytics-dashboard.tsx` |
 | 站点管理页 | `src/app/admin/analytics/sites/page.tsx` |
-| 站点管理 | `src/app/admin/analytics/sites/_components/site-management.tsx` |
+| 站点管理 | `src/components/modules/admin/site-management.tsx` |
 | API | `GET /api/admin/analytics/overview\|visits`, `DELETE /api/admin/analytics/data`, `GET/POST/PUT/DELETE /api/admin/analytics/sites` |
 | 数据层 | `src/lib/domain/analytics.ts`, `src/lib/domain/track-sites.ts`, `src/lib/core/http-client.ts` |
 
@@ -165,7 +163,7 @@
 | 类型 | 文件 |
 |------|------|
 | 页面 | `src/app/admin/settings/page.tsx` |
-| 提交按钮 | `src/app/admin/settings/_components/settings-submit-button.tsx` |
+| 提交按钮 | `src/components/modules/admin/settings-submit-button.tsx` |
 | 数据层 | `src/lib/core/site.ts`, `src/lib/domain/seo-submit.ts` |
 
 ### Showcase `/admin/showcase`
@@ -287,12 +285,28 @@
 | SectionHeading | `src/components/site/section-heading.tsx` |
 | SiteHeader | `src/components/site/site-header.tsx` |
 
-### `components/modules/` — 业务模块组件（16 个）
+### `components/modules/` — 业务模块组件（32 个）
 | 组件 | 文件 |
 |------|------|
+| AdminLoginCard | `src/components/modules/admin/admin-login-card.tsx` |
+| AdminSidebar | `src/components/modules/admin/admin-sidebar.tsx` |
+| AnalyticsDashboard | `src/components/modules/admin/analytics-dashboard.tsx` |
+| CoverUpload | `src/components/modules/admin/cover-upload.tsx` |
+| EditorToolbar | `src/components/modules/admin/editor-toolbar.tsx` |
+| MarkdownEditor | `src/components/modules/admin/markdown-editor.tsx` |
+| MarkdownPreview | `src/components/modules/admin/markdown-preview.tsx` |
+| MetadataPanel | `src/components/modules/admin/metadata-panel.tsx` |
 | AdminPageHeader | `src/components/modules/admin/page-header.tsx` |
+| PostEditor | `src/components/modules/admin/post-editor.tsx` |
+| PostManagementClient | `src/components/modules/admin/post-management-client.tsx` |
+| SettingsSubmitButton | `src/components/modules/admin/settings-submit-button.tsx` |
+| SiteManagement | `src/components/modules/admin/site-management.tsx` |
+| TaxonomyCard | `src/components/modules/admin/taxonomy-card.tsx` |
+| TaxonomyManagement | `src/components/modules/admin/taxonomy-management.tsx` |
+| UploadManagement | `src/components/modules/admin/upload-management.tsx` |
+| UserListClient | `src/components/modules/admin/user-list-client.tsx` |
+| ArticleFooterActions | `src/components/modules/blog/article-footer-actions.tsx` |
 | CommitChart | `src/components/modules/home/commit-chart.tsx` |
-| EmptyState | `src/components/modules/blog/empty-state.tsx` |
 | FilterDialog | `src/components/modules/blog/filter-dialog.tsx` |
 | FilterSidebar | `src/components/modules/blog/filter-sidebar.tsx` |
 | Header | `src/components/modules/blog/header.tsx` |
@@ -311,7 +325,7 @@
 
 ## 6. 数据层
 
-### `lib/core/` — 基础设施（9 个）
+### `lib/core/` — 基础设施（10 个）
 | 文件 | 职责 |
 |------|------|
 | `src/lib/core/db.ts` | MySQL 连接池 |
@@ -319,12 +333,13 @@
 | `src/lib/core/site.ts` | 站点元数据、路由、导航常量 |
 | `src/lib/core/api-response.ts` | 统一响应 `{ code, data, message }` |
 | `src/lib/core/http-client.ts` | 前端 fetch 封装 |
+| `src/lib/core/toast-store.ts` | Toast 状态订阅与消息分发 |
 | `src/lib/core/with-admin.ts` | admin 鉴权 wrapper |
 | `src/lib/core/with-user.ts` | user 鉴权 wrapper |
 | `src/lib/core/utils.ts` | cn(), isNavItemActive(), toAbsoluteUrl() |
 | `src/lib/core/legacy-redirects.ts` | 旧站 301 映射 |
 
-### `lib/domain/` — 业务数据层（13 个）
+### `lib/domain/` — 业务数据层（14 个）
 | 文件 | 职责 |
 |------|------|
 | `src/lib/domain/posts.ts` | 文章 CRUD |
@@ -335,6 +350,7 @@
 | `src/lib/domain/analytics.ts` | 统计仪表盘数据 |
 | `src/lib/domain/track-sites.ts` | 统计站点管理 |
 | `src/lib/domain/geo.ts` | IP → 地理信息 |
+| `src/lib/domain/github.ts` | GitHub 提交记录查询 |
 | `src/lib/domain/ua.ts` | User-Agent 解析 |
 | `src/lib/domain/seo-submit.ts` | SEO 推送 |
 | `src/lib/domain/nav-config.ts` | 导航类型 + 默认数据 |
@@ -353,7 +369,7 @@
 | 脚本 | `scripts/docs-check.mjs`, `scripts/sync-uploads.mjs` |
 | 埋点 | `public/script.js` |
 | 数据库 | `sql/init.sql`, `sql/seed-admin.mjs` |
-| 规范 | `specs/` (9 篇) |
+| 规范 | `specs/README.md` 索引 + `specs/00-项目总则.md` 至 `specs/08-组件优化清单.md`（9 篇规范） |
 | 文档 | `src/docs/` (功能文档 + 接口文档 + registry) |
 
 ---

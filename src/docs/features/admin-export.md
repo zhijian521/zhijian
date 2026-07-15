@@ -70,5 +70,5 @@ GET /api/admin/posts/export?id=3  → 导出指定文章
 |------|------|
 | `src/app/api/admin/posts/export/route.ts` | 导出 API（鉴权 + archiver 流式打包） |
 | `src/lib/domain/posts.ts` | `extractImagePaths()` 从 Markdown 提取图片路径 |
-| `src/app/admin/_components/post-management-client.tsx` | 工具栏按钮 + 行内导出按钮 |
+| `src/components/modules/admin/post-management-client.tsx` | 工具栏按钮 + 行内导出按钮 |
 | `package.json` | `archiver` 依赖（ZIP 打包） |

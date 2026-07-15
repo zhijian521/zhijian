@@ -1,13 +1,13 @@
 # AGENTS.md
 
 > 本文档为 AI 助手（Claude、Cursor、Copilot 等）提供项目上下文。
-> 详细编码规范见 `specs/` 目录（9 篇：README 索引 + 00-07 共 8 篇规范），本文档定位为快速速查卡。
+> 详细编码规范见 `specs/` 目录（README 索引 + 00-08 共 9 篇规范），本文档定位为快速速查卡。
 
 ---
 
 ## 项目概述
 
-**知简** — 个人博客 + 导航页 + 站点监控（观澜），Next.js 15 单体全栈应用。
+**知简** — 个人博客 + 导航页 + 后台管理 + 站点监控（观澜），Next.js 15 单体全栈应用。
 
 - **技术栈**: Next.js 15 + React 19 + TypeScript + CSS Modules + MySQL
 - **视觉风格**: 全站「文人书斋」风格（朱砂红 + 宣纸米白 + 衬线标题 + 零圆角）
@@ -33,16 +33,16 @@
 ```
 src/
 ├── app/          # Next.js App Router（页面 + API）
-│   ├── admin/    # 后台管理（layout.tsx 鉴权 + AdminShell）
+│   ├── admin/    # 后台管理（layout.tsx 鉴权 + 壳层分发）
 │   ├── blog/     # 公开博客
 │   ├── nav/      # 导航站
 │   └── api/      # 33 条 API route（posts/admin/nav/auth/ai/collect/favicon）
 ├── components/
 │   ├── ui/       # 原子组件：button/input/dialog/tag/table...
 │   ├── site/     # 前台展示：article/card/chrome/markdown...
-│   └── modules/  # 业务组件：page-header + home（首页 8 模块）
+│   └── modules/  # 业务组件：admin / home / blog
 ├── lib/
-│   ├── core/     # 基础设施（9 文件）：db/auth/api/http/site/utils/with-*/legacy
+│   ├── core/     # 基础设施（10 文件）：db/auth/api/http/site/toast/utils/with-*/legacy
 │   └── domain/   # 业务数据层（14 文件）：posts/categories/tags/nav-*/uploads/analytics/github/...
 ├── hooks/        # use-auth.ts
 ├── showcase/     # 组件展示 registry
@@ -68,13 +68,13 @@ export async function GET() { ... }  // 公开
 ```
 
 ### 文件组织
-- 组件：`component-name/component-name.tsx` + `.module.css`（UI 现有平铺保留）
+- 组件：`components/<layer>/component-name.tsx` + `component-name.module.css`，按层平铺
 - 数据层：`lib/core/`（基础设施）、`lib/domain/`（业务），`app → domain → core` 单向依赖
 - 鉴权：`withAdmin`（403）/ `withUser`（401），禁止手写重复模板
 
 ### 样式
 - 三层：`tokens.css`（间距/字号）→ `theme.css`（颜色/字体）→ 组件 CSS Module
-- 所有值用 `var(--*)`，禁止硬编码 `#xxx`、`12px`
+- 颜色和可映射的间距/字号使用现有 token；像素精度、断点、边框宽度等例外按 `specs/03-样式规范.md` 判断
 
 > 完整规范见 `specs/02-代码风格.md`、`specs/03-样式规范.md`、`specs/04-API规范.md`、`specs/05-数据层规范.md`、`specs/06-组件规范.md`。
 
@@ -239,14 +239,14 @@ refactor: 中文描述
 | Markdown 渲染 | `src/components/site/markdown-article.tsx` |
 | 导航栏组件 | `src/components/site/site-header.tsx` |
 | 标题组件 | `src/components/site/section-heading.tsx` |
-| 后台壳 | `src/app/admin/layout.tsx` + `_components/admin-shell.tsx` |
+| 后台壳 | `src/app/admin/layout.tsx` + `src/components/modules/admin/admin-shell.module.css` |
 | 公开壳 | `src/components/site/public-chrome.tsx` |
 | 埋点脚本 | `public/script.js` |
 | 数据库 Schema | `sql/init.sql` |
 | 功能文档 | `src/docs/features/`（11 篇，注册于 `_registry.ts`） |
 | 接口文档 | `src/docs/api/_registry.ts`（33 条） |
 | 审查清单 | `src/docs/features/review-checklist.md` |
-| 编码规范 | `specs/`（00-07 共 8 篇） |
+| 编码规范 | `specs/`（00-08 共 9 篇） |
 
 ---
 
@@ -279,12 +279,12 @@ refactor: 中文描述
 
 ### 添加后台页面
 1. `src/app/admin/<name>/page.tsx`
-2. 交互放 `*-client.tsx`，数据层放 `lib/domain/`
+2. 交互组件放 `src/components/modules/admin/`，数据层放 `src/lib/domain/`
 3. 在 `lib/core/site.ts` 的 `ADMIN_NAV_GROUPS` 添加导航
 4. API 用 `withAdmin` wrapper
 
 ### 添加 UI 组件
-1. `src/components/ui/<name>/<name>.tsx` + `.module.css`（现有平铺保留）
+1. `src/components/ui/<name>.tsx` + `<name>.module.css`
 2. 样式用 `var(--*)`，参考 `tag.tsx` / `ghost-button.tsx`
 
 ### 添加图标
@@ -292,9 +292,9 @@ refactor: 中文描述
 2. 文件末尾添加 `export const XxxIcon = makeIcon('key')`
 
 ### 添加公开页面
-1. `src/app/<name>/page.tsx` + `.module.css`
+1. `src/app/<name>/page.tsx` 负责路由编排，业务组件放 `src/components/modules/<domain>/`
 2. 自动被 `PublicChrome` 包裹（`/admin` 路径除外）
 
 ---
 
-*最后更新: 2026-07-04（精简瘦身：目录树/约定/样式 → 指向 specs；补全 nav_chat 表；修正 lib 路径；统一图标系统描述）*
+*最后更新: 2026-07-15（同步 components/modules 目录、后台壳层、规范数量与新增页面约定）*
