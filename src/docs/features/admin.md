@@ -58,6 +58,8 @@
 
 - 当前路由匹配分组下任一子项时自动展开该分组
 - 用户手动点击折叠/展开后以手动状态为准
+- 折叠组通过原生 `hidden` 同时移出视觉和键盘焦点顺序，按钮使用 `aria-expanded` + `aria-controls`
+- 当前页面链接使用 `aria-current="page"`
 - 退出登录：POST `/api/auth/logout` 后跳转登录页
 
 ---

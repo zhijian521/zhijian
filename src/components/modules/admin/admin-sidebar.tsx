@@ -3,13 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronRightIcon, LogOutIcon, PlusIcon, UserCircle2Icon } from '@/components/ui/icons';
 import { useState } from 'react';
 
+/*== 组件导入 ==*/
+import { ChevronRightIcon, LogOutIcon, PlusIcon, UserCircle2Icon } from '@/components/ui/icons';
+import { toast } from '@/components/ui/toast';
+
+/*== 数据与配置 ==*/
 import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/core/site';
 import { api } from '@/lib/core/http-client';
-import { toast } from '@/components/ui/toast';
 import { cn, isNavItemActive } from '@/lib/core/utils';
+
+/*== 样式导入 ==*/
 import styles from './admin-sidebar.module.css';
 
 /*== 后台侧边栏：数据驱动二级折叠菜单，自动展开当前路由所在分组。 ==*/
@@ -48,6 +53,22 @@ export default function AdminSidebar() {
         });
     }
 
+    async function handleCreatePost() {
+        setIsCreating(true);
+        try {
+            const res = await api.post<{ id: number }>('/admin/posts', {});
+            if (res.code === 0 && res.data) {
+                window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
+                return;
+            }
+            toast.error(res.message || '新建文章失败');
+        } catch {
+            toast.error('新建文章失败');
+        } finally {
+            setIsCreating(false);
+        }
+    }
+
     return (
         <aside className={styles.sidebar}>
             {/* 品牌区 */}
@@ -67,27 +88,8 @@ export default function AdminSidebar() {
             </div>
 
             {/* 撰写文章快捷入口 */}
-            <button
-                className={styles.createButton}
-                disabled={isCreating}
-                onClick={async () => {
-                    setIsCreating(true);
-                    try {
-                        const res = await api.post<{ id: number }>('/admin/posts', {});
-                        if (res.code === 0 && res.data) {
-                            window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
-                        } else {
-                            toast.error(res.message || '新建文章失败');
-                        }
-                    } catch {
-                        toast.error('新建文章失败');
-                    } finally {
-                        setIsCreating(false);
-                    }
-                }}
-                type="button"
-            >
-                <PlusIcon className={styles.navIcon} />
+            <button className={styles.createButton} disabled={isCreating} onClick={handleCreatePost} type="button">
+                <PlusIcon aria-hidden="true" className={styles.navIcon} />
                 <span>{isCreating ? '创建中...' : '撰写文章'}</span>
             </button>
 
@@ -101,11 +103,12 @@ export default function AdminSidebar() {
                             const Icon = item.icon;
                             return (
                                 <Link
+                                    aria-current={isActive ? 'page' : undefined}
                                     className={cn(styles.navItem, isActive && styles.navActive)}
                                     href={item.href}
                                     key={item.href}
                                 >
-                                    <Icon className={styles.navIcon} />
+                                    <Icon aria-hidden="true" className={styles.navIcon} />
                                     <span>{item.label}</span>
                                 </Link>
                             );
@@ -115,34 +118,37 @@ export default function AdminSidebar() {
                     // 可折叠分组
                     const GroupIcon = group.icon;
                     const open = isGroupOpen(group.key, group.items);
+                    const subNavId = `admin-nav-group-${group.key}`;
 
                     return (
                         <div className={styles.navGroup} key={group.key}>
                             <button
+                                aria-controls={subNavId}
+                                aria-expanded={open}
                                 className={styles.groupHeader}
                                 onClick={() => toggleGroup(group.key)}
                                 type="button"
-                                aria-expanded={open}
                             >
-                                {GroupIcon && <GroupIcon className={styles.groupIcon} />}
+                                {GroupIcon && <GroupIcon aria-hidden="true" className={styles.groupIcon} />}
                                 <span>{group.label}</span>
-                                <ChevronRightIcon className={cn(styles.groupArrow, open && styles.groupArrowOpen)} />
+                                <ChevronRightIcon
+                                    aria-hidden="true"
+                                    className={cn(styles.groupArrow, open && styles.groupArrowOpen)}
+                                />
                             </button>
 
-                            <div
-                                className={styles.subNav}
-                                style={{ maxHeight: open ? `${group.items.length * 50}px` : '0' }}
-                            >
+                            <div className={styles.subNav} hidden={!open} id={subNavId}>
                                 {group.items.map((item) => {
                                     const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
                                     const Icon = item.icon;
                                     return (
                                         <Link
+                                            aria-current={isActive ? 'page' : undefined}
                                             className={cn(styles.subNavItem, isActive && styles.subNavActive)}
                                             href={item.href}
                                             key={item.href}
                                         >
-                                            <Icon className={styles.navIcon} />
+                                            <Icon aria-hidden="true" className={styles.navIcon} />
                                             <span>{item.label}</span>
                                         </Link>
                                     );
@@ -156,7 +162,7 @@ export default function AdminSidebar() {
             {/* 底部区 */}
             <div className={styles.footer}>
                 <button className={cn(styles.footerButton, styles.navItem)} type="button">
-                    <UserCircle2Icon className={styles.navIcon} />
+                    <UserCircle2Icon aria-hidden="true" className={styles.navIcon} />
                     <span>个人资料</span>
                 </button>
                 <button
@@ -165,7 +171,7 @@ export default function AdminSidebar() {
                     onClick={handleLogout}
                     type="button"
                 >
-                    <LogOutIcon className={styles.navIcon} />
+                    <LogOutIcon aria-hidden="true" className={styles.navIcon} />
                     <span>{isLoggingOut ? '退出中...' : '退出登录'}</span>
                 </button>
             </div>

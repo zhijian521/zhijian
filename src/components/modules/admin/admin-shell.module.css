@@ -7,5 +7,5 @@
     min-height: 100vh;
     margin-left: 16rem;
     background: var(--background);
-    padding: 3rem;
+    padding: var(--space-7);
 }
