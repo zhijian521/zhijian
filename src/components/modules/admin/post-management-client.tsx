@@ -8,7 +8,7 @@
 ============================================================================*/
 
 import { DownloadIcon, PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -21,54 +21,58 @@ import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/components/modules/admin/page-header';
 import { api } from '@/lib/core/http-client';
+import { getPageAfterDelete } from '@/lib/core/pagination';
 import { APP_ROUTES } from '@/lib/core/site';
+import type { AdminPostListItem, AdminPostListResult, AdminPostStatusFilter } from '@/lib/domain/posts';
 
 import styles from './post-management-client.module.css';
 import shared from '@/components/modules/admin/admin-shared.module.css';
 
-/*== 文章列表项：API 返回的列表数据，不含 content（太重），含分类/标签名称。 ==*/
-interface PostListItem {
-    id: number;
-    title: string;
-    slug: string;
-    status: 'draft' | 'published';
-    categoryName: string | null;
-    tagNames: { id: number; name: string; slug: string }[] | null;
-    publishedAt: string | null;
-    updatedAt: string | null;
+interface PostManagementClientProps {
+    initialData: AdminPostListResult;
+    initialFilters: {
+        keyword: string;
+        page: number;
+        pageSize: number;
+        status: AdminPostStatusFilter;
+    };
 }
 
 /*== 后台文章管理：真实 API + 搜索 + 状态筛选 + 删除操作。 ==*/
-export default function PostManagementClient() {
-    const [posts, setPosts] = useState<PostListItem[]>([]);
-    const [total, setTotal] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [keyword, setKeyword] = useState('');
-    const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
+export default function PostManagementClient({ initialData, initialFilters }: PostManagementClientProps) {
+    const [posts, setPosts] = useState(initialData.data);
+    const [total, setTotal] = useState(initialData.total);
+    const [loading, setLoading] = useState(false);
+    const [keyword, setKeyword] = useState(initialFilters.keyword);
+    const [status, setStatus] = useState<AdminPostStatusFilter>(initialFilters.status);
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
     const [deleting, setDeleting] = useState<number | null>(null);
     const [creating, setCreating] = useState(false);
     const [exporting, setExporting] = useState(false);
-    const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [page, setPage] = useState(initialFilters.page);
+    const [pageSize, setPageSize] = useState(initialFilters.pageSize);
+    const skipInitialFetchRef = useRef(true);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await api.get<PostListItem[]>('/admin/posts');
+            const res = await api.get<AdminPostListResult>('/admin/posts', { keyword, page, pageSize, status });
             if (res.code === 0 && res.data) {
-                setPosts(res.data);
-                // API 不分页，total 直接取数组长度
-                setTotal(res.data.length);
+                setPosts(res.data.data);
+                setTotal(res.data.total);
             }
         } catch {
             toast.error('获取文章列表失败');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [keyword, page, pageSize, status]);
 
     useEffect(() => {
+        if (skipInitialFetchRef.current) {
+            skipInitialFetchRef.current = false;
+            return;
+        }
         fetchData();
     }, [fetchData]);
 
@@ -81,15 +85,6 @@ export default function PostManagementClient() {
         return () => window.removeEventListener('focus', handleFocus);
     }, [fetchData]);
 
-    const filteredPosts = useMemo(() => {
-        return posts.filter((post) => {
-            const q = keyword.trim().toLowerCase();
-            const matchesKeyword = !q || [post.title, post.slug].some((f) => f?.toLowerCase().includes(q));
-            const matchesStatus = status === 'all' || post.status === status;
-            return matchesKeyword && matchesStatus;
-        });
-    }, [posts, keyword, status]);
-
     async function handleDeleteConfirm() {
         if (!deleteTarget) return;
 
@@ -97,10 +92,12 @@ export default function PostManagementClient() {
         try {
             const res = await api.delete(`/admin/posts/${deleteTarget.id}`);
             if (res.code === 0) {
-                setPosts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+                const nextPage = getPageAfterDelete(page, posts.length);
+                setPosts((previousPosts) => previousPosts.filter((post) => post.id !== deleteTarget.id));
                 setTotal((prev) => prev - 1);
                 setDeleteTarget(null);
                 toast.success('删除成功');
+                if (nextPage !== page) setPage(nextPage);
             } else {
                 toast.error(res.message || '删除失败。');
             }
@@ -128,8 +125,8 @@ export default function PostManagementClient() {
             a.click();
             URL.revokeObjectURL(blobUrl);
             toast.success('导出成功');
-        } catch (e: any) {
-            toast.error(e.message || '导出失败');
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : '导出失败');
         } finally {
             setExporting(false);
         }
@@ -140,10 +137,9 @@ export default function PostManagementClient() {
         return value.split(' ')[0] || value;
     }
 
-    const totalPages = Math.max(1, Math.ceil(filteredPosts.length / pageSize));
-    const pagedPosts = filteredPosts.slice((page - 1) * pageSize, page * pageSize);
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-    const columns: DataColumn<PostListItem>[] = [
+    const columns: DataColumn<AdminPostListItem>[] = [
         {
             header: '文章',
             render: (post) => (
@@ -171,7 +167,7 @@ export default function PostManagementClient() {
             hideBelow: 'md',
             render: (post) => (
                 <div className={styles.tagList}>
-                    {post.tagNames?.map((t) => (
+                    {post.tagNames.map((t) => (
                         <Tag key={t.id} size="mini">
                             {t.name}
                         </Tag>
@@ -241,7 +237,7 @@ export default function PostManagementClient() {
                     />
                     <PillSelect
                         onChange={(v) => {
-                            setStatus(v as 'all' | 'draft' | 'published');
+                            setStatus(v as AdminPostStatusFilter);
                             setPage(1);
                         }}
                         options={[
@@ -292,7 +288,7 @@ export default function PostManagementClient() {
                 columns={columns}
                 emptyText={loading ? '加载中...' : '暂无文章'}
                 rowKey={(post) => post.id}
-                rows={pagedPosts}
+                rows={posts}
             />
 
             <Pagination

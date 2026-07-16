@@ -56,17 +56,12 @@ export default function TaxonomyManagement() {
 
     async function handleDeleteConfirm() {
         if (!deleteTarget) return;
-        try {
-            if (deleteTarget.kind === 'cat') {
-                catList.setDeleteTarget({ id: deleteTarget.id, name: deleteTarget.name });
-                await catList.handleDeleteConfirm();
-            } else {
-                tagList.setDeleteTarget({ id: deleteTarget.id, name: deleteTarget.name });
-                await tagList.handleDeleteConfirm();
-            }
-        } finally {
-            setDeleteTarget(null);
-        }
+
+        const deleted =
+            deleteTarget.kind === 'cat'
+                ? await catList.deleteById(deleteTarget.id)
+                : await tagList.deleteById(deleteTarget.id);
+        if (deleted) setDeleteTarget(null);
     }
 
     /*-- 分类弹窗表单状态 --*/

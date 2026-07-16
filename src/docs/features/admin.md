@@ -118,11 +118,11 @@ Client Component，直角风格登录表单：
 
 **文件**：`src/app/admin/posts/page.tsx` → `src/components/modules/admin/post-management-client.tsx`
 
-服务端仅渲染 `<PostManagementClient />`，所有数据和交互在客户端完成。
+服务端根据 URL 查询参数读取当前页文章并传入 `<PostManagementClient />`，客户端负责后续筛选、分页、创建、删除和导出交互。
 
 ### 功能
 
-- 文章列表：DataTable，支持搜索 + 分页
+- 文章列表：服务端首屏数据 + 服务端分页，支持搜索与状态筛选
 - 新建草稿：POST `/api/admin/posts`，跳转编辑器
 - 编辑：跳转 `/admin/posts/:id`（独立全屏编辑器）
 - 删除：DELETE `/api/admin/posts/:id`，确认弹窗
@@ -131,7 +131,7 @@ Client Component，直角风格登录表单：
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/api/admin/posts` | 获取全部文章（含草稿） |
+| GET | `/api/admin/posts?page=1&pageSize=10&keyword=&status=all` | 按筛选条件分页获取文章（含草稿），仅返回列表字段 |
 | POST | `/api/admin/posts` | 创建草稿（自动生成 slug: `draft-{timestamp}`） |
 | PATCH | `/api/admin/posts/:id` | 更新文章字段 |
 | DELETE | `/api/admin/posts/:id` | 删除文章 |
@@ -153,6 +153,7 @@ Client Component，直角风格登录表单：
 | 组件 | 说明 |
 |------|------|
 | `post-editor.tsx` | 编辑器主组件：视图切换 + 数据管理 + 自动保存 |
+| `post-editor-content.tsx` | 复用元数据面板和正文编辑区，避免不同视图模式重复渲染 |
 | `editor-toolbar.tsx` | 顶部工具栏：编辑/预览/分栏视图切换 + 保存 + 返回 |
 | `markdown-editor.tsx` | Markdown 编辑区（textarea） |
 | `markdown-preview.tsx` | Markdown 预览区（复用 ArticleDetail 完整详情结构） |
@@ -306,6 +307,7 @@ interface AdminPageHeaderProps {
 | `src/components/modules/admin/post-management-client.tsx` | 文章列表交互 |
 | `src/app/admin/posts/[id]/page.tsx` | 文章编辑器页 |
 | `src/components/modules/admin/post-editor.tsx` | 编辑器主组件 |
+| `src/components/modules/admin/post-editor-content.tsx` | 编辑器复用展示区 |
 | `src/components/modules/admin/editor-toolbar.tsx` | 工具栏 |
 | `src/components/modules/admin/markdown-editor.tsx` | Markdown 编辑区 |
 | `src/components/modules/admin/markdown-preview.tsx` | Markdown 预览区 |
@@ -320,3 +322,4 @@ interface AdminPageHeaderProps {
 | `src/components/modules/admin/user-list-client.tsx` | 用户列表交互 |
 | `src/app/admin/settings/page.tsx` | 系统设置页 |
 | `src/components/modules/admin/settings-submit-button.tsx` | 搜索引擎提交操作 |
+| `src/components/modules/admin/settings-submit-button.module.css` | 搜索引擎提交结果样式 |

@@ -49,6 +49,31 @@ export interface PublishedPostFilter {
     limit?: number;
 }
 
+export type AdminPostStatusFilter = 'all' | PostStatus;
+
+export interface AdminPostListQuery {
+    keyword?: string;
+    page?: number;
+    pageSize?: number;
+    status?: AdminPostStatusFilter;
+}
+
+export interface AdminPostListItem {
+    id: number;
+    slug: string;
+    title: string;
+    status: PostStatus;
+    categoryName: string | null;
+    tagNames: { id: number; name: string; slug: string }[];
+    publishedAt: string | null;
+    updatedAt: string | null;
+}
+
+export interface AdminPostListResult {
+    data: AdminPostListItem[];
+    total: number;
+}
+
 /*-- 内部查询选项，统一数据库读取时的条件组合逻辑 --*/
 interface ReadPostsOptions {
     includeDrafts: boolean;
@@ -77,6 +102,17 @@ interface PostRow extends RowDataPacket {
     updated_at: string | null;
 }
 
+interface AdminPostListRow extends RowDataPacket {
+    id: number;
+    slug: string;
+    title: string;
+    category_name: string | null;
+    tags: number[] | string | null;
+    status: PostStatus;
+    published_at: string | null;
+    updated_at: string | null;
+}
+
 const EMPTY_SUMMARY_FALLBACK = '这篇文章还没有摘要，等你补上一段引导文字。';
 const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
 
@@ -99,6 +135,80 @@ export async function getAllPosts(): Promise<Post[]> {
     noStore();
     const posts = await readPostsFromDatabase({ includeDrafts: true });
     return enrichPostsWithTagNames(posts);
+}
+
+/*-- 获取后台文章列表。仅返回列表所需字段，并在数据库层完成筛选和分页。 --*/
+export async function listAdminPosts(query: AdminPostListQuery = {}): Promise<AdminPostListResult> {
+    noStore();
+    const db = getDb();
+    if (!db) return { data: [], total: 0 };
+
+    const page = Math.max(1, Math.floor(query.page || 1));
+    const pageSize = Math.min(100, Math.max(1, Math.floor(query.pageSize || 10)));
+    const conditions: string[] = [];
+    const values: Array<number | string> = [];
+    const keyword = query.keyword?.trim();
+
+    if (keyword) {
+        conditions.push('(p.title LIKE ? OR p.slug LIKE ?)');
+        const likeKeyword = `%${keyword}%`;
+        values.push(likeKeyword, likeKeyword);
+    }
+
+    if (query.status === 'draft' || query.status === 'published') {
+        conditions.push('p.status = ?');
+        values.push(query.status);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const offset = (page - 1) * pageSize;
+
+    try {
+        const [countRows] = await db.query<RowDataPacket[]>(
+            `SELECT COUNT(*) AS total FROM zhijian_blog_posts p ${whereClause}`,
+            values
+        );
+        const [rows] = await db.execute<AdminPostListRow[]>(
+            `
+                SELECT
+                    p.id,
+                    p.slug,
+                    p.title,
+                    p.tags,
+                    p.status,
+                    DATE_FORMAT(p.published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
+                    DATE_FORMAT(p.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at,
+                    c.name AS category_name
+                FROM zhijian_blog_posts p
+                LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
+                ${whereClause}
+                ORDER BY p.updated_at IS NULL, p.updated_at DESC, p.published_at IS NULL, p.published_at DESC, p.id DESC
+                LIMIT ? OFFSET ?
+            `,
+            [...values, pageSize, offset]
+        );
+        const tagMap = await getTagNameMap(rows.flatMap((row) => parsePostTags(row.tags)));
+
+        return {
+            data: rows.map((row) => {
+                const tags = parsePostTags(row.tags);
+                return {
+                    id: row.id,
+                    slug: row.slug,
+                    title: row.title,
+                    status: row.status,
+                    categoryName: row.category_name,
+                    tagNames: tags.map((id) => tagMap.get(id)).filter(Boolean) as AdminPostListItem['tagNames'],
+                    publishedAt: row.published_at,
+                    updatedAt: row.updated_at,
+                };
+            }),
+            total: Number(countRows[0]?.total || 0),
+        };
+    } catch (error) {
+        console.error('Failed to list admin posts.', { query, error });
+        return { data: [], total: 0 };
+    }
 }
 
 /*-- 按 Slug 获取单篇已发布文章，用于前台详情页。未找到时返回 null --*/
@@ -315,16 +425,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         );
 
         return rows.map((row) => {
-            let tags: number[] = [];
-            if (Array.isArray(row.tags)) {
-                tags = row.tags;
-            } else if (row.tags) {
-                try {
-                    tags = JSON.parse(row.tags as string);
-                } catch {
-                    tags = [];
-                }
-            }
+            const tags = parsePostTags(row.tags);
 
             return {
                 id: row.id,
@@ -353,9 +454,25 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     const allTagIds = posts.flatMap((post) => post.tags).filter(Boolean);
     if (allTagIds.length === 0) return posts;
 
-    const uniqueIds = [...new Set(allTagIds)];
+    const tagMap = await getTagNameMap(allTagIds);
+    if (tagMap.size === 0) return posts;
+
+    return posts.map((post) => ({
+        ...post,
+        tagNames: post.tags.map((id) => tagMap.get(id)).filter(Boolean) as {
+            id: number;
+            name: string;
+            slug: string;
+        }[],
+    }));
+}
+
+async function getTagNameMap(tagIds: number[]): Promise<Map<number, { id: number; name: string; slug: string }>> {
+    const uniqueIds = [...new Set(tagIds)];
+    if (uniqueIds.length === 0) return new Map();
+
     const db = getDb();
-    if (!db) return posts;
+    if (!db) return new Map();
 
     try {
         const [tagRows] = await db.execute<RowDataPacket[]>(
@@ -368,17 +485,22 @@ async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
             tagMap.set(row.id, { id: row.id, name: row.name, slug: row.slug });
         }
 
-        return posts.map((post) => ({
-            ...post,
-            tagNames: post.tags.map((id) => tagMap.get(id)).filter(Boolean) as {
-                id: number;
-                name: string;
-                slug: string;
-            }[],
-        }));
+        return tagMap;
     } catch (error) {
         console.error('Failed to enrich posts with tag names.', { error });
-        return posts;
+        return new Map();
+    }
+}
+
+function parsePostTags(value: number[] | string | null): number[] {
+    if (Array.isArray(value)) return value;
+    if (!value) return [];
+
+    try {
+        const tags = JSON.parse(value) as unknown;
+        return Array.isArray(tags) && tags.every(Number.isInteger) ? tags : [];
+    } catch {
+        return [];
     }
 }
 

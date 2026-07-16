@@ -93,24 +93,27 @@ export default function AdminLoginCard() {
         setMessage(null);
 
         startTransition(async () => {
-            const res = await api.post<{ user: { role: string } }>('/auth/login', {
-                password: loginForm.password,
-                username: loginForm.username.trim(),
-            });
+            try {
+                const res = await api.post<{ user: { role: string } }>('/auth/login', {
+                    password: loginForm.password,
+                    username: loginForm.username.trim(),
+                });
 
-            if (res.code !== 0) {
-                setMessage(res.message || '登录失败，请检查账号和密码。');
-                return;
+                if (res.code !== 0) {
+                    setMessage(res.message || '登录失败，请检查账号和密码。');
+                    return;
+                }
+
+                if (res.data?.user?.role !== 'admin') {
+                    setMessage('该账号无后台管理权限。');
+                    return;
+                }
+
+                persistRememberedLogin();
+                window.location.href = APP_ROUTES.admin;
+            } catch {
+                setMessage('登录请求失败，请检查网络连接后重试。');
             }
-
-            // 非管理员无法进入后台
-            if (res.data?.user?.role !== 'admin') {
-                setMessage('该账号无后台管理权限。');
-                return;
-            }
-
-            persistRememberedLogin();
-            window.location.href = APP_ROUTES.admin;
         });
     }
 

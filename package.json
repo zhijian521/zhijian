@@ -8,6 +8,7 @@
         "start": "next start",
         "lint": "next lint",
         "typecheck": "tsc --noEmit",
+        "test": "vitest run",
         "docs:check": "node scripts/docs-check.mjs",
         "check": "npm run lint && npm run typecheck && npm run docs:check",
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\" \"*.{json,md}\"",
@@ -37,6 +38,7 @@
         "eslint": "^8.57.1",
         "eslint-config-next": "^15.5.20",
         "prettier": "^3.9.4",
-        "typescript": "5.8.3"
+        "typescript": "5.8.3",
+        "vitest": "^3.2.7"
     }
 }

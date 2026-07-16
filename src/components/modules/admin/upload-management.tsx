@@ -7,7 +7,7 @@
   以及服务器图片同步到本地的操作说明。
 ============================================================================*/
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { CheckIcon, CopyIcon, DownloadIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
@@ -17,6 +17,7 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/core/http-client';
+import { getPageAfterDelete } from '@/lib/core/pagination';
 import { toast } from '@/components/ui/toast';
 import AdminPageHeader from '@/components/modules/admin/page-header';
 
@@ -64,17 +65,23 @@ export default function UploadManagement() {
     /* 同步弹窗 */
     const [syncOpen, setSyncOpen] = useState(false);
     const [syncCopied, setSyncCopied] = useState(false);
+    const uploadsRequestRef = useRef(0);
+    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const syncCopiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
     /* 加载图片列表 */
     const fetchUploads = useCallback(
         async (p: number) => {
+            const requestId = ++uploadsRequestRef.current;
             setLoading(true);
             try {
                 const res = await api.get<{ data: UploadItem[]; total: number }>(
                     `/admin/uploads?page=${p}&pageSize=${pageSize}`
                 );
+                if (requestId !== uploadsRequestRef.current) return;
+
                 if (res.code === 0 && res.data) {
                     setUploads(res.data.data);
                     setTotal(res.data.total);
@@ -82,9 +89,10 @@ export default function UploadManagement() {
                     toast.error(res.message || '获取图片列表失败');
                 }
             } catch {
+                if (requestId !== uploadsRequestRef.current) return;
                 toast.error('网络错误');
             } finally {
-                setLoading(false);
+                if (requestId === uploadsRequestRef.current) setLoading(false);
             }
         },
         [pageSize]
@@ -94,13 +102,21 @@ export default function UploadManagement() {
         fetchUploads(page);
     }, [page, fetchUploads]);
 
+    useEffect(() => {
+        return () => {
+            if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+            if (syncCopiedTimerRef.current) clearTimeout(syncCopiedTimerRef.current);
+        };
+    }, []);
+
     /* 复制 Markdown */
     const handleCopy = useCallback(async (upload: UploadItem) => {
         const markdown = `![](${upload.path})`;
         try {
             await navigator.clipboard.writeText(markdown);
             setCopiedId(upload.id);
-            setTimeout(() => setCopiedId(null), 1500);
+            if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+            copiedTimerRef.current = setTimeout(() => setCopiedId(null), 1500);
         } catch {
             toast.error('复制失败');
         }
@@ -115,7 +131,9 @@ export default function UploadManagement() {
             if (res.code === 0) {
                 toast.success('图片已删除');
                 setDeleteTarget(null);
-                fetchUploads(page);
+                const nextPage = getPageAfterDelete(page, uploads.length);
+                if (nextPage !== page) setPage(nextPage);
+                else fetchUploads(page);
             } else {
                 toast.error(res.message || '删除失败');
             }
@@ -124,7 +142,7 @@ export default function UploadManagement() {
         } finally {
             setDeleting(false);
         }
-    }, [deleteTarget, page, fetchUploads]);
+    }, [deleteTarget, fetchUploads, page, uploads.length]);
 
     /* 重命名图片 */
     const handleRename = useCallback(async () => {
@@ -147,6 +165,17 @@ export default function UploadManagement() {
             setRenaming(false);
         }
     }, [renameTarget, renameValue, page, fetchUploads]);
+
+    const handleSyncCommandCopy = useCallback(async () => {
+        try {
+            await navigator.clipboard.writeText('node scripts/sync-uploads.mjs');
+            setSyncCopied(true);
+            if (syncCopiedTimerRef.current) clearTimeout(syncCopiedTimerRef.current);
+            syncCopiedTimerRef.current = setTimeout(() => setSyncCopied(false), 1500);
+        } catch {
+            toast.error('复制失败');
+        }
+    }, []);
 
     return (
         <div className={styles.management}>
@@ -268,11 +297,7 @@ export default function UploadManagement() {
                         <button
                             aria-label="复制命令"
                             className={styles.syncCopyBtn}
-                            onClick={() => {
-                                navigator.clipboard.writeText('node scripts/sync-uploads.mjs');
-                                setSyncCopied(true);
-                                setTimeout(() => setSyncCopied(false), 1500);
-                            }}
+                            onClick={handleSyncCommandCopy}
                             type="button"
                         >
                             {syncCopied ? (

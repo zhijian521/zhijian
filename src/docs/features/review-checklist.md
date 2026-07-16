@@ -116,6 +116,7 @@
 | 编辑器页 | `src/app/admin/posts/[id]/page.tsx` |
 | 编辑器布局 | `src/app/admin/posts/[id]/layout.tsx` |
 | 编辑器组件 | `src/components/modules/admin/post-editor.tsx` |
+| 编辑器复用展示区 | `src/components/modules/admin/post-editor-content.tsx` |
 | Markdown 编辑 | `src/components/modules/admin/markdown-editor.tsx` |
 | Markdown 预览 | `src/components/modules/admin/markdown-preview.tsx` |
 | 工具栏 | `src/components/modules/admin/editor-toolbar.tsx` |
@@ -287,7 +288,7 @@
 | SectionHeading | `src/components/site/section-heading.tsx` |
 | SiteHeader | `src/components/site/site-header.tsx` |
 
-### `components/modules/` — 业务模块组件（34 个）
+### `components/modules/` — 业务模块组件（35 个）
 | 组件 | 文件 |
 |------|------|
 | AdminLoginCard | `src/components/modules/admin/admin-login-card.tsx` |
@@ -302,6 +303,7 @@
 | MetadataPanel | `src/components/modules/admin/metadata-panel.tsx` |
 | AdminPageHeader | `src/components/modules/admin/page-header.tsx` |
 | PostEditor | `src/components/modules/admin/post-editor.tsx` |
+| PostEditorContent | `src/components/modules/admin/post-editor-content.tsx` |
 | PostManagementClient | `src/components/modules/admin/post-management-client.tsx` |
 | SettingsSubmitButton | `src/components/modules/admin/settings-submit-button.tsx` |
 | SiteManagement | `src/components/modules/admin/site-management.tsx` |

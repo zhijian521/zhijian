@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 /*== 组件导入 ==*/
-import { ChevronRightIcon, LogOutIcon, PlusIcon, UserCircle2Icon } from '@/components/ui/icons';
+import { ChevronRightIcon, LogOutIcon, PlusIcon } from '@/components/ui/icons';
 import { toast } from '@/components/ui/toast';
 
 /*== 数据与配置 ==*/
@@ -168,10 +168,6 @@ export default function AdminSidebar() {
 
             {/* 底部区 */}
             <div className={styles.footer}>
-                <button className={cn(styles.footerButton, styles.navItem)} type="button">
-                    <UserCircle2Icon aria-hidden="true" className={styles.navIcon} />
-                    <span>个人资料</span>
-                </button>
                 <button
                     className={cn(styles.footerButton, styles.navItem, styles.footerDanger)}
                     disabled={isLoggingOut}

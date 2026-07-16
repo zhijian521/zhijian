@@ -7,7 +7,7 @@
   与数据清理；概览和访问记录的展示分别交由独立组件渲染。
 ============================================================================*/
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import AdminPageHeader from '@/components/modules/admin/page-header';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -41,6 +41,8 @@ export default function AnalyticsDashboard() {
     const [visitsLoading, setVisitsLoading] = useState(false);
     const [clearOpen, setClearOpen] = useState(false);
     const [clearLoading, setClearLoading] = useState(false);
+    const overviewRequestRef = useRef(0);
+    const visitsRequestRef = useRef(0);
 
     const fetchSites = useCallback(async () => {
         try {
@@ -56,27 +58,41 @@ export default function AnalyticsDashboard() {
     }, []);
 
     const fetchData = useCallback(async () => {
-        if (!siteId) return;
+        const requestId = ++overviewRequestRef.current;
+        if (!siteId) {
+            setData(null);
+            setError(null);
+            setLoading(false);
+            return;
+        }
 
         setLoading(true);
         setError(null);
+        setData(null);
         try {
             const response = await api.get<AnalyticsData>('/admin/analytics/overview', { siteId, range });
+            if (requestId !== overviewRequestRef.current) return;
             if (response.code === 0 && response.data) {
                 setData(response.data);
                 return;
             }
             setError(response.message || '获取数据失败');
         } catch (error) {
+            if (requestId !== overviewRequestRef.current) return;
             console.error('获取分析数据失败：', error);
             setError('网络请求失败，请检查网络连接后重试');
         } finally {
-            setLoading(false);
+            if (requestId === overviewRequestRef.current) setLoading(false);
         }
     }, [range, siteId]);
 
     const fetchVisits = useCallback(async () => {
-        if (!siteId) return;
+        const requestId = ++visitsRequestRef.current;
+        if (!siteId) {
+            setVisits({ data: [], total: 0 });
+            setVisitsLoading(false);
+            return;
+        }
 
         setVisitsLoading(true);
         try {
@@ -86,11 +102,13 @@ export default function AnalyticsDashboard() {
                 page: visitsPage,
                 pageSize: visitsPageSize,
             });
-            if (response.code === 0 && response.data) setVisits(response.data);
+            if (requestId === visitsRequestRef.current && response.code === 0 && response.data)
+                setVisits(response.data);
         } catch (error) {
+            if (requestId !== visitsRequestRef.current) return;
             console.error('获取访问记录失败：', error);
         } finally {
-            setVisitsLoading(false);
+            if (requestId === visitsRequestRef.current) setVisitsLoading(false);
         }
     }, [range, siteId, visitsPage, visitsPageSize]);
 
@@ -220,10 +238,10 @@ export default function AnalyticsDashboard() {
                             重试
                         </GhostButton>
                     </div>
-                ) : loading && !data ? (
-                    <div className={styles.loading}>加载中...</div>
                 ) : !siteId ? (
                     <AnalyticsEmptyState />
+                ) : loading && !data ? (
+                    <div className={styles.loading}>加载中...</div>
                 ) : data ? (
                     <AnalyticsOverview data={data} />
                 ) : null

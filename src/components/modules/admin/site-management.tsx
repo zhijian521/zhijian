@@ -33,6 +33,7 @@ export default function SiteManagement() {
     const [data, setData] = useState<ListData<TrackSite>>({ data: [], total: 0 });
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [togglingSiteId, setTogglingSiteId] = useState<string | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
     /* 弹窗表单状态 */
@@ -55,8 +56,9 @@ export default function SiteManagement() {
             if (res.code === 0 && res.data) {
                 setData(res.data);
             }
-        } catch (err) {
-            console.error('获取站点列表失败：', err);
+        } catch (error) {
+            console.error('获取站点列表失败：', error);
+            toast.error('获取站点列表失败');
         } finally {
             setLoading(false);
         }
@@ -121,6 +123,7 @@ export default function SiteManagement() {
 
     async function handleToggleStatus(site: TrackSite) {
         const newStatus = site.status === 'active' ? 'paused' : 'active';
+        setTogglingSiteId(site.id);
         try {
             const res = await api.put('/admin/analytics/sites', { id: site.id, status: newStatus });
             if (res.code === 0) {
@@ -131,6 +134,8 @@ export default function SiteManagement() {
             }
         } catch {
             toast.error('请求失败。');
+        } finally {
+            setTogglingSiteId(null);
         }
     }
 
@@ -200,6 +205,7 @@ export default function SiteManagement() {
                 <div className={shared.actionGroup}>
                     <IconButton icon={<PencilIcon />} onClick={() => openEditForm(site)} size="medium" title="编辑" />
                     <IconButton
+                        disabled={togglingSiteId === site.id}
                         icon={site.status === 'active' ? <PauseIcon /> : <PlayIcon />}
                         onClick={() => handleToggleStatus(site)}
                         size="medium"

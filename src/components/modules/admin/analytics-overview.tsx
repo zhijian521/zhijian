@@ -143,15 +143,27 @@ function DonutChart({ data, palette }: { data: DonutEntry[]; palette: string[] }
     );
 }
 
-function ChartTooltip({ active, label, payload }: any) {
+interface ChartTooltipPayload {
+    color?: string;
+    name?: string | number;
+    value?: string | number;
+}
+
+interface ChartTooltipProps {
+    active?: boolean;
+    label?: string | number;
+    payload?: ChartTooltipPayload[];
+}
+
+function ChartTooltip({ active, label, payload }: ChartTooltipProps) {
     if (!active || !payload?.length) return null;
 
     return (
         <div className={styles.tooltip}>
             <p className={styles.tooltipLabel}>{label}</p>
-            {payload.map((entry: any, index: number) => (
+            {payload.map((entry, index) => (
                 <p className={styles.tooltipValue} key={index} style={{ color: entry.color }}>
-                    {entry.name === 'pv' ? '浏览量' : '访客数'}：{formatNum(entry.value)}
+                    {entry.name === 'pv' ? '浏览量' : '访客数'}：{formatNum(Number(entry.value))}
                 </p>
             ))}
         </div>

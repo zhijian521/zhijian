@@ -24,10 +24,8 @@ import styles from './markdown-editor.module.css';
 export interface MarkdownEditorProps {
     content: string;
     onContentChange: (value: string) => void;
-    onInsertImage: (markdown: string) => void;
     fullWidth?: boolean;
 }
-
 /*== 工具栏按钮配置 ==*/
 type ToolbarItem =
     | { isSep: true }
@@ -74,7 +72,7 @@ function execToolbarAction(action: string, insert: (t: string) => void, wrap: (a
 const UPLOADING_MARKER = '![⏳上传中...](';
 
 /*== MarkdownEditor Markdown 编辑区 ==*/
-export function MarkdownEditor({ content, onContentChange, onInsertImage, fullWidth }: MarkdownEditorProps) {
+export function MarkdownEditor({ content, onContentChange, fullWidth }: MarkdownEditorProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -127,12 +125,11 @@ export function MarkdownEditor({ content, onContentChange, onInsertImage, fullWi
             if (!res.ok || !result.data?.path) throw new Error(result.message || '上传失败');
             const md = `![${file.name}](${result.data.path})`;
             onContentChange(contentRef.current.replace(marker, md));
-            onInsertImage(md);
         } catch {
             onContentChange(contentRef.current.replace(marker, ''));
             toast.error('上传失败');
         }
-    }, [insertAtCursor, onContentChange, onInsertImage]);
+    }, [insertAtCursor, onContentChange]);
 
     /* 粘贴图片 */
     const handlePaste = useCallback((e: React.ClipboardEvent) => {

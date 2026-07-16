@@ -17,9 +17,8 @@ import { toast } from '@/components/ui/toast';
 import { APP_ROUTES } from '@/lib/core/site';
 
 import { EditorToolbar, type ViewMode } from './editor-toolbar';
-import { MarkdownEditor } from './markdown-editor';
 import { MarkdownPreview } from './markdown-preview';
-import { MetadataPanel } from './metadata-panel';
+import { PostEditorContent, PostEditorMetadata } from './post-editor-content';
 
 import styles from './post-editor.module.css';
 
@@ -70,16 +69,18 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
 
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const lastSavedRef = useRef(JSON.stringify(formData));
+    const saveQueueRef = useRef(Promise.resolve(false));
+    const saveVersionRef = useRef(0);
     /* 用 ref 追踪最新 formData，避免异步回调中闭包捕获过时值 */
     const formDataRef = useRef(formData);
     useEffect(() => {
         formDataRef.current = formData;
     }, [formData]);
 
-    /* 自动保存 */
     const saveDraft = useCallback(
-        async (data: FormData) => {
+        async (data: FormData, version: number): Promise<boolean> => {
+            if (version !== saveVersionRef.current) return false;
+
             setIsSaving(true);
             setSaveStatus('saving');
             try {
@@ -87,20 +88,34 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                     ...data,
                     publishedAt: data.publishedAt || null,
                 });
+                if (version !== saveVersionRef.current) return false;
+
                 if (res.code === 0) {
-                    lastSavedRef.current = JSON.stringify(data);
                     setSaveStatus('saved');
-                } else {
-                    setSaveStatus('unsaved');
-                    toast.error(res.message || '自动保存失败');
+                    return true;
                 }
-            } catch {
+
                 setSaveStatus('unsaved');
+                toast.error(res.message || '自动保存失败');
+            } catch {
+                if (version === saveVersionRef.current) setSaveStatus('unsaved');
             } finally {
-                setIsSaving(false);
+                if (version === saveVersionRef.current) setIsSaving(false);
             }
+
+            return false;
         },
         [post.id]
+    );
+
+    const enqueueSave = useCallback(
+        (data: FormData) => {
+            const version = ++saveVersionRef.current;
+            const nextSave = saveQueueRef.current.catch(() => false).then(() => saveDraft(data, version));
+            saveQueueRef.current = nextSave;
+            return nextSave;
+        },
+        [saveDraft]
     );
 
     const scheduleSave = useCallback(
@@ -108,10 +123,10 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
             setSaveStatus('unsaved');
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
             saveTimerRef.current = setTimeout(() => {
-                saveDraft(newData);
+                enqueueSave(newData);
             }, 3000);
         },
-        [saveDraft]
+        [enqueueSave]
     );
 
     function updateField<K extends keyof FormData>(key: K, value: FormData[K]) {
@@ -125,23 +140,14 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
             newData.altText = null;
         }
         setFormData(newData);
-        // 草稿状态、内容/标题/封面图变更时自动保存
-        if (
-            newData.status === 'draft' ||
-            key === 'content' ||
-            key === 'title' ||
-            key === 'coverImage' ||
-            key === 'altText'
-        ) {
-            scheduleSave(newData);
-        }
+        scheduleSave(newData);
     }
 
     /* 手动保存 */
     const handleManualSave = useCallback(async () => {
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-        await saveDraft(formDataRef.current);
-    }, [saveDraft]);
+        await enqueueSave(formDataRef.current);
+    }, [enqueueSave]);
 
     /* 发布 / 取消发布 */
     const handleTogglePublish = useCallback(async () => {
@@ -151,14 +157,15 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         setFormData(newData);
 
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-        await saveDraft(newData);
+        const saved = await enqueueSave(newData);
+        if (!saved) return;
 
         if (newStatus === 'published') {
             toast.success('文章已发布');
         } else {
             toast.success('文章已取消发布');
         }
-    }, [saveDraft]);
+    }, [enqueueSave]);
 
     /* 返回文章列表：优先关闭当前标签页；若浏览器阻止（非脚本打开的标签页）则延迟跳转。 */
     const handleBack = useCallback(() => {
@@ -168,11 +175,6 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
         setTimeout(() => {
             window.location.href = APP_ROUTES.adminPosts;
         }, 200);
-    }, []);
-
-    /* 文章内插入图片回调 */
-    const handleInsertImage = useCallback((_markdown: string) => {
-        // 图片已在 MarkdownEditor 内部处理了 content 更新，此处无需额外操作
     }, []);
 
     /* beforeunload 弹窗 */
@@ -225,56 +227,35 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                 {/* 分栏模式：元数据面板（左）+ 编辑/预览（右） */}
                 {viewMode === 'split' && (
                     <>
-                        {/* 元数据面板（左侧） */}
-                        <div className={styles.sidePanel}>
-                            <MetadataPanel
-                                altText={formData.altText}
-                                categories={categories}
-                                categoryId={formData.categoryId}
-                                coverImage={formData.coverImage}
-                                onAltTextChange={(v: string | null) => updateField('altText', v)}
-                                onCategoryIdChange={(v: number | null) => updateField('categoryId', v)}
-                                onCoverImageChange={(v: string | null) => updateField('coverImage', v)}
-                                onPublishedAtChange={(v: string | null) => updateField('publishedAt', v)}
-                                onSelectedTagsChange={(v: number[]) => updateField('tags', v)}
-                                onSlugChange={(v: string) => updateField('slug', v)}
-                                onStatusChange={(v: PostStatus) => updateField('status', v)}
-                                publishedAt={formData.publishedAt}
-                                selectedTags={formData.tags}
-                                slug={formData.slug}
-                                status={formData.status}
-                                tags={tags}
-                            />
-                        </div>
+                        <PostEditorMetadata
+                            altText={formData.altText}
+                            categories={categories}
+                            categoryId={formData.categoryId}
+                            coverImage={formData.coverImage}
+                            onAltTextChange={(v: string | null) => updateField('altText', v)}
+                            onCategoryIdChange={(v: number | null) => updateField('categoryId', v)}
+                            onCoverImageChange={(v: string | null) => updateField('coverImage', v)}
+                            onPublishedAtChange={(v: string | null) => updateField('publishedAt', v)}
+                            onSelectedTagsChange={(v: number[]) => updateField('tags', v)}
+                            onSlugChange={(v: string) => updateField('slug', v)}
+                            onStatusChange={(v: PostStatus) => updateField('status', v)}
+                            publishedAt={formData.publishedAt}
+                            selectedTags={formData.tags}
+                            slug={formData.slug}
+                            status={formData.status}
+                            tags={tags}
+                        />
 
                         <div className={styles.contentSplit}>
-                            {/* 编辑区 */}
-                            <div className={styles.editPane}>
-                                <div className={styles.headerArea}>
-                                    <input
-                                        className={styles.titleInput}
-                                        onChange={(e) => updateField('title', e.target.value)}
-                                        placeholder="文章标题"
-                                        type="text"
-                                        value={formData.title}
-                                    />
-                                    <textarea
-                                        className={styles.summaryInput}
-                                        onChange={(e) => updateField('summary', e.target.value)}
-                                        placeholder="写一段简短的摘要..."
-                                        rows={2}
-                                        value={formData.summary}
-                                    />
-                                </div>
-                                <div className={styles.contentEdit}>
-                                    <MarkdownEditor
-                                        content={formData.content}
-                                        fullWidth={false}
-                                        onContentChange={(v: string) => updateField('content', v)}
-                                        onInsertImage={handleInsertImage}
-                                    />
-                                </div>
-                            </div>
+                            <PostEditorContent
+                                content={formData.content}
+                                fullWidth={false}
+                                onContentChange={(value) => updateField('content', value)}
+                                onSummaryChange={(value) => updateField('summary', value)}
+                                onTitleChange={(value) => updateField('title', value)}
+                                summary={formData.summary}
+                                title={formData.title}
+                            />
 
                             {/* 预览区 */}
                             <div className={styles.previewPane}>
@@ -287,54 +268,34 @@ export default function PostEditor({ post, categories, tags }: PostEditorProps) 
                 {/* 编辑模式：元数据面板（左）+ 全宽编辑（右） */}
                 {viewMode === 'edit' && (
                     <>
-                        {/* 元数据面板（左侧） */}
-                        <div className={styles.sidePanel}>
-                            <MetadataPanel
-                                altText={formData.altText}
-                                categories={categories}
-                                categoryId={formData.categoryId}
-                                coverImage={formData.coverImage}
-                                onAltTextChange={(v: string | null) => updateField('altText', v)}
-                                onCategoryIdChange={(v: number | null) => updateField('categoryId', v)}
-                                onCoverImageChange={(v: string | null) => updateField('coverImage', v)}
-                                onPublishedAtChange={(v: string | null) => updateField('publishedAt', v)}
-                                onSelectedTagsChange={(v: number[]) => updateField('tags', v)}
-                                onSlugChange={(v: string) => updateField('slug', v)}
-                                onStatusChange={(v: PostStatus) => updateField('status', v)}
-                                publishedAt={formData.publishedAt}
-                                selectedTags={formData.tags}
-                                slug={formData.slug}
-                                status={formData.status}
-                                tags={tags}
-                            />
-                        </div>
+                        <PostEditorMetadata
+                            altText={formData.altText}
+                            categories={categories}
+                            categoryId={formData.categoryId}
+                            coverImage={formData.coverImage}
+                            onAltTextChange={(v: string | null) => updateField('altText', v)}
+                            onCategoryIdChange={(v: number | null) => updateField('categoryId', v)}
+                            onCoverImageChange={(v: string | null) => updateField('coverImage', v)}
+                            onPublishedAtChange={(v: string | null) => updateField('publishedAt', v)}
+                            onSelectedTagsChange={(v: number[]) => updateField('tags', v)}
+                            onSlugChange={(v: string) => updateField('slug', v)}
+                            onStatusChange={(v: PostStatus) => updateField('status', v)}
+                            publishedAt={formData.publishedAt}
+                            selectedTags={formData.tags}
+                            slug={formData.slug}
+                            status={formData.status}
+                            tags={tags}
+                        />
 
-                        <div className={styles.editPane}>
-                            <div className={styles.headerArea}>
-                                <input
-                                    className={styles.titleInput}
-                                    onChange={(e) => updateField('title', e.target.value)}
-                                    placeholder="文章标题"
-                                    type="text"
-                                    value={formData.title}
-                                />
-                                <textarea
-                                    className={styles.summaryInput}
-                                    onChange={(e) => updateField('summary', e.target.value)}
-                                    placeholder="写一段简短的摘要..."
-                                    rows={2}
-                                    value={formData.summary}
-                                />
-                            </div>
-                            <div className={styles.contentEdit}>
-                                <MarkdownEditor
-                                    content={formData.content}
-                                    fullWidth
-                                    onContentChange={(v: string) => updateField('content', v)}
-                                    onInsertImage={handleInsertImage}
-                                />
-                            </div>
-                        </div>
+                        <PostEditorContent
+                            content={formData.content}
+                            fullWidth
+                            onContentChange={(value) => updateField('content', value)}
+                            onSummaryChange={(value) => updateField('summary', value)}
+                            onTitleChange={(value) => updateField('title', value)}
+                            summary={formData.summary}
+                            title={formData.title}
+                        />
                     </>
                 )}
 

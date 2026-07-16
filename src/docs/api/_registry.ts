@@ -69,7 +69,7 @@ export const API_REGISTRY: ApiEntry[] = [
         group: 'admin',
         auth: 'admin',
         methods: [
-            { method: 'GET', desc: '获取全部文章（含草稿）' },
+            { method: 'GET', desc: '按筛选条件分页获取文章（含草稿）' },
             { method: 'POST', desc: '创建草稿' },
         ],
         params: [

@@ -13,6 +13,8 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { toast } from '@/components/ui/toast';
 import type { SubmitResult } from '@/lib/domain/seo-submit';
 
+import styles from './settings-submit-button.module.css';
+
 interface SubmitResponse {
     totalUrls: number;
     indexNow: SubmitResult;
@@ -53,25 +55,15 @@ export function SettingsSubmitButton() {
             </SubmitButton>
 
             {result ? (
-                <div style={{ marginTop: '0.75rem', fontSize: '0.875rem', lineHeight: 1.75 }}>
-                    <p style={{ margin: 0, color: 'var(--muted-foreground)' }}>共 {result.totalUrls} 个 URL</p>
-                    <p
-                        style={{
-                            margin: 0,
-                            color: result.indexNow.success ? 'var(--primary)' : 'var(--muted-foreground)',
-                        }}
-                    >
+                <div className={styles.result}>
+                    <p className={styles.resultLine}>共 {result.totalUrls} 个 URL</p>
+                    <p className={`${styles.resultLine} ${result.indexNow.success ? styles.resultSuccess : ''}`}>
                         IndexNow：
                         {result.indexNow.success
                             ? `成功 ${result.indexNow.count} 条`
                             : `失败 — ${result.indexNow.message}`}
                     </p>
-                    <p
-                        style={{
-                            margin: 0,
-                            color: result.baidu.success ? 'var(--primary)' : 'var(--muted-foreground)',
-                        }}
-                    >
+                    <p className={`${styles.resultLine} ${result.baidu.success ? styles.resultSuccess : ''}`}>
                         百度：
                         {result.baidu.success ? `成功 ${result.baidu.count} 条` : `失败 — ${result.baidu.message}`}
                     </p>

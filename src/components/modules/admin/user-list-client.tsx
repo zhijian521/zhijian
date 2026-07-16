@@ -7,7 +7,7 @@
   并维护账号角色、状态与密码等表单字段。
 ============================================================================*/
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -22,6 +22,7 @@ import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/core/http-client';
+import { getPageAfterDelete } from '@/lib/core/pagination';
 import type { ListData } from '@/lib/core/api-response';
 import styles from './user-list-client.module.css';
 import shared from '@/components/modules/admin/admin-shared.module.css';
@@ -69,9 +70,11 @@ export default function UserListClient() {
     const [form, setForm] = useState<UserFormData>(EMPTY_FORM);
     const [submitting, setSubmitting] = useState(false);
     const [formMessage, setFormMessage] = useState<string | null>(null);
+    const usersRequestRef = useRef(0);
 
     const fetchUsers = useCallback(
         async (opts?: { page?: number; search?: string }) => {
+            const requestId = ++usersRequestRef.current;
             const p = opts?.page ?? page;
             const s = opts?.search ?? searchKeyword;
             setLoading(true);
@@ -79,13 +82,13 @@ export default function UserListClient() {
                 const params: Record<string, unknown> = { page: p, pageSize };
                 if (s.trim()) params.search = s.trim();
                 const res = await api.get<ListData<UserItem>>('/admin/users', params);
-                if (res.code === 0 && res.data) {
+                if (requestId === usersRequestRef.current && res.code === 0 && res.data) {
                     setData(res.data);
                 }
-            } catch (err) {
-                toast.error('获取用户列表失败');
+            } catch {
+                if (requestId === usersRequestRef.current) toast.error('获取用户列表失败');
             } finally {
-                setLoading(false);
+                if (requestId === usersRequestRef.current) setLoading(false);
             }
         },
         [page, searchKeyword, pageSize]
@@ -112,13 +115,15 @@ export default function UserListClient() {
         try {
             const res = await api.delete(`/admin/users/${deleteTarget.id}`);
             if (res.code === 0) {
-                setData((prev) => ({
-                    ...prev,
-                    data: prev.data.filter((u) => u.id !== deleteTarget.id),
-                    total: prev.total - 1,
+                const nextPage = getPageAfterDelete(page, data.data.length);
+                setData((previousData) => ({
+                    ...previousData,
+                    data: previousData.data.filter((user) => user.id !== deleteTarget.id),
+                    total: previousData.total - 1,
                 }));
                 setDeleteTarget(null);
                 toast.success('删除成功');
+                if (nextPage !== page) setPage(nextPage);
             } else {
                 toast.error(res.message || '删除失败。');
             }
