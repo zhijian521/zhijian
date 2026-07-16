@@ -137,7 +137,7 @@ export default function AdminSidebar() {
                                 />
                             </button>
 
-                            <div className={styles.subNav} hidden={!open} id={subNavId}>
+                            <div hidden={!open} id={subNavId}>
                                 {group.items.map((item) => {
                                     const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
                                     const Icon = item.icon;

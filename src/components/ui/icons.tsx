@@ -10,9 +10,7 @@
 import React from 'react';
 
 /*== 图标组件属性 ==*/
-export interface IconProps extends React.SVGAttributes<SVGSVGElement> {
-    className?: string;
-}
+export type IconProps = React.SVGAttributes<SVGSVGElement>;
 
 /*== 图标组件的函数类型，用于 NavSubItem 等 ==*/
 export type IconComponent = React.ComponentType<IconProps>;
@@ -432,7 +430,6 @@ export const SearchIcon = makeIcon('search');
 export const SparklesIcon = makeIcon('sparkles');
 export const SettingsIcon = makeIcon('settings');
 export const ShieldIcon = makeIcon('shield');
-export const TagIcon = makeIcon('tag');
 export const Trash2Icon = makeIcon('trash2');
 export const TrendingDownIcon = makeIcon('trending-down');
 export const TrendingUpIcon = makeIcon('trending-up');

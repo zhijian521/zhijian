@@ -32,9 +32,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
                 {items.map((item, index) => (
                     <li className={styles.item} key={`${item.label}-${index}`}>
                         {index > 0 && (
-                            <span className={styles.sep} aria-hidden>
-                                /
-                            </span>
+                            <span aria-hidden>/</span>
                         )}
                         {item.href ? (
                             <Link className={styles.link} href={item.href}>
