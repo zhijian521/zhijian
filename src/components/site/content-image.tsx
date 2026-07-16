@@ -29,8 +29,8 @@ function isUploadedPath(src: string): boolean {
 /*== 公开内容图片：本地资源走 next/image，外链/上传图片回退原生 img。 ==*/
 export function ContentImage({ alt, className, priority = false, sizes = '100vw', src, style }: ContentImageProps) {
     if (isRemoteImage(src) || isUploadedPath(src)) {
-        // eslint-disable-next-line @next/next/no-img-element -- 外链/上传图片不走 next/image 优化
         return (
+            // eslint-disable-next-line @next/next/no-img-element -- 外链/上传图片不走 next/image 优化
             <img
                 alt={alt}
                 className={className}

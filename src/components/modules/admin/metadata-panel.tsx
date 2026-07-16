@@ -187,12 +187,7 @@ export function MetadataPanel({
             {/* 状态：药丸单选 */}
             <div className={styles.field}>
                 <span className={styles.fieldLabel}>状态</span>
-                <PillSelect
-                    onChange={onStatusChange}
-                    options={STATUS_OPTIONS}
-                    size="small"
-                    value={status}
-                />
+                <PillSelect onChange={onStatusChange} options={STATUS_OPTIONS} size="small" value={status} />
             </div>
 
             {/* 发布时间 */}
