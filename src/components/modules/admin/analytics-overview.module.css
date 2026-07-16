@@ -1,0 +1,460 @@
+/*============================================================================
+  analytics-overview — 统计概览展示样式
+
+  定义指标、图表、排行、分布和入口出口表格的展示布局。
+============================================================================*/
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.metricsRow {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+    .metricsRow {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .metricsRow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.metric,
+.cardWide,
+.cardThird,
+.pairCard {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 1.25rem;
+}
+
+.metricLabel {
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.metricValue {
+    margin: 0 0 0.25rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.cardWide {
+    grid-column: 1 / -1;
+}
+
+.cardThird {
+    grid-column: span 1;
+}
+
+@media (max-width: 640px) {
+    .cardThird,
+    .cardWide {
+        grid-column: 1 / -1;
+    }
+}
+
+.rowPair {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .rowPair {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cardTitle {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.subTitle {
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.cardHeader .cardTitle {
+    margin-bottom: 0;
+}
+
+.change {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.8rem;
+}
+
+.changeUp {
+    color: var(--primary);
+}
+
+.changeDown,
+.changeNeutral {
+    color: var(--muted-foreground);
+}
+
+.changeNeutral {
+    font-size: 0.8rem;
+}
+
+.changeIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.chartArea {
+    width: 100%;
+}
+
+.chartEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.legend {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.legendItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+
+.legendLine {
+    display: inline-block;
+    width: 1rem;
+    height: 2px;
+    background: var(--primary);
+}
+
+.legendLineDashed {
+    height: 0;
+    border-top: 2px dashed var(--muted-foreground);
+    background: none;
+}
+
+.tooltip {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tooltipLabel {
+    margin: 0 0 0.25rem;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+
+.tooltipValue {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.rankList,
+.sourceList,
+.dotList,
+.donutLegend {
+    display: flex;
+    flex-direction: column;
+}
+
+.rankList,
+.dotList {
+    gap: 0.5rem;
+}
+
+.sourceList {
+    gap: 0.625rem;
+}
+
+.rankItem,
+.dotRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rankIdx {
+    width: 1.25rem;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    text-align: center;
+}
+
+.rankBody,
+.donutLegend,
+.dotName {
+    flex: 1;
+    min-width: 0;
+}
+
+.rankLabel {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rankMeta {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: var(--muted-foreground);
+}
+
+.rankNum {
+    min-width: 2.5rem;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.barTrack,
+.sourceBarTrack {
+    height: 6px;
+    border-radius: 2px;
+    background: var(--muted);
+    overflow: hidden;
+}
+
+.barTrack {
+    margin-top: 4px;
+}
+
+.barFill,
+.sourceBarFill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--primary-subtle);
+    transition: width 0.3s ease;
+}
+
+.sourceRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sourceName {
+    width: 5.5rem;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sourceBarTrack {
+    flex: 1;
+}
+
+.sourcePct,
+.dotPct {
+    min-width: 2.5rem;
+    font-size: 0.85rem;
+    color: var(--foreground);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.sourcePct {
+    flex-shrink: 0;
+}
+
+.donutWrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.donutSvg {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+}
+
+.donutLegend {
+    gap: 0.375rem;
+}
+
+.donutLegendRow {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.donutDot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 1px;
+}
+
+.donutName {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.8rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.donutPct {
+    font-size: 0.8rem;
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+.geoInner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .geoInner {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .geoInner {
+        grid-template-columns: 1fr;
+    }
+}
+
+.geoCol {
+    min-width: 0;
+}
+
+.tagCloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.cloudTag {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--muted);
+    transition:
+        border-color 0.15s,
+        background 0.15s;
+}
+
+.cloudTag:hover {
+    border-color: var(--primary);
+    background: var(--primary-subtle-soft);
+}
+
+.cloudName {
+    font-size: 0.85rem;
+    color: var(--foreground);
+}
+
+.cloudPct,
+.dotCnt {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+.cloudPct {
+    color: var(--primary);
+}
+
+.dotMark {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: 1px;
+    background: var(--primary);
+}
+
+.dotName {
+    font-size: 0.85rem;
+    color: var(--foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tablePath {
+    font-size: 0.8rem;
+    color: var(--foreground);
+    word-break: break-all;
+}
+
+.tableNum {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+}

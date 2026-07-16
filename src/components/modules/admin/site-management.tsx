@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  site-management — 统计站点管理
+
+  管理统计站点的创建、编辑、启停和删除，
+  同时提供埋点接入代码的生成、展示与复制。
+============================================================================*/
+
 import { useEffect, useState, useCallback } from 'react';
 
 import { PencilIcon, PlusIcon, Trash2Icon, CopyIcon, PauseIcon, PlayIcon } from '@/components/ui/icons';

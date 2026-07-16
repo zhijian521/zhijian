@@ -17,7 +17,7 @@ import { APP_ROUTES } from '@/lib/core/site';
 
 /*== 样式导入 ==*/
 import './globals.css';
-import styles from '@/components/modules/admin/admin-shell.module.css';
+import styles from './layout.module.css';
 
 /*== 类型定义 ==*/
 interface AdminLayoutProps {

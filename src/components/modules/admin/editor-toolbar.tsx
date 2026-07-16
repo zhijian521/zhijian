@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  editor-toolbar — 文章编辑器工具栏
+
+  提供返回、保存状态、编辑视图切换、手动保存，
+  以及文章发布与取消发布操作。
+============================================================================*/
+
 import { ArrowLeftIcon, SaveIcon } from '@/components/ui/icons';
 import type { PostStatus } from '@/lib/domain/post-shared';
 

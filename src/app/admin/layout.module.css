@@ -1,3 +1,5 @@
+/*== 后台布局样式：固定侧边栏 + 主内容区。 ==*/
+
 .layout {
     position: relative;
     min-height: 100vh;

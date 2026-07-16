@@ -180,7 +180,13 @@ UA 解析 — parseUA() 提取 browser / os
 
 **文件**：`src/app/admin/analytics/page.tsx`（路由页）
 
-**展示组件**：`src/components/modules/admin/analytics-dashboard.tsx`
+**组件结构**：
+
+| 组件 | 职责 |
+|------|------|
+| `analytics-dashboard.tsx` | 数据与交互容器：站点和时间范围选择、标签页、接口请求、访问分页、接入代码复制和数据清理 |
+| `analytics-overview.tsx` | 概览展示：指标、趋势图、排行、分布和入口/出口页面 |
+| `analytics-visits.tsx` | 访问记录展示：访问表格与分页 |
 
 **路由**：`/admin/analytics`
 
@@ -549,8 +555,12 @@ interface UAInfo {
 | `public/script.js` | 数据采集嵌入脚本 |
 | `src/app/api/collect/route.ts` | 数据收集 API（无鉴权） |
 | `src/app/admin/analytics/page.tsx` | 统计概览路由页 |
-| `src/components/modules/admin/analytics-dashboard.tsx` | 统计概览展示组件 |
-| `src/components/modules/admin/analytics-dashboard.module.css` | 统计概览样式 |
+| `src/components/modules/admin/analytics-dashboard.tsx` | 统计数据与交互容器 |
+| `src/components/modules/admin/analytics-overview.tsx` | 统计概览展示组件 |
+| `src/components/modules/admin/analytics-visits.tsx` | 访问记录展示组件 |
+| `src/components/modules/admin/analytics-dashboard.module.css` | 统计容器样式（控制栏、加载、错误和空状态） |
+| `src/components/modules/admin/analytics-overview.module.css` | 统计概览展示样式 |
+| `src/components/modules/admin/analytics-visits.module.css` | 访问记录展示样式 |
 | `src/app/admin/analytics/sites/page.tsx` | 站点管理路由页 |
 | `src/components/modules/admin/site-management.tsx` | 站点管理展示组件 |
 | `src/components/modules/admin/site-management.module.css` | 站点管理样式 |

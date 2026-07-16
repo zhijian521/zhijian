@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  post-management-client — 文章管理列表
+
+  加载并筛选文章列表，提供分页、创建、编辑、删除，
+  以及文章内容导出等后台管理操作。
+============================================================================*/
+
 import { DownloadIcon, PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

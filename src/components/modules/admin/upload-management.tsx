@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  upload-management — 图片资源管理
+
+  分页展示后台上传图片，支持复制 Markdown、重命名、删除，
+  以及服务器图片同步到本地的操作说明。
+============================================================================*/
+
 import { useState, useEffect, useCallback } from 'react';
 
 import { CheckIcon, CopyIcon, DownloadIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons';

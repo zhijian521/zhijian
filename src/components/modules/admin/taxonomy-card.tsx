@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  taxonomy-card — 分类与标签卡片
+
+  统一展示分类或标签名称、分类排序号和视觉色调，
+  并提供编辑与删除入口。
+============================================================================*/
+
 import { PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { IconButton } from '@/components/ui/icon-button';
 

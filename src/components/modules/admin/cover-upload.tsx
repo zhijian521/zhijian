@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  cover-upload — 文章封面上传
+
+  支持点击选择与拖拽上传图片，展示当前封面，
+  并同步维护封面路径和替代文本。
+============================================================================*/
+
 import { useCallback, useRef, useState } from 'react';
 import { ImageIcon, XIcon } from '@/components/ui/icons';
 import { toast } from '@/components/ui/toast';

@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  settings-submit-button — 搜索引擎提交控件
+
+  触发站点 URL 的 IndexNow 与百度提交，
+  并展示提交进度、数量和各渠道结果。
+============================================================================*/
+
 import { useState } from 'react';
 
 import { SubmitButton } from '@/components/ui/submit-button';

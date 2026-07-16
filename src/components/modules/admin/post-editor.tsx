@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  post-editor — 全屏文章编辑器
+
+  统一管理文章表单、自动保存与发布状态，组合元数据面板、
+  Markdown 编辑器和复用真实详情结构的文章预览。
+============================================================================*/
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 import type { Post, PostStatus } from '@/lib/domain/post-shared';

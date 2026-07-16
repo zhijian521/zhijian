@@ -278,7 +278,7 @@ interface AdminPageHeaderProps {
 
 ### 后台壳层样式
 
-**文件**：`src/components/modules/admin/admin-shell.module.css`
+**文件**：`src/app/admin/layout.module.css`
 
 后台没有独立 `AdminShell` 组件；`src/app/admin/layout.tsx` 直接组合侧边栏和主内容区，并使用该 CSS Module 控制固定侧边栏偏移和页面内边距。
 
@@ -295,7 +295,7 @@ interface AdminPageHeaderProps {
 | 文件 | 说明 |
 |------|------|
 | `src/app/admin/layout.tsx` | 后台布局（鉴权 + 路由分发） |
-| `src/components/modules/admin/admin-shell.module.css` | 后台壳层样式（侧边栏偏移 + 主内容区） |
+| `src/app/admin/layout.module.css` | 后台壳层样式（侧边栏偏移 + 主内容区） |
 | `src/components/modules/admin/admin-sidebar.tsx` | 侧边栏导航 |
 | `src/components/modules/admin/admin-login-card.tsx` | 登录表单卡片 |
 | `src/components/modules/admin/page-header.tsx` | 页面统一头部 |

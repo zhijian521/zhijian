@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  user-list-client — 后台用户管理
+
+  提供用户搜索、分页、创建、编辑和删除，
+  并维护账号角色、状态与密码等表单字段。
+============================================================================*/
+
 import { useEffect, useState, useCallback } from 'react';
 
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';

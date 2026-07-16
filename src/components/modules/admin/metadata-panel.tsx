@@ -1,5 +1,12 @@
 'use client';
 
+/*============================================================================
+  metadata-panel — 文章元数据面板
+
+  集中编辑封面、Slug、状态、发布时间、分类和标签，
+  将字段变更回传给文章编辑器统一保存。
+============================================================================*/
+
 import { useCallback } from 'react';
 import { Select } from '@/components/ui/select';
 import { PillSelect } from '@/components/ui/pill-select';

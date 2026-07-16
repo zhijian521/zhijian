@@ -85,7 +85,7 @@
 | 类型 | 文件 |
 |------|------|
 | 布局（鉴权） | `src/app/admin/layout.tsx` |
-| Shell 样式 | `src/components/modules/admin/admin-shell.module.css` |
+| Shell 样式 | `src/app/admin/layout.module.css` |
 | 侧边栏 | `src/components/modules/admin/admin-sidebar.tsx` |
 | 公共样式 | `src/components/modules/admin/admin-shared.module.css` |
 | 后台全局样式 | `src/app/admin/globals.css` |
@@ -153,7 +153,9 @@
 | 类型 | 文件 |
 |------|------|
 | 概览页 | `src/app/admin/analytics/page.tsx` |
-| 仪表盘 | `src/components/modules/admin/analytics-dashboard.tsx` |
+| 数据与交互容器 | `src/components/modules/admin/analytics-dashboard.tsx` |
+| 概览展示 | `src/components/modules/admin/analytics-overview.tsx` |
+| 访问记录展示 | `src/components/modules/admin/analytics-visits.tsx` |
 | 站点管理页 | `src/app/admin/analytics/sites/page.tsx` |
 | 站点管理 | `src/components/modules/admin/site-management.tsx` |
 | API | `GET /api/admin/analytics/overview\|visits`, `DELETE /api/admin/analytics/data`, `GET/POST/PUT/DELETE /api/admin/analytics/sites` |
@@ -285,12 +287,14 @@
 | SectionHeading | `src/components/site/section-heading.tsx` |
 | SiteHeader | `src/components/site/site-header.tsx` |
 
-### `components/modules/` — 业务模块组件（32 个）
+### `components/modules/` — 业务模块组件（34 个）
 | 组件 | 文件 |
 |------|------|
 | AdminLoginCard | `src/components/modules/admin/admin-login-card.tsx` |
 | AdminSidebar | `src/components/modules/admin/admin-sidebar.tsx` |
 | AnalyticsDashboard | `src/components/modules/admin/analytics-dashboard.tsx` |
+| AnalyticsOverview | `src/components/modules/admin/analytics-overview.tsx` |
+| AnalyticsVisits | `src/components/modules/admin/analytics-visits.tsx` |
 | CoverUpload | `src/components/modules/admin/cover-upload.tsx` |
 | EditorToolbar | `src/components/modules/admin/editor-toolbar.tsx` |
 | MarkdownEditor | `src/components/modules/admin/markdown-editor.tsx` |
