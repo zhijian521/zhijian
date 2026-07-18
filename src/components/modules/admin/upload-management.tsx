@@ -17,22 +17,16 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/core/http-client';
+import type { ListData } from '@/lib/core/api-response';
 import { getPageAfterDelete } from '@/lib/core/pagination';
 import { toast } from '@/components/ui/toast';
-import AdminPageHeader from '@/components/modules/admin/page-header';
+import type { Upload } from '@/lib/domain/uploads';
 
 import styles from './upload-management.module.css';
 import shared from '@/components/modules/admin/admin-shared.module.css';
 
-interface UploadItem {
-    id: number;
-    filename: string;
-    original: string;
-    path: string;
-    size: number;
-    mime: string;
-    alt: string;
-    createdAt: string;
+interface UploadManagementProps {
+    initialData: ListData<Upload>;
 }
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -44,21 +38,21 @@ function formatSize(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/*== UploadManagement 图片管理页面组件 ==*/
-export default function UploadManagement() {
-    const [uploads, setUploads] = useState<UploadItem[]>([]);
-    const [total, setTotal] = useState(0);
+/*== UploadManagement 图片管理交互组件 ==*/
+export default function UploadManagement({ initialData }: UploadManagementProps) {
+    const [uploads, setUploads] = useState(initialData.data);
+    const [total, setTotal] = useState(initialData.total);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [copiedId, setCopiedId] = useState<number | null>(null);
 
     /* 删除确认弹窗 */
-    const [deleteTarget, setDeleteTarget] = useState<UploadItem | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<Upload | null>(null);
     const [deleting, setDeleting] = useState(false);
 
     /* 重命名弹窗 */
-    const [renameTarget, setRenameTarget] = useState<UploadItem | null>(null);
+    const [renameTarget, setRenameTarget] = useState<Upload | null>(null);
     const [renameValue, setRenameValue] = useState('');
     const [renaming, setRenaming] = useState(false);
 
@@ -66,6 +60,7 @@ export default function UploadManagement() {
     const [syncOpen, setSyncOpen] = useState(false);
     const [syncCopied, setSyncCopied] = useState(false);
     const uploadsRequestRef = useRef(0);
+    const skipInitialFetchRef = useRef(true);
     const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const syncCopiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -77,9 +72,7 @@ export default function UploadManagement() {
             const requestId = ++uploadsRequestRef.current;
             setLoading(true);
             try {
-                const res = await api.get<{ data: UploadItem[]; total: number }>(
-                    `/admin/uploads?page=${p}&pageSize=${pageSize}`
-                );
+                const res = await api.get<ListData<Upload>>(`/admin/uploads?page=${p}&pageSize=${pageSize}`);
                 if (requestId !== uploadsRequestRef.current) return;
 
                 if (res.code === 0 && res.data) {
@@ -99,6 +92,10 @@ export default function UploadManagement() {
     );
 
     useEffect(() => {
+        if (skipInitialFetchRef.current) {
+            skipInitialFetchRef.current = false;
+            return;
+        }
         fetchUploads(page);
     }, [page, fetchUploads]);
 
@@ -110,7 +107,7 @@ export default function UploadManagement() {
     }, []);
 
     /* 复制 Markdown */
-    const handleCopy = useCallback(async (upload: UploadItem) => {
+    const handleCopy = useCallback(async (upload: Upload) => {
         const markdown = `![](${upload.path})`;
         try {
             await navigator.clipboard.writeText(markdown);
@@ -179,22 +176,17 @@ export default function UploadManagement() {
 
     return (
         <div className={styles.management}>
-            <AdminPageHeader
-                description="上传和管理文章图片，支持复制 Markdown 路径和同步到本地开发环境。"
-                eyebrow="Uploads"
-                tag={`${total} 张图片`}
-                title="图片管理"
-                action={
-                    <GhostButton
-                        asButton
-                        icon={<DownloadIcon className={shared.btnIcon} />}
-                        onClick={() => setSyncOpen(true)}
-                        size="small"
-                    >
-                        同步到本地
-                    </GhostButton>
-                }
-            />
+            <div className={styles.toolbar}>
+                <span className={styles.resultCount}>{total} 张图片</span>
+                <GhostButton
+                    asButton
+                    icon={<DownloadIcon className={shared.btnIcon} />}
+                    onClick={() => setSyncOpen(true)}
+                    size="small"
+                >
+                    同步到本地
+                </GhostButton>
+            </div>
 
             {loading ? (
                 <div className={styles.empty}>加载中...</div>

@@ -23,6 +23,12 @@
     min-width: 220px;
 }
 
+.siteCount {
+    white-space: nowrap;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+
 .rightControls {
     display: flex;
     align-items: center;

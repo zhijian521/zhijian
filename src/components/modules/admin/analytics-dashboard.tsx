@@ -9,7 +9,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import AdminPageHeader from '@/components/modules/admin/page-header';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { CopyIcon, Trash2Icon } from '@/components/ui/icons';
@@ -27,9 +26,12 @@ import styles from './analytics-dashboard.module.css';
 
 const VISITS_DEFAULT_PAGE_SIZE = 10;
 
-export default function AnalyticsDashboard() {
-    const [sites, setSites] = useState<AnalyticsSiteOption[]>([]);
-    const [siteId, setSiteId] = useState('');
+interface AnalyticsDashboardProps {
+    initialSites: AnalyticsSiteOption[];
+}
+
+export default function AnalyticsDashboard({ initialSites }: AnalyticsDashboardProps) {
+    const [siteId, setSiteId] = useState(initialSites[0]?.id ?? '');
     const [range, setRange] = useState<DateRange>('7d');
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -43,19 +45,6 @@ export default function AnalyticsDashboard() {
     const [clearLoading, setClearLoading] = useState(false);
     const overviewRequestRef = useRef(0);
     const visitsRequestRef = useRef(0);
-
-    const fetchSites = useCallback(async () => {
-        try {
-            const response = await api.get<{ data: AnalyticsSiteOption[]; total: number }>('/admin/analytics/sites');
-            if (response.code !== 0 || !response.data?.data) return;
-
-            const siteList = response.data.data;
-            setSites(siteList);
-            setSiteId((previousSiteId) => previousSiteId || (siteList.length > 0 ? siteList[0].id : ''));
-        } catch (error) {
-            console.error('获取站点列表失败：', error);
-        }
-    }, []);
 
     const fetchData = useCallback(async () => {
         const requestId = ++overviewRequestRef.current;
@@ -113,10 +102,6 @@ export default function AnalyticsDashboard() {
     }, [range, siteId, visitsPage, visitsPageSize]);
 
     useEffect(() => {
-        fetchSites();
-    }, [fetchSites]);
-
-    useEffect(() => {
         fetchData();
     }, [fetchData]);
 
@@ -166,22 +151,16 @@ export default function AnalyticsDashboard() {
 
     return (
         <>
-            <AdminPageHeader
-                description="查看站点访问数据，了解流量趋势和用户行为。"
-                eyebrow="Analytics"
-                tag={sites.length > 0 ? `${sites.length} 个站点` : undefined}
-                title="网站统计"
-            />
-
             <div className={styles.controls}>
                 <div className={styles.siteSelect}>
                     <Select
                         onChange={setSiteId}
-                        options={sites.map((site) => ({ value: site.id, label: `${site.name} (${site.id})` }))}
+                        options={initialSites.map((site) => ({ value: site.id, label: `${site.name} (${site.id})` }))}
                         placeholder="暂无站点"
                         size="medium"
                         value={siteId}
                     />
+                    <span className={styles.siteCount}>{initialSites.length} 个站点</span>
                     {siteId ? (
                         <GhostButton
                             asButton

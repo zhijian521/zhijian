@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 /*== 数据与配置 ==*/
 import { api } from '@/lib/core/http-client';
@@ -19,10 +19,15 @@ import { toast } from '@/components/ui/toast';
  *
  * @param endpoint  API 端点，如 '/admin/tags'
  * @param labelName 单条目名称，用于 toast 提示，如 '标签'
+ * @param initialData 服务端提供的首屏列表
  */
-export function useCrudList<T extends { id: number; name: string }>(endpoint: string, labelName: string) {
-    const [data, setData] = useState<ListData<T>>({ data: [], total: 0 });
-    const [loading, setLoading] = useState(true);
+export function useCrudList<T extends { id: number; name: string }>(
+    endpoint: string,
+    labelName: string,
+    initialData: ListData<T>
+) {
+    const [data, setData] = useState(initialData);
+    const [loading, setLoading] = useState(false);
     const [deleting, setDeleting] = useState<number | null>(null);
 
     const fetchData = useCallback(async () => {
@@ -38,10 +43,6 @@ export function useCrudList<T extends { id: number; name: string }>(endpoint: st
             setLoading(false);
         }
     }, [endpoint, labelName]);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
 
     async function deleteById(id: number): Promise<boolean> {
         setDeleting(id);

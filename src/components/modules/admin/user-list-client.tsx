@@ -44,6 +44,10 @@ interface UserFormData {
     status: 'active' | 'disabled';
 }
 
+interface UserListClientProps {
+    initialData: ListData<UserItem>;
+}
+
 const EMPTY_FORM: UserFormData = {
     username: '',
     email: '',
@@ -53,13 +57,13 @@ const EMPTY_FORM: UserFormData = {
 };
 
 /*== 后台用户列表：匹配博客表格风格。 ==*/
-export default function UserListClient() {
-    const [data, setData] = useState<ListData<UserItem>>({ data: [], total: 0 });
+export default function UserListClient({ initialData }: UserListClientProps) {
+    const [data, setData] = useState(initialData);
     const [searchInput, setSearchInput] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [deleting, setDeleting] = useState<number | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: number; username: string } | null>(null);
 
@@ -71,6 +75,7 @@ export default function UserListClient() {
     const [submitting, setSubmitting] = useState(false);
     const [formMessage, setFormMessage] = useState<string | null>(null);
     const usersRequestRef = useRef(0);
+    const skipInitialFetchRef = useRef(true);
 
     const fetchUsers = useCallback(
         async (opts?: { page?: number; search?: string }) => {
@@ -95,6 +100,10 @@ export default function UserListClient() {
     );
 
     useEffect(() => {
+        if (skipInitialFetchRef.current) {
+            skipInitialFetchRef.current = false;
+            return;
+        }
         fetchUsers();
     }, [fetchUsers]);
 

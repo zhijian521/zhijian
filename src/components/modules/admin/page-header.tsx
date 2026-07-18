@@ -2,7 +2,7 @@
   page-header — 后台页面统一头部
 
   后台页面标题区，支持 eyebrow（小标题装饰线）、衬线主标题、
-  正文描述，以及底部 tag + action 操作区。
+  正文描述和可选信息标签。
 ============================================================================*/
 
 /*== 样式导入 ==*/
@@ -18,24 +18,17 @@ interface AdminPageHeaderProps {
     description: string;
     /*-- 信息标签（如"3 篇文章"） --*/
     tag?: string;
-    /*-- 右侧操作区（如新建按钮） --*/
-    action?: React.ReactNode;
 }
 
 /*== AdminPageHeader 后台页面统一头部 — 匹配博客衬线标题风格 ==*/
-export default function AdminPageHeader({ eyebrow, title, description, tag, action }: AdminPageHeaderProps) {
+export default function AdminPageHeader({ eyebrow, title, description, tag }: AdminPageHeaderProps) {
     return (
         <header className={styles.header}>
             {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
             <h1 className={styles.title}>{title}</h1>
             <p className={styles.description}>{description}</p>
 
-            {tag || action ? (
-                <div className={styles.metaRow}>
-                    {tag ? <span className={styles.tag}>{tag}</span> : null}
-                    {action}
-                </div>
-            ) : null}
+            {tag ? <span className={styles.tag}>{tag}</span> : null}
         </header>
     );
 }

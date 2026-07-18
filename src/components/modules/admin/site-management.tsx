@@ -7,7 +7,7 @@
   同时提供埋点接入代码的生成、展示与复制。
 ============================================================================*/
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { PencilIcon, PlusIcon, Trash2Icon, CopyIcon, PauseIcon, PlayIcon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -20,7 +20,6 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import { getEmbedScript } from '@/lib/core/utils';
-import AdminPageHeader from '@/components/modules/admin/page-header';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
 import type { TrackSite } from '@/lib/domain/track-sites';
@@ -28,10 +27,14 @@ import type { TrackSite } from '@/lib/domain/track-sites';
 import styles from './site-management.module.css';
 import shared from '@/components/modules/admin/admin-shared.module.css';
 
+interface SiteManagementProps {
+    initialData: ListData<TrackSite>;
+}
+
 /*== 站点管理 ==*/
-export default function SiteManagement() {
-    const [data, setData] = useState<ListData<TrackSite>>({ data: [], total: 0 });
-    const [loading, setLoading] = useState(true);
+export default function SiteManagement({ initialData }: SiteManagementProps) {
+    const [data, setData] = useState(initialData);
+    const [loading, setLoading] = useState(false);
     const [deleting, setDeleting] = useState<string | null>(null);
     const [togglingSiteId, setTogglingSiteId] = useState<string | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
@@ -63,10 +66,6 @@ export default function SiteManagement() {
             setLoading(false);
         }
     }, []);
-
-    useEffect(() => {
-        fetchSites();
-    }, [fetchSites]);
 
     function openCreateForm() {
         setFormMode('create');
@@ -226,14 +225,8 @@ export default function SiteManagement() {
 
     return (
         <>
-            <AdminPageHeader
-                description="管理监控站点，获取接入代码嵌入目标网站即可开始采集数据。"
-                eyebrow="Analytics"
-                tag={`${data.total} 个站点`}
-                title="站点管理"
-            />
-
             <div className={styles.toolbar}>
+                <span className={styles.resultCount}>{data.total} 个站点</span>
                 <GhostButton
                     asButton
                     icon={<PlusIcon className={shared.btnIcon} />}

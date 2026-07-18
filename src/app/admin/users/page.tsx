@@ -1,7 +1,8 @@
 /*============================================================================
   page — 用户管理页
 
-  渲染 UserListClient 客户端组件，承接用户列表 CRUD 交互。
+  服务端读取用户首屏数据并渲染页面头部，
+  UserListClient 承接后续搜索、分页和 CRUD 交互。
 ============================================================================*/
 
 import type { Metadata } from 'next';
@@ -10,6 +11,9 @@ import type { Metadata } from 'next';
 import AdminPageHeader from '@/components/modules/admin/page-header';
 import UserListClient from '@/components/modules/admin/user-list-client';
 
+/*== 数据与配置 ==*/
+import { listUsers } from '@/lib/core/auth';
+
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
@@ -17,7 +21,20 @@ export const metadata: Metadata = {
 };
 
 /*== 后台用户列表页。 ==*/
-export default function AdminUsersPage() {
+export default async function AdminUsersPage() {
+    const result = await listUsers({ page: 1, pageSize: 10 });
+    const initialData = {
+        data: result.users.map(({ id, username, email, role, status, created_at }) => ({
+            id,
+            username,
+            email,
+            role,
+            status,
+            created_at: created_at.toISOString(),
+        })),
+        total: result.total,
+    };
+
     return (
         <div>
             <AdminPageHeader
@@ -26,7 +43,7 @@ export default function AdminUsersPage() {
                 tag="账号管理"
                 title="用户管理"
             />
-            <UserListClient />
+            <UserListClient initialData={initialData} />
         </div>
     );
 }

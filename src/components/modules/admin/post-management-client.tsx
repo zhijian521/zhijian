@@ -19,7 +19,6 @@ import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
-import AdminPageHeader from '@/components/modules/admin/page-header';
 import { api } from '@/lib/core/http-client';
 import { getPageAfterDelete } from '@/lib/core/pagination';
 import { APP_ROUTES } from '@/lib/core/site';
@@ -214,13 +213,6 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
 
     return (
         <>
-            <AdminPageHeader
-                description="集中查看全部文章，支持关键词搜索、状态筛选和快速进入编辑页。"
-                eyebrow="Posts"
-                tag={`${total} 篇文章`}
-                title="文章管理"
-            />
-
             {/* 搜索 + 筛选 + 新建 */}
             <div className={styles.toolbar}>
                 <div className={styles.searchRow} role="search" aria-label="搜索文章">
@@ -248,40 +240,43 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                         value={status}
                     />
                 </div>
-                <GhostButton
-                    asButton
-                    disabled={exporting}
-                    icon={<DownloadIcon className={shared.btnIcon} />}
-                    onClick={() => doExport(null)}
-                    size="medium"
-                >
-                    {exporting ? '导出中...' : '全部导出'}
-                </GhostButton>
-                <GhostButton
-                    asButton
-                    disabled={creating}
-                    icon={<PlusIcon className={shared.btnIcon} />}
-                    onClick={async () => {
-                        setCreating(true);
-                        try {
-                            const res = await api.post<{ id: number }>('/admin/posts', {});
-                            if (res.code === 0 && res.data) {
-                                window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
-                                fetchData();
-                            } else {
-                                toast.error(res.message || '新建文章失败');
+                <div className={styles.actions}>
+                    <span className={styles.resultCount}>{total} 篇文章</span>
+                    <GhostButton
+                        asButton
+                        disabled={exporting}
+                        icon={<DownloadIcon className={shared.btnIcon} />}
+                        onClick={() => doExport(null)}
+                        size="medium"
+                    >
+                        {exporting ? '导出中...' : '全部导出'}
+                    </GhostButton>
+                    <GhostButton
+                        asButton
+                        disabled={creating}
+                        icon={<PlusIcon className={shared.btnIcon} />}
+                        onClick={async () => {
+                            setCreating(true);
+                            try {
+                                const res = await api.post<{ id: number }>('/admin/posts', {});
+                                if (res.code === 0 && res.data) {
+                                    window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
+                                    fetchData();
+                                } else {
+                                    toast.error(res.message || '新建文章失败');
+                                }
+                            } catch {
+                                toast.error('新建文章失败');
+                            } finally {
+                                setCreating(false);
                             }
-                        } catch {
-                            toast.error('新建文章失败');
-                        } finally {
-                            setCreating(false);
-                        }
-                    }}
-                    size="medium"
-                    variant="primary"
-                >
-                    {creating ? '创建中...' : '新建文章'}
-                </GhostButton>
+                        }}
+                        size="medium"
+                        variant="primary"
+                    >
+                        {creating ? '创建中...' : '新建文章'}
+                    </GhostButton>
+                </div>
             </div>
 
             <DataTable

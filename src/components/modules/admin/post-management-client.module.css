@@ -21,6 +21,19 @@
     gap: 1rem;
 }
 
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.resultCount {
+    margin-right: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+
 .postTitle {
     font-weight: 500;
     margin: 0;

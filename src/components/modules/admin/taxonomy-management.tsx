@@ -16,7 +16,6 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
-import AdminPageHeader from '@/components/modules/admin/page-header';
 import shared from '@/components/modules/admin/admin-shared.module.css';
 import { api } from '@/lib/core/http-client';
 import { useCrudList } from '@/hooks/use-crud-list';
@@ -42,11 +41,22 @@ interface TagItem {
 /*-- 统一删除目标：区分分类与标签 --*/
 type DeleteTarget = { kind: 'cat' | 'tag'; id: number; name: string } | null;
 
+interface TaxonomyManagementProps {
+    initialCategories: CategoryItem[];
+    initialTags: TagItem[];
+}
+
 /*== 分类与标签合并管理 ==*/
 
-export default function TaxonomyManagement() {
-    const catList = useCrudList<CategoryItem>('/admin/categories', '分类');
-    const tagList = useCrudList<TagItem>('/admin/tags', '标签');
+export default function TaxonomyManagement({ initialCategories, initialTags }: TaxonomyManagementProps) {
+    const catList = useCrudList('/admin/categories', '分类', {
+        data: initialCategories,
+        total: initialCategories.length,
+    });
+    const tagList = useCrudList('/admin/tags', '标签', {
+        data: initialTags,
+        total: initialTags.length,
+    });
 
     /*-- 统一删除目标 --*/
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
@@ -209,20 +219,13 @@ export default function TaxonomyManagement() {
 
     return (
         <>
-            <AdminPageHeader
-                description="管理文章分类与标签，支持新增、编辑和删除。"
-                eyebrow="Categories & Tags"
-                tag={`${catList.data.total} 个分类 · ${tagList.data.total} 个标签`}
-                title="分类标签"
-            />
-
             <div className={styles.columns}>
                 {/* 左栏：分类 */}
                 <div className={styles.column}>
                     <div className={styles.columnHeader}>
                         <div className={styles.columnLabel}>
                             <span className={styles.columnTitle}>分类</span>
-                            <span className={styles.columnSub}>Categories</span>
+                            <span className={styles.columnSub}>Categories · {catList.data.total}</span>
                         </div>
                         <GhostButton
                             asButton
@@ -260,7 +263,7 @@ export default function TaxonomyManagement() {
                     <div className={styles.columnHeader}>
                         <div className={styles.columnLabel}>
                             <span className={styles.columnTitle}>标签</span>
-                            <span className={styles.columnSub}>Tags</span>
+                            <span className={styles.columnSub}>Tags · {tagList.data.total}</span>
                         </div>
                         <GhostButton
                             asButton

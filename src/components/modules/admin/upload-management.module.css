@@ -1,8 +1,19 @@
 .management {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: var(--space-6);
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.resultCount {
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
 }
 
 .grid {

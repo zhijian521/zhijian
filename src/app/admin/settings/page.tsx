@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 /*== 后台设置页：匹配博客卡片风格。 ==*/
-export default async function AdminSettingsPage() {
+export default function AdminSettingsPage() {
     return (
         <>
             <AdminPageHeader

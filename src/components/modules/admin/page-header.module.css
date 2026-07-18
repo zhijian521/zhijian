@@ -2,7 +2,7 @@
   page-header — 后台页面统一头部
 
   后台页面标题区，支持小标题装饰线（eyebrow）、衬线主标题、
-  正文描述，以及底部 tag + action 操作区。匹配博客衬线标题风格。
+  正文描述和可选信息标签。匹配博客衬线标题风格。
 ============================================================================*/
 
 .header {
@@ -39,17 +39,9 @@
     color: var(--muted-foreground);
 }
 
-/*== 底部 tag + 操作区 ==*/
-.metaRow {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3);
-    margin-top: var(--space-4);
-}
-
 .tag {
     display: inline-block;
+    margin-top: var(--space-4);
     border: 1px solid var(--primary);
     border-radius: var(--radius);
     background: var(--primary-subtle-medium);
