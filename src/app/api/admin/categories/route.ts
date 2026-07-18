@@ -4,7 +4,7 @@
  * @auth admin
  * @method GET  分类列表
  * @method POST 创建分类
- * @returns success<Category[]> | success<Category> | fail
+ * @returns GET success<{ data: Category[]; total: number }> | POST success<{ category: Category }> | fail
  */
 
 import { NextResponse } from 'next/server';

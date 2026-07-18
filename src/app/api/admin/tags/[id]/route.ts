@@ -4,7 +4,7 @@
  * @auth admin
  * @method PUT    更新标签
  * @method DELETE 删除标签
- * @returns success<Tag> | fail
+ * @returns PUT success<{ tag: Tag | null }> | DELETE success<null> | fail
  */
 
 import { NextResponse } from 'next/server';

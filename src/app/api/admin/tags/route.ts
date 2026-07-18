@@ -4,7 +4,7 @@
  * @auth admin
  * @method GET  标签列表
  * @method POST 创建标签
- * @returns success<Tag[]> | success<Tag> | fail
+ * @returns GET success<{ data: Tag[]; total: number }> | POST success<{ tag: Tag }> | fail
  */
 
 import { NextResponse } from 'next/server';

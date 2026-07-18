@@ -2,8 +2,8 @@
  * @api AI 模型列表
  * @group ai
  * @auth user
- * @method GET 返回可用 AI 模型配置
- * @returns success<ModelConfig[]> | fail
+ * @method GET 返回可用 AI 模型 ID
+ * @returns success<string[]> | fail
  */
 
 import { NextResponse } from 'next/server';

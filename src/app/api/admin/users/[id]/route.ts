@@ -5,7 +5,7 @@
  * @method GET    获取用户详情
  * @method PUT    更新用户信息
  * @method DELETE 删除用户
- * @returns success<User> | fail
+ * @returns GET/PUT success<{ user: User | null }> | DELETE success<null> | fail
  */
 
 import { NextResponse } from 'next/server';

@@ -4,7 +4,7 @@
  * @auth admin
  * @method GET  用户列表（分页+搜索）
  * @method POST 创建用户
- * @returns success<ListData<User>> | success<User> | fail
+ * @returns GET success<{ data: User[]; total: number }> | POST success<{ user: User }> | fail
  */
 
 import { NextResponse } from 'next/server';

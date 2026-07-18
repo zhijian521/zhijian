@@ -3,7 +3,7 @@
  * @group admin
  * @auth admin
  * @method DELETE 清除指定站点统计数据
- * @returns success | fail
+ * @returns success<{ events: number; daily: number }> | fail
  */
 
 import { NextResponse } from 'next/server';

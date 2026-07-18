@@ -3,7 +3,8 @@
  * @group collect
  * @auth none
  * @method POST 接收前端埋点数据（PV/UV/事件等）
- * @returns success | fail
+ * @method OPTIONS 响应 CORS 预检
+ * @returns POST 202 空响应 | OPTIONS 204 空响应 | fail
  */
 
 import { NextRequest, NextResponse } from 'next/server';

@@ -4,7 +4,7 @@
  * @auth admin
  * @method PUT    更新分类
  * @method DELETE 删除分类
- * @returns success<Category> | fail
+ * @returns PUT success<{ category: Category | null }> | DELETE success<null> | fail
  */
 
 import { NextResponse } from 'next/server';

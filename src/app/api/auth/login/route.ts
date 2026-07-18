@@ -3,7 +3,7 @@
  * @group auth
  * @auth none
  * @method POST 用户名/密码登录，成功返回 session cookie
- * @returns success<{ userId }> | fail
+ * @returns success<{ user: { id, username, email, role } }> | fail
  */
 
 import { NextResponse } from 'next/server';

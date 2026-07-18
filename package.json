@@ -11,8 +11,8 @@
         "test": "vitest run",
         "docs:check": "node scripts/docs-check.mjs",
         "check": "npm run lint && npm run typecheck && npm run docs:check",
-        "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\" \"*.{json,md}\"",
-        "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\" \"*.{json,md}\"",
+        "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\" \"docs/**/*.md\" \"*.{json,md}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\" \"docs/**/*.md\" \"*.{json,md}\"",
         "db:seed": "node sql/seed-admin.mjs"
     },
     "dependencies": {

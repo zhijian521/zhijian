@@ -3,7 +3,7 @@
  * @group auth
  * @auth none
  * @method GET 从 cookie 解析当前登录用户信息
- * @returns success<User> | fail
+ * @returns success<{ user: { id, username, email, role } }> | fail
  */
 
 import { NextResponse } from 'next/server';

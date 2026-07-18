@@ -2,8 +2,8 @@
  * @api 导航站全量数据
  * @group nav
  * @auth user
- * @method GET 获取当前用户所有导航数据（书签/todo/笔记/聊天）
- * @returns success<NavData> | fail
+ * @method GET 获取当前用户的书签、待办和笔记
+ * @returns success<{ bookmarks, todos, notes }> | fail
  */
 
 import { NextResponse } from 'next/server';

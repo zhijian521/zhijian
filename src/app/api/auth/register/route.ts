@@ -3,7 +3,7 @@
  * @group auth
  * @auth none
  * @method POST 注册新用户（默认 user 角色）
- * @returns success<{ userId }> | fail
+ * @returns success<{ user: { id, username, email, role } }> | fail
  */
 
 import { NextResponse } from 'next/server';

@@ -3,7 +3,7 @@
  * @group admin
  * @auth admin
  * @method POST 将已发布文章 URL 推送到搜索引擎
- * @returns success | fail
+ * @returns success<{ totalUrls: number; indexNow; baidu }> | fail
  */
 
 import { NextResponse } from 'next/server';

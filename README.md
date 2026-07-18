@@ -29,6 +29,12 @@
 - 系统设置，登录鉴权（bcrypt + 签名 Cookie）
 - SEO 主动推送：IndexNow、百度站长平台 URL 提交，发文即推送
 
+**导航页**
+
+- 搜索引擎切换、书签与文件夹管理
+- 备忘录、Markdown 笔记和 DeepSeek 流式 AI 对话
+- 游客使用本地存储，登录用户同步到 MySQL
+
 **观澜 · 站点分析**
 
 - PV / UV / 会话 / 跳出率 / 平均停留 / 新访客占比等核心指标
@@ -51,16 +57,29 @@
 | 鉴权     | bcryptjs + 签名 Cookie                         |
 | 部署     | Node.js + Nginx                                |
 
+## 项目文档
+
+| 文档                                                      | 内容                                          |
+| --------------------------------------------------------- | --------------------------------------------- |
+| [项目文档导航](./docs/00-文档导航.md)                     | 全部产品、技术和开发规范入口                  |
+| [需求文档](./docs/01-产品文档/01-需求文档.md)             | 当前产品目标、角色、功能边界和验收要求        |
+| [功能文档](./docs/01-产品文档/02-功能文档.md)             | 当前页面入口、权限和用户可见能力              |
+| [架构设计文档](./docs/02-技术文档/01-架构设计文档.md)     | 当前分层、数据模型和主要数据流                |
+| [接口文档](./docs/02-技术文档/03-接口文档/00-接口导航.md) | 当前 33 个 API Route 的方法、鉴权、参数和响应 |
+| [开发规范导航](./docs/03-开发规范/00-规范导航.md)         | 目录、代码、样式、接口、数据、组件和文档规则  |
+
+功能新增、行为优化或架构调整必须在同一次提交中更新受影响的 Markdown。当前基线文档只记录已落地内容，未实施规划单独放入方案文档。
+
 ## 目录结构
 
 ```
 src/
 ├── app/                    # Next.js App Router
 │   ├── admin/              # 后台管理
-│   │   ├── _components/    # 后台组件（布局壳、侧边栏、各管理页）
 │   │   ├── _hooks/         # 后台 Hooks（列表 CRUD 等）
 │   │   ├── posts/[id]/     # 文章编辑器（全屏独立页面）
 │   │   ├── analytics/      # 站点分析（数据概览 + 站点管理）
+│   │   ├── showcase/       # UI 组件与图标预览
 │   │   ├── settings/       # 系统设置（SEO 推送等）
 │   │   └── ...             # 分类标签、图片、用户管理
 │   ├── api/                # API 路由
@@ -70,11 +89,18 @@ src/
 │   │   ├── posts/          # 博客内容接口
 │   │   └── nav/            # 导航配置
 │   ├── blog/               # 博客前台
+│   ├── nav/                # 导航页
 │   └── page.tsx            # 首页
 ├── components/
-│   ├── site/               # 前台组件（文章卡片、内容图片等）
-│   └── ui/                 # 通用 UI 组件（表格、分页、弹窗、Toast 等）
-├── lib/                    # 数据层、鉴权、采集分析、SEO 推送、工具函数
+│   ├── ui/                 # 通用原子组件
+│   ├── site/               # 前台共享展示组件
+│   └── modules/            # 首页、博客和后台业务组件
+├── lib/
+│   ├── core/               # 数据库、鉴权、响应和基础工具
+│   └── domain/             # 文章、导航、统计等业务数据层
+├── showcase/               # 组件展示 Registry
+└── middleware.ts           # 注入当前路径请求头
+docs/                       # 产品、技术和开发规范 Markdown
 sql/
 └── init.sql                # 数据库建表脚本
 public/
@@ -140,13 +166,19 @@ npm run db:seed
 
 ## 可用脚本
 
-| 命令                | 说明                |
-| ------------------- | ------------------- |
-| `npm run dev`       | 开发服务器          |
-| `npm run build`     | 生产构建            |
-| `npm run start`     | 启动生产服务        |
-| `npm run typecheck` | TypeScript 类型检查 |
-| `npm run db:seed`   | 创建管理员账号      |
+| 命令                   | 说明                                        |
+| ---------------------- | ------------------------------------------- |
+| `npm run dev`          | 开发服务器                                  |
+| `npm run build`        | 生产构建                                    |
+| `npm run start`        | 启动生产服务                                |
+| `npm run lint`         | ESLint 检查                                 |
+| `npm run typecheck`    | TypeScript 类型检查                         |
+| `npm run test`         | Vitest 自动化测试                           |
+| `npm run docs:check`   | 文档链接与 API 登记检查                     |
+| `npm run check`        | 统一完成标准：lint + typecheck + docs:check |
+| `npm run format`       | Prettier 格式化                             |
+| `npm run format:check` | Prettier 格式检查                           |
+| `npm run db:seed`      | 创建管理员账号                              |
 
 ## License
 

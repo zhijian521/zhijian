@@ -6,7 +6,7 @@
  * @method POST   创建站点
  * @method PUT    更新站点
  * @method DELETE 删除站点
- * @returns success<TrackSite[]> | success<TrackSite> | fail
+ * @returns GET success<{ data: TrackSite[]; total: number }> | POST/PUT success<{ site: TrackSite | null }> | DELETE success<null> | fail
  */
 
 import { NextResponse } from 'next/server';

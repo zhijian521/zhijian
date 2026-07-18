@@ -2,8 +2,8 @@
  * @api 图片同步检查
  * @group admin
  * @auth admin
- * @method GET 对比远程与本地图片差异
- * @returns success<{ missing: string[] }> | fail
+ * @method GET 扫描服务器上传目录
+ * @returns success<{ files: { path: string; size: number }[]; total: number }>
  */
 
 import fs from 'fs';
