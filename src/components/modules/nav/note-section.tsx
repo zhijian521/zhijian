@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
+import { IconButton } from '@/components/ui/icon-button';
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
+import { PillSelect } from '@/components/ui/pill-select';
+import { SubmitButton } from '@/components/ui/submit-button';
 import type { NoteItem } from '@/lib/domain/nav-storage';
 import { genId, getNotes, saveNotes } from '@/lib/domain/nav-storage';
 
@@ -13,6 +16,11 @@ import NoteMarkdownEditor from './note-markdown-editor';
 import styles from './note-section.module.css';
 
 type ViewMode = 'edit' | 'preview';
+
+const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
+    { value: 'edit', label: '编辑' },
+    { value: 'preview', label: '预览' },
+];
 
 function formatDate(ts: number): string {
     return new Date(ts).toLocaleDateString('zh-CN', {
@@ -214,10 +222,8 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
         <div className={styles.panel}>
             <aside className={styles.sidebar}>
                 <div className={styles.sidebarHeader}>
-                    <h2 className={styles.title}>笔记</h2>
-                    <button className={styles.addBtn} onClick={handleCreate} type="button">
-                        <PlusIcon style={{ width: '0.75rem', height: '0.75rem' }} />
-                    </button>
+                    <h2 className={styles.title}>笔记列表</h2>
+                    <IconButton aria-label="新建笔记" icon={<PlusIcon />} onClick={handleCreate} size="small" />
                 </div>
 
                 <ul className={styles.list}>
@@ -245,17 +251,17 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                     <p className={styles.noteTitle}>{getDisplayTitle(note.title)}</p>
                                     <p className={styles.noteDate}>{formatDate(note.updatedAt)}</p>
                                 </div>
-                                <button
+                                <IconButton
                                     aria-label="删除笔记"
                                     className={styles.noteDelete}
+                                    icon={<Trash2Icon />}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleDelete(note.id);
                                     }}
-                                    type="button"
-                                >
-                                    <Trash2Icon className={styles.noteDeleteIcon} />
-                                </button>
+                                    size="mini"
+                                    variant="danger"
+                                />
                             </li>
                         );
                     })}
@@ -284,22 +290,12 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                 </p>
                             </div>
 
-                            <div className={styles.viewTabs}>
-                                <button
-                                    className={`${styles.viewTab} ${viewMode === 'edit' ? styles.viewTabActive : ''}`}
-                                    onClick={() => handleViewModeChange('edit')}
-                                    type="button"
-                                >
-                                    编辑
-                                </button>
-                                <button
-                                    className={`${styles.viewTab} ${viewMode === 'preview' ? styles.viewTabActive : ''}`}
-                                    onClick={() => handleViewModeChange('preview')}
-                                    type="button"
-                                >
-                                    预览
-                                </button>
-                            </div>
+                            <PillSelect
+                                onChange={handleViewModeChange}
+                                options={VIEW_OPTIONS}
+                                size="small"
+                                value={viewMode}
+                            />
                         </div>
 
                         <div className={styles.detailContent}>
@@ -319,9 +315,9 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                 ) : (
                     <div className={styles.emptyState}>
                         <p className={styles.emptyText}>还没有笔记，先新建一篇开始写。</p>
-                        <button className={styles.emptyAction} onClick={handleCreate} type="button">
+                        <SubmitButton onClick={handleCreate} type="button">
                             新建笔记
-                        </button>
+                        </SubmitButton>
                     </div>
                 )}
             </section>

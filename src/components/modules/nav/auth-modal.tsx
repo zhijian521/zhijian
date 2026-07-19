@@ -1,9 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import Dialog from '@/components/ui/dialog';
+import { PillSelect } from '@/components/ui/pill-select';
+import { SubmitButton } from '@/components/ui/submit-button';
+import { TextInput } from '@/components/ui/text-input';
 
 import styles from './auth-modal.module.css';
+
+type AuthTab = 'login' | 'register';
+
+const AUTH_TABS: { value: AuthTab; label: string }[] = [
+    { value: 'login', label: '登录' },
+    { value: 'register', label: '注册' },
+];
 
 interface AuthModalProps {
     open: boolean;
@@ -15,7 +26,7 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLogin, onRegister }: AuthModalProps) {
-    const [tab, setTab] = useState<'login' | 'register'>(initialTab ?? 'login');
+    const [tab, setTab] = useState<AuthTab>(initialTab ?? 'login');
 
     /*-- 弹窗打开时同步 tab --*/
     useEffect(() => {
@@ -35,8 +46,8 @@ export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLog
         setLoading(false);
     }
 
-    function switchTab(t: 'login' | 'register') {
-        setTab(t);
+    function switchTab(nextTab: AuthTab) {
+        setTab(nextTab);
         reset();
     }
 
@@ -81,66 +92,47 @@ export default function AuthModal({ open, initialTab, onSuccess, onCancel, onLog
             title={tab === 'login' ? '登录' : '注册'}
         >
             <div className={styles.tabs}>
-                <button
-                    className={`${styles.tab} ${tab === 'login' ? styles.tabActive : ''}`}
-                    onClick={() => switchTab('login')}
-                    type="button"
-                >
-                    登录
-                </button>
-                <button
-                    className={`${styles.tab} ${tab === 'register' ? styles.tabActive : ''}`}
-                    onClick={() => switchTab('register')}
-                    type="button"
-                >
-                    注册
-                </button>
+                <PillSelect onChange={switchTab} options={AUTH_TABS} size="small" value={tab} />
             </div>
 
-            <form onSubmit={tab === 'login' ? handleLogin : handleRegister}>
-                <label className={styles.fieldLabel}>
-                    用户名
-                    <input
-                        className={styles.fieldInput}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="用户名"
-                        required
-                        type="text"
-                        value={username}
-                    />
-                </label>
+            <form className={styles.form} onSubmit={tab === 'login' ? handleLogin : handleRegister}>
+                <TextInput
+                    id="nav-auth-username"
+                    label="用户名"
+                    onChange={(event) => setUsername(event.target.value)}
+                    placeholder="用户名"
+                    required
+                    type="text"
+                    value={username}
+                />
 
                 {tab === 'register' && (
-                    <label className={styles.fieldLabel}>
-                        邮箱
-                        <input
-                            className={styles.fieldInput}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="email@example.com"
-                            required
-                            type="email"
-                            value={email}
-                        />
-                    </label>
+                    <TextInput
+                        id="nav-auth-email"
+                        label="邮箱"
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="email@example.com"
+                        required
+                        type="email"
+                        value={email}
+                    />
                 )}
 
-                <label className={styles.fieldLabel}>
-                    密码
-                    <input
-                        className={styles.fieldInput}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="至少 6 位"
-                        required
-                        type="password"
-                        value={password}
-                    />
-                </label>
+                <TextInput
+                    id="nav-auth-password"
+                    label="密码"
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="至少 6 位"
+                    required
+                    type="password"
+                    value={password}
+                />
 
                 {error && <p className={styles.error}>{error}</p>}
 
-                <button className={styles.submitBtn} disabled={loading} type="submit">
+                <SubmitButton className={styles.submitBtn} disabled={loading} type="submit">
                     {loading ? '请稍候…' : tab === 'login' ? '登录' : '注册'}
-                </button>
+                </SubmitButton>
             </form>
         </Dialog>
     );

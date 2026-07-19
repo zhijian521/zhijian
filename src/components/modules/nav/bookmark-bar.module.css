@@ -1,0 +1,41 @@
+/*== 书签栏及编辑弹窗布局 ==*/
+
+.wrapper {
+    width: 100%;
+}
+
+.bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.dialogFields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+}
+
+.deleteText {
+    margin: 0;
+    color: var(--foreground);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+}
+
+.confirmBtnDanger {
+    border-color: var(--destructive);
+    background: var(--destructive);
+}
+
+.confirmBtnDanger:hover {
+    background: color-mix(in srgb, var(--destructive) 88%, black);
+}

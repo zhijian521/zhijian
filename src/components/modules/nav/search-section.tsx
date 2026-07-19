@@ -18,7 +18,9 @@ export default function SearchSection({ isLoggedIn, dataVersion, onAskAi }: Sear
         <div className={styles.section}>
             <h1 className={styles.brandTitle}>{SITE_METADATA.name}</h1>
             <SearchBar onAskAi={onAskAi} />
-            <BookmarkBar isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
+            <div className={styles.bookmarks}>
+                <BookmarkBar isLoggedIn={isLoggedIn} dataVersion={dataVersion} />
+            </div>
         </div>
     );
 }

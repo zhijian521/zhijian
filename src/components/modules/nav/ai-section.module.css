@@ -3,9 +3,10 @@
 .panel {
     display: flex;
     width: 100%;
-    height: 100%;
-    gap: 0.75rem;
-    padding: 2rem 2.5rem 2rem 4rem;
+    min-height: 0;
+    padding-top: var(--space-4);
+    flex: 1;
+    gap: var(--space-3);
     box-sizing: border-box;
 }
 
@@ -18,7 +19,7 @@
     padding: 0.875rem;
     border: 1px solid var(--border);
     background: var(--card);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
 
@@ -38,26 +39,6 @@
     font-family: var(--font-serif);
     font-size: 1.25rem;
     font-weight: 500;
-}
-
-.addBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.875rem;
-    height: 1.875rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted-foreground);
-    cursor: pointer;
-    transition:
-        border-color 0.15s ease,
-        color 0.15s ease;
-}
-
-.addBtn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
 }
 
 .list {
@@ -144,11 +125,6 @@
     color: var(--destructive);
 }
 
-.convDeleteIcon {
-    width: 0.8125rem;
-    height: 0.8125rem;
-}
-
 /*-- 右侧详情 --*/
 
 .detail {
@@ -159,7 +135,7 @@
     flex-direction: column;
     border: 1px solid var(--border);
     background: var(--card);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
 
@@ -232,7 +208,7 @@
     min-width: 10rem;
     background: var(--popover);
     border: 1px solid var(--border);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow);
     z-index: 50;
     padding: 0.25rem 0;
 }
@@ -368,11 +344,6 @@
     transition: border-color 0.15s ease;
 }
 
-.inputWrap:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--ring-subtle);
-}
-
 .input {
     display: block;
     width: 100%;
@@ -439,19 +410,4 @@
     margin: 0;
     color: var(--muted-foreground);
     font-size: 0.9375rem;
-}
-
-.emptyAction {
-    min-width: 7rem;
-    padding: 0.625rem 1rem;
-    border: 1px solid var(--primary);
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: opacity 0.15s ease;
-}
-
-.emptyAction:hover {
-    opacity: 0.92;
 }

@@ -2,7 +2,9 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 
+import { GhostButton } from '@/components/ui/ghost-button';
 import { LogOutIcon, SettingsIcon } from '@/components/ui/icons';
+import { SubmitButton } from '@/components/ui/submit-button';
 import type { AuthUser } from '@/hooks/use-auth';
 import { getSaveStatus, onSaveStatusChange, syncLocalToServer, clearLocalNavData } from '@/lib/domain/nav-storage';
 
@@ -155,35 +157,28 @@ export default function SettingsSection({
                                     <span className={styles.profileValue}>{user.role}</span>
                                 </div>
 
-                                <button
+                                <GhostButton
+                                    asButton
                                     className={styles.logoutButton}
                                     disabled={loggingOut}
+                                    icon={<LogOutIcon />}
                                     onClick={handleLogout}
-                                    type="button"
+                                    size="small"
                                 >
-                                    <LogOutIcon className={styles.logoutIcon} />
                                     <span>{loggingOut ? '退出中…' : '退出登录'}</span>
-                                </button>
+                                </GhostButton>
                             </div>
                         ) : (
                             <div className={styles.authActions}>
                                 <p className={styles.cardHint}>登录后会自动把当前导航数据同步到你的账号。</p>
 
                                 <div className={styles.authButtons}>
-                                    <button
-                                        className={styles.primaryButton}
-                                        onClick={() => setShowAuthModal('login')}
-                                        type="button"
-                                    >
+                                    <SubmitButton onClick={() => setShowAuthModal('login')} size="small" type="button">
                                         登录
-                                    </button>
-                                    <button
-                                        className={styles.secondaryButton}
-                                        onClick={() => setShowAuthModal('register')}
-                                        type="button"
-                                    >
+                                    </SubmitButton>
+                                    <GhostButton asButton onClick={() => setShowAuthModal('register')} size="small">
                                         注册
-                                    </button>
+                                    </GhostButton>
                                 </div>
                             </div>
                         )}

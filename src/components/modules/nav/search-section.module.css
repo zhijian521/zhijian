@@ -1,0 +1,41 @@
+/*== 导航首屏：品牌、检索与常用书签 ==*/
+
+.section {
+    display: flex;
+    width: 100%;
+    max-width: 58rem;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.brandTitle {
+    margin: 0;
+    color: var(--primary);
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 6vw, 4.75rem);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+}
+
+.bookmarks {
+    width: 100%;
+    max-width: 54rem;
+}
+
+@media (max-height: 760px) {
+    .section {
+        gap: var(--space-4);
+    }
+
+    .brandTitle {
+        font-size: clamp(2.75rem, 5vw, 4rem);
+    }
+}
+
+@media (max-width: 640px) {
+    .section {
+        gap: var(--space-4);
+    }
+}

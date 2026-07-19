@@ -1,9 +1,10 @@
 .panel {
     display: flex;
     width: 100%;
-    height: 100%;
-    gap: 0.75rem;
-    padding: 2rem 2.5rem 2rem 4rem;
+    min-height: 0;
+    padding-top: var(--space-4);
+    flex: 1;
+    gap: var(--space-3);
     box-sizing: border-box;
 }
 
@@ -16,7 +17,7 @@
     padding: 0.875rem;
     border: 1px solid var(--border);
     background: var(--card);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
 
@@ -36,26 +37,6 @@
     font-family: var(--font-serif);
     font-size: 1.25rem;
     font-weight: 500;
-}
-
-.addBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.875rem;
-    height: 1.875rem;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted-foreground);
-    cursor: pointer;
-    transition:
-        border-color 0.15s ease,
-        color 0.15s ease;
-}
-
-.addBtn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
 }
 
 .list {
@@ -142,11 +123,6 @@
     color: var(--destructive);
 }
 
-.noteDeleteIcon {
-    width: 0.875rem;
-    height: 0.875rem;
-}
-
 .dragOverBefore::before,
 .dragOverAfter::after {
     content: '';
@@ -173,7 +149,7 @@
     flex-direction: column;
     border: 1px solid var(--border);
     background: var(--card);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
 
@@ -220,38 +196,6 @@
     margin-top: 0;
 }
 
-.viewTabs {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.15625rem;
-    border: 1px solid var(--border);
-    background: color-mix(in srgb, var(--card) 88%, transparent);
-    flex-shrink: 0;
-}
-
-.viewTab {
-    min-width: 3.875rem;
-    padding: 0.375rem 0.6875rem;
-    border: none;
-    background: transparent;
-    color: var(--muted-foreground);
-    font-size: 0.78125rem;
-    line-height: 1.2;
-    cursor: pointer;
-    transition:
-        background-color 0.15s ease,
-        color 0.15s ease;
-}
-
-.viewTab:hover {
-    color: var(--foreground);
-}
-
-.viewTabActive {
-    background: var(--primary);
-    color: var(--primary-foreground);
-}
-
 .detailContent {
     flex: 1;
     min-height: 0;
@@ -280,19 +224,4 @@
     margin: 0;
     color: var(--muted-foreground);
     font-size: 0.9375rem;
-}
-
-.emptyAction {
-    min-width: 7rem;
-    padding: 0.625rem 1rem;
-    border: 1px solid var(--primary);
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: opacity 0.15s ease;
-}
-
-.emptyAction:hover {
-    opacity: 0.92;
 }

@@ -3,6 +3,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 import Dialog from '@/components/ui/dialog';
+import { GhostButton } from '@/components/ui/ghost-button';
+import { SubmitButton } from '@/components/ui/submit-button';
+import { TextInput } from '@/components/ui/text-input';
 import { isBookmarkFolder } from '@/lib/domain/nav-config';
 import type { Bookmark, BookmarkItem, BookmarkFolder } from '@/lib/domain/nav-config';
 import { getBookmarks, saveBookmarks, genId } from '@/lib/domain/nav-storage';
@@ -344,48 +347,45 @@ export default function BookmarkBar({ isLoggedIn, dataVersion }: BookmarkBarProp
                         </p>
                     )}
                     {config.showForm && (
-                        <>
-                            <label className={styles.fieldLabel}>
-                                名称
-                                <input
-                                    className={styles.fieldInput}
-                                    onChange={(e) => setFormName(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') handleSave();
-                                    }}
-                                    placeholder="名称"
-                                    type="text"
-                                    value={formName}
-                                />
-                            </label>
+                        <div className={styles.dialogFields}>
+                            <TextInput
+                                id="bookmark-name"
+                                label="名称"
+                                onChange={(event) => setFormName(event.target.value)}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') handleSave();
+                                }}
+                                placeholder="名称"
+                                type="text"
+                                value={formName}
+                            />
                             {config.showUrl && (
-                                <label className={styles.fieldLabel}>
-                                    URL
-                                    <input
-                                        className={styles.fieldInput}
-                                        onChange={(e) => setFormUrl(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleSave();
-                                        }}
-                                        placeholder="https://"
-                                        type="url"
-                                        value={formUrl}
-                                    />
-                                </label>
+                                <TextInput
+                                    id="bookmark-url"
+                                    label="URL"
+                                    onChange={(event) => setFormUrl(event.target.value)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') handleSave();
+                                    }}
+                                    placeholder="https://"
+                                    type="url"
+                                    value={formUrl}
+                                />
                             )}
-                        </>
+                        </div>
                     )}
                     <div className={styles.dialogActions}>
-                        <button className={styles.cancelBtn} onClick={() => setEditMode(null)} type="button">
+                        <GhostButton asButton onClick={() => setEditMode(null)} size="small">
                             取消
-                        </button>
-                        <button
+                        </GhostButton>
+                        <SubmitButton
                             className={`${styles.confirmBtn} ${config.showDelete ? styles.confirmBtnDanger : ''}`}
                             onClick={handleSave}
+                            size="small"
                             type="button"
                         >
                             {config.showDelete ? '删除' : '保存'}
-                        </button>
+                        </SubmitButton>
                     </div>
                 </Dialog>
             )}

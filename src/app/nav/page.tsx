@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import NavShell from '@/app/nav/_components/nav-shell';
+import NavShell from '@/components/modules/nav/nav-shell';
 
 export const metadata: Metadata = {
     title: '导航',

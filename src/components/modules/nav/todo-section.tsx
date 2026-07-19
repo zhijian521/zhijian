@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+import { IconButton } from '@/components/ui/icon-button';
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import { getTodos, saveTodos, genId } from '@/lib/domain/nav-storage';
 import type { TodoItem } from '@/lib/domain/nav-storage';
@@ -177,10 +178,6 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
 
     return (
         <div className={styles.panel}>
-            <div className={styles.header}>
-                <h2 className={styles.title}>备忘录</h2>
-            </div>
-
             <div className={styles.matrix}>
                 {QUADRANTS.map((q) => {
                     const items = todosOf(q);
@@ -196,14 +193,12 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                 <span className={styles.qDot} />
                                 <span className={styles.qTitle}>{q.label}</span>
                                 <span className={styles.qCount}>{items.length}</span>
-                                <button
+                                <IconButton
                                     aria-label="新增"
-                                    className={styles.qAdd}
+                                    icon={<PlusIcon />}
                                     onClick={() => handleAddInQuadrant(q)}
-                                    type="button"
-                                >
-                                    <PlusIcon style={{ width: '0.875rem', height: '0.875rem' }} />
-                                </button>
+                                    size="mini"
+                                />
                             </div>
                             <div className={styles.qList}>
                                 {items.map((t) => {
@@ -261,17 +256,17 @@ export default function TodoSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                                                     {t.text || '（空）'}
                                                 </div>
                                             )}
-                                            <button
+                                            <IconButton
                                                 aria-label="删除"
                                                 className={styles.cardDelete}
+                                                icon={<Trash2Icon />}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleDelete(t.id);
                                                 }}
-                                                type="button"
-                                            >
-                                                <Trash2Icon className={styles.cardDeleteIcon} />
-                                            </button>
+                                                size="mini"
+                                                variant="danger"
+                                            />
                                         </div>
                                     );
                                 })}

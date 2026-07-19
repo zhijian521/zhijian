@@ -1,0 +1,22 @@
+/*== 导航页认证弹窗布局 ==*/
+
+.tabs {
+    margin-bottom: var(--space-5);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.error {
+    margin: 0;
+    color: var(--destructive);
+    font-size: var(--text-sm);
+}
+
+.submitBtn {
+    width: 100%;
+    margin-top: var(--space-1);
+}

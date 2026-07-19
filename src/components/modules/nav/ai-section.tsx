@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { MarkdownArticle } from '@/components/site/markdown-article';
+import { IconButton } from '@/components/ui/icon-button';
 import { PlusIcon, Trash2Icon, ArrowUpIcon, SparklesIcon } from '@/components/ui/icons';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { toast } from '@/components/ui/toast';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import type { ChatConversation, ChatMessage } from '@/lib/domain/nav-storage';
@@ -335,9 +337,9 @@ export default function AiSection({
                 <div className={styles.emptyState}>
                     <SparklesIcon style={{ width: '2rem', height: '2rem', color: 'var(--primary)' }} />
                     <p className={styles.emptyText}>登录后即可使用 AI 对话。</p>
-                    <button className={styles.emptyAction} onClick={onRequireLogin} type="button">
+                    <SubmitButton onClick={onRequireLogin} type="button">
                         登录
-                    </button>
+                    </SubmitButton>
                 </div>
             </div>
         );
@@ -349,15 +351,13 @@ export default function AiSection({
         <div className={styles.panel}>
             <aside className={styles.sidebar}>
                 <div className={styles.sidebarHeader}>
-                    <h2 className={styles.title}>对话</h2>
-                    <button
+                    <h2 className={styles.title}>对话列表</h2>
+                    <IconButton
                         aria-label="新建对话"
-                        className={styles.addBtn}
+                        icon={<PlusIcon />}
                         onClick={handleCreateConversation}
-                        type="button"
-                    >
-                        <PlusIcon style={{ width: '0.75rem', height: '0.75rem' }} />
-                    </button>
+                        size="small"
+                    />
                 </div>
 
                 <ul className={styles.list}>
@@ -371,17 +371,17 @@ export default function AiSection({
                                 <p className={styles.convTitle}>{c.title || '新对话'}</p>
                                 <p className={styles.convMeta}>{formatTime(c.updatedAt)}</p>
                             </div>
-                            <button
+                            <IconButton
                                 aria-label="删除对话"
                                 className={styles.convDelete}
+                                icon={<Trash2Icon />}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setConfirmDeleteId(c.id);
                                 }}
-                                type="button"
-                            >
-                                <Trash2Icon className={styles.convDeleteIcon} />
-                            </button>
+                                size="mini"
+                                variant="danger"
+                            />
                         </li>
                     ))}
                 </ul>

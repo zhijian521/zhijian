@@ -60,7 +60,7 @@
     border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
     background: color-mix(in srgb, var(--card) 82%, transparent);
     backdrop-filter: blur(22px);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.16);
+    box-shadow: var(--shadow-lg);
 }
 
 .cardHeader {
@@ -121,35 +121,15 @@
 }
 
 .logoutButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
     align-self: flex-start;
-    min-width: 6.5rem;
-    padding: 0.5rem 0.875rem;
     border: 1px solid color-mix(in srgb, var(--destructive) 42%, transparent);
-    background: color-mix(in srgb, var(--card) 72%, transparent);
     color: var(--destructive);
-    font-size: 0.8125rem;
-    cursor: pointer;
-    transition:
-        background-color 0.18s ease,
-        opacity 0.18s ease;
 }
 
 .logoutButton:hover {
     background: color-mix(in srgb, var(--destructive) 12%, transparent);
-}
-
-.logoutButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.logoutIcon {
-    width: 0.875rem;
-    height: 0.875rem;
+    border-color: var(--destructive);
+    color: var(--destructive);
 }
 
 .authActions {
@@ -161,38 +141,6 @@
 .authButtons {
     display: flex;
     gap: 0.625rem;
-}
-
-.primaryButton,
-.secondaryButton {
-    min-width: 5.5rem;
-    padding: 0.5rem 0.875rem;
-    font-size: 0.8125rem;
-    cursor: pointer;
-    transition:
-        opacity 0.18s ease,
-        background-color 0.18s ease,
-        border-color 0.18s ease;
-}
-
-.primaryButton {
-    border: 1px solid var(--primary);
-    background: var(--primary);
-    color: var(--primary-foreground);
-}
-
-.primaryButton:hover {
-    opacity: 0.92;
-}
-
-.secondaryButton {
-    border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
-    background: transparent;
-    color: var(--foreground);
-}
-
-.secondaryButton:hover {
-    background: color-mix(in srgb, var(--card) 86%, var(--muted) 14%);
 }
 
 .syncList {
