@@ -76,7 +76,6 @@
 src/
 ├── app/                    # Next.js App Router
 │   ├── admin/              # 后台管理
-│   │   ├── _hooks/         # 后台 Hooks（列表 CRUD 等）
 │   │   ├── posts/[id]/     # 文章编辑器（全屏独立页面）
 │   │   ├── analytics/      # 站点分析（数据概览 + 站点管理）
 │   │   ├── showcase/       # UI 组件与图标预览
@@ -98,6 +97,7 @@ src/
 ├── lib/
 │   ├── core/               # 数据库、鉴权、响应和基础工具
 │   └── domain/             # 文章、导航、统计等业务数据层
+├── hooks/                  # 认证和通用 CRUD 列表 Hook
 ├── showcase/               # 组件展示 Registry
 └── middleware.ts           # 注入当前路径请求头
 docs/                       # 产品、技术和开发规范 Markdown
