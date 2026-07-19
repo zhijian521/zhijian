@@ -20,83 +20,6 @@
     outline-offset: var(--focus-offset);
 }
 
-.shell :is(input, textarea):focus,
-.shell :is(input, textarea):focus-visible {
-    border-color: var(--border);
-    outline: none;
-    box-shadow: none;
-}
-
-/*-- 四屏导航 --*/
-
-.sectionNav {
-    position: fixed;
-    top: 50%;
-    left: var(--space-5);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    transform: translateY(-50%);
-}
-
-.sectionNavList {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    flex-direction: column;
-    gap: var(--space-2);
-    list-style: none;
-}
-
-.sectionNavButton {
-    display: flex;
-    min-width: 4rem;
-    padding: var(--space-2) var(--space-3);
-    align-items: center;
-    border: 0;
-    border-left: 2px solid transparent;
-    background: transparent;
-    color: var(--muted-foreground);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        border-color var(--transition),
-        background-color var(--transition),
-        color var(--transition);
-}
-
-.sectionNavButton:hover,
-.sectionNavButtonActive {
-    border-left-color: var(--primary);
-    color: var(--primary);
-    background: var(--primary-subtle-soft);
-}
-
-.sectionNavLabel {
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wide);
-}
-
-/*-- 单屏容器 --*/
-
-.section {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    height: 100vh;
-    padding: var(--space-6) var(--space-9);
-    scroll-snap-align: start;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-}
-
-.sectionTop {
-    justify-content: flex-start;
-    padding-top: clamp(var(--space-8), 22vh, 12rem);
-}
-
 .sectionActions {
     position: absolute;
     top: var(--space-6);
@@ -104,62 +27,7 @@
     z-index: 12;
 }
 
-.sectionStretch {
-    align-items: stretch;
-    justify-content: stretch;
-}
-
-@media (max-width: 900px) {
-    .section {
-        padding-right: var(--space-8);
-        padding-left: var(--space-8);
-    }
-
-    .sectionNav {
-        left: var(--space-2);
-    }
-
-    .sectionNavButton {
-        min-width: 3rem;
-        padding-right: var(--space-2);
-        padding-left: var(--space-2);
-    }
-}
-
 @media (max-width: 640px) {
-    .section {
-        padding: var(--space-5) var(--space-3);
-    }
-
-    .sectionNav {
-        top: auto;
-        right: var(--space-3);
-        bottom: var(--space-3);
-        left: var(--space-3);
-        flex-direction: row;
-        transform: none;
-    }
-
-    .sectionNavList {
-        width: 100%;
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .sectionNavButton {
-        min-width: 3rem;
-        padding: var(--space-2) var(--space-3);
-        border: 0;
-        border-bottom: 1px solid var(--border-strong);
-        text-align: center;
-    }
-
-    .sectionNavButton:hover,
-    .sectionNavButtonActive {
-        border: 0;
-        border-bottom: 3px solid var(--primary);
-    }
-
     .sectionActions {
         top: var(--space-3);
         right: var(--space-3);

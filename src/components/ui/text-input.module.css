@@ -49,7 +49,9 @@
 
 /*== 基础输入框 — 对应 default 尺寸 ==*/
 .input {
+    display: block;
     width: 100%;
+    box-sizing: border-box;
     padding: var(--comp-py-base) var(--comp-px-base);
     font-family: inherit;
     font-size: var(--comp-text-base);

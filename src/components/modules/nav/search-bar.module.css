@@ -19,6 +19,11 @@
     transition: border-color 0.15s;
 }
 
+.bar:focus-within {
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+
 .engineBtn {
     display: flex;
     align-items: center;
@@ -94,11 +99,11 @@
 
 .input {
     flex: 1;
-    padding: 0.875rem 1rem;
+    padding: var(--space-4);
     border: none;
     background: transparent;
     color: var(--foreground);
-    font-size: 1.0625rem;
+    font-size: var(--text-sm);
     font-family: var(--font-sans);
     outline: none;
 }
@@ -117,19 +122,19 @@
     align-items: center;
     justify-content: center;
     border: none;
-    background: var(--primary);
-    color: var(--primary-foreground);
+    background: transparent;
+    color: var(--primary);
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: color var(--transition);
 }
 
 .aiBtn:hover {
-    opacity: 0.88;
+    color: var(--primary-hover);
 }
 
 .aiIcon {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .history {

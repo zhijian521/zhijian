@@ -7,7 +7,9 @@ import { clearNavDataCache } from '@/lib/domain/nav-storage';
 
 import AiSection from './ai-section';
 import NoteSection from './note-section';
+import PageSection from './page-section';
 import SearchSection from './search-section';
+import SectionNav from './section-nav';
 import SettingsSection from './settings-section';
 import TodoSection from './todo-section';
 import styles from './nav-shell.module.css';
@@ -107,25 +109,9 @@ export default function NavShell() {
         <div className={styles.shell} ref={shellRef}>
             <div className="bg-overlay" />
 
-            <nav aria-label="导航页分屏" className={styles.sectionNav}>
-                <ol className={styles.sectionNavList}>
-                    {NAV_SECTIONS.map((section, index) => (
-                        <li key={section.label}>
-                            <button
-                                aria-current={activeSection === index ? 'page' : undefined}
-                                aria-label={`${section.label}，${section.shortcut}`}
-                                className={`${styles.sectionNavButton} ${activeSection === index ? styles.sectionNavButtonActive : ''}`}
-                                onClick={() => scrollToSection(index)}
-                                type="button"
-                            >
-                                <span className={styles.sectionNavLabel}>{section.label}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ol>
-            </nav>
+            <SectionNav activeIndex={activeSection} onSelect={scrollToSection} sections={NAV_SECTIONS} />
 
-            <section aria-label="搜索与书签" className={`${styles.section} ${styles.sectionTop}`} ref={sectionRef(0)}>
+            <PageSection label="搜索与书签" sectionRef={sectionRef(0)} variant="top">
                 <div className={styles.sectionActions}>
                     <SettingsSection
                         isLoggedIn={isLoggedIn}
@@ -140,9 +126,9 @@ export default function NavShell() {
                 </div>
 
                 <SearchSection dataVersion={dataVersion} isLoggedIn={isLoggedIn} onAskAi={handleAskAi} />
-            </section>
+            </PageSection>
 
-            <section aria-label="AI 对话" className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(1)}>
+            <PageSection label="AI 对话" sectionRef={sectionRef(1)} variant="stretch">
                 <AiSection
                     dataVersion={dataVersion}
                     initialQuery={pendingAiQuery}
@@ -151,19 +137,15 @@ export default function NavShell() {
                     onConsumedInitialQuery={handleConsumedInitialQuery}
                     onRequireLogin={handleRequireLogin}
                 />
-            </section>
+            </PageSection>
 
-            <section
-                aria-label="四象限待办"
-                className={`${styles.section} ${styles.sectionStretch}`}
-                ref={sectionRef(2)}
-            >
+            <PageSection label="四象限待办" sectionRef={sectionRef(2)} variant="stretch">
                 <TodoSection dataVersion={dataVersion} isLoggedIn={isLoggedIn} />
-            </section>
+            </PageSection>
 
-            <section aria-label="随手笔记" className={`${styles.section} ${styles.sectionStretch}`} ref={sectionRef(3)}>
+            <PageSection label="随手笔记" sectionRef={sectionRef(3)} variant="stretch">
                 <NoteSection dataVersion={dataVersion} isLoggedIn={isLoggedIn} />
-            </section>
+            </PageSection>
         </div>
     );
 }

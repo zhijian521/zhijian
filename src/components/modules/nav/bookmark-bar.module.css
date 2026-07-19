@@ -8,6 +8,8 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
+    margin: var(--space-4);
     gap: var(--space-2);
 }
 

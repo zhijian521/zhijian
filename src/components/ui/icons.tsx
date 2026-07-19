@@ -240,6 +240,13 @@ export const STROKE_ICONS: Record<string, React.ReactNode> = {
             <path d="m21 21-4.3-4.3" strokeLinecap="round" strokeLinejoin="round" />
         </>
     ),
+    'search-sparkles': (
+        <>
+            <circle cx="10.5" cy="11.5" r="5.5" />
+            <path d="m14.5 15.5 5 5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M18.5 2v4M16.5 4h4M20.5 9v2M19.5 10h2" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+    ),
     sparkles: (
         <>
             <path
@@ -427,6 +434,7 @@ export const PlusIcon = makeIcon('plus');
 export const QuoteIcon = makeIcon('quote');
 export const SaveIcon = makeIcon('save');
 export const SearchIcon = makeIcon('search');
+export const SearchSparklesIcon = makeIcon('search-sparkles');
 export const SparklesIcon = makeIcon('sparkles');
 export const SettingsIcon = makeIcon('settings');
 export const ShieldIcon = makeIcon('shield');

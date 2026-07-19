@@ -337,26 +337,16 @@
     border-top: 1px solid var(--border);
 }
 
-.inputWrap {
+.composer > :first-child {
     flex: 1;
-    border: 1px solid var(--border);
-    background: var(--background);
-    transition: border-color 0.15s ease;
+    min-width: 0;
 }
 
 .input {
-    display: block;
-    width: 100%;
     padding: 0.5rem 0.75rem;
-    border: none;
-    background: transparent;
-    color: var(--foreground);
-    font-family: var(--font-sans);
     font-size: 0.875rem;
     line-height: 1.6;
-    outline: none;
     resize: none;
-    box-sizing: border-box;
     max-height: 8rem;
 }
 

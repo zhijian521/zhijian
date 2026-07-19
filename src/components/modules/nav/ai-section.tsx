@@ -6,6 +6,7 @@ import { MarkdownArticle } from '@/components/site/markdown-article';
 import { IconButton } from '@/components/ui/icon-button';
 import { PlusIcon, Trash2Icon, ArrowUpIcon, SparklesIcon } from '@/components/ui/icons';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import type { ChatConversation, ChatMessage } from '@/lib/domain/nav-storage';
@@ -462,16 +463,17 @@ export default function AiSection({
                 </div>
 
                 <div className={styles.composer}>
-                    <div className={styles.inputWrap}>
-                        <textarea
-                            className={styles.input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="输入消息，Enter 发送，Shift+Enter 换行..."
-                            rows={1}
-                            value={input}
-                        />
-                    </div>
+                    <TextInput
+                        aria-label="AI 对话输入"
+                        className={styles.input}
+                        inputSize="medium"
+                        multiline
+                        onChange={(event) => setInput(event.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="输入消息，Enter 发送，Shift+Enter 换行..."
+                        rows={1}
+                        value={input}
+                    />
                     <button
                         aria-label="发送"
                         className={styles.sendBtn}

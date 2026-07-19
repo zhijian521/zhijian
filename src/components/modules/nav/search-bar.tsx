@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
-import { SparklesIcon } from '@/components/ui/icons';
+import { SearchSparklesIcon } from '@/components/ui/icons';
 import { SEARCH_ENGINES } from '@/lib/domain/nav-config';
 import {
     getSearchHistory,
@@ -129,12 +129,12 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') handleSearch();
                     }}
-                    placeholder="搜索或输入网址..."
+                    placeholder="寻一处旧识，或抵达一方新境…"
                     type="text"
                     value={query}
                 />
-                <button aria-label="AI 对话" className={styles.aiBtn} onClick={handleAskAi} type="button">
-                    <SparklesIcon className={styles.aiIcon} />
+                <button aria-label="AI 搜索" className={styles.aiBtn} onClick={handleAskAi} type="button">
+                    <SearchSparklesIcon className={styles.aiIcon} />
                 </button>
             </div>
 

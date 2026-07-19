@@ -10,10 +10,10 @@
 }
 
 .brandTitle {
-    margin: 0;
+    margin: var(--space-6);
     color: var(--primary);
     font-family: var(--font-serif);
-    font-size: clamp(3rem, 6vw, 4.75rem);
+    font-size: clamp(2rem, 5vw, 4rem);
     font-weight: var(--weight-semibold);
     line-height: var(--leading-tight);
     letter-spacing: var(--tracking-tight);
