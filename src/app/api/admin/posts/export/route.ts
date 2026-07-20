@@ -13,6 +13,7 @@ import { ZipArchive } from 'archiver';
 
 import { withAdmin } from '@/lib/core/with-admin';
 import { extractImagePaths, getAllPosts } from '@/lib/domain/posts';
+import { resolveUploadFilePath } from '@/lib/domain/uploads';
 
 /*== 文章一键导出 API — 将所有文章 + 引用图片打包为 ZIP 流式下载
     支持 ?id= 参数：指定时只导出该文章；省略时导出全部。 ==*/
@@ -50,7 +51,6 @@ export const GET = withAdmin(async (request) => {
 
     /*-- 记录缺失文件，写入 manifest --*/
     const missingFiles: string[] = [];
-    const publicDir = path.join(process.cwd(), 'public');
 
     /*-- 为每篇文章生成 .md 文件 --*/
     const usedTitles = new Map<string, number>();
@@ -92,11 +92,11 @@ export const GET = withAdmin(async (request) => {
         archive.append(mdContent, { name: `${fileName}.md` });
     }
 
-    /*-- 复制图片文件到 ZIP --*/
+    /*-- 复制图片文件到 ZIP（路径经 resolveUploadFilePath 校验，拒绝穿越） --*/
     for (const [src, target] of imageMap) {
-        const filePath = path.join(publicDir, src.replace(/^\//, ''));
+        const filePath = resolveUploadFilePath(src);
         try {
-            if (fs.existsSync(filePath)) {
+            if (filePath && fs.existsSync(filePath)) {
                 archive.file(filePath, { name: target });
             } else {
                 missingFiles.push(src);

@@ -62,6 +62,15 @@ export function validateImageFile(file: { type: string; size: number }): string 
     return null;
 }
 
+/*== 把 /uploads/ 开头的站内路径安全解析为绝对路径；逃逸出 uploads 目录时返回 null。 ==*/
+export function resolveUploadFilePath(src: string): string | null {
+    /*-- 归一化解析后校验前缀，拒绝 .. 路径穿越 --*/
+    const filePath = path.resolve(process.cwd(), 'public', src.replace(/^\//, ''));
+    const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads') + path.sep;
+    if (!filePath.startsWith(uploadsDir)) return null;
+    return filePath;
+}
+
 /*== 写入操作 ==*/
 
 /*== 上传图片到文件系统 + 数据库。 非 SVG/GIF 自动转为 WebP。返回上传记录，失败时返回 null。 ==*/
