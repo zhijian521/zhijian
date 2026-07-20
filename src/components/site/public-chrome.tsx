@@ -6,21 +6,13 @@
 ============================================================================*/
 
 'use client';
-
+/*== 依赖导入 ==*/
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
-
-/*== 数据与配置 ==*/
 import { APP_ROUTES, SITE_METADATA } from '@/lib/core/site';
 import { SiteHeader } from '@/components/site/site-header';
-
-/*== 样式导入 ==*/
+import type { PublicChromeProps } from '@/types/site';
 import styles from './public-chrome.module.css';
-
-/*== 类型定义 ==*/
-interface PublicChromeProps {
-    children: React.ReactNode;
-}
 
 /*== 前台公共壳层：统一提供 SiteHeader + 页脚 + 统计脚本。 ==*/
 export default function PublicChrome({ children }: PublicChromeProps) {

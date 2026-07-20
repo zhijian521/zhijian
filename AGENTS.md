@@ -230,6 +230,7 @@ refactor: 中文描述
 | 站点配置      | `src/lib/core/site.ts`                                         |
 | 根布局元数据  | `src/lib/core/metadata.ts`                                     |
 | App 路由类型  | `src/types/app.ts`                                             |
+| 站点壳组件类型 | `src/types/site.ts`                                            |
 | API 响应格式  | `src/lib/core/api-response.ts`                                 |
 | 认证系统      | `src/lib/core/auth.ts`                                         |
 | Admin 鉴权    | `src/lib/core/with-admin.ts`                                   |
