@@ -67,3 +67,8 @@ export function isCategoryActive(activeCategorySlug: string | undefined, slug: s
     if (!activeCategorySlug) return !slug;
     return activeCategorySlug === slug;
 }
+
+/*== 序列化 JSON-LD 为可安全内嵌 <script> 的字符串。转义 < 防止内容中的 </script> 提前闭合标签（XSS）。 ==*/
+export function serializeJsonLd(data: unknown): string {
+    return JSON.stringify(data).replace(/</g, '\\u003c');
+}

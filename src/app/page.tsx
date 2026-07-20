@@ -17,6 +17,7 @@ import { BookIcon, CodeIcon, ExternalLinkIcon, GitHubIcon } from '@/components/u
 
 /*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
+import { serializeJsonLd } from '@/lib/core/utils';
 import { getPublishedPosts } from '@/lib/domain/posts';
 import { fetchCommitHistory } from '@/lib/domain/github';
 
@@ -119,7 +120,7 @@ export default async function HomePage() {
     return (
         <main>
             {/* 结构化数据 */}
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(homeJsonLd) }} />
             {/* 首屏封面 */}
             <HeroSection />
             {/* 简介&文章&项目 */}

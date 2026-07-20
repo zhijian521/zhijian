@@ -16,7 +16,7 @@ import { RelatedPosts } from '@/components/modules/blog/related-posts';
 
 /*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
-import { toAbsoluteUrl } from '@/lib/core/utils';
+import { serializeJsonLd, toAbsoluteUrl } from '@/lib/core/utils';
 import { getPostBySlug, getPublishedPosts, toPostIsoDateTime } from '@/lib/domain/posts';
 
 /*== 样式导入 ==*/
@@ -196,7 +196,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         <main className={`${styles.page} ${styles.pageViewport}`}>
             <div className="bg-overlay" />
             {/* JSON-LD 结构化数据 */}
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
             <article className={styles.surface}>
                 <ArticleDetail post={post} />
             </article>

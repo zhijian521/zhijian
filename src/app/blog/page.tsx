@@ -13,7 +13,7 @@ import { cache } from 'react';
 import ListClient from '@/components/modules/blog/list-client';
 import type { ActiveFilterChip } from '@/components/modules/blog/header';
 import type { FilterOption } from '@/components/modules/blog/filter-sidebar';
-import { buildBlogUrl } from '@/lib/core/utils';
+import { buildBlogUrl, serializeJsonLd } from '@/lib/core/utils';
 
 /*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
@@ -358,7 +358,7 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
 
     return (
         <>
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
             <ListClient
                 activeCategorySlug={activeCategorySlug || undefined}
                 activeFilterChips={activeFilterChips}
