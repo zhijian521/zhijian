@@ -2,11 +2,13 @@
  * @api Favicon 代理
  * @group util
  * @auth none
- * @method GET 自建 favicon 获取服务，代理抓取站点图标
+ * @method GET 自建 favicon 获取服务，代理抓取站点图标（SSRF 防护）
  * @returns 图片二进制 | 302 重定向
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+
+import { fetchWithSsrfGuard } from '@/lib/core/ssrf-guard';
 
 /*============================================================================
   Favicon 代理 API — 自建 favicon 获取服务
@@ -15,10 +17,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
   逻辑：
   1. 内存缓存，30 天过期
-  2. 抓取首页 HTML，解析 <link rel="icon"> 等
-  3. 未找到则 fallback /favicon.ico
-  4. 代理返回图片二进制 + 浏览器缓存头
-  5. 全部失败 302 → Google favicon API
+  2. isValidDomain 形状粗筛（第一道防线）
+  3. fetchWithSsrfGuard 抓取首页 HTML（仅 https + DNS 校验公网地址 + 逐跳
+     校验重定向），流式读取超 512KB 截断，解析 <link rel="icon"> 等
+  4. 未找到则 fallback /favicon.ico
+  5. fetchWithSsrfGuard 抓取 favicon 图片，校验 image/* content-type
+  6. 代理返回图片二进制 + 浏览器缓存头
+  7. 全部失败 302 → Google favicon API
 ============================================================================*/
 
 /*-- 内存缓存 --*/
@@ -30,6 +35,38 @@ interface CacheEntry {
 const cache = new Map<string, CacheEntry>();
 const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 天
 const MAX_CACHE = 500;
+const MAX_HTML_BYTES = 512 * 1024; // 首页 HTML 读取上限 512KB
+
+/*-- 流式读取响应体为文本，超过 512KB 即截断（无鉴权端点防止大 body 耗尽内存） --*/
+async function readHtmlWithLimit(res: Response): Promise<string> {
+    if (!res.body) return '';
+    const reader = res.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    try {
+        for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            total += value.byteLength;
+            if (total > MAX_HTML_BYTES) {
+                /* 截断安全：<link rel="icon"> 位于 head 前部，截尾不影响提取 */
+                await reader.cancel();
+                break;
+            }
+            chunks.push(value);
+        }
+    } finally {
+        reader.releaseLock();
+    }
+    const size = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+    const merged = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) {
+        merged.set(chunk, offset);
+        offset += chunk.byteLength;
+    }
+    return new TextDecoder().decode(merged);
+}
 
 /*-- 从 HTML 中提取 favicon URL --*/
 function extractFaviconUrl(html: string, origin: string): string | null {
@@ -84,20 +121,16 @@ export async function GET(request: NextRequest) {
     const origin = `https://${domain}`;
 
     try {
-        /*-- 第一步：抓首页 HTML 提取 favicon URL --*/
+        /*-- 第一步：抓首页 HTML 提取 favicon URL（SSRF 防护在 fetchWithSsrfGuard 内统一完成） --*/
         let faviconUrl: string | null = null;
         try {
-            const htmlRes = await fetch(origin, {
-                signal: AbortSignal.timeout(5000),
-                headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FaviconBot/1.0)' },
-                redirect: 'follow',
-            });
+            const htmlRes = await fetchWithSsrfGuard(origin);
             if (htmlRes.ok) {
-                const html = await htmlRes.text();
+                const html = await readHtmlWithLimit(htmlRes);
                 faviconUrl = extractFaviconUrl(html, origin);
             }
         } catch {
-            /* 首页抓取失败，忽略 */
+            /* 首页抓取失败（含 SSRF 拦截），忽略走 fallback */
         }
 
         /*-- 第二步：fallback /favicon.ico --*/
@@ -106,11 +139,7 @@ export async function GET(request: NextRequest) {
         }
 
         /*-- 第三步：抓取 favicon 图片 --*/
-        const imgRes = await fetch(faviconUrl, {
-            signal: AbortSignal.timeout(5000),
-            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FaviconBot/1.0)' },
-            redirect: 'follow',
-        });
+        const imgRes = await fetchWithSsrfGuard(faviconUrl);
 
         if (!imgRes.ok) throw new Error(`favicon fetch ${imgRes.status}`);
 
