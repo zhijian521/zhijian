@@ -25,12 +25,9 @@ export const dynamic = 'force-dynamic';
 
 /*== 页面元数据 ==*/
 export const metadata: Metadata = {
-    title: SITE_METADATA.brandTitle,
+    title: { absolute: SITE_METADATA.brandTitle },
     description: SITE_METADATA.description,
     keywords: [...SITE_METADATA.keywords],
-    authors: [{ name: SITE_METADATA.author }],
-    creator: SITE_METADATA.author,
-    publisher: SITE_METADATA.author,
     alternates: { canonical: SITE_METADATA.siteUrl },
     openGraph: {
         title: SITE_METADATA.brandTitle,

@@ -7,17 +7,11 @@
 ============================================================================*/
 
 'use client';
-
+/*== 依赖导入 ==*/
 import { usePathname } from 'next/navigation';
-
-/*== 数据与配置 ==*/
 import { APP_ROUTES } from '@/lib/core/site';
 import PublicChrome from '@/components/site/public-chrome';
-
-/*== 类型定义 ==*/
-interface AppFrameProps {
-    children: React.ReactNode;
-}
+import type { AppFrameProps } from '@/types/site';
 
 /*== 根壳层分发器：根据当前路由在前台 PublicChrome 与后台页面之间实时切换。 ==*/
 export default function AppFrame({ children }: AppFrameProps) {
