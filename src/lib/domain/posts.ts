@@ -42,11 +42,13 @@ export interface CreatePostInput {
     tags?: number[];
 }
 
-/*-- 前台文章列表查询参数：支持分类、标签服务端过滤和数量限制 --*/
+/*-- 前台文章列表查询参数：支持分类、标签服务端过滤和数量限制；includeContent 默认 false，列表不查询正文 --*/
 export interface PublishedPostFilter {
     categorySlug?: string;
     tagSlugs?: string[];
     limit?: number;
+    /*-- 是否查询正文。默认 false，仅导出等确需正文的场景显式开启 --*/
+    includeContent?: boolean;
 }
 
 export type AdminPostStatusFilter = 'all' | PostStatus;
@@ -74,7 +76,7 @@ export interface AdminPostListResult {
     total: number;
 }
 
-/*-- 内部查询选项，统一数据库读取时的条件组合逻辑 --*/
+/*-- 内部查询选项，统一数据库读取时的条件组合逻辑。includeContent 默认 true，保持单篇与后台读取现状 --*/
 interface ReadPostsOptions {
     includeDrafts: boolean;
     id?: number;
@@ -82,6 +84,7 @@ interface ReadPostsOptions {
     categorySlug?: string;
     tagSlugs?: string[];
     limit?: number;
+    includeContent?: boolean;
 }
 
 /*-- MySQL 查询返回的原始行类型，字段名与数据库列名保持一致 --*/
@@ -118,7 +121,7 @@ const EMPTY_CONTENT_FALLBACK = '这篇文章还没有正文内容。';
 
 /*== 公开查询 ==*/
 
-/*-- 获取已发布文章列表 --*/
+/*-- 获取已发布文章列表。默认不查询正文（content 为空字符串），需要正文时显式传 includeContent: true --*/
 export async function getPublishedPosts(filter: PublishedPostFilter = {}): Promise<Post[]> {
     noStore();
     const posts = await readPostsFromDatabase({
@@ -126,8 +129,71 @@ export async function getPublishedPosts(filter: PublishedPostFilter = {}): Promi
         categorySlug: filter.categorySlug,
         tagSlugs: filter.tagSlugs,
         limit: filter.limit,
+        includeContent: filter.includeContent === true,
     });
     return enrichPostsWithTagNames(posts);
+}
+
+/*-- 分页获取已发布文章列表。SQL 层完成分页且不查询正文，列表与计数并行查询 --*/
+export async function listPublishedPostsPage(
+    filter: PublishedPostFilter & { page: number; pageSize: number }
+): Promise<{ posts: Post[]; total: number }> {
+    noStore();
+    const db = getDb();
+    if (!db) return { posts: [], total: 0 };
+
+    const page = Math.max(1, Math.floor(filter.page || 1));
+    const pageSize = Math.min(100, Math.max(1, Math.floor(filter.pageSize || 10)));
+    const offset = (page - 1) * pageSize;
+
+    const publishedFilter = buildPublishedFilter(filter);
+    const conditions = ['p.status = ?', ...publishedFilter.conditions];
+    const values: Array<number | string> = ['published', ...publishedFilter.values];
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+
+    try {
+        const [[countRows], [rows]] = await Promise.all([
+            db.query<RowDataPacket[]>(
+                `
+                    SELECT COUNT(*) AS total
+                    FROM zhijian_blog_posts p
+                    LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
+                    ${whereClause}
+                `,
+                values
+            ),
+            db.query<PostRow[]>(
+                `
+                    SELECT
+                        p.id,
+                        p.slug,
+                        p.title,
+                        p.summary,
+                        p.cover_image,
+                        p.alt_text,
+                        p.category_id,
+                        p.tags,
+                        p.status,
+                        DATE_FORMAT(p.published_at, '%Y-%m-%d %H:%i:%s') AS published_at,
+                        DATE_FORMAT(p.updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at,
+                        c.name AS category_name,
+                        c.slug AS category_slug
+                    FROM zhijian_blog_posts p
+                    LEFT JOIN zhijian_blog_categories c ON p.category_id = c.id
+                    ${whereClause}
+                    ORDER BY p.updated_at IS NULL, p.updated_at DESC, p.published_at IS NULL, p.published_at DESC, p.id DESC
+                    LIMIT ? OFFSET ?
+                `,
+                [...values, pageSize, offset]
+            ),
+        ]);
+
+        const posts = await enrichPostsWithTagNames(rows.map((row) => mapPostRow(row, false)));
+        return { posts, total: Number(countRows[0]?.total || 0) };
+    } catch (error) {
+        console.error('Failed to list published posts page.', { filter, error });
+        return { posts: [], total: 0 };
+    }
 }
 
 /*-- 获取全部文章（含草稿），供后台管理列表使用 --*/
@@ -359,6 +425,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         return [];
     }
 
+    const includeContent = options.includeContent !== false;
     const conditions: string[] = [];
     const values: Array<number | string> = [];
 
@@ -377,25 +444,14 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
         values.push(options.slug);
     }
 
-    if (options.categorySlug) {
-        conditions.push('c.slug = ?');
-        values.push(options.categorySlug);
-    }
-
-    if (options.tagSlugs && options.tagSlugs.length > 0) {
-        conditions.push(`
-            EXISTS (
-                SELECT 1
-                FROM zhijian_blog_tags filter_t
-                WHERE filter_t.slug IN (${options.tagSlugs.map(() => '?').join(', ')})
-                    AND JSON_CONTAINS(p.tags, CAST(filter_t.id AS JSON), '$')
-            )
-        `);
-        values.push(...options.tagSlugs);
-    }
+    const publishedFilter = buildPublishedFilter(options);
+    conditions.push(...publishedFilter.conditions);
+    values.push(...publishedFilter.values);
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-    const limitClause = options.limit && options.limit > 0 ? `LIMIT ${options.limit}` : '';
+    const withLimit = typeof options.limit === 'number' && options.limit > 0;
+    const limitClause = withLimit ? 'LIMIT ?' : '';
+    const contentColumn = includeContent ? 'p.content,' : '';
 
     try {
         const [rows] = await db.query<PostRow[]>(
@@ -405,7 +461,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                     p.slug,
                     p.title,
                     p.summary,
-                    p.content,
+                    ${contentColumn}
                     p.cover_image,
                     p.alt_text,
                     p.category_id,
@@ -421,41 +477,72 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
                 ORDER BY p.updated_at IS NULL, p.updated_at DESC, p.published_at IS NULL, p.published_at DESC, p.id DESC
                 ${limitClause}
             `,
-            values
+            withLimit ? [...values, Math.floor(options.limit!)] : values
         );
 
-        return rows.map((row) => {
-            const tags = parsePostTags(row.tags);
-
-            return {
-                id: row.id,
-                slug: row.slug,
-                title: row.title,
-                summary: row.summary?.trim() || EMPTY_SUMMARY_FALLBACK,
-                content: row.content?.trim() || EMPTY_CONTENT_FALLBACK,
-                coverImage: row.cover_image ?? null,
-                altText: row.alt_text ?? null,
-                categoryId: row.category_id ?? null,
-                categoryName: row.category_name ?? undefined,
-                tags,
-                status: row.status,
-                publishedAt: row.published_at,
-                updatedAt: row.updated_at,
-            };
-        });
+        return rows.map((row) => mapPostRow(row, includeContent));
     } catch (error) {
         console.error('Failed to read zhijian_blog_posts.', { options, error });
         return [];
     }
 }
 
+/*-- 构建已发布文章列表的筛选条件（分类 + 标签），列表查询与分页计数共用 --*/
+function buildPublishedFilter(filter: { categorySlug?: string; tagSlugs?: string[] }): {
+    conditions: string[];
+    values: Array<number | string>;
+} {
+    const conditions: string[] = [];
+    const values: Array<number | string> = [];
+
+    if (filter.categorySlug) {
+        conditions.push('c.slug = ?');
+        values.push(filter.categorySlug);
+    }
+
+    if (filter.tagSlugs && filter.tagSlugs.length > 0) {
+        conditions.push(`
+            EXISTS (
+                SELECT 1
+                FROM zhijian_blog_tags filter_t
+                WHERE filter_t.slug IN (${filter.tagSlugs.map(() => '?').join(', ')})
+                    AND JSON_CONTAINS(p.tags, CAST(filter_t.id AS JSON), '$')
+            )
+        `);
+        values.push(...filter.tagSlugs);
+    }
+
+    return { conditions, values };
+}
+
+/*-- 把数据库行映射为 Post。列表查询不取正文时 content 置为空字符串 --*/
+function mapPostRow(row: PostRow, includeContent: boolean): Post {
+    const content = includeContent ? row.content?.trim() || EMPTY_CONTENT_FALLBACK : '';
+
+    return {
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        summary: row.summary?.trim() || EMPTY_SUMMARY_FALLBACK,
+        content,
+        coverImage: row.cover_image ?? null,
+        altText: row.alt_text ?? null,
+        categoryId: row.category_id ?? null,
+        categoryName: row.category_name ?? undefined,
+        tags: parsePostTags(row.tags),
+        status: row.status,
+        publishedAt: row.published_at,
+        updatedAt: row.updated_at,
+    };
+}
+
 /*-- 批量查询标签名称，拼装到文章的 tagNames 字段中。查询失败时静默回退，不影响文章列表返回 --*/
 async function enrichPostsWithTagNames(posts: Post[]): Promise<Post[]> {
     const allTagIds = posts.flatMap((post) => post.tags).filter(Boolean);
-    if (allTagIds.length === 0) return posts;
+    if (allTagIds.length === 0) return posts.map((post) => ({ ...post, tagNames: [] }));
 
     const tagMap = await getTagNameMap(allTagIds);
-    if (tagMap.size === 0) return posts;
+    if (tagMap.size === 0) return posts.map((post) => ({ ...post, tagNames: [] }));
 
     return posts.map((post) => ({
         ...post,

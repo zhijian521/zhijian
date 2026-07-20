@@ -26,7 +26,7 @@ export function ArticleFooter({ post }: ArticleFooterProps) {
         <footer className={styles.footer}>
             <Show when={post.tagNames && post.tagNames.length > 0}>
                 <div className={styles.tags}>
-                    {post.tagNames!.map((tag) => (
+                    {(post.tagNames ?? []).map((tag) => (
                         <Tag key={tag.id} size="mini" variant="outlined">
                             {tag.name}
                         </Tag>

@@ -22,7 +22,7 @@ import { Show } from '@/components/ui/show';
 /*== 数据与配置 ==*/
 import type { ActiveFilterChip } from '@/components/modules/blog/header';
 import type { FilterOption } from '@/components/modules/blog/filter-sidebar';
-import type { Post } from '@/lib/domain/post-shared';
+import type { PostListItem } from '@/components/modules/blog/post-item';
 import { buildBlogUrl } from '@/lib/core/utils';
 
 /*== 样式导入 ==*/
@@ -41,7 +41,7 @@ interface ListClientProps {
     /*-- 当前页码 --*/
     currentPage: number;
     /*-- 文章列表数据 --*/
-    posts: Post[];
+    posts: PostListItem[];
     /*-- 可选标签列表 --*/
     tagOptions: FilterOption[];
     /*-- 总页数 --*/

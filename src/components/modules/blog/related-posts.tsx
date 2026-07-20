@@ -34,7 +34,7 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
                         <h3 className={styles.cardTitle}>{post.title}</h3>
                         <Show when={post.tagNames && post.tagNames.length > 0}>
                             <div className={styles.cardTags}>
-                                {post.tagNames!.slice(0, 3).map((tag) => (
+                                {(post.tagNames ?? []).slice(0, 3).map((tag) => (
                                     <Tag key={tag.id} size="mini" variant="outlined">
                                         {tag.name}
                                     </Tag>

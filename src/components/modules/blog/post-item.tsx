@@ -21,9 +21,24 @@ import type { Post } from '@/lib/domain/post-shared';
 import styles from './post-item.module.css';
 
 /*== 类型定义 ==*/
+/*-- 列表页文章卡片实际消费的字段，服务端按此裁剪后再传入客户端 --*/
+export type PostListItem = Pick<
+    Post,
+    | 'id'
+    | 'slug'
+    | 'title'
+    | 'summary'
+    | 'coverImage'
+    | 'altText'
+    | 'categoryName'
+    | 'tagNames'
+    | 'publishedAt'
+    | 'updatedAt'
+>;
+
 interface PostItemProps {
     /*-- 文章数据 --*/
-    post: Post;
+    post: PostListItem;
 }
 
 /*== PostItem 文章列表项 — 标题 + 摘要 + 元数据 + 可选封面图 ==*/
@@ -40,7 +55,7 @@ export function PostItem({ post }: PostItemProps) {
                     </Show>
                     <Show when={post.tagNames && post.tagNames.length > 0}>
                         <div className={styles.tags}>
-                            {post.tagNames!.map((tag) => (
+                            {(post.tagNames ?? []).map((tag) => (
                                 <Tag key={tag.id} size="mini" variant="outlined">
                                     {tag.name}
                                 </Tag>

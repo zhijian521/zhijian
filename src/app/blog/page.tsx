@@ -13,12 +13,13 @@ import { cache } from 'react';
 import ListClient from '@/components/modules/blog/list-client';
 import type { ActiveFilterChip } from '@/components/modules/blog/header';
 import type { FilterOption } from '@/components/modules/blog/filter-sidebar';
+import type { PostListItem } from '@/components/modules/blog/post-item';
 import { buildBlogUrl, serializeJsonLd } from '@/lib/core/utils';
 
 /*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
 import { listCategories } from '@/lib/domain/categories';
-import { getPublishedPosts } from '@/lib/domain/posts';
+import { listPublishedPostsPage } from '@/lib/domain/posts';
 import { listTags } from '@/lib/domain/tags';
 
 const PAGE_SIZE = 10;
@@ -26,7 +27,7 @@ const PAGE_SIZE = 10;
 /*== cache 包裹：同一请求内 generateMetadata 与 render 共享查询结果，避免重复查库 ==*/
 const cachedCategories = cache(listCategories);
 const cachedTags = cache(listTags);
-const cachedPublishedPosts = cache(getPublishedPosts);
+const cachedPublishedPostsPage = cache(listPublishedPostsPage);
 
 /*== 类型定义 ==*/
 interface BlogPageProps {
@@ -235,12 +236,14 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
         categories,
         tags
     );
-    const posts = await cachedPublishedPosts({
+    const { total } = await cachedPublishedPostsPage({
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
+        page: filters.currentPage,
+        pageSize: PAGE_SIZE,
     });
     const hasFilterState = Boolean(activeCategorySlug) || activeTagSlugs.length > 0;
-    const { currentPage, totalPages } = computePagination(posts.length, filters.currentPage);
+    const { currentPage, totalPages } = computePagination(total, filters.currentPage);
     const canonical = buildBlogUrl({
         categorySlug: activeCategorySlug,
         page: currentPage,
@@ -306,12 +309,40 @@ export default async function BlogListPage({ searchParams }: BlogPageProps) {
     ]);
     const { activeCategoryLabel, activeCategorySlug, activeFilterChips, activeTagNames, activeTagSlugs } =
         resolveFilterState(filters, categories, tags);
-    const filteredPosts = await cachedPublishedPosts({
+    const requestedPage = await cachedPublishedPostsPage({
         categorySlug: activeCategorySlug,
         tagSlugs: activeTagSlugs,
+        page: filters.currentPage,
+        pageSize: PAGE_SIZE,
     });
-    const { currentPage, totalPages } = computePagination(filteredPosts.length, filters.currentPage);
-    const pagedPosts = filteredPosts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+    const { currentPage, totalPages } = computePagination(requestedPage.total, filters.currentPage);
+
+    /*-- 页码超出范围被修正时，按修正后的页码重新取当前页数据 --*/
+    let pagePosts = requestedPage.posts;
+    if (currentPage !== filters.currentPage) {
+        pagePosts = (
+            await cachedPublishedPostsPage({
+                categorySlug: activeCategorySlug,
+                tagSlugs: activeTagSlugs,
+                page: currentPage,
+                pageSize: PAGE_SIZE,
+            })
+        ).posts;
+    }
+
+    /*-- 仅保留 PostItem 实际使用的字段，未用字段不序列化进客户端 props --*/
+    const pagedPosts: PostListItem[] = pagePosts.map((post) => ({
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        summary: post.summary,
+        coverImage: post.coverImage,
+        altText: post.altText,
+        categoryName: post.categoryName,
+        tagNames: post.tagNames,
+        publishedAt: post.publishedAt,
+        updatedAt: post.updatedAt,
+    }));
     const { categoryOptions, tagOptions } = buildFilterOptions({
         activeCategorySlug,
         activeTagSlugs,

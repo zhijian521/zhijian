@@ -166,7 +166,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
             hideBelow: 'md',
             render: (post) => (
                 <div className={styles.tagList}>
-                    {post.tagNames.map((t) => (
+                    {(post.tagNames ?? []).map((t) => (
                         <Tag key={t.id} size="mini">
                             {t.name}
                         </Tag>
