@@ -35,7 +35,7 @@ interface UploadRow extends RowDataPacket {
 /*== 常量 ==*/
 
 /*== 允许的图片 MIME 类型。 ==*/
-const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']);
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 
 /*== 文件大小上限 5 MB。 ==*/
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -46,7 +46,6 @@ const MIME_TO_EXT: Record<string, string> = {
     'image/png': 'png',
     'image/gif': 'gif',
     'image/webp': 'webp',
-    'image/svg+xml': 'svg',
 };
 
 /*== 校验 ==*/
@@ -54,7 +53,7 @@ const MIME_TO_EXT: Record<string, string> = {
 /*== 校验图片格式和大小，返回错误消息或 null。 ==*/
 export function validateImageFile(file: { type: string; size: number }): string | null {
     if (!ALLOWED_MIME_TYPES.has(file.type)) {
-        return '不支持的图片格式，仅允许 JPEG、PNG、GIF、WebP、SVG。';
+        return '不支持的图片格式，仅允许 JPEG、PNG、GIF、WebP。';
     }
     if (file.size > MAX_FILE_SIZE) {
         return '图片大小不能超过 5 MB。';
@@ -73,7 +72,7 @@ export function resolveUploadFilePath(src: string): string | null {
 
 /*== 写入操作 ==*/
 
-/*== 上传图片到文件系统 + 数据库。 非 SVG/GIF 自动转为 WebP。返回上传记录，失败时返回 null。 ==*/
+/*== 上传图片到文件系统 + 数据库。 非 GIF 自动转为 WebP。返回上传记录，失败时返回 null。 ==*/
 export async function saveUpload(file: File): Promise<Upload | null> {
     const db = getDb();
     if (!db) return null;
@@ -81,8 +80,8 @@ export async function saveUpload(file: File): Promise<Upload | null> {
     const ext = MIME_TO_EXT[file.type];
     if (!ext) return null;
 
-    /*-- SVG 和 GIF 不转换，其余格式统一转为 WebP --*/
-    const shouldConvert = file.type !== 'image/svg+xml' && file.type !== 'image/gif';
+    /*-- GIF 不转换，其余格式统一转为 WebP --*/
+    const shouldConvert = file.type !== 'image/gif';
 
     const outputExt = shouldConvert ? 'webp' : ext;
     const outputMime = shouldConvert ? 'image/webp' : file.type;

@@ -16,7 +16,7 @@ import { withAdmin } from '@/lib/core/with-admin';
 
 /*== 图片同步清单接口 — 扫描服务器 public/uploads/ 目录，返回所有图片的路径和大小，供本地同步脚本使用。 ==*/
 
-const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']);
+const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp']);
 
 interface SyncFileItem {
     path: string;
