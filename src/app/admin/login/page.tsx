@@ -12,7 +12,7 @@ import { redirect } from 'next/navigation';
 import AdminLoginCard from '@/components/modules/admin/admin-login-card';
 
 /*== 数据与配置 ==*/
-import { getSessionFromCookies } from '@/lib/core/auth';
+import { getSessionFromCookies, validateSession } from '@/lib/core/auth';
 import { APP_ROUTES } from '@/lib/core/site';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +23,8 @@ export const metadata: Metadata = {
 
 /*== 后台登录页：已登录管理员直接进入后台，普通用户跳转首页。 ==*/
 export default async function AdminLoginPage() {
-    const session = await getSessionFromCookies();
+    /*-- 走 validateSession：被禁用/删除的用户视同未登录，避免与后台守卫之间重定向循环 --*/
+    const session = await validateSession(await getSessionFromCookies());
 
     if (session) {
         if (session.role === 'admin') {

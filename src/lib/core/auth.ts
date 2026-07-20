@@ -163,6 +163,7 @@ export async function updateUser(
 
     values.push(id);
     await db.execute(`UPDATE zhijian_users SET ${sets.join(', ')} WHERE id = ?`, values);
+    invalidateSessionUserCache(id);
     return getUserById(id);
 }
 
@@ -172,7 +173,9 @@ export async function deleteUser(id: number): Promise<boolean> {
     if (!db) throw new Error('数据库未配置');
 
     const [result] = await db.execute('DELETE FROM zhijian_users WHERE id = ?', [id]);
-    return (result as any).affectedRows > 0;
+    const deleted = (result as any).affectedRows > 0;
+    if (deleted) invalidateSessionUserCache(id);
+    return deleted;
 }
 
 /*== 用户列表（分页 + 搜索）。 ==*/
@@ -272,6 +275,39 @@ export function parseSessionToken(token: string | undefined): SessionPayload | n
 }
 
 /*============================================================================
+  Session 用户状态校验
+  token 只证明身份来源可信；用户被禁用 / 降级 / 删除后必须能失效。
+  以数据库为准校验 status 与 role，短 TTL 内存缓存避免每请求查库。
+============================================================================*/
+
+/*== 缓存有效期：吊销最长滞后 60 秒（updateUser/deleteUser 会主动失效缓存）。 ==*/
+const SESSION_USER_CACHE_TTL = 60 * 1000;
+
+const sessionUserCache = new Map<number, { user: User; expiresAt: number }>();
+
+/*== 使用户状态缓存失效（用户被更新 / 删除时调用，吊销立即生效）。 ==*/
+export function invalidateSessionUserCache(userId: number): void {
+    sessionUserCache.delete(userId);
+}
+
+/*== 校验 session 对应用户仍有效（存在且 active），角色以数据库为准（降级立即生效）。 ==*/
+export async function validateSession(session: SessionPayload | null): Promise<SessionPayload | null> {
+    if (!session) return null;
+
+    const cached = sessionUserCache.get(session.userId);
+    let user = cached && cached.expiresAt > Date.now() ? cached.user : null;
+    if (!user) {
+        user = await getUserById(session.userId);
+        /*-- 查不到（已删除或 DB 不可用）不写缓存，避免故障期结果被固化 --*/
+        if (!user) return null;
+        sessionUserCache.set(session.userId, { user, expiresAt: Date.now() + SESSION_USER_CACHE_TTL });
+    }
+
+    if (user.status !== 'active') return null;
+    return { userId: user.id, username: user.username, role: user.role };
+}
+
+/*============================================================================
   Cookie 工具
 ============================================================================*/
 
@@ -303,9 +339,9 @@ export function getSessionFromRequest(request: NextRequest): SessionPayload | nu
   鉴权守卫（服务端组件 / API Route 用）
 ============================================================================*/
 
-/*== 要求已登录（任意角色）。未登录 → 重定向到指定登录页。 ==*/
+/*== 要求已登录（任意角色）且账号仍有效。未通过 → 重定向到指定登录页。 ==*/
 export async function requireAuth(redirectTo?: string): Promise<SessionPayload> {
-    const session = await getSessionFromCookies();
+    const session = await validateSession(await getSessionFromCookies());
     if (!session) {
         redirect(redirectTo || APP_ROUTES.adminLogin);
     }
@@ -322,8 +358,8 @@ export async function requireAdmin(): Promise<SessionPayload> {
 }
 
 /*== API Route 版本：返回 session 或 null（不重定向，由调用方返回 JSON 错误）。 ==*/
-export function requireAdminFromRequest(request: NextRequest): SessionPayload | null {
-    const session = getSessionFromRequest(request);
+export async function requireAdminFromRequest(request: NextRequest): Promise<SessionPayload | null> {
+    const session = await validateSession(getSessionFromRequest(request));
     if (!session || session.role !== 'admin') return null;
     return session;
 }

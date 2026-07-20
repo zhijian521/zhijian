@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { getSessionFromRequest, type SessionPayload } from './auth';
+import { getSessionFromRequest, validateSession, type SessionPayload } from './auth';
 import { BizCode, fail } from './api-response';
 
 type UserHandler = (
@@ -23,7 +23,7 @@ export function withUser(handler: UserHandler) {
         request: NextRequest,
         context: { params: Promise<Record<string, string | string[]>> }
     ): Promise<Response | NextResponse> => {
-        const session = getSessionFromRequest(request);
+        const session = await validateSession(getSessionFromRequest(request));
         if (!session) {
             return NextResponse.json(fail(BizCode.UNAUTHORIZED, '未登录。'), { status: 401 });
         }

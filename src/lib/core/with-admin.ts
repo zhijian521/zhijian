@@ -26,7 +26,7 @@ export function withAdmin(handler: AdminHandler) {
         request: NextRequest,
         context: { params: Promise<Record<string, string | string[]>> }
     ): Promise<Response | NextResponse> => {
-        const admin = requireAdminFromRequest(request);
+        const admin = await requireAdminFromRequest(request);
         if (!admin) {
             return NextResponse.json(fail(BizCode.FORBIDDEN, '需要管理员权限。'), { status: 403 });
         }
