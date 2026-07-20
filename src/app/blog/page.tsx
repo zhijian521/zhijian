@@ -263,9 +263,6 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
                   index: true,
                   follow: true,
               },
-        authors: [{ name: SITE_METADATA.author }],
-        creator: SITE_METADATA.author,
-        publisher: SITE_METADATA.author,
         alternates: {
             canonical,
             ...(currentPage > 1 && {

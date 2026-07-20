@@ -64,9 +64,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         title,
         description,
         keywords,
-        authors: [{ name: SITE_METADATA.author }],
-        creator: SITE_METADATA.author,
-        publisher: SITE_METADATA.author,
         alternates: {
             canonical,
         },

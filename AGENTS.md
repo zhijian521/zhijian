@@ -42,9 +42,10 @@ src/
 │   ├── site/     # 前台展示：article/card/chrome/markdown...
 │   └── modules/  # 业务组件：admin / home / blog / nav
 ├── lib/
-│   ├── core/     # 基础设施（11 文件）：db/auth/api/http/pagination/site/toast/utils/with-*/legacy
+│   ├── core/     # 基础设施（12 文件）：db/auth/api/http/metadata/pagination/site/toast/utils/with-*/legacy
 │   └── domain/   # 业务数据层（14 文件）：posts/categories/tags/nav-*/uploads/analytics/github/...
 ├── hooks/        # use-auth.ts / use-crud-list.ts
+├── types/        # 跨路由共享 TypeScript 类型
 └── showcase/     # 组件展示 registry
 docs/             # 产品、技术和开发规范 Markdown
 ```
@@ -227,6 +228,8 @@ refactor: 中文描述
 | ------------- | -------------------------------------------------------------- |
 | 主题变量      | `src/app/theme.css`                                            |
 | 站点配置      | `src/lib/core/site.ts`                                         |
+| 根布局元数据  | `src/lib/core/metadata.ts`                                     |
+| App 路由类型  | `src/types/app.ts`                                             |
 | API 响应格式  | `src/lib/core/api-response.ts`                                 |
 | 认证系统      | `src/lib/core/auth.ts`                                         |
 | Admin 鉴权    | `src/lib/core/with-admin.ts`                                   |
