@@ -19,6 +19,7 @@ export const BizCode = {
     FORBIDDEN: 40300,
     NOT_FOUND: 40400,
     CONFLICT: 40900,
+    RATE_LIMITED: 42900,
     INTERNAL: 50000,
     /*-- 用户 --*/
     USER_NOT_FOUND: 40401,

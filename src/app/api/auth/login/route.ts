@@ -3,7 +3,7 @@
  * @group auth
  * @auth none
  * @method POST 用户名/密码登录，成功返回 session cookie
- * @returns success<{ user: { id, username, email, role } }> | fail
+ * @returns success<{ user: { id, username, email, role } }> | fail（429 = 频率超限）
  */
 
 import { NextResponse } from 'next/server';
@@ -16,6 +16,7 @@ import {
     verifyPassword,
 } from '@/lib/core/auth';
 import { BizCode, fail, success } from '@/lib/core/api-response';
+import { checkRateLimit } from '@/lib/core/rate-limit';
 
 /*==
   公开登录接口。
@@ -35,6 +36,12 @@ export async function POST(request: Request) {
 
     if (!username || !password) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请输入用户名和密码。'), { status: 400 });
+    }
+
+    /*-- 限流：同一 IP + 用户名 5 次/分钟，防在线爆破 --*/
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    if (!checkRateLimit(`${ip}:${username}`, 5, 60_000)) {
+        return NextResponse.json(fail(BizCode.RATE_LIMITED, '尝试过于频繁，请稍后再试。'), { status: 429 });
     }
 
     const user = await getUserByUsername(username);

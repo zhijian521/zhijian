@@ -3,13 +3,14 @@
  * @group auth
  * @auth none
  * @method POST 注册新用户（默认 user 角色）
- * @returns success<{ user: { id, username, email, role } }> | fail
+ * @returns success<{ user: { id, username, email, role } }> | fail（429 = 频率超限）
  */
 
 import { NextResponse } from 'next/server';
 
 import { createUser, hashPassword, validateUserFields } from '@/lib/core/auth';
 import { BizCode, fail, success } from '@/lib/core/api-response';
+import { checkRateLimit } from '@/lib/core/rate-limit';
 
 /*== 公开注册接口
   POST body: { username, email, password }
@@ -29,6 +30,12 @@ export async function POST(request: Request) {
     const fieldError = validateUserFields(username, email, password);
     if (fieldError) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, fieldError), { status: 400 });
+    }
+
+    /*-- 限流：同一 IP 5 次/分钟，防批量注册 --*/
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    if (!checkRateLimit(ip, 5, 60_000)) {
+        return NextResponse.json(fail(BizCode.RATE_LIMITED, '尝试过于频繁，请稍后再试。'), { status: 429 });
     }
 
     try {
