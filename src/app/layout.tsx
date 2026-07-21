@@ -6,7 +6,6 @@
   交由 AppFrame 客户端壳层根据路由分发前台与后台视觉结构。
 ============================================================================*/
 
-/*== 依赖导入 ==*/
 import AppFrame from '@/components/site/app-frame';
 import { ROOT_METADATA } from '@/lib/core/metadata';
 import type { RootLayoutProps } from '@/types/app';
@@ -15,7 +14,7 @@ import './globals.css';
 /*== 页面元数据 ==*/
 export const metadata = ROOT_METADATA;
 
-/*== 项目根布局：交由客户端壳层根据当前路由分发前台与后台视觉结构。 ==*/
+/*== 项目根布局 ==*/
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="zh-CN">

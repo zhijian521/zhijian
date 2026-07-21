@@ -5,10 +5,7 @@
   复用 StatusPage 组件，水墨背景 + 毛玻璃卡片 + 诗意文案。
 ============================================================================*/
 
-/*== 类型导入 ==*/
 import type { Metadata } from 'next';
-
-/*== 组件导入 ==*/
 import { StatusPage } from '@/components/ui/status-page';
 
 export const metadata: Metadata = {

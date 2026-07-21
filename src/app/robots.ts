@@ -5,7 +5,6 @@
   允许搜索引擎抓取前台，禁止后台和 API。
 ============================================================================*/
 
-/*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
 
 export default function robots() {

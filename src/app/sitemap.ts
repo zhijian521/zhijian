@@ -5,7 +5,6 @@
   包含首页、博客列表页、所有已发布文章，按 priority 分层。
 ============================================================================*/
 
-/*== 数据与配置 ==*/
 import { SITE_METADATA } from '@/lib/core/site';
 import { getPublishedPosts, toPostIsoDateTime } from '@/lib/domain/posts';
 
