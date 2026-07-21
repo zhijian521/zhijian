@@ -51,6 +51,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
     return (
         <main className={styles.layout}>
+            <div aria-hidden="true" className={styles.texture} />
             <AdminSidebar />
             <section className={styles.main}>{children}</section>
             <ToastContainer />

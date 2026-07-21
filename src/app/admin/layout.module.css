@@ -1,13 +1,36 @@
-/*== 后台布局样式：固定侧边栏 + 主内容区。 ==*/
+/*== 后台布局样式：背景纱罩 + 固定侧边栏 + 透明主内容区。 ==*/
 
 .layout {
     position: relative;
+    isolation: isolate;
     min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--background);
 }
 
+/*== 背景纱罩：铺满视口的水墨底图，配 --overlay-gradient 统一亮/暗主题蒙版。 ==*/
+.texture {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url('/images/bg-nav.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+.texture::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--overlay-gradient);
+}
+
+/*== 主内容区：完全透明，直接透出背景图 + --overlay-gradient 蒙版；内部卡片仍为实心，保证密集内容可读。 ==*/
 .main {
     min-height: 100vh;
+    min-height: 100dvh;
     margin-left: 16rem;
-    background: var(--background);
+    background: transparent;
     padding: var(--space-7);
 }
