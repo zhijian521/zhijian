@@ -1,17 +1,3 @@
-import {
-    LayoutDashboardIcon,
-    BookOpenIcon,
-    FileTextIcon,
-    FolderTreeIcon,
-    UsersIcon,
-    SettingsIcon,
-    WrenchIcon,
-    ActivityIcon,
-    ImageIcon,
-    CodeIcon,
-    type IconComponent,
-} from '@/components/ui/icons';
-
 /*============================================================================
   站点全局配置
 
@@ -119,11 +105,24 @@ export interface NavItem {
     match: 'exact' | 'prefix';
 }
 
+/*== 导航图标 key：core 层只存字符串 key，key → 图标组件的映射见 components/ui/nav-icons.ts ==*/
+export type NavIconKey =
+    | 'activity'
+    | 'book-open'
+    | 'code'
+    | 'file-text'
+    | 'folder-tree'
+    | 'image'
+    | 'layout-dashboard'
+    | 'settings'
+    | 'users'
+    | 'wrench';
+
 /*== 二级导航子项。 ==*/
 export interface NavSubItem {
     href: string;
     label: string;
-    icon: IconComponent;
+    icon: NavIconKey;
     match?: 'exact' | 'prefix';
 }
 
@@ -131,7 +130,7 @@ export interface NavSubItem {
 export interface NavGroup {
     key: string;
     label?: string;
-    icon?: IconComponent;
+    icon?: NavIconKey;
     items: NavSubItem[];
 }
 
@@ -145,43 +144,43 @@ export const PUBLIC_NAV_ITEMS: NavItem[] = [
 export const ADMIN_NAV_GROUPS: NavGroup[] = [
     {
         key: 'overview',
-        items: [{ href: APP_ROUTES.admin, label: '概览', icon: LayoutDashboardIcon, match: 'exact' }],
+        items: [{ href: APP_ROUTES.admin, label: '概览', icon: 'layout-dashboard', match: 'exact' }],
     },
     {
         key: 'content',
         label: '文章管理',
-        icon: BookOpenIcon,
+        icon: 'book-open',
         items: [
-            { href: APP_ROUTES.adminPosts, label: '文章列表', icon: FileTextIcon, match: 'prefix' },
-            { href: APP_ROUTES.adminTaxonomy, label: '分类标签', icon: FolderTreeIcon, match: 'prefix' },
-            { href: APP_ROUTES.adminUploads, label: '图片管理', icon: ImageIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminPosts, label: '文章列表', icon: 'file-text', match: 'prefix' },
+            { href: APP_ROUTES.adminTaxonomy, label: '分类标签', icon: 'folder-tree', match: 'prefix' },
+            { href: APP_ROUTES.adminUploads, label: '图片管理', icon: 'image', match: 'prefix' },
         ],
     },
     {
         key: 'system',
         label: '系统管理',
-        icon: SettingsIcon,
+        icon: 'settings',
         items: [
-            { href: APP_ROUTES.adminUsers, label: '用户管理', icon: UsersIcon, match: 'prefix' },
-            { href: APP_ROUTES.adminSettings, label: '系统设置', icon: WrenchIcon, match: 'exact' },
+            { href: APP_ROUTES.adminUsers, label: '用户管理', icon: 'users', match: 'prefix' },
+            { href: APP_ROUTES.adminSettings, label: '系统设置', icon: 'wrench', match: 'exact' },
         ],
     },
     {
         key: 'analytics',
         label: '网站统计',
-        icon: ActivityIcon,
+        icon: 'activity',
         items: [
-            { href: APP_ROUTES.adminAnalytics, label: '数据概览', icon: ActivityIcon, match: 'exact' },
-            { href: APP_ROUTES.adminAnalyticsSites, label: '站点管理', icon: FolderTreeIcon, match: 'prefix' },
+            { href: APP_ROUTES.adminAnalytics, label: '数据概览', icon: 'activity', match: 'exact' },
+            { href: APP_ROUTES.adminAnalyticsSites, label: '站点管理', icon: 'folder-tree', match: 'prefix' },
         ],
     },
     {
         key: 'devtools',
         label: '开发工具',
-        icon: CodeIcon,
+        icon: 'code',
         items: [
-            { href: APP_ROUTES.adminShowcaseComponents, label: '组件预览', icon: LayoutDashboardIcon, match: 'exact' },
-            { href: APP_ROUTES.adminShowcaseIcons, label: '图标预览', icon: ImageIcon, match: 'exact' },
+            { href: APP_ROUTES.adminShowcaseComponents, label: '组件预览', icon: 'layout-dashboard', match: 'exact' },
+            { href: APP_ROUTES.adminShowcaseIcons, label: '图标预览', icon: 'image', match: 'exact' },
         ],
     },
 ];

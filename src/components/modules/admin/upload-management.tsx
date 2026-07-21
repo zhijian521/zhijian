@@ -18,8 +18,8 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
-import { getPageAfterDelete } from '@/lib/core/pagination';
 import { toast } from '@/components/ui/toast';
+import { usePagedList } from '@/hooks/use-paged-list';
 import type { Upload } from '@/lib/domain/uploads';
 
 import styles from './upload-management.module.css';
@@ -40,16 +40,7 @@ function formatSize(bytes: number): string {
 
 /*== UploadManagement 图片管理交互组件 ==*/
 export default function UploadManagement({ initialData }: UploadManagementProps) {
-    const [uploads, setUploads] = useState(initialData.data);
-    const [total, setTotal] = useState(initialData.total);
-    const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-    const [loading, setLoading] = useState(false);
     const [copiedId, setCopiedId] = useState<number | null>(null);
-
-    /* 删除确认弹窗 */
-    const [deleteTarget, setDeleteTarget] = useState<Upload | null>(null);
-    const [deleting, setDeleting] = useState(false);
 
     /* 重命名弹窗 */
     const [renameTarget, setRenameTarget] = useState<Upload | null>(null);
@@ -59,45 +50,37 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
     /* 同步弹窗 */
     const [syncOpen, setSyncOpen] = useState(false);
     const [syncCopied, setSyncCopied] = useState(false);
-    const uploadsRequestRef = useRef(0);
-    const skipInitialFetchRef = useRef(true);
     const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const syncCopiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-    /* 加载图片列表 */
-    const fetchUploads = useCallback(
-        async (p: number) => {
-            const requestId = ++uploadsRequestRef.current;
-            setLoading(true);
-            try {
-                const res = await api.get<ListData<Upload>>(`/admin/uploads?page=${p}&pageSize=${pageSize}`);
-                if (requestId !== uploadsRequestRef.current) return;
-
-                if (res.code === 0 && res.data) {
-                    setUploads(res.data.data);
-                    setTotal(res.data.total);
-                } else {
-                    toast.error(res.message || '获取图片列表失败');
-                }
-            } catch {
-                if (requestId !== uploadsRequestRef.current) return;
-                toast.error('网络错误');
-            } finally {
-                if (requestId === uploadsRequestRef.current) setLoading(false);
-            }
+    const {
+        data: uploads,
+        total,
+        loading,
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        totalPages,
+        deleting,
+        deleteTarget,
+        setDeleteTarget,
+        confirmDelete,
+        refresh,
+    } = usePagedList<Upload>({
+        endpoint: '/admin/uploads',
+        initialData,
+        initialPageSize: DEFAULT_PAGE_SIZE,
+        /* 删除后重新请求当前页，保证缩略图与服务器一致 */
+        deleteMode: 'refetch',
+        messages: {
+            fetchError: '获取图片列表失败',
+            networkError: '网络错误',
+            deleteSuccess: '图片已删除',
+            deleteFailed: '删除失败',
+            deleteError: '网络错误',
         },
-        [pageSize]
-    );
-
-    useEffect(() => {
-        if (skipInitialFetchRef.current) {
-            skipInitialFetchRef.current = false;
-            return;
-        }
-        fetchUploads(page);
-    }, [page, fetchUploads]);
+    });
 
     useEffect(() => {
         return () => {
@@ -119,28 +102,6 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
         }
     }, []);
 
-    /* 删除图片 */
-    const handleDelete = useCallback(async () => {
-        if (!deleteTarget) return;
-        setDeleting(true);
-        try {
-            const res = await api.delete(`/admin/uploads/${deleteTarget.id}`);
-            if (res.code === 0) {
-                toast.success('图片已删除');
-                setDeleteTarget(null);
-                const nextPage = getPageAfterDelete(page, uploads.length);
-                if (nextPage !== page) setPage(nextPage);
-                else fetchUploads(page);
-            } else {
-                toast.error(res.message || '删除失败');
-            }
-        } catch {
-            toast.error('网络错误');
-        } finally {
-            setDeleting(false);
-        }
-    }, [deleteTarget, fetchUploads, page, uploads.length]);
-
     /* 重命名图片 */
     const handleRename = useCallback(async () => {
         if (!renameTarget || !renameValue.trim()) return;
@@ -152,7 +113,7 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
             if (res.code === 0) {
                 toast.success('名称已修改');
                 setRenameTarget(null);
-                fetchUploads(page);
+                refresh();
             } else {
                 toast.error(res.message || '修改失败');
             }
@@ -161,7 +122,7 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
         } finally {
             setRenaming(false);
         }
-    }, [renameTarget, renameValue, page, fetchUploads]);
+    }, [renameTarget, renameValue, refresh]);
 
     const handleSyncCommandCopy = useCallback(async () => {
         try {
@@ -255,10 +216,7 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
                             onPageChange={setPage}
                             total={totalPages}
                             pageSize={pageSize}
-                            onPageSizeChange={(s) => {
-                                setPageSize(s);
-                                setPage(1);
-                            }}
+                            onPageSizeChange={setPageSize}
                         />
                     </div>
                 </>
@@ -268,10 +226,10 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
             <ConfirmDialog
                 cancelLabel="取消"
                 confirmLabel="删除"
-                loading={deleting}
+                loading={deleting !== null}
                 message={`确定要删除图片「${deleteTarget?.original ?? ''}」吗？删除后无法恢复。`}
                 onCancel={() => setDeleteTarget(null)}
-                onConfirm={handleDelete}
+                onConfirm={confirmDelete}
                 open={deleteTarget !== null}
                 title="删除图片"
             />

@@ -7,7 +7,7 @@
   同时提供埋点接入代码的生成、展示与复制。
 ============================================================================*/
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { PencilIcon, PlusIcon, Trash2Icon, CopyIcon, PauseIcon, PlayIcon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -22,6 +22,7 @@ import { toast } from '@/components/ui/toast';
 import { getEmbedScript } from '@/lib/core/utils';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
+import { usePagedList } from '@/hooks/use-paged-list';
 import type { TrackSite } from '@/lib/domain/track-sites';
 
 import styles from './site-management.module.css';
@@ -33,11 +34,7 @@ interface SiteManagementProps {
 
 /*== 站点管理 ==*/
 export default function SiteManagement({ initialData }: SiteManagementProps) {
-    const [data, setData] = useState(initialData);
-    const [loading, setLoading] = useState(false);
-    const [deleting, setDeleting] = useState<string | null>(null);
     const [togglingSiteId, setTogglingSiteId] = useState<string | null>(null);
-    const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
     /* 弹窗表单状态 */
     const [formOpen, setFormOpen] = useState(false);
@@ -52,20 +49,28 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
     const [codeDialogOpen, setCodeDialogOpen] = useState(false);
     const [codeDialogSiteId, setCodeDialogSiteId] = useState('');
 
-    const fetchSites = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get<ListData<TrackSite>>('/admin/analytics/sites');
-            if (res.code === 0 && res.data) {
-                setData(res.data);
-            }
-        } catch (error) {
-            console.error('获取站点列表失败：', error);
-            toast.error('获取站点列表失败');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    /* 站点列表不分页，仅复用数据/加载/删除状态机 */
+    const {
+        data: sites,
+        total,
+        loading,
+        deleting,
+        deleteTarget,
+        setDeleteTarget,
+        confirmDelete,
+        refresh,
+    } = usePagedList<TrackSite>({
+        endpoint: '/admin/analytics/sites',
+        initialData,
+        paginated: false,
+        deleteUrl: (id) => `/admin/analytics/sites?id=${id}`,
+        messages: {
+            fetchError: '获取站点列表失败',
+            silentFetchFailure: true,
+            deleteSuccess: '站点已删除',
+        },
+        onFetchError: (error) => console.error('获取站点列表失败：', error),
+    });
 
     function openCreateForm() {
         setFormMode('create');
@@ -112,7 +117,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
                 setCodeDialogOpen(true);
             }
 
-            fetchSites();
+            refresh();
         } catch {
             setFormMessage('请求失败，请稍后重试。');
         } finally {
@@ -127,7 +132,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
             const res = await api.put('/admin/analytics/sites', { id: site.id, status: newStatus });
             if (res.code === 0) {
                 toast.success(newStatus === 'active' ? '站点已启用' : '站点已暂停');
-                fetchSites();
+                refresh();
             } else {
                 toast.error(res.message || '操作失败。');
             }
@@ -135,29 +140,6 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
             toast.error('请求失败。');
         } finally {
             setTogglingSiteId(null);
-        }
-    }
-
-    async function handleDeleteConfirm() {
-        if (!deleteTarget) return;
-
-        setDeleting(deleteTarget.id);
-        try {
-            const res = await api.delete(`/admin/analytics/sites?id=${deleteTarget.id}`);
-            if (res.code === 0) {
-                setData((prev) => ({
-                    data: prev.data.filter((s) => s.id !== deleteTarget.id),
-                    total: prev.total - 1,
-                }));
-                setDeleteTarget(null);
-                toast.success('站点已删除');
-            } else {
-                toast.error(res.message || '删除失败。');
-            }
-        } catch {
-            toast.error('删除请求失败。');
-        } finally {
-            setDeleting(null);
         }
     }
 
@@ -212,7 +194,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
                     />
                     <IconButton
                         icon={<Trash2Icon />}
-                        onClick={() => setDeleteTarget({ id: site.id, name: site.name })}
+                        onClick={() => setDeleteTarget(site)}
                         size="medium"
                         title="删除"
                         variant="danger"
@@ -226,7 +208,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
     return (
         <>
             <div className={styles.toolbar}>
-                <span className={styles.resultCount}>{data.total} 个站点</span>
+                <span className={styles.resultCount}>{total} 个站点</span>
                 <GhostButton
                     asButton
                     icon={<PlusIcon className={shared.btnIcon} />}
@@ -242,14 +224,14 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
                 columns={columns}
                 emptyText={loading ? '加载中...' : '暂无站点'}
                 rowKey={(site) => site.id}
-                rows={data.data}
+                rows={sites}
             />
 
             <ConfirmDialog
                 confirmLabel="删除"
                 message={`确定要删除站点「${deleteTarget?.name ?? ''}」吗？相关数据将保留但不再采集。`}
                 onCancel={() => setDeleteTarget(null)}
-                onConfirm={handleDeleteConfirm}
+                onConfirm={confirmDelete}
                 open={!!deleteTarget}
                 loading={deleting !== null}
                 title="确认删除"

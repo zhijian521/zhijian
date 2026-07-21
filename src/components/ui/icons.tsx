@@ -12,7 +12,7 @@ import React from 'react';
 /*== 图标组件属性 ==*/
 export type IconProps = React.SVGAttributes<SVGSVGElement>;
 
-/*== 图标组件的函数类型，用于 NavSubItem 等 ==*/
+/*== 图标组件的函数类型，用于 nav-icons 映射等 ==*/
 export type IconComponent = React.ComponentType<IconProps>;
 
 /*============================================================================

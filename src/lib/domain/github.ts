@@ -1,4 +1,15 @@
-/*== 从 GitHub API 拉取仓库提交记录。 ==*/
+/*============================================================================
+  github — GitHub 提交记录数据层
+
+  从 GitHub commits API 拉取最近 180 天提交并按日聚合，
+  供首页 CommitChart 提交热力图使用。
+
+  性能说明：首页为 force-dynamic，fetch 级 revalidate 会被页面动态语义覆盖，
+  因此缓存放到了函数级 —— unstable_cache 跨请求缓存 1 小时，
+  避免每个访客都串行翻页打 GitHub API（最多 20 页），同时保留页面动态语义。
+============================================================================*/
+
+import { unstable_cache } from 'next/cache';
 
 export interface DailyCommits {
     date: string;
@@ -8,7 +19,11 @@ export interface DailyCommits {
 const OWNER = 'zhijian521';
 const REPO = 'zhijian';
 
-export async function fetchCommitHistory(): Promise<DailyCommits[]> {
+/*== 缓存周期：1 小时（秒） ==*/
+const REVALIDATE_SECONDS = 3600;
+
+/*-- 实际拉取逻辑：未配置 GITHUB_TOKEN 时返回空数组，调用方按无数据渲染 --*/
+async function fetchCommitHistoryFromGitHub(): Promise<DailyCommits[]> {
     const token = process.env.GITHUB_TOKEN;
     if (!token) return [];
 
@@ -23,8 +38,6 @@ export async function fetchCommitHistory(): Promise<DailyCommits[]> {
         const url = `https://api.github.com/repos/${OWNER}/${REPO}/commits?since=${sinceISO}&per_page=100&page=${page}`;
         const res = await fetch(url, {
             headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-            /* 首页 force-dynamic 覆盖此值；非 force-dynamic 页面使用时自动生效 */
-            next: { revalidate: 3600 },
         });
         if (!res.ok) break;
 
@@ -42,3 +55,10 @@ export async function fetchCommitHistory(): Promise<DailyCommits[]> {
     for (const d of dates) map.set(d, (map.get(d) || 0) + 1);
     return [...map.entries()].map(([date, count]) => ({ date, count })).sort((a, b) => a.date.localeCompare(b.date));
 }
+
+/*== 跨请求缓存：force-dynamic 页面下依然生效，避免每访客实时打 GitHub API ==*/
+export const fetchCommitHistory = unstable_cache(
+    fetchCommitHistoryFromGitHub,
+    ['github-commit-history'],
+    { revalidate: REVALIDATE_SECONDS, tags: ['github-commit-history'] }
+);

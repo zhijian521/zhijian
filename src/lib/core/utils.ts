@@ -40,6 +40,16 @@ export function toAbsoluteUrl(value: string | null | undefined): string | undefi
     }
 }
 
+/*== 获取本站自埋点的统计站点 ID（可选）。未配置时前台不渲染统计脚本，避免自部署数据回流原作者站点。 ==*/
+export function getTrackSiteId(): string | undefined {
+    return process.env.NEXT_PUBLIC_TRACK_SITE_ID || undefined;
+}
+
+/*== 获取 Google Analytics 衡量 ID（可选）。未配置时前台不渲染 GA 脚本，避免自部署数据回流原作者账号。 ==*/
+export function getGaId(): string | undefined {
+    return process.env.NEXT_PUBLIC_GA_ID || undefined;
+}
+
 /*== 生成监控接入代码片段。 ==*/
 export function getEmbedScript(siteId: string): string {
     const base = getScriptUrl();

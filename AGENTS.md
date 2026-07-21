@@ -43,8 +43,8 @@ src/
 │   └── modules/  # 业务组件：admin / home / blog / nav
 ├── lib/
 │   ├── core/     # 基础设施（16 文件）：db/auth/api/http/metadata/pagination/site/toast/utils/with-*/legacy/rate-limit/ssrf-guard/request-ip/json-body
-│   └── domain/   # 业务数据层（14 文件）：posts/categories/tags/nav-*/uploads/analytics/github/...
-├── hooks/        # use-auth.ts / use-crud-list.ts
+│   └── domain/   # 业务数据层（18 文件）：posts/categories/tags/nav-*/uploads/analytics*/track-*/github/...
+├── hooks/        # use-auth.ts / use-crud-list.ts / use-paged-list.ts
 ├── types/        # 跨路由共享 TypeScript 类型
 └── showcase/     # 组件展示 registry
 docs/             # 产品、技术和开发规范 Markdown
@@ -191,6 +191,8 @@ ADMIN_PASSWORD=your-password
 ADMIN_SESSION_SECRET=your-random-secret-string
 
 # 可选项
+NEXT_PUBLIC_TRACK_SITE_ID=   # 本站自埋点站点 ID（留空则前台不加载统计脚本）
+NEXT_PUBLIC_GA_ID=           # Google Analytics 衡量 ID（留空则不加载）
 INDEXNOW_API_KEY=            # IndexNow SEO 推送
 BAIDU_SUBMISSION_TOKEN=      # 百度站长推送
 BAIDU_SITE=                  # 百度站长站点域名
@@ -267,6 +269,9 @@ refactor: 中文描述
 | Nav DB        | `src/lib/domain/nav-db.ts`                                     |
 | Nav 存储      | `src/lib/domain/nav-storage.ts`                                |
 | Git 提交记录  | `src/lib/domain/github.ts`                                     |
+| 采集事件      | `src/lib/domain/track-events.ts`                               |
+| 分页列表 Hook | `src/hooks/use-paged-list.ts`                                  |
+| 导航图标映射  | `src/components/ui/nav-icons.ts`                               |
 | 图标库        | `src/components/ui/icons.tsx`                                  |
 | Toast         | `src/components/ui/toast.tsx` + `src/lib/core/toast-store.ts`  |
 | Markdown 渲染 | `src/components/site/markdown-article.tsx`                     |
@@ -343,4 +348,4 @@ refactor: 中文描述
 
 ---
 
-_最后更新: 2026-07-21（批次 B 工程收口：rate-limit 加固/nav 健壮性/移除测试设施/文档清单补全）_
+_最后更新: 2026-07-21（批次 C 性能与架构：GitHub 缓存/usePagedList/图标解耦/track-events 下沉/埋点配置化/analytics 拆分）_

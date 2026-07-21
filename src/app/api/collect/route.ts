@@ -9,11 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getDb } from '@/lib/core/db';
 import { fail, type BizCodeValue } from '@/lib/core/api-response';
 import { checkRateLimit } from '@/lib/core/rate-limit';
 import { getClientIp } from '@/lib/core/request-ip';
 import { lookup, maskIp } from '@/lib/domain/geo';
+import { insertTrackEvents, isTrackSiteActive, type TrackEventRow } from '@/lib/domain/track-events';
 import { parseUA } from '@/lib/domain/ua';
 
 /*============================================================================
@@ -107,17 +107,12 @@ export async function POST(request: NextRequest) {
             return new NextResponse(null, { status: 429, headers: corsHeaders });
         }
 
-        /*-- 验证站点存在且启用 --*/
-        const db = getDb();
-        if (!db) {
+        /*-- 验证站点存在且启用（null = 数据库不可用，与站点不存在区分） --*/
+        const siteActive = await isTrackSiteActive(siteId);
+        if (siteActive === null) {
             return NextResponse.json(fail(50000, '服务暂不可用'), { status: 500, headers: corsHeaders });
         }
-
-        const [siteRows] = await db.execute('SELECT id FROM zhijian_track_sites WHERE id = ? AND status = ?', [
-            siteId,
-            'active',
-        ]);
-        if ((siteRows as any[]).length === 0) {
+        if (!siteActive) {
             return NextResponse.json(fail(40400, '站点未注册或已停用'), { status: 404, headers: corsHeaders });
         }
 
@@ -139,47 +134,42 @@ export async function POST(request: NextRequest) {
             return true;
         });
 
-        /*-- 构建批量 INSERT --*/
-        const values: any[] = [];
-        const placeholders: string[] = [];
+        /*-- 构建批量写入行（字段截断 + 白名单 + UA/Geo 编排在此完成） --*/
+        const rows: TrackEventRow[] = [];
 
         for (const evt of dedupedEvents) {
             /* #14 UA 解析 */
             const uaInfo = parseUA(evt.ua || '');
 
-            placeholders.push('(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            values.push(
-                siteId,
-                evt.type,
-                (evt.url || '').slice(0, MAX_PATH),
-                (evt.referrer || '').slice(0, MAX_REFERRER) || null,
-                (evt.title || '').slice(0, MAX_TITLE) || null,
-                evt.duration != null && evt.duration >= 0 ? Math.min(evt.duration, 86400) : null,
-                (evt.screen || '').slice(0, MAX_SCREEN) || null,
-                (evt.lang || '').slice(0, MAX_LANG) || null,
-                evt.isNew ? 1 : 0,
-                evt.isSessionStart ? 1 : 0,
-                (visitorId || '').slice(0, MAX_VISITOR_ID) || null,
-                (sessionId || '').slice(0, MAX_SESSION_ID) || null,
-                maskedIp,
-                geo?.country || null,
-                geo?.region || null,
-                geo?.city || null,
-                (evt.ua || '').slice(0, 500) || null,
-                uaInfo.browser || null,
-                uaInfo.os || null
-            );
+            rows.push({
+                site_id: siteId,
+                type: evt.type,
+                path: (evt.url || '').slice(0, MAX_PATH),
+                referrer: (evt.referrer || '').slice(0, MAX_REFERRER) || null,
+                title: (evt.title || '').slice(0, MAX_TITLE) || null,
+                duration: evt.duration != null && evt.duration >= 0 ? Math.min(evt.duration, 86400) : null,
+                screen: (evt.screen || '').slice(0, MAX_SCREEN) || null,
+                lang: (evt.lang || '').slice(0, MAX_LANG) || null,
+                is_new: evt.isNew ? 1 : 0,
+                is_session: evt.isSessionStart ? 1 : 0,
+                visitor_id: (visitorId || '').slice(0, MAX_VISITOR_ID) || null,
+                session_id: (sessionId || '').slice(0, MAX_SESSION_ID) || null,
+                ip: maskedIp,
+                country: geo?.country || null,
+                region: geo?.region || null,
+                city: geo?.city || null,
+                ua: (evt.ua || '').slice(0, 500) || null,
+                browser: uaInfo.browser || null,
+                os: uaInfo.os || null,
+            });
         }
 
-        if (placeholders.length === 0) {
+        if (rows.length === 0) {
             return new NextResponse(null, { status: 202, headers: corsHeaders });
         }
 
-        /*-- 批量写入 --*/
-        await db.execute(
-            `INSERT INTO zhijian_track_events (site_id, type, path, referrer, title, duration, screen, lang, is_new, is_session, visitor_id, session_id, ip, country, region, city, ua, browser, os) VALUES ${placeholders.join(', ')}`,
-            values
-        );
+        /*-- 批量写入（SQL 收口 domain 层，热路径仅站点校验 + 一次 INSERT 两条查询） --*/
+        await insertTrackEvents(rows);
 
         return new NextResponse(null, { status: 202, headers: corsHeaders });
     } catch (err) {

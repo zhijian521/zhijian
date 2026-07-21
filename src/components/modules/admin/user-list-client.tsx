@@ -7,7 +7,7 @@
   并维护账号角色、状态与密码等表单字段。
 ============================================================================*/
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
@@ -22,8 +22,8 @@ import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/core/http-client';
-import { getPageAfterDelete } from '@/lib/core/pagination';
 import type { ListData } from '@/lib/core/api-response';
+import { usePagedList, type PagedListQuery } from '@/hooks/use-paged-list';
 import styles from './user-list-client.module.css';
 import shared from '@/components/modules/admin/admin-shared.module.css';
 
@@ -58,14 +58,8 @@ const EMPTY_FORM: UserFormData = {
 
 /*== 后台用户列表：匹配博客表格风格。 ==*/
 export default function UserListClient({ initialData }: UserListClientProps) {
-    const [data, setData] = useState(initialData);
+    /* 搜索输入两段式：输入框内容仅在提交时同步为 keyword 触发请求 */
     const [searchInput, setSearchInput] = useState('');
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const [loading, setLoading] = useState(false);
-    const [deleting, setDeleting] = useState<number | null>(null);
-    const [deleteTarget, setDeleteTarget] = useState<{ id: number; username: string } | null>(null);
 
     /* 弹窗表单状态 */
     const [formOpen, setFormOpen] = useState(false);
@@ -74,73 +68,38 @@ export default function UserListClient({ initialData }: UserListClientProps) {
     const [form, setForm] = useState<UserFormData>(EMPTY_FORM);
     const [submitting, setSubmitting] = useState(false);
     const [formMessage, setFormMessage] = useState<string | null>(null);
-    const usersRequestRef = useRef(0);
-    const skipInitialFetchRef = useRef(true);
 
-    const fetchUsers = useCallback(
-        async (opts?: { page?: number; search?: string }) => {
-            const requestId = ++usersRequestRef.current;
-            const p = opts?.page ?? page;
-            const s = opts?.search ?? searchKeyword;
-            setLoading(true);
-            try {
-                const params: Record<string, unknown> = { page: p, pageSize };
-                if (s.trim()) params.search = s.trim();
-                const res = await api.get<ListData<UserItem>>('/admin/users', params);
-                if (requestId === usersRequestRef.current && res.code === 0 && res.data) {
-                    setData(res.data);
-                }
-            } catch {
-                if (requestId === usersRequestRef.current) toast.error('获取用户列表失败');
-            } finally {
-                if (requestId === usersRequestRef.current) setLoading(false);
-            }
-        },
-        [page, searchKeyword, pageSize]
-    );
+    /* 关键词仅在非空时作为 search 参数传递 */
+    const buildQuery = useCallback((query: PagedListQuery) => {
+        const params: Record<string, unknown> = { page: query.page, pageSize: query.pageSize };
+        if (query.keyword.trim()) params.search = query.keyword.trim();
+        return params;
+    }, []);
 
-    useEffect(() => {
-        if (skipInitialFetchRef.current) {
-            skipInitialFetchRef.current = false;
-            return;
-        }
-        fetchUsers();
-    }, [fetchUsers]);
+    const {
+        data: users,
+        loading,
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        setKeyword,
+        totalPages,
+        deleting,
+        deleteTarget,
+        setDeleteTarget,
+        confirmDelete,
+        refresh,
+    } = usePagedList<UserItem>({
+        endpoint: '/admin/users',
+        initialData,
+        buildQuery,
+        messages: { fetchError: '获取用户列表失败', silentFetchFailure: true },
+    });
 
     function handleSearchSubmit(e?: React.FormEvent) {
         e?.preventDefault();
-        setSearchKeyword(searchInput);
-        setPage(1);
-    }
-
-    function handleDeleteClick(userId: number, username: string) {
-        setDeleteTarget({ id: userId, username });
-    }
-
-    async function handleDeleteConfirm() {
-        if (!deleteTarget) return;
-
-        setDeleting(deleteTarget.id);
-        try {
-            const res = await api.delete(`/admin/users/${deleteTarget.id}`);
-            if (res.code === 0) {
-                const nextPage = getPageAfterDelete(page, data.data.length);
-                setData((previousData) => ({
-                    ...previousData,
-                    data: previousData.data.filter((user) => user.id !== deleteTarget.id),
-                    total: previousData.total - 1,
-                }));
-                setDeleteTarget(null);
-                toast.success('删除成功');
-                if (nextPage !== page) setPage(nextPage);
-            } else {
-                toast.error(res.message || '删除失败。');
-            }
-        } catch {
-            toast.error('删除请求失败。');
-        } finally {
-            setDeleting(null);
-        }
+        setKeyword(searchInput);
     }
 
     /* 弹窗表单操作 */
@@ -197,15 +156,13 @@ export default function UserListClient({ initialData }: UserListClientProps) {
 
             setFormOpen(false);
             toast.success(formMode === 'create' ? '创建成功' : '修改成功');
-            fetchUsers();
+            refresh();
         } catch {
             setFormMessage('请求失败，请稍后重试。');
         } finally {
             setSubmitting(false);
         }
     }
-
-    const totalPages = Math.max(1, Math.ceil(data.total / pageSize));
 
     const columns: DataColumn<UserItem>[] = [
         {
@@ -249,7 +206,7 @@ export default function UserListClient({ initialData }: UserListClientProps) {
                     <IconButton icon={<PencilIcon />} onClick={() => openEditForm(user)} size="medium" title="编辑" />
                     <IconButton
                         icon={<Trash2Icon />}
-                        onClick={() => handleDeleteClick(user.id, user.username)}
+                        onClick={() => setDeleteTarget(user)}
                         size="medium"
                         title="删除"
                         variant="danger"
@@ -293,7 +250,7 @@ export default function UserListClient({ initialData }: UserListClientProps) {
                 columns={columns}
                 emptyText={loading ? '加载中...' : '暂无用户数据'}
                 rowKey={(user) => user.id}
-                rows={data.data}
+                rows={users}
             />
 
             <ConfirmDialog
@@ -301,7 +258,7 @@ export default function UserListClient({ initialData }: UserListClientProps) {
                 title="确认删除"
                 message={`确定要删除用户「${deleteTarget?.username ?? ''}」吗？此操作不可撤销。`}
                 confirmLabel="删除"
-                onConfirm={handleDeleteConfirm}
+                onConfirm={confirmDelete}
                 onCancel={() => setDeleteTarget(null)}
                 loading={deleting !== null}
             />
@@ -395,10 +352,7 @@ export default function UserListClient({ initialData }: UserListClientProps) {
                 onPageChange={setPage}
                 total={totalPages}
                 pageSize={pageSize}
-                onPageSizeChange={(s) => {
-                    setPageSize(s);
-                    setPage(1);
-                }}
+                onPageSizeChange={setPageSize}
             />
         </div>
     );

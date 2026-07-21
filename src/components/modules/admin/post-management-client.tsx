@@ -8,7 +8,7 @@
 ============================================================================*/
 
 import { DownloadIcon, PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from '@/components/ui/icons';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
@@ -20,8 +20,8 @@ import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/core/http-client';
-import { getPageAfterDelete } from '@/lib/core/pagination';
 import { APP_ROUTES } from '@/lib/core/site';
+import { usePagedList, type PagedListQuery } from '@/hooks/use-paged-list';
 import type { AdminPostListItem, AdminPostListResult, AdminPostStatusFilter } from '@/lib/domain/posts';
 
 import styles from './post-management-client.module.css';
@@ -39,73 +39,50 @@ interface PostManagementClientProps {
 
 /*== 后台文章管理：真实 API + 搜索 + 状态筛选 + 删除操作。 ==*/
 export default function PostManagementClient({ initialData, initialFilters }: PostManagementClientProps) {
-    const [posts, setPosts] = useState(initialData.data);
-    const [total, setTotal] = useState(initialData.total);
-    const [loading, setLoading] = useState(false);
-    const [keyword, setKeyword] = useState(initialFilters.keyword);
     const [status, setStatus] = useState<AdminPostStatusFilter>(initialFilters.status);
-    const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
-    const [deleting, setDeleting] = useState<number | null>(null);
     const [creating, setCreating] = useState(false);
     const [exporting, setExporting] = useState(false);
-    const [page, setPage] = useState(initialFilters.page);
-    const [pageSize, setPageSize] = useState(initialFilters.pageSize);
-    const skipInitialFetchRef = useRef(true);
 
-    const fetchData = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get<AdminPostListResult>('/admin/posts', { keyword, page, pageSize, status });
-            if (res.code === 0 && res.data) {
-                setPosts(res.data.data);
-                setTotal(res.data.total);
-            }
-        } catch {
-            toast.error('获取文章列表失败');
-        } finally {
-            setLoading(false);
-        }
-    }, [keyword, page, pageSize, status]);
+    /* status 变化通过 buildQuery 依赖触发列表重新请求 */
+    const buildQuery = useCallback(
+        (query: PagedListQuery) => ({ keyword: query.keyword, page: query.page, pageSize: query.pageSize, status }),
+        [status]
+    );
 
-    useEffect(() => {
-        if (skipInitialFetchRef.current) {
-            skipInitialFetchRef.current = false;
-            return;
-        }
-        fetchData();
-    }, [fetchData]);
+    const {
+        data: posts,
+        total,
+        loading,
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        keyword,
+        setKeyword,
+        totalPages,
+        deleting,
+        deleteTarget,
+        setDeleteTarget,
+        confirmDelete,
+        refresh,
+    } = usePagedList<AdminPostListItem>({
+        endpoint: '/admin/posts',
+        initialData,
+        initialPage: initialFilters.page,
+        initialPageSize: initialFilters.pageSize,
+        initialKeyword: initialFilters.keyword,
+        buildQuery,
+        messages: { fetchError: '获取文章列表失败', silentFetchFailure: true },
+    });
 
     /* 从编辑器标签页返回时重新加载列表 */
     useEffect(() => {
         function handleFocus() {
-            fetchData();
+            refresh();
         }
         window.addEventListener('focus', handleFocus);
         return () => window.removeEventListener('focus', handleFocus);
-    }, [fetchData]);
-
-    async function handleDeleteConfirm() {
-        if (!deleteTarget) return;
-
-        setDeleting(deleteTarget.id);
-        try {
-            const res = await api.delete(`/admin/posts/${deleteTarget.id}`);
-            if (res.code === 0) {
-                const nextPage = getPageAfterDelete(page, posts.length);
-                setPosts((previousPosts) => previousPosts.filter((post) => post.id !== deleteTarget.id));
-                setTotal((prev) => prev - 1);
-                setDeleteTarget(null);
-                toast.success('删除成功');
-                if (nextPage !== page) setPage(nextPage);
-            } else {
-                toast.error(res.message || '删除失败。');
-            }
-        } catch {
-            toast.error('删除请求失败。');
-        } finally {
-            setDeleting(null);
-        }
-    }
+    }, [refresh]);
 
     async function doExport(postId: number | null) {
         setExporting(true);
@@ -135,8 +112,6 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
         if (!value) return '-';
         return value.split(' ')[0] || value;
     }
-
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
     const columns: DataColumn<AdminPostListItem>[] = [
         {
@@ -201,7 +176,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                     <IconButton
                         disabled={deleting === post.id}
                         icon={<Trash2Icon />}
-                        onClick={() => setDeleteTarget({ id: post.id, title: post.title })}
+                        onClick={() => setDeleteTarget(post)}
                         size="medium"
                         title="删除"
                         variant="danger"
@@ -220,10 +195,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                         icon={<SearchIcon />}
                         id="post-search"
                         inputSize="medium"
-                        onChange={(e) => {
-                            setKeyword(e.target.value);
-                            setPage(1);
-                        }}
+                        onChange={(e) => setKeyword(e.target.value)}
                         placeholder="搜索标题或 Slug"
                         value={keyword}
                     />
@@ -261,7 +233,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                                 const res = await api.post<{ id: number }>('/admin/posts', {});
                                 if (res.code === 0 && res.data) {
                                     window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
-                                    fetchData();
+                                    refresh();
                                 } else {
                                     toast.error(res.message || '新建文章失败');
                                 }
@@ -291,10 +263,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                 onPageChange={setPage}
                 total={totalPages}
                 pageSize={pageSize}
-                onPageSizeChange={(s) => {
-                    setPageSize(s);
-                    setPage(1);
-                }}
+                onPageSizeChange={setPageSize}
             />
 
             <ConfirmDialog
@@ -302,7 +271,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                 loading={deleting !== null}
                 message={`确定要删除文章「${deleteTarget?.title ?? ''}」吗？此操作不可撤销。`}
                 onCancel={() => setDeleteTarget(null)}
-                onConfirm={handleDeleteConfirm}
+                onConfirm={confirmDelete}
                 open={!!deleteTarget}
                 title="确认删除"
             />

@@ -14,6 +14,7 @@ import { useState } from 'react';
 
 /*== 组件导入 ==*/
 import { ChevronRightIcon, LogOutIcon, PlusIcon } from '@/components/ui/icons';
+import { NAV_ICON_COMPONENTS } from '@/components/ui/nav-icons';
 import { toast } from '@/components/ui/toast';
 
 /*== 数据与配置 ==*/
@@ -107,7 +108,7 @@ export default function AdminSidebar() {
                     if (!group.label) {
                         return group.items.map((item) => {
                             const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
-                            const Icon = item.icon;
+                            const Icon = NAV_ICON_COMPONENTS[item.icon];
                             return (
                                 <Link
                                     aria-current={isActive ? 'page' : undefined}
@@ -123,7 +124,7 @@ export default function AdminSidebar() {
                     }
 
                     // 可折叠分组
-                    const GroupIcon = group.icon;
+                    const GroupIcon = group.icon ? NAV_ICON_COMPONENTS[group.icon] : undefined;
                     const open = isGroupOpen(group.key, group.items);
                     const subNavId = `admin-nav-group-${group.key}`;
 
@@ -147,7 +148,7 @@ export default function AdminSidebar() {
                             <div hidden={!open} id={subNavId}>
                                 {group.items.map((item) => {
                                     const isActive = isNavItemActive(pathname, item.href, item.match ?? 'prefix');
-                                    const Icon = item.icon;
+                                    const Icon = NAV_ICON_COMPONENTS[item.icon];
                                     return (
                                         <Link
                                             aria-current={isActive ? 'page' : undefined}
