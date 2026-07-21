@@ -6,6 +6,7 @@
 ============================================================================*/
 
 /*== 组件导入 ==*/
+import { EmptyState } from '@/components/ui/empty-state';
 import { Show } from '@/components/ui/show';
 import { TextLink } from '@/components/ui/text-link';
 import { PostCard } from '@/components/modules/home/post-card';
@@ -27,7 +28,7 @@ export function PostsSection({ posts }: PostsSectionProps) {
         <section className={styles.section}>
             <SectionHeading action={<TextLink href="/blog">查看全部</TextLink>}>最新文章</SectionHeading>
             <div className={styles.grid}>
-                <Show when={posts.length > 0} fallback={<p className={styles.empty}>暂无文章。</p>}>
+                <Show when={posts.length > 0} fallback={<EmptyState text="暂无文章。" className={styles.empty} />}>
                     {posts.map((post) => (
                         <PostCard key={post.id} post={post} tagVariant="primary" />
                     ))}

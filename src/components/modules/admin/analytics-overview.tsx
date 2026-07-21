@@ -23,6 +23,7 @@ import {
 
 import { TrendingDownIcon, TrendingUpIcon } from '@/components/ui/icons';
 import { DataTable, type DataColumn } from '@/components/ui/data-table';
+import { EmptyState } from '@/components/ui/empty-state';
 import type { EntryExitItem } from '@/lib/domain/analytics';
 
 import type { AnalyticsData } from './analytics-dashboard.types';
@@ -246,7 +247,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                             </AreaChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className={styles.chartEmpty}>暂无趋势数据</div>
+                        <EmptyState variant="block" text="暂无趋势数据" />
                     )}
                 </div>
             </div>
@@ -276,7 +277,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                             ))}
                         </div>
                     ) : (
-                        <div className={styles.chartEmpty}>暂无数据</div>
+                        <EmptyState variant="block" text="暂无数据" />
                     )}
                 </div>
 
@@ -295,7 +296,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                             ))}
                         </div>
                     ) : (
-                        <div className={styles.chartEmpty}>暂无数据</div>
+                        <EmptyState variant="block" text="暂无数据" />
                     )}
                 </div>
             </div>
@@ -312,7 +313,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                         palette={DEVICE_PALETTE}
                     />
                 ) : (
-                    <div className={styles.chartEmpty}>暂无数据</div>
+                    <EmptyState variant="block" text="暂无数据" />
                 )}
             </div>
 
@@ -328,7 +329,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                         palette={BROWSER_PALETTE}
                     />
                 ) : (
-                    <div className={styles.chartEmpty}>暂无数据</div>
+                    <EmptyState variant="block" text="暂无数据" />
                 )}
             </div>
 
@@ -340,7 +341,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                         palette={OS_PALETTE}
                     />
                 ) : (
-                    <div className={styles.chartEmpty}>暂无数据</div>
+                    <EmptyState variant="block" text="暂无数据" />
                 )}
             </div>
 
@@ -393,7 +394,7 @@ export const AnalyticsOverview = memo(function AnalyticsOverview({ data }: Analy
                         ) : null}
                     </div>
                 ) : (
-                    <div className={styles.chartEmpty}>暂无数据</div>
+                    <EmptyState variant="block" text="暂无数据" />
                 )}
             </div>
 

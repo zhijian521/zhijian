@@ -8,32 +8,18 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
 import { CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { SITE_METADATA } from '@/lib/core/site';
 
 /*== RSS 订阅按钮 — 点击复制 feed 地址到剪贴板，短暂显示「已复制」反馈 ==*/
 export function RssCopyButton() {
-    const [copied, setCopied] = useState(false);
-    const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const { copied, copy } = useCopyToClipboard();
     const feedUrl = `${SITE_METADATA.siteUrl}/feed.xml`;
 
-    /*-- 卸载时清理定时器，避免组件销毁后 setState --*/
-    useEffect(() => {
-        return () => clearTimeout(timerRef.current);
-    }, []);
-
     function handleClick() {
-        navigator.clipboard.writeText(feedUrl).then(
-            () => {
-                setCopied(true);
-                clearTimeout(timerRef.current);
-                timerRef.current = setTimeout(() => setCopied(false), 1500);
-            },
-            () => {},
-        );
+        copy(feedUrl);
     }
 
     return (

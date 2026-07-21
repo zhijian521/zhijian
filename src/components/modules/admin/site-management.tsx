@@ -22,6 +22,7 @@ import { toast } from '@/components/ui/toast';
 import { getEmbedScript } from '@/lib/core/utils';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { usePagedList } from '@/hooks/use-paged-list';
 import type { TrackSite } from '@/lib/domain/track-sites';
 
@@ -48,6 +49,13 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
     /* 接入代码展示弹窗 */
     const [codeDialogOpen, setCodeDialogOpen] = useState(false);
     const [codeDialogSiteId, setCodeDialogSiteId] = useState('');
+
+    /* 复制接入代码 */
+    const { copy: copyToClipboard } = useCopyToClipboard({
+        toast: true,
+        successMessage: '接入代码已复制',
+        errorMessage: '复制失败，请手动复制。',
+    });
 
     /* 站点列表不分页，仅复用数据/加载/删除状态机 */
     const {
@@ -143,14 +151,8 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
         }
     }
 
-    async function copyEmbedCode(siteId: string) {
-        const code = getEmbedScript(siteId);
-        try {
-            await navigator.clipboard.writeText(code);
-            toast.success('接入代码已复制');
-        } catch {
-            toast.error('复制失败，请手动复制。');
-        }
+    function copyEmbedCode(siteId: string) {
+        copyToClipboard(getEmbedScript(siteId));
     }
 
     const columns: DataColumn<TrackSite>[] = [

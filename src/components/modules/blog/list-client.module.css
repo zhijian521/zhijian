@@ -81,9 +81,8 @@
     flex-direction: column;
 }
 
-/*-- 空状态提示文字 --*/
+/*-- 空状态提示文字（文字色由 EmptyState 基色提供，此处仅保留场景化修饰） --*/
 .empty {
-    color: var(--muted-foreground);
     padding: var(--space-6) 0;
     font-size: var(--text-base);
 }

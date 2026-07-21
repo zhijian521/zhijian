@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+
+import { useClickOutside } from '@/hooks/use-click-outside';
 
 import styles from './bookmark-context-menu.module.css';
 
@@ -20,25 +22,8 @@ interface BookmarkContextMenuProps {
 export default function BookmarkContextMenu({ x, y, actions, onClose }: BookmarkContextMenuProps) {
     const menuRef = useRef<HTMLDivElement>(null);
 
-    /*-- ESC + 点击外部关闭 --*/
-    useEffect(() => {
-        function handleKey(e: KeyboardEvent) {
-            if (e.key === 'Escape') onClose();
-        }
-        function handleClick(e: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-                onClose();
-            }
-        }
-        document.addEventListener('keydown', handleKey);
-        /*-- 延迟绑定 mousedown，等右键的 mouseup 完全结束 --*/
-        const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 150);
-        return () => {
-            clearTimeout(timer);
-            document.removeEventListener('keydown', handleKey);
-            document.removeEventListener('mousedown', handleClick);
-        };
-    }, [onClose]);
+    /*-- ESC + 点击外部关闭；mousedown 延迟 150ms 绑定，等右键的 mouseup 完全结束 --*/
+    useClickOutside(menuRef, onClose, { delayMs: 150 });
 
     /*-- 边界修正：菜单超出视口时调整位置 --*/
     const menuX = Math.min(x, window.innerWidth - 160);

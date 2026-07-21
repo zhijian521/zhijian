@@ -10,6 +10,7 @@
 
 /*== 依赖导入 ==*/
 import React from 'react';
+import { useClickOutside } from '@/hooks/use-click-outside';
 
 /*== 样式导入 ==*/
 import { cn } from '@/lib/core/utils';
@@ -56,17 +57,9 @@ export function Select<T extends string>({
     const selected = options.find((o) => o.value === value);
     const sizeClass = SIZE_CLASS[size];
 
-    /* 点击外部关闭 */
-    React.useEffect(() => {
-        if (!open) return;
-        function handleClickOutside(e: MouseEvent) {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-                setOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [open]);
+    /* 点击外部关闭（Escape 保留下方独立 effect：Escape 关闭后需归还焦点给触发按钮，
+       与外部点击不抢焦点的行为不同，统一 onClose 无法区分来源，故 hook 传 escape: false） */
+    useClickOutside(wrapperRef, () => setOpen(false), { enabled: open, escape: false });
 
     /* Escape 关闭 */
     React.useEffect(() => {

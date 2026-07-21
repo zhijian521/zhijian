@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ArticleView } from '@/components/site/article-view';
+import { EmptyState } from '@/components/ui/empty-state';
 import { IconButton } from '@/components/ui/icon-button';
 import { PlusIcon, Trash2Icon } from '@/components/ui/icons';
 import { PillSelect } from '@/components/ui/pill-select';
@@ -313,12 +314,16 @@ export default function NoteSection({ isLoggedIn, dataVersion }: { isLoggedIn?: 
                         </div>
                     </>
                 ) : (
-                    <div className={styles.emptyState}>
-                        <p className={styles.emptyText}>还没有笔记，先新建一篇开始写。</p>
-                        <SubmitButton onClick={handleCreate} type="button">
-                            新建笔记
-                        </SubmitButton>
-                    </div>
+                    <EmptyState
+                        action={
+                            <SubmitButton onClick={handleCreate} type="button">
+                                新建笔记
+                            </SubmitButton>
+                        }
+                        className={styles.emptyFill}
+                        text="还没有笔记，先新建一篇开始写。"
+                        variant="block"
+                    />
                 )}
             </section>
         </div>

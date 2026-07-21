@@ -7,8 +7,8 @@
   语法高亮 + 右上角悬浮复制按钮。
 ============================================================================*/
 
-/*== 依赖导入 ==*/
-import { useCallback, useState } from 'react';
+/*== Hook 导入 ==*/
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 /*== 组件导入 ==*/
 import { CheckIcon, CopyIcon } from '@/components/ui/icons';
@@ -29,21 +29,11 @@ function extractText(children: React.ReactNode): string {
 /*== CodeBlock — 自定义代码块渲染：语法高亮 + 右上角浮动复制按钮 ==*/
 export function CodeBlock({ children, className, ...rest }: React.ComponentPropsWithoutRef<'pre'>) {
     const code = extractText(children);
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = useCallback(async () => {
-        try {
-            await navigator.clipboard.writeText(code);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-        } catch {
-            /* 剪贴板不可用时静默失败 */
-        }
-    }, [code]);
+    const { copied, copy } = useCopyToClipboard();
 
     return (
         <div className={styles.codeBlock}>
-            <button aria-label="复制代码" className={styles.copyBtn} onClick={handleCopy} type="button">
+            <button aria-label="复制代码" className={styles.copyBtn} onClick={() => copy(code)} type="button">
                 {copied ? <CheckIcon className={styles.checkIcon} /> : <CopyIcon className={styles.copyIcon} />}
             </button>
             <pre className={`${styles.codeArea}${className ? ` ${className}` : ''}`} {...rest}>

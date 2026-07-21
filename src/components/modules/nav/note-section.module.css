@@ -209,19 +209,8 @@
     box-sizing: border-box;
 }
 
-.emptyState {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 2rem;
-    text-align: center;
-}
+/*-- 空态场景修饰：撑满详情区（居中布局与文字外观由 EmptyState 组件提供） --*/
 
-.emptyText {
-    margin: 0;
-    color: var(--muted-foreground);
-    font-size: 0.9375rem;
+.emptyFill {
+    flex: 1;
 }

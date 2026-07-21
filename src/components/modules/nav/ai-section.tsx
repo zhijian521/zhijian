@@ -9,6 +9,8 @@ import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import { EmptyState } from '@/components/ui/empty-state';
+import { useClickOutside } from '@/hooks/use-click-outside';
 import type { ChatConversation, ChatMessage } from '@/lib/domain/nav-storage';
 import { genId, getChatConversations, saveChatConversations, getAiModel, setAiModel } from '@/lib/domain/nav-storage';
 
@@ -101,17 +103,8 @@ export default function AiSection({
         };
     }, [isLoggedIn]);
 
-    /*-- 点外面关闭模型下拉 --*/
-    useEffect(() => {
-        if (!modelOpen) return;
-        function handleClick(e: MouseEvent) {
-            if (modelDropdownRef.current && !modelDropdownRef.current.contains(e.target as Node)) {
-                setModelOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
-    }, [modelOpen]);
+    /*-- 点外面/Escape 关闭模型下拉（原不支持 Escape，hook 默认 escape=true 顺带修复） --*/
+    useClickOutside(modelDropdownRef, () => setModelOpen(false), { enabled: modelOpen });
 
     /*-- 滚动到底部 --*/
     const scrollToBottom = useCallback(() => {
@@ -335,13 +328,17 @@ export default function AiSection({
     if (!loading && !isLoggedIn) {
         return (
             <div className={styles.panel}>
-                <div className={styles.emptyState}>
-                    <SparklesIcon style={{ width: '2rem', height: '2rem', color: 'var(--primary)' }} />
-                    <p className={styles.emptyText}>登录后即可使用 AI 对话。</p>
-                    <SubmitButton onClick={onRequireLogin} type="button">
-                        登录
-                    </SubmitButton>
-                </div>
+                <EmptyState
+                    action={
+                        <SubmitButton onClick={onRequireLogin} type="button">
+                            登录
+                        </SubmitButton>
+                    }
+                    className={styles.emptyFill}
+                    icon={<SparklesIcon style={{ width: '2rem', height: '2rem', color: 'var(--primary)' }} />}
+                    text="登录后即可使用 AI 对话。"
+                    variant="block"
+                />
             </div>
         );
     }
@@ -425,10 +422,12 @@ export default function AiSection({
 
                 <div className={styles.messages} ref={messagesRef}>
                     {messages.length === 0 && !streaming ? (
-                        <div className={styles.emptyState}>
-                            <SparklesIcon style={{ width: '1.75rem', height: '1.75rem', color: 'var(--primary)' }} />
-                            <p className={styles.emptyText}>输入问题，开始对话。</p>
-                        </div>
+                        <EmptyState
+                            className={styles.emptyFill}
+                            icon={<SparklesIcon style={{ width: '1.75rem', height: '1.75rem', color: 'var(--primary)' }} />}
+                            text="输入问题，开始对话。"
+                            variant="block"
+                        />
                     ) : null}
 
                     {messages.map((m) => (

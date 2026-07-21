@@ -60,12 +60,9 @@
     scrollbar-color: var(--border) transparent;
 }
 
-/*-- 空状态 --*/
+/*-- 空状态：padding/对齐为场景化修饰，文字色与字号由 EmptyState 组件提供 --*/
 
 .empty {
-    margin: 0;
     padding: 2rem 0;
     text-align: center;
-    font-size: 0.875rem;
-    color: var(--muted-foreground);
 }

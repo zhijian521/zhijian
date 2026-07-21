@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
+import { useClickOutside } from '@/hooks/use-click-outside';
 import { isBookmarkFolder } from '@/lib/domain/nav-config';
 import type { Bookmark } from '@/lib/domain/nav-config';
 import type { DragState } from './drag-utils';
@@ -38,20 +39,8 @@ export default function BookmarkLink({
     const [open, setOpen] = useState(false);
     const folderRef = useRef<HTMLDivElement>(null);
 
-    /*-- 点击外部关闭文件夹弹出层 --*/
-    useEffect(() => {
-        if (!open) return;
-        function handleClick(e: MouseEvent) {
-            if (folderRef.current && !folderRef.current.contains(e.target as Node)) {
-                setOpen(false);
-            }
-        }
-        const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 0);
-        return () => {
-            clearTimeout(timer);
-            document.removeEventListener('mousedown', handleClick);
-        };
-    }, [open]);
+    /*-- 点击外部关闭文件夹弹出层（原实现不含 Escape，保持原语义） --*/
+    useClickOutside(folderRef, () => setOpen(false), { enabled: open, escape: false });
 
     /*-- 当前项的拖拽高亮类（position 命中时） --*/
     const pos = dragState?.overId === bookmark.id ? dragState?.position : null;

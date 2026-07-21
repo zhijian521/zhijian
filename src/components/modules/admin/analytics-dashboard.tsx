@@ -17,6 +17,7 @@ import { Select } from '@/components/ui/select';
 import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/core/http-client';
 import { getEmbedScript } from '@/lib/core/utils';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import type { DateRange, VisitRecord } from '@/lib/domain/analytics';
 
 import { AnalyticsOverview } from './analytics-overview';
@@ -45,6 +46,13 @@ export default function AnalyticsDashboard({ initialSites }: AnalyticsDashboardP
     const [clearLoading, setClearLoading] = useState(false);
     const overviewRequestRef = useRef(0);
     const visitsRequestRef = useRef(0);
+
+    /* 复制接入代码 */
+    const { copy: copyToClipboard } = useCopyToClipboard({
+        toast: true,
+        successMessage: '接入代码已复制',
+        errorMessage: '复制失败',
+    });
 
     const fetchData = useCallback(async () => {
         const requestId = ++overviewRequestRef.current;
@@ -114,15 +122,9 @@ export default function AnalyticsDashboard({ initialSites }: AnalyticsDashboardP
         setVisitsPage(1);
     }, []);
 
-    async function copyEmbedCode() {
+    function copyEmbedCode() {
         if (!siteId) return;
-
-        try {
-            await navigator.clipboard.writeText(getEmbedScript(siteId));
-            toast.success('接入代码已复制');
-        } catch {
-            toast.error('复制失败');
-        }
+        copyToClipboard(getEmbedScript(siteId));
     }
 
     async function handleClearData() {

@@ -7,12 +7,13 @@
   以及服务器图片同步到本地的操作说明。
 ============================================================================*/
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 
 import { CheckIcon, CopyIcon, DownloadIcon, PencilIcon, Trash2Icon } from '@/components/ui/icons';
 import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
+import { EmptyState } from '@/components/ui/empty-state';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { IconButton } from '@/components/ui/icon-button';
 import { SubmitButton } from '@/components/ui/submit-button';
@@ -20,6 +21,7 @@ import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/core/http-client';
 import type { ListData } from '@/lib/core/api-response';
 import { toast } from '@/components/ui/toast';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { usePagedList } from '@/hooks/use-paged-list';
 import type { Upload } from '@/lib/domain/uploads';
 
@@ -39,10 +41,22 @@ function formatSize(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+/*== 行内复制 Markdown 按钮 — 列表逐行多目标场景，每行各自持有 copied 状态 ==*/
+function CopyMarkdownButton({ upload }: { upload: Upload }) {
+    const { copied, copy } = useCopyToClipboard();
+    return (
+        <IconButton
+            aria-label="复制 Markdown"
+            icon={copied ? <CheckIcon /> : <CopyIcon />}
+            onClick={() => copy(`![](${upload.path})`)}
+            size="mini"
+            title="复制 Markdown"
+        />
+    );
+}
+
 /*== UploadManagement 图片管理交互组件 ==*/
 export default function UploadManagement({ initialData }: UploadManagementProps) {
-    const [copiedId, setCopiedId] = useState<number | null>(null);
-
     /* 重命名弹窗 */
     const [renameTarget, setRenameTarget] = useState<Upload | null>(null);
     const [renameValue, setRenameValue] = useState('');
@@ -50,9 +64,7 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
 
     /* 同步弹窗 */
     const [syncOpen, setSyncOpen] = useState(false);
-    const [syncCopied, setSyncCopied] = useState(false);
-    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const syncCopiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const { copied: syncCopied, copy: copySyncCommand } = useCopyToClipboard();
 
     const {
         data: uploads,
@@ -83,26 +95,6 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
         },
     });
 
-    useEffect(() => {
-        return () => {
-            if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
-            if (syncCopiedTimerRef.current) clearTimeout(syncCopiedTimerRef.current);
-        };
-    }, []);
-
-    /* 复制 Markdown */
-    const handleCopy = useCallback(async (upload: Upload) => {
-        const markdown = `![](${upload.path})`;
-        try {
-            await navigator.clipboard.writeText(markdown);
-            setCopiedId(upload.id);
-            if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
-            copiedTimerRef.current = setTimeout(() => setCopiedId(null), 1500);
-        } catch {
-            toast.error('复制失败');
-        }
-    }, []);
-
     /* 重命名图片 */
     const handleRename = useCallback(async () => {
         if (!renameTarget || !renameValue.trim()) return;
@@ -125,17 +117,6 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
         }
     }, [renameTarget, renameValue, refresh]);
 
-    const handleSyncCommandCopy = useCallback(async () => {
-        try {
-            await navigator.clipboard.writeText('node scripts/sync-uploads.mjs');
-            setSyncCopied(true);
-            if (syncCopiedTimerRef.current) clearTimeout(syncCopiedTimerRef.current);
-            syncCopiedTimerRef.current = setTimeout(() => setSyncCopied(false), 1500);
-        } catch {
-            toast.error('复制失败');
-        }
-    }, []);
-
     return (
         <div className={styles.management}>
             <div className={styles.toolbar}>
@@ -151,9 +132,9 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
             </div>
 
             {loading ? (
-                <div className={styles.empty}>加载中...</div>
+                <EmptyState className={styles.empty} variant="block" text="加载中..." />
             ) : uploads.length === 0 ? (
-                <div className={styles.empty}>暂无图片，上传后将在此显示。</div>
+                <EmptyState className={styles.empty} variant="block" text="暂无图片，上传后将在此显示。" />
             ) : (
                 <>
                     <div className={styles.grid}>
@@ -170,13 +151,7 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
                                         size="mini"
                                         title="修改名称"
                                     />
-                                    <IconButton
-                                        aria-label="复制 Markdown"
-                                        icon={copiedId === upload.id ? <CheckIcon /> : <CopyIcon />}
-                                        onClick={() => handleCopy(upload)}
-                                        size="mini"
-                                        title="复制 Markdown"
-                                    />
+                                    <CopyMarkdownButton upload={upload} />
                                     <IconButton
                                         aria-label="删除图片"
                                         icon={<Trash2Icon />}
@@ -242,7 +217,7 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
                         <button
                             aria-label="复制命令"
                             className={styles.syncCopyBtn}
-                            onClick={handleSyncCommandCopy}
+                            onClick={() => copySyncCommand('node scripts/sync-uploads.mjs')}
                             type="button"
                         >
                             {syncCopied ? (

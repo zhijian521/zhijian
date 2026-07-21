@@ -13,6 +13,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+/*== Hook 导入 ==*/
+import { useClickOutside } from '@/hooks/use-click-outside';
+
 /*== 组件导入 ==*/
 import { Show } from '@/components/ui/show';
 import { MenuIcon, XIcon } from '@/components/ui/icons';
@@ -61,27 +64,9 @@ export function SiteHeader({ transparent = false }: SiteHeaderProps) {
         triggerRef.current?.focus();
     }, []);
 
-    /*-- 移动菜单：点击外部 / Escape 关闭 --*/
-    useEffect(() => {
-        if (!isMobileNavOpen) return;
-
-        const onOutside = (e: MouseEvent) => {
-            const target = e.target as Node;
-            if (!mobileNavRef.current?.contains(target) && !triggerRef.current?.contains(target)) {
-                closeMenu();
-            }
-        };
-        const onEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') closeMenu();
-        };
-
-        document.addEventListener('mousedown', onOutside);
-        document.addEventListener('keydown', onEscape);
-        return () => {
-            document.removeEventListener('mousedown', onOutside);
-            document.removeEventListener('keydown', onEscape);
-        };
-    }, [isMobileNavOpen, closeMenu]);
+    /*-- 移动菜单：点击外部 / Escape 关闭（触发按钮在面板之外，数组形态一并排除；
+         两种关闭来源统一走 closeMenu 归还焦点，与原实现行为一致） --*/
+    useClickOutside([mobileNavRef, triggerRef], closeMenu, { enabled: isMobileNavOpen });
 
     const headerClass = transparent ? cn(styles.headerHome, isScrolled && styles.headerScrolled) : styles.headerInner;
 

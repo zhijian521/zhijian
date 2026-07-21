@@ -9,6 +9,9 @@
 
 import { useState } from 'react';
 
+/*== 组件导入 ==*/
+import { EmptyState } from '@/components/ui/empty-state';
+
 /*== 数据与配置 ==*/
 import type { DailyCommits } from '@/lib/domain/github';
 
@@ -81,7 +84,7 @@ function DayCell({ day, count, onSelect }: DayCellProps) {
 export function CommitChart({ data }: CommitChartProps) {
     const [selected, setSelected] = useState<{ date: string; count: number } | null>(null);
 
-    if (data.length === 0) return <div className={styles.empty}>配置 GITHUB_TOKEN 后查看提交记录</div>;
+    if (data.length === 0) return <EmptyState variant="block" text="配置 GITHUB_TOKEN 后查看提交记录" />;
 
     const dayMap = new Map(data.map((d) => [d.date, d.count]));
     const max = Math.max(...data.map((d) => d.count), 1);

@@ -6,6 +6,7 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { LogOutIcon, SettingsIcon } from '@/components/ui/icons';
 import { SubmitButton } from '@/components/ui/submit-button';
 import type { AuthUser } from '@/hooks/use-auth';
+import { useClickOutside } from '@/hooks/use-click-outside';
 import { getSaveStatus, onSaveStatusChange, syncLocalToServer, clearLocalNavData } from '@/lib/domain/nav-storage';
 
 import AuthModal from './auth-modal';
@@ -63,29 +64,8 @@ export default function SettingsSection({
         }
     }, [loginSignal, isLoggedIn, loading]);
 
-    useEffect(() => {
-        if (!isOpen) return;
-
-        function handlePointerDown(event: MouseEvent) {
-            if (!rootRef.current?.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-
-        function handleKeyDown(event: KeyboardEvent) {
-            if (event.key === 'Escape') {
-                setIsOpen(false);
-            }
-        }
-
-        document.addEventListener('mousedown', handlePointerDown);
-        window.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            document.removeEventListener('mousedown', handlePointerDown);
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [isOpen]);
+    /*-- 点外面/Escape 关闭面板（原 Escape 绑 window，统一到 hook 的 document 监听，行为等价） --*/
+    useClickOutside(rootRef, () => setIsOpen(false), { enabled: isOpen });
 
     async function handleAuthSuccess() {
         setShowAuthModal(false);

@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { PlusIcon } from '@/components/ui/icons';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
+import { EmptyState } from '@/components/ui/empty-state';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
@@ -239,9 +240,9 @@ export default function TaxonomyManagement({ initialCategories, initialTags }: T
                     </div>
                     <div className={styles.cardList} role="list" aria-label="分类列表">
                         {catList.loading ? (
-                            <p className={styles.empty}>加载中...</p>
+                            <EmptyState className={styles.empty} text="加载中..." />
                         ) : catList.data.data.length === 0 ? (
-                            <p className={styles.empty}>暂无分类</p>
+                            <EmptyState className={styles.empty} text="暂无分类" />
                         ) : (
                             catList.data.data.map((cat) => (
                                 <TaxonomyCard
@@ -277,9 +278,9 @@ export default function TaxonomyManagement({ initialCategories, initialTags }: T
                     </div>
                     <div className={styles.cardList} role="list" aria-label="标签列表">
                         {tagList.loading ? (
-                            <p className={styles.empty}>加载中...</p>
+                            <EmptyState className={styles.empty} text="加载中..." />
                         ) : tagList.data.data.length === 0 ? (
-                            <p className={styles.empty}>暂无标签</p>
+                            <EmptyState className={styles.empty} text="暂无标签" />
                         ) : (
                             tagList.data.data.map((tag) => (
                                 <TaxonomyCard

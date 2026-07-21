@@ -91,9 +91,3 @@
 .legend .cell {
     cursor: default;
 }
-
-.empty {
-    font-size: var(--text-sm);
-    color: var(--muted-foreground);
-    padding: var(--space-4) 0;
-}

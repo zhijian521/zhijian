@@ -153,15 +153,6 @@
     width: 100%;
 }
 
-.chartEmpty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 120px;
-    font-size: 0.875rem;
-    color: var(--muted-foreground);
-}
-
 .legend {
     display: flex;
     gap: 1.25rem;

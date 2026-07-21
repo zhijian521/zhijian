@@ -16,6 +16,7 @@ import { FilterDialog } from '@/components/modules/blog/filter-dialog';
 import { FilterSidebar } from '@/components/modules/blog/filter-sidebar';
 import { Header } from '@/components/modules/blog/header';
 import { PostItem } from '@/components/modules/blog/post-item';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Pagination } from '@/components/ui/pagination';
 import { Show } from '@/components/ui/show';
 
@@ -118,7 +119,7 @@ export default function ListClient({
                     <section className={styles.main}>
                         {/* 文章列表 */}
                         <div className={styles.list}>
-                            <Show when={posts.length > 0} fallback={<p className={styles.empty}>没有匹配的文章。</p>}>
+                            <Show when={posts.length > 0} fallback={<EmptyState text="没有匹配的文章。" className={styles.empty} />}>
                                 {posts.map((post) => (
                                     <PostItem key={post.id} post={post} />
                                 ))}

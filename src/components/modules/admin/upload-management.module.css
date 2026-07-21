@@ -83,13 +83,9 @@
     line-height: 1.4;
 }
 
+/*-- 空态：块级最小高度与边框为场景化修饰，居中布局/文字色/字号由 EmptyState block 提供 --*/
 .empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 200px;
-    color: var(--muted-foreground);
-    font-size: 0.875rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
 }

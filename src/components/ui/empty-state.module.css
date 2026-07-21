@@ -1,0 +1,37 @@
+/*============================================================================
+  empty-state — 无数据提示样式
+
+  公共部分提炼自全站现有手写空态（chartEmpty / .empty / .emptyState）：
+  二级文字色 + 小号字号。布局类修饰（高度/内边距/对齐）由消费方按需追加。
+============================================================================*/
+
+/*-- 公共基础：行内文字提示，列表与小区域直接使用 --*/
+.empty {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: var(--text-sm);
+}
+
+/*-- block 形态：面板/卡片级垂直居中块，最小高度提炼自 chartEmpty 的 120px --*/
+.block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    min-height: 7.5rem;
+    padding: var(--space-6);
+    text-align: center;
+}
+
+/*-- block 图标：容器定尺寸，颜色继承 muted-foreground（currentColor） --*/
+.icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+}
+
+/*-- block 文字：抵消 p 默认外边距，间距由 .block 的 gap 统一控制 --*/
+.text {
+    margin: 0;
+}

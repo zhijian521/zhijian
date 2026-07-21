@@ -383,21 +383,8 @@
     height: 1rem;
 }
 
-/*-- 空态 / 未登录 --*/
+/*-- 空态场景修饰：撑满所在面板/消息区（居中布局与文字外观由 EmptyState 组件提供） --*/
 
-.emptyState {
+.emptyFill {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 2rem;
-    text-align: center;
-}
-
-.emptyText {
-    margin: 0;
-    color: var(--muted-foreground);
-    font-size: 0.9375rem;
 }

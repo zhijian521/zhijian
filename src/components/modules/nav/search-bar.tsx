@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 import { SearchSparklesIcon } from '@/components/ui/icons';
+import { useClickOutside } from '@/hooks/use-click-outside';
 import { SEARCH_ENGINES } from '@/lib/domain/nav-config';
 import {
     getSearchHistory,
@@ -34,15 +35,8 @@ export default function SearchBar({ onAskAi }: SearchBarProps) {
         setHistory(getSearchHistory());
     }, []);
 
-    useEffect(() => {
-        function handleClick(e: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-                setDropdownOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
-    }, []);
+    /*-- 点外面/Escape 关闭引擎下拉（仅下拉打开时绑定；原不支持 Escape，属顺带修复） --*/
+    useClickOutside(dropdownRef, () => setDropdownOpen(false), { enabled: dropdownOpen });
 
     const engine = SEARCH_ENGINES.find((e) => e.key === engineKey) ?? SEARCH_ENGINES[0];
 
