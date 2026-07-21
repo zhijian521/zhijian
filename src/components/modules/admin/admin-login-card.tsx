@@ -3,18 +3,20 @@
 /*============================================================================
   admin-login-card — 后台登录卡片
 
-  负责管理员账号登录、用户名记忆和错误反馈，
-  登录成功后进入后台管理区域。
+  负责管理员账号登录、用户名记忆和错误反馈。
+  普通用户登录后保留当前页面并提示无后台权限。
 ============================================================================*/
 
-import { useEffect, useState, useTransition } from 'react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
-import { UserIcon, LockIcon } from '@/components/ui/icons';
-import { APP_ROUTES, STORAGE_KEYS } from '@/lib/core/site';
-import { api } from '@/lib/core/http-client';
-import { TextInput } from '@/components/ui/text-input';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { LockIcon, UserIcon } from '@/components/ui/icons';
+import { TextInput } from '@/components/ui/text-input';
+
+import { api } from '@/lib/core/http-client';
+import { APP_ROUTES, SITE_METADATA, STORAGE_KEYS } from '@/lib/core/site';
+
 import styles from './admin-login-card.module.css';
 
 interface LoginFormState {
@@ -27,17 +29,40 @@ interface RememberedLoginPayload {
     username: string;
 }
 
+interface LoginResponse {
+    user: {
+        role: 'admin' | 'user';
+    };
+}
+
 const INITIAL_FORM: LoginFormState = {
     password: '',
     remember: false,
     username: '',
 };
 
-/*== 后台登录页主体：使用直角视觉，同时支持本地记住密码回填。 ==*/
+const LOGIN_MESSAGE_ID = 'admin-login-message';
+
+function isRememberedLoginPayload(value: unknown): value is RememberedLoginPayload {
+    if (!value || typeof value !== 'object') {
+        return false;
+    }
+
+    return typeof (value as Record<string, unknown>).username === 'string';
+}
+
+function removeRememberedLogin() {
+    try {
+        window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
+    } catch {
+        // 浏览器禁用存储时无需清理，登录态由 HttpOnly Cookie 维护
+    }
+}
+
 export default function AdminLoginCard() {
     const [loginForm, setLoginForm] = useState(INITIAL_FORM);
     const [message, setMessage] = useState<string | null>(null);
-    const [isPending, startTransition] = useTransition();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         try {
@@ -47,10 +72,10 @@ export default function AdminLoginCard() {
                 return;
             }
 
-            const savedLogin = JSON.parse(savedValue) as RememberedLoginPayload;
+            const savedLogin: unknown = JSON.parse(savedValue);
 
-            if (!savedLogin.username) {
-                window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
+            if (!isRememberedLoginPayload(savedLogin) || !savedLogin.username.trim()) {
+                removeRememberedLogin();
                 return;
             }
 
@@ -60,7 +85,7 @@ export default function AdminLoginCard() {
                 username: savedLogin.username,
             }));
         } catch {
-            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
+            removeRememberedLogin();
         }
     }, []);
 
@@ -69,94 +94,100 @@ export default function AdminLoginCard() {
             ...current,
             [key]: value,
         }));
+        setMessage(null);
 
         if (key === 'remember' && value === false) {
-            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
+            removeRememberedLogin();
         }
     }
 
     function persistRememberedLogin() {
-        if (loginForm.remember) {
-            window.localStorage.setItem(
-                STORAGE_KEYS.adminRememberedUsername,
-                JSON.stringify({
-                    username: loginForm.username.trim(),
-                } satisfies RememberedLoginPayload)
-            );
-        } else {
-            window.localStorage.removeItem(STORAGE_KEYS.adminRememberedUsername);
+        try {
+            if (loginForm.remember) {
+                window.localStorage.setItem(
+                    STORAGE_KEYS.adminRememberedUsername,
+                    JSON.stringify({
+                        username: loginForm.username.trim(),
+                    } satisfies RememberedLoginPayload)
+                );
+                return;
+            }
+
+            removeRememberedLogin();
+        } catch {
+            // 登录态由 HttpOnly Cookie 维护，本地偏好写入失败不应阻断登录
         }
     }
 
-    function handleLoginSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleLoginSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        if (isSubmitting) {
+            return;
+        }
+
         setMessage(null);
+        setIsSubmitting(true);
 
-        startTransition(async () => {
-            try {
-                const res = await api.post<{ user: { role: string } }>('/auth/login', {
-                    password: loginForm.password,
-                    username: loginForm.username.trim(),
-                });
-
-                if (res.code !== 0) {
-                    setMessage(res.message || '登录失败，请检查账号和密码。');
-                    return;
-                }
-
-                if (res.data?.user?.role !== 'admin') {
-                    setMessage('该账号无后台管理权限。');
-                    return;
-                }
-
-                persistRememberedLogin();
-                window.location.href = APP_ROUTES.admin;
-            } catch {
-                setMessage('登录请求失败，请检查网络连接后重试。');
-            }
+        const response = await api.post<LoginResponse>('/auth/login', {
+            password: loginForm.password,
+            username: loginForm.username.trim(),
         });
+
+        if (response.code !== 0) {
+            setMessage(response.message || '登录失败，请检查账号和密码。');
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (response.data?.user.role !== 'admin') {
+            setMessage('该账号无后台管理权限。');
+            setIsSubmitting(false);
+            return;
+        }
+
+        persistRememberedLogin();
+        window.location.assign(APP_ROUTES.admin);
     }
 
     return (
         <main className={styles.page}>
-            <div aria-hidden="true" className={styles.texture}>
-                <div className={styles.textureGlow} />
-            </div>
+            <div aria-hidden="true" className={styles.texture} />
 
             <section className={styles.shell}>
                 <header className={styles.brand}>
-                    <Image
-                        alt="Zhijian Logo"
-                        className={styles.logo}
-                        height={56}
-                        priority
-                        src="/images/logo.webp"
-                        width={56}
-                    />
-                    <h1 className={styles.title}>Zhijian Admin</h1>
+                    <Image alt="" className={styles.logo} height={56} priority src="/images/logo.webp" width={56} />
+                    <h1 className={styles.title}>{SITE_METADATA.adminName}</h1>
                 </header>
 
-                <section className={styles.card} aria-label="后台登录表单">
-                    <form className={styles.form} onSubmit={handleLoginSubmit}>
+                <div className={styles.card}>
+                    <form
+                        aria-busy={isSubmitting}
+                        aria-describedby={message ? LOGIN_MESSAGE_ID : undefined}
+                        className={styles.form}
+                        onSubmit={handleLoginSubmit}
+                    >
                         <TextInput
-                            icon={<UserIcon />}
+                            autoComplete="username"
+                            disabled={isSubmitting}
+                            icon={<UserIcon aria-hidden="true" />}
                             id="username"
                             label="用户名"
                             onChange={(event) => handleFieldChange('username', event.target.value)}
                             placeholder="请输入您的用户名"
                             required
-                            autoComplete="username"
                             value={loginForm.username}
                         />
 
                         <TextInput
-                            icon={<LockIcon />}
+                            autoComplete="current-password"
+                            disabled={isSubmitting}
+                            icon={<LockIcon aria-hidden="true" />}
                             id="password"
                             label="密码"
                             onChange={(event) => handleFieldChange('password', event.target.value)}
                             placeholder="请输入您的密码"
                             required
-                            autoComplete={loginForm.remember ? 'current-password' : 'off'}
                             type="password"
                             value={loginForm.password}
                         />
@@ -165,6 +196,7 @@ export default function AdminLoginCard() {
                             <input
                                 checked={loginForm.remember}
                                 className={styles.checkbox}
+                                disabled={isSubmitting}
                                 id="remember"
                                 onChange={(event) => handleFieldChange('remember', event.target.checked)}
                                 type="checkbox"
@@ -172,13 +204,13 @@ export default function AdminLoginCard() {
                             <span>记住用户名</span>
                         </label>
 
-                        <SubmitButton disabled={isPending}>{isPending ? '登录中...' : '登录'}</SubmitButton>
+                        <SubmitButton disabled={isSubmitting}>{isSubmitting ? '登录中...' : '登录'}</SubmitButton>
 
-                        <p aria-live="polite" className={styles.message}>
+                        <p aria-atomic="true" aria-live="polite" className={styles.message} id={LOGIN_MESSAGE_ID}>
                             {message}
                         </p>
                     </form>
-                </section>
+                </div>
             </section>
 
             <footer className={styles.footer}>

@@ -1,9 +1,12 @@
 .page {
     position: relative;
+    isolation: isolate;
     display: flex;
     min-height: 100vh;
+    min-height: 100svh;
     flex-direction: column;
     overflow-x: hidden;
+    background: var(--background);
 }
 
 .texture {
@@ -11,13 +14,17 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.04;
+    background-image: url('/images/bg-nav.webp');
+    background-size: cover;
+    background-position: center;
 }
 
-.textureGlow {
+/* 蒙版纱罩：复用 theme.css 的 --overlay-gradient 统一 token，暗色主题自动加深 */
+.texture::after {
+    content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at top right, rgba(227, 190, 189, 0.32), transparent 38%);
+    background: var(--overlay-gradient);
 }
 
 .shell {
@@ -26,15 +33,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 48px 16px 28px;
+    padding: var(--space-6);
 }
 
 .brand {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    margin-bottom: 28px;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
 }
 
 .logo {
@@ -47,10 +54,10 @@
 .title {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: 32px;
-    line-height: 1.2;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-normal);
     color: var(--primary);
 }
 
@@ -59,27 +66,34 @@
     max-width: 24rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    background: var(--background);
-    padding: 20px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(8px);
+    background: var(--card);
+    padding: var(--space-8) var(--space-6) var(--space-6);
+    box-shadow: var(--shadow-lg);
+    -webkit-backdrop-filter: var(--blur-sm);
+    backdrop-filter: var(--blur-sm);
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: var(--space-4);
 }
 
 .checkboxRow {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 0;
-    font-size: 12px;
-    line-height: 1.4;
+    min-height: 24px;
+    gap: var(--space-1);
+    padding: var(--space-1) 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
     color: var(--muted-foreground);
     cursor: pointer;
+}
+
+.checkboxRow:has(.checkbox:disabled) {
+    cursor: not-allowed;
+    opacity: var(--opacity-60);
 }
 
 .checkbox {
@@ -89,35 +103,26 @@
     accent-color: var(--primary);
 }
 
+.checkbox:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
 .message {
-    min-height: 18px;
-    margin: -2px 0 0;
-    font-size: 12px;
-    line-height: 1.5;
+    min-height: 1rem;
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
     color: var(--destructive);
 }
 
 .footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 0 24px 24px;
+    padding: 0 var(--space-5) var(--space-5);
+    text-align: center;
 }
 
 .copyright {
-    font-size: 12px;
-    line-height: 1.4;
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
     color: var(--muted-foreground);
-}
-
-@media (min-width: 768px) {
-    .shell {
-        padding-left: 40px;
-        padding-right: 40px;
-    }
-
-    .card {
-        padding: 28px;
-    }
 }
