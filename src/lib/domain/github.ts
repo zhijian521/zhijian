@@ -22,6 +22,16 @@ const REPO = 'zhijian';
 /*== 缓存周期：1 小时（秒） ==*/
 const REVALIDATE_SECONDS = 3600;
 
+/*-- 日期键口径：固定按 Asia/Shanghai 换算（YYYY-MM-DD）。
+     GitHub 返回的 author.date 是 UTC ISO 串，直接 slice(0, 10) 取的是 UTC 日期，
+     会把东八区 0-8 点的提交归到前一天格子；渲染侧（commit-chart）按浏览器本地
+     时区取键，作者与受众均在中国、数据库时区同为 +08:00，故聚合侧统一换算到
+     Asia/Shanghai。这里不能省略 timeZone 依赖服务器本地时区 —— 部署环境
+     （如 Vercel）默认 UTC，显式指定才能保证两侧口径一致且不受部署位置影响 --*/
+function toShanghaiDateKey(iso: string): string {
+    return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
+}
+
 /*-- 实际拉取逻辑：未配置 GITHUB_TOKEN 时返回空数组，调用方按无数据渲染 --*/
 async function fetchCommitHistoryFromGitHub(): Promise<DailyCommits[]> {
     const token = process.env.GITHUB_TOKEN;
@@ -45,7 +55,7 @@ async function fetchCommitHistoryFromGitHub(): Promise<DailyCommits[]> {
         if (commits.length === 0) break;
         for (const c of commits) {
             const d = c.commit.author?.date;
-            if (d) dates.push(d.slice(0, 10));
+            if (d) dates.push(toShanghaiDateKey(d));
         }
         if (commits.length < 100) break;
         page++;

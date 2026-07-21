@@ -119,3 +119,19 @@ select {
         padding-right: var(--space-4);
     }
 }
+
+/*== 无障碍工具 ==*/
+
+/*-- 视觉隐藏（sr-only）：视觉不可见但屏幕阅读器可感知，
+     用于 aria-live 播报、跳过链接等无障碍辅助内容 --*/
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

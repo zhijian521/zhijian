@@ -9,6 +9,21 @@
     background: var(--background);
 }
 
+/*== 整卡热区 ==*/
+/* 单个外层 Link 充满卡片，消除链接套链接 */
+.cardLink {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/*== 焦点轮廓 ==*/
+.cardLink:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
 /*== 封面图 + 渐变叠层 ==*/
 .visualImage {
     position: relative;
@@ -100,4 +115,26 @@
     right: 0;
     z-index: 2;
     padding: 0 var(--space-5) var(--space-4);
+}
+
+/*== 阅读更多（装饰性 span，视觉复刻 TextLink）==*/
+.readMore {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--comp-text-base);
+    line-height: var(--leading-normal);
+    font-weight: var(--weight-medium);
+    color: var(--primary);
+    transition: opacity var(--transition);
+}
+
+.readMore:hover {
+    opacity: var(--opacity-60);
+}
+
+.readMoreIcon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
 }

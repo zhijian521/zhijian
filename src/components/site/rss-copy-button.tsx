@@ -14,9 +14,6 @@ import { CopyIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
 import { SITE_METADATA } from '@/lib/core/site';
 
-/*== 样式导入 ==*/
-import styles from './rss-copy-button.module.css';
-
 /*== RSS 订阅按钮 — 点击复制 feed 地址到剪贴板，短暂显示「已复制」反馈 ==*/
 export function RssCopyButton() {
     const [copied, setCopied] = useState(false);
@@ -44,8 +41,8 @@ export function RssCopyButton() {
             <GhostButton asButton icon={<CopyIcon />} onClick={handleClick} size="small">
                 {copied ? '已复制' : 'RSS 订阅'}
             </GhostButton>
-            {/* 屏幕阅读器播报复制结果（视觉隐藏） */}
-            <span aria-live="polite" className={styles.visuallyHidden} role="status">
+            {/* 屏幕阅读器播报复制结果（视觉隐藏，用全局 visually-hidden 工具类） */}
+            <span aria-live="polite" className="visually-hidden" role="status">
                 {copied ? '已复制 RSS 订阅地址' : ''}
             </span>
         </>
