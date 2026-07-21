@@ -58,8 +58,8 @@ export default function AdminSettingsPage() {
                             后续新增模块可继续在 <code className={styles.code}>/admin</code> 下扩展独立菜单与页面。
                         </p>
                         <p>
-                            数据库初始化脚本：<code className={styles.code}>sql/init.sql</code>，包含 posts 和 users
-                            两张表。
+                            数据库初始化脚本：<code className={styles.code}>sql/init.sql</code>
+                            ，包含用户、博客（文章/分类/标签/上传）、观澜统计与导航数据共 12 张表。
                         </p>
                     </div>
                 </div>

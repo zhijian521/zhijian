@@ -124,9 +124,9 @@ export default async function BlogPostPage({ params }: PageProps) {
             },
             {
                 '@type': 'Person',
-                '@id': `${SITE_METADATA.siteUrl}/#about-me`,
+                '@id': `${SITE_METADATA.siteUrl}#author`,
                 name: SITE_METADATA.author,
-                url: `${SITE_METADATA.siteUrl}/#about-me`,
+                url: SITE_METADATA.siteUrl,
             },
             {
                 '@type': 'Organization',
@@ -171,7 +171,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 datePublished: publishedTime,
                 dateModified: modifiedTime,
                 author: {
-                    '@id': `${SITE_METADATA.siteUrl}/#about-me`,
+                    '@id': `${SITE_METADATA.siteUrl}#author`,
                 },
                 publisher: {
                     '@id': `${SITE_METADATA.siteUrl}#publisher`,

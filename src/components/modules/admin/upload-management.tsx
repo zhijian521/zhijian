@@ -14,6 +14,7 @@ import { Pagination } from '@/components/ui/pagination';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import Dialog from '@/components/ui/dialog';
 import { GhostButton } from '@/components/ui/ghost-button';
+import { IconButton } from '@/components/ui/icon-button';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { TextInput } from '@/components/ui/text-input';
 import { api } from '@/lib/core/http-client';
@@ -159,37 +160,31 @@ export default function UploadManagement({ initialData }: UploadManagementProps)
                         {uploads.map((upload) => (
                             <div className={styles.card} key={upload.id}>
                                 <div className={styles.cardActions}>
-                                    <button
+                                    <IconButton
                                         aria-label="修改名称"
-                                        className={styles.iconBtn}
+                                        icon={<PencilIcon />}
                                         onClick={() => {
                                             setRenameTarget(upload);
                                             setRenameValue(upload.original);
                                         }}
-                                        type="button"
-                                    >
-                                        <PencilIcon className={styles.iconSmall} />
-                                    </button>
-                                    <button
+                                        size="mini"
+                                        title="修改名称"
+                                    />
+                                    <IconButton
                                         aria-label="复制 Markdown"
-                                        className={styles.iconBtn}
+                                        icon={copiedId === upload.id ? <CheckIcon /> : <CopyIcon />}
                                         onClick={() => handleCopy(upload)}
-                                        type="button"
-                                    >
-                                        {copiedId === upload.id ? (
-                                            <CheckIcon className={styles.iconSmall} />
-                                        ) : (
-                                            <CopyIcon className={styles.iconSmall} />
-                                        )}
-                                    </button>
-                                    <button
+                                        size="mini"
+                                        title="复制 Markdown"
+                                    />
+                                    <IconButton
                                         aria-label="删除图片"
-                                        className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+                                        icon={<Trash2Icon />}
                                         onClick={() => setDeleteTarget(upload)}
-                                        type="button"
-                                    >
-                                        <Trash2Icon className={styles.iconSmall} />
-                                    </button>
+                                        size="mini"
+                                        title="删除图片"
+                                        variant="danger"
+                                    />
                                 </div>
                                 {/* eslint-disable-next-line @next/next/no-img-element -- 上传缩略图不走 next/image 优化 */}
                                 <img

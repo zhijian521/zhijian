@@ -177,6 +177,94 @@
     color: inherit;
 }
 
+/*== 代码高亮 · 暗色适配 ==
+   亮色由 highlight.js/styles/github.css 提供（全局引入，仅亮色）。
+   暗色在 .body 作用域内覆盖 hljs token 配色，不引入新依赖、不影响亮色。
+   调色板参考 github-dark 并整体降饱和、向暖偏移，
+   与暗色墨底（--muted #1c1812）和朱砂/竹青/靛蓝语义色协调。
+   基础文字色与背景已由上方 pre code / CodeBlock 走主题变量，无需重复覆盖。 */
+@media (prefers-color-scheme: dark) {
+    /*-- 注释 / 公式 — 暖灰，弱于正文 --*/
+    .body :global(.hljs-comment),
+    .body :global(.hljs-quote),
+    .body :global(.hljs-code),
+    .body :global(.hljs-formula) {
+        color: #8f867a;
+    }
+
+    /*-- 关键字 / 类型 — 朱砂柔红，呼应主色 --*/
+    .body :global(.hljs-doctag),
+    .body :global(.hljs-keyword),
+    .body :global(.hljs-meta .hljs-keyword),
+    .body :global(.hljs-template-tag),
+    .body :global(.hljs-template-variable),
+    .body :global(.hljs-type),
+    .body :global(.hljs-variable.language_) {
+        color: #d98a7d;
+    }
+
+    /*-- 函数与类名 — 靛蓝柔，呼应 --info 暗色值 --*/
+    .body :global(.hljs-title),
+    .body :global(.hljs-title.class_),
+    .body :global(.hljs-title.class_.inherited__),
+    .body :global(.hljs-title.function_),
+    .body :global(.hljs-section) {
+        color: #8ea6c8;
+    }
+
+    /*-- 属性 / 数字 / 变量 / 选择器 — 赭石暖金 --*/
+    .body :global(.hljs-attr),
+    .body :global(.hljs-attribute),
+    .body :global(.hljs-literal),
+    .body :global(.hljs-meta),
+    .body :global(.hljs-number),
+    .body :global(.hljs-operator),
+    .body :global(.hljs-selector-attr),
+    .body :global(.hljs-selector-class),
+    .body :global(.hljs-selector-id),
+    .body :global(.hljs-variable) {
+        color: #c9a97a;
+    }
+
+    /*-- 字符串 / 正则 — 竹青柔，呼应 --success 暗色值 --*/
+    .body :global(.hljs-string),
+    .body :global(.hljs-regexp),
+    .body :global(.hljs-meta .hljs-string) {
+        color: #a3bd94;
+    }
+
+    /*-- 内置符号 / 标签名 — 琥珀与竹青 --*/
+    .body :global(.hljs-built_in),
+    .body :global(.hljs-symbol),
+    .body :global(.hljs-bullet) {
+        color: #c98f5f;
+    }
+
+    .body :global(.hljs-name),
+    .body :global(.hljs-selector-tag),
+    .body :global(.hljs-selector-pseudo) {
+        color: #92b28c;
+    }
+
+    /*-- 强调 / 替换文本 — 跟随正文色，避免 github.css 的深色沉底 --*/
+    .body :global(.hljs-subst),
+    .body :global(.hljs-emphasis),
+    .body :global(.hljs-strong) {
+        color: var(--foreground);
+    }
+
+    /*-- diff 增删行 — 用主题语义色的暗色版本，背景换低透明叠色 --*/
+    .body :global(.hljs-addition) {
+        color: #92b28c;
+        background-color: rgba(91, 163, 112, 0.12);
+    }
+
+    .body :global(.hljs-deletion) {
+        color: #d98a7d;
+        background-color: rgba(201, 72, 77, 0.12);
+    }
+}
+
 /*== 链接 ==*/
 .body :global(a) {
     color: var(--primary);

@@ -2,8 +2,11 @@
   post-card — 文章卡片
 
   首页与列表页复用。有封面图时展示图片 + 渐变蒙层，
-  内容区含标题、分类 Tag、日期、摘要与"阅读更多"链接。
+  内容区含标题（可点击跳转详情）、分类 Tag、日期、摘要与"阅读更多"链接。
 ============================================================================*/
+
+/*== 依赖导入 ==*/
+import Link from 'next/link';
 
 /*== 组件导入 ==*/
 import { ContentImage } from '@/components/site/content-image';
@@ -46,7 +49,9 @@ export function PostCard({ post, tagVariant = 'default' }: PostCardProps) {
             {/*文章简要*/}
             <div className={cn(styles.body, hasVisual && styles.hasVisual)}>
                 <div className={styles.bodyContent}>
-                    <h3 className={styles.title}>{post.title}</h3>
+                    <h3 className={styles.title}>
+                        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                    </h3>
                     <div className={styles.metaRow}>
                         <Show when={post.categoryName}>
                             <Tag variant={tagVariant} size="mini">

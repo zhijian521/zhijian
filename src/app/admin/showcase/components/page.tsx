@@ -13,7 +13,7 @@ import { SHOWCASE_REGISTRY } from '@/showcase/registry';
 /*== 样式导入 ==*/
 import styles from './page.module.css';
 
-export const metadata = { title: '组件预览 - 知简' };
+export const metadata = { title: '组件预览' };
 
 export default function ShowcaseComponentsPage() {
     const byModule = SHOWCASE_REGISTRY.reduce<Record<string, typeof SHOWCASE_REGISTRY>>((acc, entry) => {

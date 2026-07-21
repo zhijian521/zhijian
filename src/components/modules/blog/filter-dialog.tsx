@@ -5,16 +5,15 @@
 
   基于 Dialog 组件，提供分类（单选）+ 标签（多选）筛选。
   通过 onSelect 回调驱动路由跳转，通过 onClose 关闭弹窗。
+  选项渲染复用 FilterOptions 共享组件。
 ============================================================================*/
 
 /*== 组件导入 ==*/
 import Dialog from '@/components/ui/dialog';
-import { GhostButton } from '@/components/ui/ghost-button';
-import { Show } from '@/components/ui/show';
+import { FilterOptions } from '@/components/modules/blog/filter-options';
 
 /*== 数据与配置 ==*/
-import type { FilterOption } from '@/components/modules/blog/filter-sidebar';
-import { isCategoryActive } from '@/lib/core/utils';
+import type { FilterOption } from '@/components/modules/blog/filter-options';
 
 /*== 样式导入 ==*/
 import styles from './filter-dialog.module.css';
@@ -50,46 +49,15 @@ export function FilterDialog({
     return (
         <Dialog maxWidth="20rem" onClose={onClose} open={open} title="筛选">
             <div className={styles.body}>
-                {/* 分类筛选 */}
-                <Show when={categoryOptions.length > 1}>
-                    <div className={styles.block}>
-                        <h3 className={styles.blockTitle}>分类</h3>
-                        <div className={styles.categories}>
-                            {categoryOptions.map((category) => (
-                                <GhostButton
-                                    active={isCategoryActive(activeCategorySlug, category.slug)}
-                                    asButton
-                                    key={category.slug || 'all'}
-                                    onClick={() => onSelect(category.href)}
-                                    size="mini"
-                                    variant="primary"
-                                >
-                                    {category.label}
-                                </GhostButton>
-                            ))}
-                        </div>
-                    </div>
-                </Show>
-
-                {/* 标签筛选 */}
-                <Show when={tagOptions.length > 0}>
-                    <div className={styles.block}>
-                        <h3 className={styles.blockTitle}>标签</h3>
-                        <div className={styles.tagFilter}>
-                            {tagOptions.map((tag) => (
-                                <GhostButton
-                                    active={activeTagSlugs.includes(tag.slug)}
-                                    asButton
-                                    key={tag.slug}
-                                    onClick={() => onSelect(tag.href)}
-                                    size="mini"
-                                >
-                                    {tag.label}
-                                </GhostButton>
-                            ))}
-                        </div>
-                    </div>
-                </Show>
+                <FilterOptions
+                    activeCategorySlug={activeCategorySlug}
+                    activeTagSlugs={activeTagSlugs}
+                    categoryOptions={categoryOptions}
+                    onSelect={onSelect}
+                    sectionClassName={styles.block}
+                    tagOptions={tagOptions}
+                    titleClassName={styles.blockTitle}
+                />
             </div>
         </Dialog>
     );

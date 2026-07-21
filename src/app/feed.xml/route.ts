@@ -51,6 +51,14 @@ ${items}
     return new Response(xml, {
         headers: {
             'Content-Type': 'application/xml',
+            /*--
+              RSS 阅读器会按固定频率轮询 feed（常见 5~30 分钟一次），
+              不缓存意味着每次轮询都全量查库生成 XML。
+              s-maxage=3600 让 CDN/边缘缓存 1 小时，
+              stale-while-revalidate 允许过期后先返回旧副本、后台再生成新副本，
+              轮询压力不再直接打到数据库。
+            --*/
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate',
         },
     });
 }

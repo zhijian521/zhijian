@@ -1,0 +1,17 @@
+/*== FilterOptions 筛选项展示 — 分类 + 标签（侧边栏与弹窗共用） ==*/
+
+/*-- 分类列表 --*/
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+/*-- 标签列表 --*/
+.tagFilter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    max-height: 12rem;
+    overflow-y: auto;
+}

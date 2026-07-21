@@ -23,6 +23,14 @@ interface CommitChartProps {
 const LEVELS = ['l0', 'l1', 'l2', 'l3', 'l4'] as const;
 const THRESHOLDS = [0, 0.25, 0.5, 0.75, Infinity] as const;
 
+/*-- 本地时区日期键（YYYY-MM-DD）：toISOString 是 UTC，东八区 0-8 点会偏一天 --*/
+function toLocalDateKey(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
 function buildWeeks(data: Map<string, number>, max: number) {
     const now = new Date();
     const end = new Date(now);
@@ -35,7 +43,7 @@ function buildWeeks(data: Map<string, number>, max: number) {
     while (d < end) {
         const week: { date: string; level: (typeof LEVELS)[number] }[] = [];
         for (let i = 0; i < 7; i++) {
-            const ds = d.toISOString().slice(0, 10);
+            const ds = toLocalDateKey(d);
             const c = data.get(ds) || 0;
             const idx = THRESHOLDS.findIndex((t) => c <= max * t);
             week.push({ date: ds, level: LEVELS[idx] });

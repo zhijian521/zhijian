@@ -34,8 +34,14 @@ export const SITE_METADATA = {
     locale: 'zh_CN',
     /*-- OG 默认分享图（相对路径，metadataBase 自动补全绝对 URL） --*/
     ogImage: '/images/og-default.webp',
-    /*-- 作者名，metadata.authors / JSON-LD Person --*/
+    /*-- 作者名，metadata.authors / JSON-LD Person / 首页 Hero 与个人名片 --*/
     author: 'Zhi Jian',
+    /*-- 作者签名行，首页 Hero 副标题与个人名片 meta 共用 --*/
+    authorTagline: '前端开发 · 全栈 · 简约设计 · 造物',
+    /*-- 首屏导语，首页 Hero 文案 --*/
+    authorMotto: '写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。',
+    /*-- 作者简介，首页个人名片文案 --*/
+    authorBio: '喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。这里没有宏大的叙事，只有一些零散的记录和简单的快乐。',
     /*-- 文章列表页标题前缀，拼接：blogTitle - [分类] - [标签] - brandTitle --*/
     blogTitle: '文章',
     /*-- 文章列表页描述，/blog 页 <meta description> / OG / Twitter --*/

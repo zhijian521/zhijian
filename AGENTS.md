@@ -36,7 +36,7 @@ src/
 │   ├── admin/    # 后台管理（layout.tsx 鉴权 + 壳层分发）
 │   ├── blog/     # 公开博客
 │   ├── nav/      # 导航站
-│   └── api/      # 33 条 API route（posts/admin/nav/auth/ai/collect/favicon）
+│   └── api/      # 34 条 API route（posts/admin/nav/auth/ai/collect/favicon）
 ├── components/
 │   ├── ui/       # 原子组件：button/input/dialog/tag/table...
 │   ├── site/     # 前台展示：article/card/chrome/markdown...
@@ -348,4 +348,4 @@ refactor: 中文描述
 
 ---
 
-_最后更新: 2026-07-21（批次 C 性能与架构：GitHub 缓存/usePagedList/图标解耦/track-events 下沉/埋点配置化/analytics 拆分）_
+_最后更新: 2026-07-21（批次 D 收尾：后台一致性/站点 API 路径参数化/品牌与博客体验/数据层加固/认证统一）_

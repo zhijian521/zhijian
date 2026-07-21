@@ -16,8 +16,8 @@ import AdminPageHeader from '@/components/modules/admin/page-header';
 
 /*== 数据与配置 ==*/
 import { countUsersByRole } from '@/lib/core/auth';
-import type { Post } from '@/lib/domain/posts';
-import { formatPostDate, getAllPosts } from '@/lib/domain/posts';
+import type { AdminPostListItem } from '@/lib/domain/posts';
+import { formatPostDate, listAdminPosts } from '@/lib/domain/posts';
 import { APP_ROUTES } from '@/lib/core/site';
 
 /*== 样式导入 ==*/
@@ -29,14 +29,20 @@ export const metadata: Metadata = {
 
 /*== 后台概览页：从数据库读取真实文章与用户统计。 ==*/
 export default async function AdminPage() {
-    const [posts, userCounts] = await Promise.all([getAllPosts(), countUsersByRole()]);
+    /* 近期文章按 pageSize 精确取 5 条；发布数用 status 筛选的 total 计数，避免全量拉取 */
+    const [recentResult, publishedResult, userCounts] = await Promise.all([
+        listAdminPosts({ page: 1, pageSize: 5 }),
+        listAdminPosts({ page: 1, pageSize: 1, status: 'published' }),
+        countUsersByRole(),
+    ]);
 
-    const publishedCount = posts.filter((p) => p.status === 'published').length;
-    const draftCount = posts.length - publishedCount;
+    const totalPosts = recentResult.total;
+    const publishedCount = publishedResult.total;
+    const draftCount = totalPosts - publishedCount;
     const totalUsers = userCounts.admin + userCounts.user;
-    const recentPosts = posts.slice(0, 5);
+    const recentPosts = recentResult.data;
 
-    const columns: DataColumn<Post>[] = [
+    const columns: DataColumn<AdminPostListItem>[] = [
         {
             header: '标题',
             render: (post) => <span className={styles.tdTitle}>{post.title}</span>,
@@ -74,7 +80,7 @@ export default async function AdminPage() {
             <AdminPageHeader
                 description="欢迎回来，这里是当前站点内容与数据的概览。"
                 eyebrow="Overview"
-                tag={`${posts.length} 篇文章 · ${totalUsers} 个用户`}
+                tag={`${totalPosts} 篇文章 · ${totalUsers} 个用户`}
                 title="概览"
             />
 
@@ -84,7 +90,7 @@ export default async function AdminPage() {
                     description={`${publishedCount} 篇已发布`}
                     icon={<FileTextIcon className={styles.metricIcon} />}
                     title="文章"
-                    value={`${posts.length}`}
+                    value={`${totalPosts}`}
                 />
                 <MetricCard
                     description={`${userCounts.admin} 管理员 · ${userCounts.user} 用户`}

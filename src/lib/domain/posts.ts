@@ -191,7 +191,7 @@ export async function listPublishedPostsPage(
         const posts = await enrichPostsWithTagNames(rows.map((row) => mapPostRow(row, false)));
         return { posts, total: Number(countRows[0]?.total || 0) };
     } catch (error) {
-        console.error('Failed to list published posts page.', { filter, error });
+        console.error('获取已发布文章分页列表失败：', { filter, error });
         return { posts: [], total: 0 };
     }
 }
@@ -272,7 +272,7 @@ export async function listAdminPosts(query: AdminPostListQuery = {}): Promise<Ad
             total: Number(countRows[0]?.total || 0),
         };
     } catch (error) {
-        console.error('Failed to list admin posts.', { query, error });
+        console.error('获取后台文章列表失败：', { query, error });
         return { data: [], total: 0 };
     }
 }
@@ -368,7 +368,7 @@ export async function updatePostById(id: number, input: UpdatePostInput): Promis
 
         return getPostById(id);
     } catch (error) {
-        console.error('Failed to update post.', { id, error });
+        console.error('更新文章失败：', { id, error });
         return null;
     }
 }
@@ -402,7 +402,7 @@ export async function createPost(input: CreatePostInput): Promise<Post | null> {
 
         return getPostById(result.insertId);
     } catch (error) {
-        console.error('Failed to create post.', { error });
+        console.error('创建文章失败：', { error });
         return null;
     }
 }
@@ -482,7 +482,7 @@ async function readPostsFromDatabase(options: ReadPostsOptions): Promise<Post[]>
 
         return rows.map((row) => mapPostRow(row, includeContent));
     } catch (error) {
-        console.error('Failed to read zhijian_blog_posts.', { options, error });
+        console.error('读取文章数据失败：', { options, error });
         return [];
     }
 }
@@ -574,7 +574,7 @@ async function getTagNameMap(tagIds: number[]): Promise<Map<number, { id: number
 
         return tagMap;
     } catch (error) {
-        console.error('Failed to enrich posts with tag names.', { error });
+        console.error('补充文章标签名称失败：', { error });
         return new Map();
     }
 }

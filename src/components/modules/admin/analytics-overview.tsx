@@ -26,20 +26,10 @@ import { DataTable, type DataColumn } from '@/components/ui/data-table';
 import type { EntryExitItem } from '@/lib/domain/analytics';
 
 import type { AnalyticsData } from './analytics-dashboard.types';
+import { BROWSER_PALETTE, CHART_COLORS, CHART_TOOLTIP_STYLE, DEVICE_PALETTE, OS_PALETTE } from './chart-colors';
 import styles from './analytics-overview.module.css';
 
-/*== 图表配置 ==*/
-
-const CHART_COLORS = {
-    primary: '#9f000f',
-    primarySubtle: '#f5e6e8',
-    muted: '#6f655c',
-    mutedSubtle: '#e7ddd1',
-};
-
-const DEVICE_PALETTE = ['#9f000f', '#c4616d', '#d9969e', '#efcdd2'];
-const BROWSER_PALETTE = ['#4a6741', '#6d8f64', '#96b68e', '#c2dbc0'];
-const OS_PALETTE = ['#5c4a2a', '#8b7355', '#b5a07a', '#d9cbb0'];
+/*== 入口/出口表格列配置 ==*/
 
 const ENTRY_EXIT_COLUMNS: DataColumn<EntryExitItem>[] = [
     { header: '页面路径', render: (item) => <span className={styles.tablePath}>{item.path}</span> },
@@ -119,12 +109,7 @@ function DonutChart({ data, palette }: { data: DonutEntry[]; palette: string[] }
                             ))}
                         </Pie>
                         <Tooltip
-                            contentStyle={{
-                                border: '1px solid #e7ddd1',
-                                background: '#fbf9f9',
-                                fontSize: 12,
-                                padding: '4px 8px',
-                            }}
+                            contentStyle={CHART_TOOLTIP_STYLE}
                             formatter={(value, name) => [formatNum(Number(value)), String(name)]}
                         />
                     </PieChart>

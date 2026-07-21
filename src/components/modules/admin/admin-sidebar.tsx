@@ -15,12 +15,12 @@ import { useState } from 'react';
 /*== 组件导入 ==*/
 import { ChevronRightIcon, LogOutIcon, PlusIcon } from '@/components/ui/icons';
 import { NAV_ICON_COMPONENTS } from '@/components/ui/nav-icons';
-import { toast } from '@/components/ui/toast';
 
 /*== 数据与配置 ==*/
 import { ADMIN_NAV_GROUPS, APP_ROUTES, SITE_METADATA } from '@/lib/core/site';
 import { api } from '@/lib/core/http-client';
 import { cn, isNavItemActive } from '@/lib/core/utils';
+import { createPostAndOpenEditor } from '@/components/modules/admin/create-post';
 
 /*== 样式导入 ==*/
 import styles from './admin-sidebar.module.css';
@@ -64,14 +64,7 @@ export default function AdminSidebar() {
     async function handleCreatePost() {
         setIsCreating(true);
         try {
-            const res = await api.post<{ id: number }>('/admin/posts', {});
-            if (res.code === 0 && res.data) {
-                window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
-                return;
-            }
-            toast.error(res.message || '新建文章失败');
-        } catch {
-            toast.error('新建文章失败');
+            await createPostAndOpenEditor();
         } finally {
             setIsCreating(false);
         }

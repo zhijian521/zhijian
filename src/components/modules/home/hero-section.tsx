@@ -11,6 +11,9 @@ import Image from 'next/image';
 import { ArrowDownIcon } from '@/components/ui/icons';
 import { GhostButton } from '@/components/ui/ghost-button';
 
+/*== 数据与配置 ==*/
+import { SITE_METADATA } from '@/lib/core/site';
+
 /*== 样式导入 ==*/
 import styles from './hero-section.module.css';
 
@@ -27,9 +30,9 @@ export function HeroSection() {
             />
             <div className={styles.overlay} />
             <div className={styles.content}>
-                <h1 className={styles.title}>Zhi Jian</h1>
-                <p className={styles.sub}>前端开发 · 全栈 · 简约设计 · 造物</p>
-                <p className={styles.copy}>写代码，也写文字；喜欢简洁的设计，追求美好的事物；一切在这里记录。</p>
+                <h1 className={styles.title}>{SITE_METADATA.author}</h1>
+                <p className={styles.sub}>{SITE_METADATA.authorTagline}</p>
+                <p className={styles.copy}>{SITE_METADATA.authorMotto}</p>
                 <GhostButton
                     variant="primary"
                     size="large"

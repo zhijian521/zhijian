@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
        将其排除出 webpack 打包，运行时直接使用 node_modules 中的原模块。 */
     serverExternalPackages: ['ip2region'],
 
-    /* 旧站 URL 301 永久重定向，映射配置见 src/lib/legacy-redirects.ts */
+    /* 旧站 URL 301 永久重定向，映射配置见 src/lib/core/legacy-redirects.ts */
     async redirects() {
         return LEGACY_REDIRECTS.map(r => ({
             source: r.source,

@@ -109,6 +109,12 @@ export async function saveUpload(file: File): Promise<Upload | null> {
         if (shouldConvert) {
             await sharp(buffer).webp({ quality: 80 }).toFile(filePath);
         } else {
+            /*-- GIF 直写前用 sharp 嗅探真实格式，防止伪装 image/gif 写入非 GIF 内容 --*/
+            const metadata = await sharp(buffer).metadata();
+            if (metadata.format !== 'gif') {
+                console.warn('GIF 内容嗅探失败，实际格式不符：', { expected: 'gif', actual: metadata.format ?? '未知' });
+                return null;
+            }
             fs.writeFileSync(filePath, buffer);
         }
     } catch (err) {
@@ -262,8 +268,12 @@ export async function deleteUploadById(id: number): Promise<boolean> {
         return false;
     }
 
-    /*-- 删除物理文件 --*/
-    const filePath = path.join(process.cwd(), 'public', upload.path);
+    /*-- 删除物理文件。路径统一走 uploads 前缀校验，校验失败时跳过删除并记录告警 --*/
+    const filePath = resolveUploadFilePath(upload.path);
+    if (!filePath) {
+        console.warn('删除上传文件已跳过（路径校验未通过）：', { path: upload.path });
+        return true;
+    }
     try {
         fs.unlinkSync(filePath);
     } catch (err) {

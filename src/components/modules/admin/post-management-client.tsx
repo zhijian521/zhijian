@@ -19,9 +19,9 @@ import { PillSelect } from '@/components/ui/pill-select';
 import { Tag } from '@/components/ui/tag';
 import { TextInput } from '@/components/ui/text-input';
 import { toast } from '@/components/ui/toast';
-import { api } from '@/lib/core/http-client';
 import { APP_ROUTES } from '@/lib/core/site';
 import { usePagedList, type PagedListQuery } from '@/hooks/use-paged-list';
+import { createPostAndOpenEditor } from '@/components/modules/admin/create-post';
 import type { AdminPostListItem, AdminPostListResult, AdminPostStatusFilter } from '@/lib/domain/posts';
 
 import styles from './post-management-client.module.css';
@@ -230,15 +230,7 @@ export default function PostManagementClient({ initialData, initialFilters }: Po
                         onClick={async () => {
                             setCreating(true);
                             try {
-                                const res = await api.post<{ id: number }>('/admin/posts', {});
-                                if (res.code === 0 && res.data) {
-                                    window.open(`${APP_ROUTES.adminPosts}/${res.data.id}`);
-                                    refresh();
-                                } else {
-                                    toast.error(res.message || '新建文章失败');
-                                }
-                            } catch {
-                                toast.error('新建文章失败');
+                                if (await createPostAndOpenEditor()) refresh();
                             } finally {
                                 setCreating(false);
                             }

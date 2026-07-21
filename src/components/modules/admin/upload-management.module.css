@@ -54,36 +54,6 @@
     opacity: 1;
 }
 
-.iconBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    padding: 0;
-    border: none;
-    background: rgba(255, 255, 255, 0.85);
-    color: var(--muted-foreground);
-    cursor: pointer;
-    transition:
-        color 0.15s ease,
-        background-color 0.15s ease;
-}
-
-.iconBtn:hover {
-    color: var(--primary);
-    background: rgba(255, 255, 255, 0.95);
-}
-
-.iconBtnDanger:hover {
-    color: var(--destructive);
-}
-
-.iconSmall {
-    width: 0.75rem;
-    height: 0.75rem;
-}
-
 .thumbnail {
     width: 100%;
     height: 120px;

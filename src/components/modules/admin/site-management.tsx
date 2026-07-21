@@ -63,7 +63,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
         endpoint: '/admin/analytics/sites',
         initialData,
         paginated: false,
-        deleteUrl: (id) => `/admin/analytics/sites?id=${id}`,
+        deleteUrl: (id) => `/admin/analytics/sites/${id}`,
         messages: {
             fetchError: '获取站点列表失败',
             silentFetchFailure: true,
@@ -102,7 +102,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
             const res =
                 formMode === 'create'
                     ? await api.post<{ site: TrackSite }>('/admin/analytics/sites', body)
-                    : await api.put<{ site: TrackSite }>('/admin/analytics/sites', { id: editingSite!.id, ...body });
+                    : await api.put<{ site: TrackSite }>(`/admin/analytics/sites/${editingSite!.id}`, body);
 
             if (res.code !== 0) {
                 setFormMessage(res.message || '操作失败。');
@@ -129,7 +129,7 @@ export default function SiteManagement({ initialData }: SiteManagementProps) {
         const newStatus = site.status === 'active' ? 'paused' : 'active';
         setTogglingSiteId(site.id);
         try {
-            const res = await api.put('/admin/analytics/sites', { id: site.id, status: newStatus });
+            const res = await api.put(`/admin/analytics/sites/${site.id}`, { status: newStatus });
             if (res.code === 0) {
                 toast.success(newStatus === 'active' ? '站点已启用' : '站点已暂停');
                 refresh();

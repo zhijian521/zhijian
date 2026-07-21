@@ -3,28 +3,19 @@
 
   仅 768px 以上显示。提供分类（单选）+ 标签（多选）筛选入口。
   通过 onNavigate 回调驱动路由跳转，自身不持有状态。
+  选项渲染复用 FilterOptions 共享组件。
 ============================================================================*/
 
 /*== 组件导入 ==*/
-import { GhostButton } from '@/components/ui/ghost-button';
-import { Show } from '@/components/ui/show';
+import { FilterOptions } from '@/components/modules/blog/filter-options';
 
 /*== 数据与配置 ==*/
-import { isCategoryActive } from '@/lib/core/utils';
+import type { FilterOption } from '@/components/modules/blog/filter-options';
 
 /*== 样式导入 ==*/
 import styles from './filter-sidebar.module.css';
 
 /*== 类型定义 ==*/
-interface FilterOption {
-    /*-- 跳转 URL --*/
-    href: string;
-    /*-- 显示文字 --*/
-    label: string;
-    /*-- 唯一标识 --*/
-    slug: string;
-}
-
 interface FilterSidebarProps {
     /*-- 当前激活的分类 slug --*/
     activeCategorySlug?: string;
@@ -48,46 +39,15 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
     return (
         <aside className={styles.sidebar}>
-            {/* 分类筛选 */}
-            <Show when={categoryOptions.length > 1}>
-                <div className={styles.card}>
-                    <h3 className={styles.cardTitle}>分类</h3>
-                    <div className={styles.categories}>
-                        {categoryOptions.map((category) => (
-                            <GhostButton
-                                active={isCategoryActive(activeCategorySlug, category.slug)}
-                                asButton
-                                key={category.slug || 'all'}
-                                onClick={() => onNavigate(category.href)}
-                                size="mini"
-                                variant="primary"
-                            >
-                                {category.label}
-                            </GhostButton>
-                        ))}
-                    </div>
-                </div>
-            </Show>
-
-            {/* 标签筛选 */}
-            <Show when={tagOptions.length > 0}>
-                <div className={styles.card}>
-                    <h3 className={styles.cardTitle}>标签</h3>
-                    <div className={styles.tagFilter}>
-                        {tagOptions.map((tag) => (
-                            <GhostButton
-                                active={activeTagSlugs.includes(tag.slug)}
-                                asButton
-                                key={tag.slug}
-                                onClick={() => onNavigate(tag.href)}
-                                size="mini"
-                            >
-                                {tag.label}
-                            </GhostButton>
-                        ))}
-                    </div>
-                </div>
-            </Show>
+            <FilterOptions
+                activeCategorySlug={activeCategorySlug}
+                activeTagSlugs={activeTagSlugs}
+                categoryOptions={categoryOptions}
+                onSelect={onNavigate}
+                sectionClassName={styles.card}
+                tagOptions={tagOptions}
+                titleClassName={styles.cardTitle}
+            />
         </aside>
     );
 }

@@ -12,6 +12,9 @@ import { GhostButton } from '@/components/ui/ghost-button';
 import { ArrowRightIcon, MailIcon } from '@/components/ui/icons';
 import { RssCopyButton } from '@/components/site/rss-copy-button';
 
+/*== 数据与配置 ==*/
+import { SITE_METADATA } from '@/lib/core/site';
+
 /*== 样式导入 ==*/
 import styles from './profile-card.module.css';
 
@@ -20,15 +23,13 @@ export function ProfileCard() {
         <div className={styles.card}>
             <div className={styles.avatarWrap}>
                 <div className={styles.avatarFrame}>
-                    <Image alt="Zhi Jian" className={styles.avatar} fill sizes="160px" src="/images/logo.webp" />
+                    <Image alt={SITE_METADATA.author} className={styles.avatar} fill sizes="160px" src="/images/logo.webp" />
                 </div>
             </div>
             <div className={styles.body}>
-                <h3 className={styles.name}>Zhi Jian</h3>
-                <p className={styles.meta}>前端开发 · 全栈 · 简约设计 · 造物</p>
-                <p className={styles.copy}>
-                    喜欢简洁的设计，也喜欢安静地写点代码。偶尔捣鼓些小工具，把一闪而过的想法变成看得见的东西。这里没有宏大的叙事，只有一些零散的记录和简单的快乐。
-                </p>
+                <h3 className={styles.name}>{SITE_METADATA.author}</h3>
+                <p className={styles.meta}>{SITE_METADATA.authorTagline}</p>
+                <p className={styles.copy}>{SITE_METADATA.authorBio}</p>
                 <div className={styles.links}>
                     <GhostButton href="mailto:yuwb0521@yeah.net" icon={<MailIcon />} size="small">
                         联系我

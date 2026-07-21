@@ -290,8 +290,9 @@ export function invalidateSessionUserCache(userId: number): void {
     sessionUserCache.delete(userId);
 }
 
-/*== 校验 session 对应用户仍有效（存在且 active），角色以数据库为准（降级立即生效）。 ==*/
-export async function validateSession(session: SessionPayload | null): Promise<SessionPayload | null> {
+/*== 查询 session 对应的有效用户（存在且 active），带 60s 内存缓存；无效返回 null。
+    供需要完整用户信息的场景（如 /api/auth/me）使用，与 validateSession 共享同一缓存。 ==*/
+export async function getSessionUser(session: SessionPayload | null): Promise<User | null> {
     if (!session) return null;
 
     const cached = sessionUserCache.get(session.userId);
@@ -303,7 +304,13 @@ export async function validateSession(session: SessionPayload | null): Promise<S
         sessionUserCache.set(session.userId, { user, expiresAt: Date.now() + SESSION_USER_CACHE_TTL });
     }
 
-    if (user.status !== 'active') return null;
+    return user.status === 'active' ? user : null;
+}
+
+/*== 校验 session 对应用户仍有效（存在且 active），角色以数据库为准（降级立即生效）。 ==*/
+export async function validateSession(session: SessionPayload | null): Promise<SessionPayload | null> {
+    const user = await getSessionUser(session);
+    if (!user) return null;
     return { userId: user.id, username: user.username, role: user.role };
 }
 

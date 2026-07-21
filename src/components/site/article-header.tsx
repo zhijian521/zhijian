@@ -40,6 +40,7 @@ export function ArticleHeader({ post }: ArticleHeaderProps) {
                     <ContentImage
                         alt={post.altText || post.title || '封面图'}
                         className={styles.coverImage}
+                        priority
                         sizes="(min-width: 896px) 56rem, 100vw"
                         src={post.coverImage!}
                     />
