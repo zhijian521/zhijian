@@ -173,7 +173,6 @@ npm run db:seed
 | `npm run start`        | 启动生产服务                                |
 | `npm run lint`         | ESLint 检查                                 |
 | `npm run typecheck`    | TypeScript 类型检查                         |
-| `npm run test`         | Vitest 自动化测试                           |
 | `npm run docs:check`   | 文档链接与 API 登记检查                     |
 | `npm run check`        | 统一完成标准：lint + typecheck + docs:check |
 | `npm run format`       | Prettier 格式化                             |

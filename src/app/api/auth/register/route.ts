@@ -33,8 +33,12 @@ export async function POST(request: Request) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, fieldError), { status: 400 });
     }
 
-    /*-- 限流：同一 IP 5 次/分钟，防批量注册。IP 经 getClientIp 提取（XFF 链尾，防伪造首值） --*/
+    /*-- 限流：同一 IP 5 次/分钟，防批量注册。IP 经 getClientIp 提取（XFF 链尾，防伪造首值）；
+      无法识别时共享 'unknown' 键（宁可误伤也不放行批量注册），并记录告警便于排查反代配置 --*/
     const ip = getClientIp(request);
+    if (ip === 'unknown') {
+        console.warn('[register] 无法识别客户端 IP（缺 x-real-ip / x-forwarded-for），限流键退化为共享值。');
+    }
     if (!checkRateLimit(ip, 5, 60_000)) {
         return NextResponse.json(fail(BizCode.RATE_LIMITED, '尝试过于频繁，请稍后再试。'), { status: 429 });
     }

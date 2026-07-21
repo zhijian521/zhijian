@@ -36,7 +36,8 @@ export const PUT = withUser(async (request, user) => {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请求体格式不正确。'), { status: 400 });
     }
 
-    if (!body.data) {
+    /*-- JSON 解析成功但结果为 null/非对象（如 "null"、字符串）时，同样视为缺少 data --*/
+    if (body === null || typeof body !== 'object' || !body.data) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '缺少 data 字段。'), { status: 400 });
     }
 

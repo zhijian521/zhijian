@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getDb } from '@/lib/core/db';
 import { fail, type BizCodeValue } from '@/lib/core/api-response';
+import { checkRateLimit } from '@/lib/core/rate-limit';
 import { getClientIp } from '@/lib/core/request-ip';
 import { lookup, maskIp } from '@/lib/domain/geo';
 import { parseUA } from '@/lib/domain/ua';
@@ -23,43 +24,7 @@ import { parseUA } from '@/lib/domain/ua';
   响应: 202 (已接受) / 404 (站点未注册) / 400 (格式错误)
 ============================================================================*/
 
-/*== 令牌桶限流：每 siteId 每秒最多 10 次请求 ==*/
-const buckets = new Map<string, { tokens: number; lastRefill: number }>();
-const RATE_LIMIT = 10;
-const WINDOW_MS = 1000;
-let cleanupRegistered = false;
-
-function checkRateLimit(siteId: string): boolean {
-    // 惰性注册清理 interval，避免 Next.js 热重载时注册多个
-    if (!cleanupRegistered) {
-        cleanupRegistered = true;
-        setInterval(() => {
-            const cutoff = Date.now() - 60000;
-            for (const [key, bucket] of buckets) {
-                if (bucket.lastRefill < cutoff) buckets.delete(key);
-            }
-        }, 300000);
-    }
-
-    let bucket = buckets.get(siteId);
-    const now = Date.now();
-
-    if (!bucket) {
-        bucket = { tokens: RATE_LIMIT - 1, lastRefill: now };
-        buckets.set(siteId, bucket);
-        return true;
-    }
-
-    const elapsed = now - bucket.lastRefill;
-    if (elapsed >= WINDOW_MS) {
-        bucket.tokens = Math.min(RATE_LIMIT, bucket.tokens + Math.floor(elapsed / WINDOW_MS) * RATE_LIMIT);
-        bucket.lastRefill = now;
-    }
-
-    if (bucket.tokens <= 0) return false;
-    bucket.tokens--;
-    return true;
-}
+/*== 限流：复用 core/rate-limit 令牌桶，每 siteId 每秒最多 10 次请求 ==*/
 
 /*== 事件字段白名单 + 长度限制 ==*/
 const VALID_TYPES = new Set(['pageview', 'heartbeat', 'leave']);
@@ -137,8 +102,8 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        /*-- 限流 --*/
-        if (!checkRateLimit(siteId)) {
+        /*-- 限流：10 次/秒/siteId，超限返回 429 空响应 --*/
+        if (!checkRateLimit(siteId, 10, 1000)) {
             return new NextResponse(null, { status: 429, headers: corsHeaders });
         }
 

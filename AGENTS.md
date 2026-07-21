@@ -159,9 +159,11 @@ created_at DATETIME
 ```sql
 id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
 site_id VARCHAR(32) / date DATE
-path VARCHAR(500) DEFAULT ''  -- 空 = 整站汇总
-pv / uv / bounce / avg_duration INT UNSIGNED
-UNIQUE KEY (site_id, date, path)
+row_type ENUM('summary','page','dim')  -- 整站汇总 / 页面行 / 维度行
+path VARCHAR(500) DEFAULT ''  -- 仅 page 行有值
+pv / uv / sessions / new_visitors / bounce / avg_duration INT UNSIGNED
+dim_name / dim_value VARCHAR  -- 仅 dim 行有值（source/device/browser...）
+UNIQUE KEY (site_id, date, row_type, path, dim_name, dim_value)
 ```
 
 ### zhijian_nav_*（每用户一条 JSON）
@@ -187,6 +189,14 @@ DATABASE_URL=mysql://user:password@host:3306/database
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your-password
 ADMIN_SESSION_SECRET=your-random-secret-string
+
+# 可选项
+INDEXNOW_API_KEY=            # IndexNow SEO 推送
+BAIDU_SUBMISSION_TOKEN=      # 百度站长推送
+BAIDU_SITE=                  # 百度站长站点域名
+DEEPSEEK_API_KEY=            # 导航页 AI 对话
+DEEPSEEK_MODEL=              # AI 模型名（有默认值）
+GITHUB_TOKEN=                # 首页 Git 提交热力图（留空则不显示数据）
 ```
 
 ---
@@ -333,4 +343,4 @@ refactor: 中文描述
 
 ---
 
-_最后更新: 2026-07-21（批次 A 安全修复：request-ip/ssrf-guard 加固/nav 校验）_
+_最后更新: 2026-07-21（批次 B 工程收口：rate-limit 加固/nav 健壮性/移除测试设施/文档清单补全）_
