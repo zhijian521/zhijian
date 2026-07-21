@@ -12,6 +12,7 @@ import { NextResponse } from 'next/server';
 import { withUser } from '@/lib/core/with-user';
 import { getChatDb, saveChatDb } from '@/lib/domain/nav-db';
 import { BizCode, fail, success } from '@/lib/core/api-response';
+import { isJsonArrayWithinLimit } from '@/lib/core/json-body';
 import type { ChatConversation } from '@/lib/domain/nav-storage';
 
 /*== AI 对话历史
@@ -44,8 +45,7 @@ export const PUT = withUser(async (request, user) => {
     }
 
     /*-- 单条 JSON 上限 1MB，防止过大写入 --*/
-    const raw = JSON.stringify(body.data);
-    if (raw.length > 1024 * 1024) {
+    if (!isJsonArrayWithinLimit(body.data)) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '对话数据过大（上限 1MB）。'), { status: 400 });
     }
 

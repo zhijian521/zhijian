@@ -17,6 +17,7 @@ import {
 } from '@/lib/core/auth';
 import { BizCode, fail, success } from '@/lib/core/api-response';
 import { checkRateLimit } from '@/lib/core/rate-limit';
+import { getClientIp } from '@/lib/core/request-ip';
 
 /*==
   公开登录接口。
@@ -38,9 +39,14 @@ export async function POST(request: Request) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '请输入用户名和密码。'), { status: 400 });
     }
 
-    /*-- 限流：同一 IP + 用户名 5 次/分钟，防在线爆破 --*/
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
-    if (!checkRateLimit(`${ip}:${username}`, 5, 60_000)) {
+    /*-- 限流：同一 IP + 用户名 5 次/分钟，防在线爆破。
+      IP 经 getClientIp 提取（XFF 链尾，防伪造首值）；无法识别时降级为仅按用户名限流。 --*/
+    const ip = getClientIp(request);
+    if (ip === 'unknown') {
+        console.warn('[login] 无法识别客户端 IP（缺 x-real-ip / x-forwarded-for），限流降级为仅按用户名。');
+    }
+    const rateKey = ip === 'unknown' ? username.slice(0, 50) : `${ip}:${username.slice(0, 50)}`;
+    if (!checkRateLimit(rateKey, 5, 60_000)) {
         return NextResponse.json(fail(BizCode.RATE_LIMITED, '尝试过于频繁，请稍后再试。'), { status: 429 });
     }
 

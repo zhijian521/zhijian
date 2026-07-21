@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getDb } from '@/lib/core/db';
 import { fail, type BizCodeValue } from '@/lib/core/api-response';
+import { getClientIp } from '@/lib/core/request-ip';
 import { lookup, maskIp } from '@/lib/domain/geo';
 import { parseUA } from '@/lib/domain/ua';
 
@@ -155,9 +156,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(fail(40400, '站点未注册或已停用'), { status: 404, headers: corsHeaders });
         }
 
-        /*-- 提取 IP + 解析地理位置 --*/
-        const forwarded = request.headers.get('x-forwarded-for');
-        const rawIp = forwarded ? forwarded.split(',')[0].trim() : request.headers.get('x-real-ip') || '';
+        /*-- 提取 IP + 解析地理位置。统一走 getClientIp（x-real-ip 优先，否则 XFF 链尾，防伪造首值） --*/
+        const clientIp = getClientIp(request);
+        const rawIp = clientIp === 'unknown' ? '' : clientIp;
         const maskedIp = rawIp ? maskIp(rawIp) : null;
         const geo = rawIp ? lookup(rawIp) : null;
 

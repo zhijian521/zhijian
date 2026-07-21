@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import { createUser, hashPassword, validateUserFields } from '@/lib/core/auth';
 import { BizCode, fail, success } from '@/lib/core/api-response';
 import { checkRateLimit } from '@/lib/core/rate-limit';
+import { getClientIp } from '@/lib/core/request-ip';
 
 /*== 公开注册接口
   POST body: { username, email, password }
@@ -32,8 +33,8 @@ export async function POST(request: Request) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, fieldError), { status: 400 });
     }
 
-    /*-- 限流：同一 IP 5 次/分钟，防批量注册 --*/
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    /*-- 限流：同一 IP 5 次/分钟，防批量注册。IP 经 getClientIp 提取（XFF 链尾，防伪造首值） --*/
+    const ip = getClientIp(request);
     if (!checkRateLimit(ip, 5, 60_000)) {
         return NextResponse.json(fail(BizCode.RATE_LIMITED, '尝试过于频繁，请稍后再试。'), { status: 429 });
     }

@@ -42,7 +42,7 @@ src/
 │   ├── site/     # 前台展示：article/card/chrome/markdown...
 │   └── modules/  # 业务组件：admin / home / blog / nav
 ├── lib/
-│   ├── core/     # 基础设施（12 文件）：db/auth/api/http/metadata/pagination/site/toast/utils/with-*/legacy
+│   ├── core/     # 基础设施（16 文件）：db/auth/api/http/metadata/pagination/site/toast/utils/with-*/legacy/rate-limit/ssrf-guard/request-ip/json-body
 │   └── domain/   # 业务数据层（14 文件）：posts/categories/tags/nav-*/uploads/analytics/github/...
 ├── hooks/        # use-auth.ts / use-crud-list.ts
 ├── types/        # 跨路由共享 TypeScript 类型
@@ -239,6 +239,10 @@ refactor: 中文描述
 | 旧站重定向    | `src/lib/core/legacy-redirects.ts`                             |
 | 数据库连接    | `src/lib/core/db.ts`                                           |
 | HTTP 客户端   | `src/lib/core/http-client.ts`                                  |
+| 限流          | `src/lib/core/rate-limit.ts`                                   |
+| SSRF 防护     | `src/lib/core/ssrf-guard.ts`                                   |
+| 客户端 IP     | `src/lib/core/request-ip.ts`                                   |
+| JSON 体校验   | `src/lib/core/json-body.ts`                                    |
 | 文章 CRUD     | `src/lib/domain/posts.ts`                                      |
 | 文章类型/日期 | `src/lib/domain/post-shared.ts`                                |
 | 分类          | `src/lib/domain/categories.ts`                                 |
@@ -277,7 +281,10 @@ refactor: 中文描述
 - 所有 admin API 用 `withAdmin` 鉴权，user API 用 `withUser`
 - 密码 bcrypt 12 rounds，Session Token HMAC-SHA256 签名
 - SQL 查询参数化，禁止字符串拼接
-- `/api/collect` 唯一无鉴权 API，有令牌桶限流（10次/秒/siteId）
+- 守卫回查数据库，禁用/降级/删除用户后 session 立即失效（60s 内存缓存）
+- `/api/collect` 唯一无鉴权写入 API，有令牌桶限流（10次/秒/siteId）
+- 登录/注册接口限流 5 次/分钟（`rate-limit.ts`），IP 经 `request-ip.ts` 提取（优先 x-real-ip，否则 XFF 链尾）
+- `/api/favicon` 出站请求经 `ssrf-guard.ts` 校验（仅公网地址、逐跳重定向校验、HTML 512KB / 图片 2MB 上限）
 - IP 用 ip2region 离线解析，存储时遮蔽末位
 
 ### 性能
@@ -326,4 +333,4 @@ refactor: 中文描述
 
 ---
 
-_最后更新: 2026-07-19（同步当前目录、组件清单与文档体系）_
+_最后更新: 2026-07-21（批次 A 安全修复：request-ip/ssrf-guard 加固/nav 校验）_

@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import { withUser } from '@/lib/core/with-user';
 import { saveBookmarksDb } from '@/lib/domain/nav-db';
 import { BizCode, fail, success } from '@/lib/core/api-response';
+import { isJsonArrayWithinLimit } from '@/lib/core/json-body';
 import type { Bookmark } from '@/lib/domain/nav-config';
 
 /*== 保存书签
@@ -26,6 +27,15 @@ export const PUT = withUser(async (request, user) => {
 
     if (!body.data) {
         return NextResponse.json(fail(BizCode.BAD_REQUEST, '缺少 data 字段。'), { status: 400 });
+    }
+
+    if (!Array.isArray(body.data)) {
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, 'data 必须是数组。'), { status: 400 });
+    }
+
+    /*-- 单条 JSON 上限 1MB，防止过大写入 --*/
+    if (!isJsonArrayWithinLimit(body.data)) {
+        return NextResponse.json(fail(BizCode.BAD_REQUEST, '书签数据过大（上限 1MB）。'), { status: 400 });
     }
 
     await saveBookmarksDb(user.userId, body.data);

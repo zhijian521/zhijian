@@ -75,7 +75,10 @@ function isPublicIpv4(octets: number[]): boolean {
     return true;
 }
 
-/*== 判定 IPv6 组数组是否为公网地址。 ==*/
+/*== 判定 IPv6 组数组是否为公网地址。
+    NAT64 / Teredo / 6to4 等过渡机制前缀整段拒绝：它们在内嵌位中携带任意 IPv4
+    （如 64:ff9b::a9fe:a9fe 映射 169.254.169.254 云元数据地址），可绕过上方
+    IPv4 黑名单直达内网；favicon 代理的合法目标不会以这些字面量形式出现，保守拒绝。 ==*/
 function isPublicIpv6(groups: number[]): boolean {
     if (groups.every((g) => g === 0)) return false; // :: 未指定地址
     if (groups.slice(0, 7).every((g) => g === 0) && groups[7] === 1) return false; // ::1 回环
@@ -89,6 +92,14 @@ function isPublicIpv6(groups: number[]): boolean {
         ]);
     }
     if (groups.slice(0, 6).every((g) => g === 0)) return false; // ::/96 已废弃的 IPv4 兼容地址，保守拒绝
+    if (groups[0] === 0x0064 && groups[1] === 0xff9b && groups.slice(2, 6).every((g) => g === 0)) {
+        return false; // 64:ff9b::/96 NAT64 知名前缀（RFC 6052），末 32 位内嵌 IPv4
+    }
+    if (groups[0] === 0x0064 && groups[1] === 0xff9b && groups[2] === 0x0001) {
+        return false; // 64:ff9b:1::/48 NAT64 本地前缀（RFC 8215），内嵌 IPv4
+    }
+    if (groups[0] === 0x2001 && groups[1] === 0x0000) return false; // 2001::/32 Teredo，内嵌 IPv4
+    if (groups[0] === 0x2002) return false; // 2002::/16 6to4，内嵌 IPv4
     const byte0 = groups[0] >> 8;
     const byte1 = groups[0] & 0xff;
     if ((byte0 & 0xfe) === 0xfc) return false; // fc00::/7 唯一本地地址（fc/fd）

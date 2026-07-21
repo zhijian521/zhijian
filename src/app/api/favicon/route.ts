@@ -21,7 +21,7 @@ import { fetchWithSsrfGuard } from '@/lib/core/ssrf-guard';
   3. fetchWithSsrfGuard 抓取首页 HTML（仅 https + DNS 校验公网地址 + 逐跳
      校验重定向），流式读取超 512KB 截断，解析 <link rel="icon"> 等
   4. 未找到则 fallback /favicon.ico
-  5. fetchWithSsrfGuard 抓取 favicon 图片，校验 image/* content-type
+  5. fetchWithSsrfGuard 抓取 favicon 图片，校验 image/* content-type，流式读取限 2MB
   6. 代理返回图片二进制 + 浏览器缓存头
   7. 全部失败 302 → Google favicon API
 ============================================================================*/
@@ -36,6 +36,7 @@ const cache = new Map<string, CacheEntry>();
 const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 天
 const MAX_CACHE = 500;
 const MAX_HTML_BYTES = 512 * 1024; // 首页 HTML 读取上限 512KB
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // favicon 图片读取上限 2MB
 
 /*-- 流式读取响应体为文本，超过 512KB 即截断（无鉴权端点防止大 body 耗尽内存） --*/
 async function readHtmlWithLimit(res: Response): Promise<string> {
@@ -66,6 +67,36 @@ async function readHtmlWithLimit(res: Response): Promise<string> {
         offset += chunk.byteLength;
     }
     return new TextDecoder().decode(merged);
+}
+
+/*-- 流式读取响应体为字节数组，超过 2MB 即抛错（截断图片必然损坏，超限走 302 兜底） --*/
+async function readImageWithLimit(res: Response): Promise<Uint8Array> {
+    if (!res.body) return new Uint8Array(0);
+    const reader = res.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    try {
+        for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            total += value.byteLength;
+            if (total > MAX_IMAGE_BYTES) {
+                await reader.cancel();
+                throw new Error(`favicon image exceeds ${MAX_IMAGE_BYTES} bytes`);
+            }
+            chunks.push(value);
+        }
+    } finally {
+        reader.releaseLock();
+    }
+    /* 未超限时 total 即分块总长，直接按 total 合并 */
+    const merged = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+        merged.set(chunk, offset);
+        offset += chunk.byteLength;
+    }
+    return merged;
 }
 
 /*-- 从 HTML 中提取 favicon URL --*/
@@ -146,8 +177,8 @@ export async function GET(request: NextRequest) {
         const contentType = imgRes.headers.get('content-type') || 'image/x-icon';
         /*-- 防止非图片响应（如 HTML 404 页面）被当图片返回 --*/
         if (!contentType.startsWith('image/')) throw new Error(`not an image: ${contentType}`);
-        const buf = await imgRes.arrayBuffer();
-        const data = new Uint8Array(buf);
+        /*-- 流式读取限 2MB，超限抛错由外层 catch 统一走 302 兜底；写入缓存的数据同源，天然受限 --*/
+        const data = await readImageWithLimit(imgRes);
 
         /*-- 写入缓存 --*/
         if (cache.size >= MAX_CACHE) {
