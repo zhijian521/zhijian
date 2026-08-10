@@ -9,6 +9,7 @@
 import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { StatusPage } from "@/components/ui/status-page";
 
 import styles from "./status-screen.module.css";
@@ -27,10 +28,10 @@ export function ErrorPage({ onRetry }: ErrorPageProps) {
             title="页面出现错误"
         >
             <div className={styles.actions}>
-                <Button asButton onClick={onRetry} variant="primary">
+                <Button onClick={onRetry} variant="primary">
                     重新加载
                 </Button>
-                <Button href="/">返回首页</Button>
+                <ButtonLink href="/">返回首页</ButtonLink>
             </div>
         </StatusPage>
     );

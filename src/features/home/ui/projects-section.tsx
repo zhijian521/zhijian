@@ -5,7 +5,7 @@
 ============================================================================*/
 
 import { SectionHeading } from "@/components/site/section-heading";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Icon } from "@/components/ui/icons";
 import { Tag } from "@/components/ui/tag";
 import { PROJECTS } from "@/config/home";
@@ -35,12 +35,12 @@ export function ProjectsSection() {
                             </div>
 
                             <div className={styles.actions}>
-                                <Button href={project.siteHref} icon="external-link" rel="noopener noreferrer" target="_blank">
+                                <ButtonLink href={project.siteHref} icon="external-link" rel="noopener noreferrer" target="_blank">
                                     访问站点
-                                </Button>
-                                <Button href={project.githubHref} icon="github" rel="noopener noreferrer" target="_blank">
+                                </ButtonLink>
+                                <ButtonLink href={project.githubHref} icon="github" rel="noopener noreferrer" target="_blank">
                                     GitHub
-                                </Button>
+                                </ButtonLink>
                             </div>
                         </article>
                     ))}

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { buildPostJsonLd, buildPostMetadata } from "@/features/blog/lib/detail-metadata";
 import { getBlogPostDetailPageData } from "@/features/blog/lib/detail-page-data";
 
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { StatusPage } from "@/components/ui/status-page";
 import { PostDetail } from "@/features/blog/ui/post-detail";
 
@@ -39,9 +39,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 description="请稍后再试，或返回文章列表继续阅读。"
                 title="文章暂时无法加载"
             >
-                <Button href="/blog" icon="arrow-right">
+                <ButtonLink href="/blog" icon="arrow-right">
                     返回文章列表
-                </Button>
+                </ButtonLink>
             </StatusPage>
         );
     }

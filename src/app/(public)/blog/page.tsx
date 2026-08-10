@@ -6,7 +6,7 @@ import { buildBlogJsonLd, buildBlogMetadata } from "@/features/blog/lib/list-met
 import { getBlogListPageData } from "@/features/blog/lib/list-page-data";
 import { parseBlogSearchParams, type BlogSearchParams } from "@/features/blog/lib/query";
 
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Pagination } from "@/components/ui/pagination";
 import { StatusPage } from "@/components/ui/status-page";
 import { StatusSection } from "@/components/ui/status-section";
@@ -36,7 +36,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     if (!blogData) {
         return (
             <StatusPage className={styles.page} contentClassName={styles.container} description="文章暂时无法加载，请稍后再试。" title="文章">
-                <Button href="/">返回首页</Button>
+                <ButtonLink href="/">返回首页</ButtonLink>
             </StatusPage>
         );
     }

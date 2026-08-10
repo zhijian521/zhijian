@@ -6,9 +6,6 @@
     --button-hover-border: var(--action-primary);
     --button-hover-background: var(--surface-muted);
     --button-hover-text: var(--action-primary);
-    --button-active-border: var(--action-primary);
-    --button-active-background: var(--action-primary);
-    --button-active-text: var(--action-primary-text);
     --button-transition:
         border-color var(--duration-normal) var(--ease-standard), background-color var(--duration-normal) var(--ease-standard),
         color var(--duration-normal) var(--ease-standard);
@@ -38,9 +35,6 @@
     --button-hover-border: var(--action-primary);
     --button-hover-background: var(--action-primary);
     --button-hover-text: var(--action-primary-text);
-    --button-active-border: var(--action-primary);
-    --button-active-background: var(--surface-muted);
-    --button-active-text: var(--action-primary);
 }
 
 /*== 交互状态 ==*/
@@ -48,13 +42,6 @@
     border-color: var(--button-hover-border);
     background: var(--button-hover-background);
     color: var(--button-hover-text);
-}
-
-.active,
-.active:hover {
-    border-color: var(--button-active-border);
-    background: var(--button-active-background);
-    color: var(--button-active-text);
 }
 
 .disabled {

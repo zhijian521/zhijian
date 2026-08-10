@@ -133,10 +133,10 @@ export function BookmarkDialog({ editorState, onClose, onSubmit }: BookmarkDialo
                     </div>
                 )}
                 <div className={styles.actions}>
-                    <Button asButton autoFocus={content.isDelete} onClick={onClose}>
+                    <Button autoFocus={content.isDelete} onClick={onClose}>
                         取消
                     </Button>
-                    <Button asButton type="submit" variant="primary">
+                    <Button type="submit" variant="primary">
                         {content.isDelete ? "删除" : "保存"}
                     </Button>
                 </div>

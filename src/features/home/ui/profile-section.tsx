@@ -7,7 +7,7 @@
 import Image from "next/image";
 
 import { SectionHeading } from "@/components/site/section-heading";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { ABOUT_CONTENT, HERO_CONTENT } from "@/config/home";
 
 import styles from "./profile-section.module.css";
@@ -34,15 +34,15 @@ export function ProfileSection() {
                         <p className={styles.bio}>{ABOUT_CONTENT.bio}</p>
 
                         <nav aria-label="联系方式" className={styles.actions}>
-                            <Button href={ABOUT_CONTENT.links.email} icon="mail">
+                            <ButtonLink href={ABOUT_CONTENT.links.email} icon="mail">
                                 联系我
-                            </Button>
-                            <Button href={ABOUT_CONTENT.links.github} icon="external-link" rel="noopener noreferrer" target="_blank">
+                            </ButtonLink>
+                            <ButtonLink href={ABOUT_CONTENT.links.github} icon="external-link" rel="noopener noreferrer" target="_blank">
                                 GitHub
-                            </Button>
-                            <Button href={ABOUT_CONTENT.links.rss} icon="rss" rel="noopener noreferrer" target="_blank">
+                            </ButtonLink>
+                            <ButtonLink href={ABOUT_CONTENT.links.rss} icon="rss" rel="noopener noreferrer" target="_blank">
                                 RSS 订阅
-                            </Button>
+                            </ButtonLink>
                         </nav>
                     </div>
                 </div>

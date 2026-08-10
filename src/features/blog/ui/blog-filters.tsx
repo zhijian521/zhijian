@@ -9,6 +9,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { IconButton } from "@/components/ui/icon-button";
 import type { BlogFilterOption } from "@/features/blog/lib/filters";
 
@@ -72,7 +73,6 @@ export function BlogFilters({ categories, tags }: BlogFiltersProps) {
             <Button
                 aria-controls={dialogId}
                 aria-expanded={isDialogOpen}
-                asButton
                 className={styles.mobileTrigger}
                 onClick={openDialog}
             >
@@ -120,16 +120,7 @@ function BlogFilterOptions({ categories, onSelect, tags }: BlogFilterOptionsProp
                     <h2 className={styles.title}>分类</h2>
                     <div className={styles.categories}>
                         {categories.map((category) => (
-                            <Button
-                                className={styles.categoryButton}
-                                href={category.href}
-                                isActive={category.isActive}
-                                key={category.href}
-                                onClick={onSelect}
-                                variant="primary"
-                            >
-                                {category.label}
-                            </Button>
+                            <CategoryFilterLink key={category.href} onSelect={onSelect} option={category} />
                         ))}
                     </div>
                 </section>
@@ -139,14 +130,38 @@ function BlogFilterOptions({ categories, onSelect, tags }: BlogFilterOptionsProp
                 <section className={styles.section}>
                     <h2 className={styles.title}>标签</h2>
                     <div className={styles.tags}>
-                        {tags.map((tag) => (
-                            <Button href={tag.href} isActive={tag.isActive} key={tag.href} onClick={onSelect}>
-                                {tag.label}
-                            </Button>
-                        ))}
+                        {tags.map((tag) => <TagFilterLink key={tag.href} onSelect={onSelect} option={tag} />)}
                     </div>
                 </section>
             ) : null}
         </>
+    );
+}
+
+interface FilterLinkProps {
+    onSelect?: () => void;
+    option: BlogFilterOption;
+}
+
+/*== 分类与标签保留独立入口，后续可分别调整选中态而不扩大通用按钮职责 ==*/
+function CategoryFilterLink({ onSelect, option }: FilterLinkProps) {
+    return (
+        <ButtonLink
+            aria-current={option.isActive ? "page" : undefined}
+            className={styles.categoryButton}
+            href={option.href}
+            onClick={onSelect}
+            variant="primary"
+        >
+            {option.label}
+        </ButtonLink>
+    );
+}
+
+function TagFilterLink({ onSelect, option }: FilterLinkProps) {
+    return (
+        <ButtonLink aria-current={option.isActive ? "page" : undefined} className={styles.tagButton} href={option.href} onClick={onSelect}>
+            {option.label}
+        </ButtonLink>
     );
 }

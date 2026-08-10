@@ -45,8 +45,11 @@
     gap: var(--space-2);
 }
 
-/*== 分类选中态与主操作悬停态保持一致 ==*/
-.categoryButton[aria-current="page"] {
+/*== 分类与标签分别保留明确的选中态入口 ==*/
+.categoryButton[aria-current="page"],
+.categoryButton[aria-current="page"]:hover,
+.tagButton[aria-current="page"],
+.tagButton[aria-current="page"]:hover {
     border-color: var(--action-primary);
     background: var(--action-primary);
     color: var(--action-primary-text);

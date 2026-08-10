@@ -5,6 +5,7 @@
 ============================================================================*/
 
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 
 import styles from "./pagination.module.css";
 
@@ -28,15 +29,18 @@ export function Pagination({ ariaLabel = "分页导航", current, getHref, total
 
     return (
         <nav aria-label={ariaLabel} className={styles.root}>
-            <Button href={hasPreviousPage ? getHref(current - 1) : undefined} isDisabled={!hasPreviousPage}>
-                上一页
-            </Button>
+            {hasPreviousPage ? <ButtonLink href={getHref(current - 1)}>上一页</ButtonLink> : <Button disabled>上一页</Button>}
 
             {items.map((item) =>
                 typeof item === "number" ? (
-                    <Button className={styles.page} href={getHref(item)} isActive={item === current} key={item}>
+                    <ButtonLink
+                        aria-current={item === current ? "page" : undefined}
+                        className={styles.page}
+                        href={getHref(item)}
+                        key={item}
+                    >
                         {item}
-                    </Button>
+                    </ButtonLink>
                 ) : (
                     <span aria-hidden="true" className={styles.ellipsis} key={item}>
                         ...
@@ -44,9 +48,7 @@ export function Pagination({ ariaLabel = "分页导航", current, getHref, total
                 ),
             )}
 
-            <Button href={hasNextPage ? getHref(current + 1) : undefined} isDisabled={!hasNextPage}>
-                下一页
-            </Button>
+            {hasNextPage ? <ButtonLink href={getHref(current + 1)}>下一页</ButtonLink> : <Button disabled>下一页</Button>}
         </nav>
     );
 }

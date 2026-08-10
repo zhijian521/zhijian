@@ -25,3 +25,11 @@
     min-width: 2rem;
     padding: 0 var(--space-1);
 }
+
+/*== 当前页使用 aria-current 表达状态，避免分页依赖通用按钮的业务属性 ==*/
+.page[aria-current="page"],
+.page[aria-current="page"]:hover {
+    border-color: var(--action-primary);
+    background: var(--action-primary);
+    color: var(--action-primary-text);
+}
