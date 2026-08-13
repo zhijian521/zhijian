@@ -76,6 +76,11 @@ export const ROOT_METADATA = {
         siteName: SITE_METADATA.name,
         images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_METADATA.brandTitle }],
     },
+    alternates: {
+        types: {
+            "application/rss+xml": "/feed.xml",
+        },
+    },
     twitter: {
         card: "summary_large_image",
         images: [DEFAULT_OG_IMAGE],

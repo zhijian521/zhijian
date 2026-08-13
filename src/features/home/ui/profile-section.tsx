@@ -7,8 +7,10 @@
 import Image from "next/image";
 
 import { SectionHeading } from "@/components/site/section-heading";
+import { RssCopyButton } from "@/components/site/rss-copy-button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ABOUT_CONTENT, HERO_CONTENT } from "@/config/home";
+import { SITE_METADATA } from "@/config/metadata";
 
 import styles from "./profile-section.module.css";
 
@@ -40,9 +42,7 @@ export function ProfileSection() {
                             <ButtonLink href={ABOUT_CONTENT.links.github} icon="external-link" rel="noopener noreferrer" target="_blank">
                                 GitHub
                             </ButtonLink>
-                            <ButtonLink href={ABOUT_CONTENT.links.rss} icon="rss" rel="noopener noreferrer" target="_blank">
-                                RSS 订阅
-                            </ButtonLink>
+                            <RssCopyButton feedUrl={new URL(ABOUT_CONTENT.links.rss, SITE_METADATA.siteUrl).toString()} />
                         </nav>
                     </div>
                 </div>

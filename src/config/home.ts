@@ -17,7 +17,7 @@ export const ABOUT_CONTENT = {
     links: {
         email: "mailto:yuwb0521@yeah.net",
         github: "https://github.com/zhijian521",
-        rss: "https://yuwb.dev/feed.xml",
+        rss: "/feed.xml",
     },
 } as const;
 

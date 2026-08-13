@@ -26,6 +26,16 @@ export interface PublishedPostDetail extends PublishedPostPreview {
     categorySlug: string | null;
 }
 
+/*== RSS 与 Sitemap 共用的已发布文章分发字段 ==*/
+export interface PublishedPostDistribution {
+    slug: string;
+    title: string;
+    summary: string | null;
+    publishedAt: string | null;
+    updatedAt: string | null;
+    tags: PostFilterOption[];
+}
+
 export interface PostFilterOption {
     name: string;
     slug: string;
