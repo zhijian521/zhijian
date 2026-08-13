@@ -1,13 +1,25 @@
 /*== 内容状态 ==*/
 .root {
-    --status-border: var(--border-default);
+    --status-accent: var(--action-primary);
+    --status-border: color-mix(in srgb, var(--border-default) var(--alpha-60), transparent);
+    --status-surface: color-mix(in srgb, var(--surface-raised) var(--alpha-80), transparent);
 
     display: flex;
+    min-height: 12rem;
     flex-direction: column;
     align-items: flex-start;
-    border-top: var(--border-width-1) solid var(--status-border);
-    border-bottom: var(--border-width-1) solid var(--status-border);
-    padding: var(--space-8) 0;
+    justify-content: center;
+    border: var(--border-width-1) solid var(--status-border);
+    padding: var(--space-12) var(--space-6);
+    background: var(--status-surface);
+}
+
+.root::before {
+    width: var(--space-6);
+    height: var(--border-width-2);
+    margin-bottom: var(--space-4);
+    background: var(--status-accent);
+    content: "";
 }
 
 .center {
@@ -17,18 +29,31 @@
 
 .title {
     font-family: var(--font-serif);
-    font-size: var(--font-size-7);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-6);
+    font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
 }
 
+.root:has(h1) .title {
+    font-size: var(--font-size-8);
+    font-weight: var(--font-weight-semibold);
+}
+
 .description {
-    margin-top: var(--space-3);
+    max-width: 36rem;
+    margin-top: var(--space-2);
     color: var(--text-secondary);
     font-size: var(--font-size-3);
     line-height: var(--line-height-relaxed);
 }
 
 .action {
-    margin-top: var(--space-4);
+    margin-top: var(--space-6);
+}
+
+@media (min-width: 48rem) {
+    .root {
+        min-height: 14rem;
+        padding: var(--space-16) var(--space-12);
+    }
 }
