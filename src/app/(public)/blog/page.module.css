@@ -10,10 +10,19 @@
     isolation: isolate;
     min-height: 100dvh;
     padding: var(--space-24) var(--space-8) var(--space-16);
-    background: var(--blog-background) center / cover no-repeat;
+    background: var(--surface-page);
 }
 
 .page::before {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    background: var(--blog-background) center / cover no-repeat;
+    content: "";
+    filter: brightness(var(--image-brightness));
+}
+
+.page::after {
     position: absolute;
     z-index: -1;
     inset: 0;
@@ -56,6 +65,9 @@
     .page {
         min-height: calc(100dvh - 5rem);
         padding: calc(5rem + var(--space-12)) var(--space-12) var(--space-24);
+    }
+
+    .page::before {
         background-attachment: fixed;
     }
 
