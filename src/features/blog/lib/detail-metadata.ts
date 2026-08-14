@@ -7,7 +7,7 @@
 import type { Metadata } from "next";
 
 import { HERO_CONTENT } from "@/config/home";
-import { DEFAULT_OG_IMAGE, SITE_METADATA } from "@/config/metadata";
+import { DEFAULT_OPEN_GRAPH, DEFAULT_OG_IMAGE, SITE_METADATA } from "@/config/metadata";
 import { toPostIsoDateTime } from "@/lib/core/date";
 import { serializeJsonLd } from "@/lib/core/json-ld";
 import type { PublishedPostDetail } from "@/types/post";
@@ -38,6 +38,7 @@ export function buildPostMetadata(post: PublishedPostDetail | null): Metadata {
         keywords: [...tagNames, ...(post.categoryName ? [post.categoryName] : []), ...SITE_METADATA.keywords],
         alternates: { canonical },
         openGraph: {
+            ...DEFAULT_OPEN_GRAPH,
             type: "article",
             title,
             description,

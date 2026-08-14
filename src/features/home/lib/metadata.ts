@@ -7,7 +7,7 @@
 import type { Metadata } from "next";
 
 import { ABOUT_CONTENT, HERO_CONTENT } from "@/config/home";
-import { DEFAULT_OG_IMAGE, SITE_METADATA } from "@/config/metadata";
+import { DEFAULT_OG_IMAGE, DEFAULT_OPEN_GRAPH, SITE_METADATA } from "@/config/metadata";
 import { serializeJsonLd } from "@/lib/core/json-ld";
 
 export const HOME_METADATA = {
@@ -16,13 +16,10 @@ export const HOME_METADATA = {
     keywords: [...SITE_METADATA.keywords],
     alternates: { canonical: "/" },
     openGraph: {
-        type: "website",
-        locale: SITE_METADATA.locale,
-        siteName: SITE_METADATA.name,
+        ...DEFAULT_OPEN_GRAPH,
         title: SITE_METADATA.brandTitle,
         description: SITE_METADATA.description,
         url: "/",
-        images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_METADATA.brandTitle }],
     },
     twitter: {
         card: "summary_large_image",

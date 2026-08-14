@@ -6,7 +6,7 @@
 
 import type { Metadata } from "next";
 
-import { DEFAULT_OG_IMAGE, SITE_METADATA } from "@/config/metadata";
+import { DEFAULT_OG_IMAGE, DEFAULT_OPEN_GRAPH, SITE_METADATA } from "@/config/metadata";
 import { serializeJsonLd } from "@/lib/core/json-ld";
 import type { PublishedPostsPage } from "@/types/post";
 
@@ -55,10 +55,10 @@ export function buildBlogMetadata(blogData: BlogMetadataData | null): Metadata {
               }
             : undefined,
         openGraph: {
+            ...DEFAULT_OPEN_GRAPH,
             title,
             description,
             url: canonical,
-            images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_METADATA.brandTitle }],
         },
         twitter: {
             card: "summary_large_image",

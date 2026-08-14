@@ -36,6 +36,14 @@ export const SITE_METADATA = {
     siteUrl: resolveSiteUrl(process.env.SITE_URL),
 } as const;
 
+/*== 页面级 Open Graph 会替换根布局对象，基础字段必须显式复用 ==*/
+export const DEFAULT_OPEN_GRAPH = {
+    type: "website",
+    locale: SITE_METADATA.locale,
+    siteName: SITE_METADATA.name,
+    images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_METADATA.brandTitle }],
+} satisfies NonNullable<Metadata["openGraph"]>;
+
 /*== 根布局默认元数据 ==*/
 export const ROOT_METADATA = {
     metadataBase: SITE_METADATA.siteUrl,
@@ -70,12 +78,7 @@ export const ROOT_METADATA = {
             },
         ],
     },
-    openGraph: {
-        type: "website",
-        locale: SITE_METADATA.locale,
-        siteName: SITE_METADATA.name,
-        images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_METADATA.brandTitle }],
-    },
+    openGraph: DEFAULT_OPEN_GRAPH,
     alternates: {
         types: {
             "application/rss+xml": "/feed.xml",

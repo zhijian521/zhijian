@@ -6,13 +6,14 @@
 
 import type { Metadata } from "next";
 
-import { SITE_METADATA } from "@/config/metadata";
+import { DEFAULT_OPEN_GRAPH, SITE_METADATA } from "@/config/metadata";
 
 export const NAV_METADATA = {
     title: "导航",
     description: "知简导航，聚合搜索与常用书签。",
     alternates: { canonical: "/nav" },
     openGraph: {
+        ...DEFAULT_OPEN_GRAPH,
         title: `导航 - ${SITE_METADATA.brandTitle}`,
         description: "知简导航，聚合搜索与常用书签。",
         url: "/nav",
