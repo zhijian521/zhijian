@@ -1,4 +1,6 @@
-# 知简 · zhijian-home
+# 知简 · zhijian
+
+统一仓库地址：[zhijian521/zhijian](https://github.com/zhijian521/zhijian)。
 
 个人站点的重构项目，统一保存新版工程、旧版参考源码和两边的原始 Git 历史。
 
