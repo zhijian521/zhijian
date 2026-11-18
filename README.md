@@ -2,6 +2,8 @@
 
 统一仓库地址：[zhijian521/zhijian](https://github.com/zhijian521/zhijian)。
 
+当前未部署公开网站，不登记线上访问地址。
+
 个人站点的重构项目，统一保存新版工程、旧版参考源码和两边的原始 Git 历史。
 
 ## 目录
