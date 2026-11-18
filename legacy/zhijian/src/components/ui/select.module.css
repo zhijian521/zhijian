@@ -1,0 +1,173 @@
+/*== Select 下拉选择 — 文人书斋风格 ==*/
+
+.wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/*-- 触发器 — 与 TextInput 同风格 --*/
+
+.trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--comp-py-base) var(--comp-px-base);
+    padding-right: var(--space-6);
+    font-family: inherit;
+    font-size: var(--comp-text-base);
+    line-height: var(--leading-normal);
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+    background: var(--background);
+    color: var(--foreground);
+    cursor: pointer;
+    outline: none;
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+    text-align: left;
+}
+
+.trigger:hover {
+    border-color: var(--primary);
+}
+
+/*== 焦点轮廓 ==*/
+.trigger:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
+.triggerOpen {
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+
+.triggerDisabled {
+    opacity: var(--opacity-40);
+    cursor: not-allowed;
+}
+
+.triggerDisabled:hover {
+    border-color: var(--input);
+}
+
+/*-- 触发器文字 --*/
+
+.triggerText {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.triggerPlaceholder {
+    color: var(--muted-foreground);
+    opacity: var(--opacity-60);
+}
+
+/*-- 下拉箭头 --*/
+
+.chevron {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    color: var(--muted-foreground);
+    transition:
+        transform var(--transition),
+        color var(--transition-fast);
+    pointer-events: none;
+}
+
+.chevronOpen {
+    transform: translateY(-50%) rotate(180deg);
+    color: var(--primary);
+}
+
+/*-- 下拉面板 --*/
+
+.panel {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    z-index: 50;
+    width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    background: var(--popover);
+    box-shadow: var(--shadow);
+}
+
+/*-- 选项 --*/
+
+.option {
+    margin: var(--space-1);
+    display: block;
+    width: calc(100% - var(--space-2));
+    padding: var(--comp-py-md) var(--comp-px-base);
+    font-family: inherit;
+    font-size: var(--comp-text-md);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+    background: transparent;
+    border: none;
+    border-left: 2px solid transparent;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.option:hover {
+    background: var(--highlight);
+}
+
+.optionActive {
+    background: var(--primary-subtle);
+    color: var(--primary);
+    border-left-color: var(--primary);
+}
+
+.optionActive:hover {
+    background: var(--primary-subtle);
+}
+
+/*-- 尺寸变体（仅 non-default，default 已在 .trigger 基础样式中） --*/
+
+.medium .trigger {
+    padding: var(--comp-py-md) var(--comp-px-md);
+    padding-right: var(--space-6);
+    font-size: var(--comp-text-md);
+}
+
+.medium .option {
+    padding: var(--comp-py-md) var(--comp-px-md);
+    font-size: var(--comp-text-sm);
+}
+
+.small .trigger {
+    padding: var(--comp-py-sm) var(--comp-px-sm);
+    padding-right: var(--space-6);
+    font-size: var(--comp-text-sm);
+}
+
+.small .option {
+    padding: var(--comp-py-sm) var(--comp-px-sm);
+    font-size: var(--comp-text-mini);
+}
+
+.small .chevron {
+    right: var(--space-2);
+}

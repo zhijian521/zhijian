@@ -1,0 +1,96 @@
+/*== Pagination 分页 — 朱砂红当前页 + 描边翻页按钮 ==*/
+
+/*-- 根容器：右对齐 --*/
+.root {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-1);
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-4);
+}
+
+/*-- 每页条数选择器 --*/
+.sizeSelector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-right: var(--space-3);
+}
+
+.sizeLabel {
+    font-size: var(--comp-text-sm);
+    color: var(--muted-foreground);
+}
+
+/*-- 通用按钮基础 --*/
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 var(--space-2);
+    border: 1px solid var(--border);
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: var(--comp-text-sm);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition:
+        color var(--transition),
+        border-color var(--transition),
+        background-color var(--transition);
+}
+
+.btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.btn:disabled {
+    opacity: var(--opacity-40);
+    cursor: default;
+}
+
+.disabledLink {
+    opacity: var(--opacity-40);
+    cursor: default;
+    pointer-events: none;
+}
+
+/*-- 翻页按钮（上一页/下一页） --*/
+.navBtn {
+    padding: 0 var(--space-3);
+    font-size: var(--comp-text-sm);
+}
+
+/*-- 当前页 — 朱砂红实色 --*/
+.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: var(--weight-medium);
+}
+
+.active:hover:not(:disabled) {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    filter: brightness(1.1);
+}
+
+/*-- 省略号 --*/
+.ellipsis {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--comp-text-base);
+    color: var(--muted-foreground);
+    user-select: none;
+}

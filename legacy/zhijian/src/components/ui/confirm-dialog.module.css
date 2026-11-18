@@ -1,0 +1,41 @@
+/*== ConfirmDialog 二次确认弹窗 — 图标+消息+双按钮 ==*/
+
+/*-- 内容区：左图标 + 右消息 --*/
+.content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+}
+
+/*-- 警告图标容器：朱砂淡底方形 --*/
+.iconWrap {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--primary-subtle);
+}
+
+.icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--primary);
+}
+
+/*-- 提示消息 --*/
+.message {
+    margin: 0;
+    font-size: var(--comp-text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+}
+
+/*-- 底部按钮区：右对齐 --*/
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+}

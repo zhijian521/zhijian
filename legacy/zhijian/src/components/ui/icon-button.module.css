@@ -1,0 +1,71 @@
+/*== IconButton 图标按钮 — 正方形纯图标，hover 背景 ==*/
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--comp-py-base);
+    font-size: var(--comp-text-base);
+    line-height: 1;
+    border: 0;
+    background: var(--muted);
+    cursor: pointer;
+    color: var(--muted-foreground);
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.button > svg {
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+}
+
+.button:hover {
+    color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+.button:disabled {
+    opacity: var(--opacity-30);
+    cursor: not-allowed;
+}
+
+.button:disabled:hover {
+    color: var(--muted-foreground);
+    background: var(--muted);
+}
+
+/*== 焦点轮廓 ==*/
+.button:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
+/*== 尺寸变体（仅 non-default，default 已在 .button 基础样式中） ==*/
+.medium {
+    padding: var(--comp-py-md);
+    font-size: var(--comp-text-md);
+}
+
+.small {
+    padding: var(--comp-py-sm);
+    font-size: var(--comp-text-sm);
+}
+
+.mini {
+    padding: var(--comp-py-mini);
+    font-size: var(--comp-text-mini);
+}
+
+/*== 颜色变体 ==*/
+.danger {
+    color: var(--destructive);
+    background: var(--destructive-subtle);
+}
+
+.danger:hover {
+    color: var(--destructive-foreground);
+    background: var(--destructive);
+}

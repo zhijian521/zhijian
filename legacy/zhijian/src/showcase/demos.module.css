@@ -1,0 +1,48 @@
+/*== 组件预览区 — 行式布局，每行 label + 组件列表 ==*/
+
+.demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.label {
+    flex-shrink: 0;
+    min-width: 3rem;
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+}
+
+.items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/*-- 弹窗内容区文字样式 --*/
+.dialogContent {
+    margin: 0;
+    font-size: var(--comp-text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+}
+.codeBlock {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-xs);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    white-space: pre;
+    font-family: var(--font-mono, 'Consolas', 'Monaco', monospace);
+}

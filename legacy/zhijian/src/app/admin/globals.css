@@ -1,0 +1,27 @@
+/* 知简 · 后台通用样式
+   仅作用于 /admin 子树（由 admin/layout.tsx 引入）。
+   博客、导航页不加载本文件。 */
+
+/*== 后台卡片：匹配博客卡片风格。 ==*/
+.admin-stitch-card {
+    border: 1px solid var(--primary);
+    background: var(--background);
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-stitch-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+    transform: translateY(-2px);
+}
+
+/*== 后台大数字。 ==*/
+.admin-stitch-number {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+}

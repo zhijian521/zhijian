@@ -1,0 +1,42 @@
+/*== PillSelect 药丸单选 — 连排扁平选项 ==*/
+
+.group {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    background: var(--muted);
+}
+
+.pill {
+    position: relative;
+    padding: var(--comp-py-base) var(--comp-px-base);
+    font-size: var(--comp-text-base);
+    font-weight: var(--weight-medium);
+    border: 0;
+    color: var(--muted-foreground);
+    background: transparent;
+    cursor: pointer;
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.pill:hover {
+    color: var(--foreground);
+}
+
+.pillActive {
+    background: var(--background);
+    color: var(--primary);
+    box-shadow: inset 0 -2px 0 var(--primary);
+}
+
+/*== 尺寸变体（仅 non-default，default 已在 .pill 基础样式中） ==*/
+.medium .pill {
+    padding: var(--comp-py-md) var(--comp-px-md);
+    font-size: var(--comp-text-md);
+}
+
+.small .pill {
+    padding: var(--comp-py-sm) var(--comp-px-sm);
+    font-size: var(--comp-text-sm);
+}

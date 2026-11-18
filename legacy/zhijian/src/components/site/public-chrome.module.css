@@ -1,0 +1,31 @@
+/*== 根容器 ==*/
+.root {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--foreground);
+}
+
+/*== 根容器：首页 / 博客页透明，背景由子页面 fixed 层提供 ==*/
+.rootTransparent {
+    background: transparent;
+}
+
+/*== 主内容区 ==*/
+.main {
+    flex: 1;
+}
+
+/*== 页脚 ==*/
+.footer {
+    background: var(--background);
+    padding: var(--space-5);
+    text-align: center;
+}
+
+.footerCopy {
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    opacity: var(--opacity-80);
+}

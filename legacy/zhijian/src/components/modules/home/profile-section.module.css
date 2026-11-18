@@ -1,0 +1,27 @@
+.section {
+    margin-top: var(--space-7);
+}
+
+.row {
+    display: flex;
+    gap: var(--space-5);
+    align-items: center;
+    border: 1px solid var(--primary);
+    background: var(--muted);
+    padding: var(--space-5);
+}
+
+.commitCol {
+    flex-shrink: 0;
+    padding-top: var(--space-1);
+}
+
+@media (max-width: 1023px) {
+    .row {
+        flex-direction: column;
+    }
+    .commitCol {
+        width: 100%;
+        overflow-x: auto;
+    }
+}

@@ -1,0 +1,63 @@
+/*== Toast 提示 — 固定右上角，匹配文人书斋风格 ==*/
+
+/*-- 容器：固定右上角 --*/
+.container {
+    position: fixed;
+    top: var(--space-5);
+    right: var(--space-5);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    pointer-events: none;
+}
+
+/*-- 单条提示 --*/
+.item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 20rem;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius);
+    font-size: var(--comp-text-base);
+    pointer-events: auto;
+    animation: toastIn var(--transition-fast) ease;
+}
+
+/*-- 成功：朱砂红边框 --*/
+.success {
+    border: 1px solid var(--primary);
+    background: var(--background);
+    color: var(--primary);
+}
+
+/*-- 错误：危险红边框 --*/
+.error {
+    border: 1px solid var(--destructive);
+    background: var(--background);
+    color: var(--destructive);
+}
+
+.icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.message {
+    flex: 1;
+    line-height: var(--leading-normal);
+}
+
+/*-- 入场动画 --*/
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

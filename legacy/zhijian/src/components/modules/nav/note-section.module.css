@@ -1,0 +1,216 @@
+.panel {
+    display: flex;
+    width: 100%;
+    min-height: 0;
+    padding-top: var(--space-4);
+    flex: 1;
+    gap: var(--space-3);
+    box-sizing: border-box;
+}
+
+.sidebar {
+    width: 18rem;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0.875rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.sidebarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.title {
+    margin: 0;
+    color: var(--foreground);
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.list {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+}
+
+.noteItem {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.noteItem:hover {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--card) 88%, var(--accent) 12%);
+}
+
+.noteItemActive {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--card) 72%, var(--primary-subtle) 28%);
+}
+
+.noteInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.noteTitle {
+    margin: 0 0 0.1875rem;
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.noteDate {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+}
+
+.noteDelete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.noteItem:hover .noteDelete,
+.noteItemActive .noteDelete {
+    opacity: 1;
+}
+
+.noteDelete:hover {
+    color: var(--destructive);
+}
+
+.dragOverBefore::before,
+.dragOverAfter::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+}
+
+.dragOverBefore::before {
+    top: -1px;
+}
+
+.dragOverAfter::after {
+    bottom: -1px;
+}
+
+.detail {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.detailHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.125rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 82%, var(--muted) 18%);
+}
+
+.detailHeaderMain {
+    flex: 1;
+    min-width: 0;
+}
+
+.detailTitle {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    outline: none;
+}
+
+.detailTitle::placeholder {
+    color: var(--muted-foreground);
+}
+
+.detailMeta {
+    margin: 0.375rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+}
+
+.detailMetaPreview {
+    margin-top: 0;
+}
+
+.detailContent {
+    flex: 1;
+    min-height: 0;
+}
+
+.previewPane {
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.5rem 1.75rem 2rem;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+/*-- 空态场景修饰：撑满详情区（居中布局与文字外观由 EmptyState 组件提供） --*/
+
+.emptyFill {
+    flex: 1;
+}

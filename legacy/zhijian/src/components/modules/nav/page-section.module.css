@@ -1,0 +1,37 @@
+/*== 单屏框架 ==*/
+
+.section {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    height: 100vh;
+    padding: var(--space-6) var(--space-9);
+    scroll-snap-align: start;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.top {
+    justify-content: flex-start;
+    padding-top: clamp(var(--space-8), 22vh, 12rem);
+}
+
+.stretch {
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+@media (max-width: 900px) {
+    .section {
+        padding-right: var(--space-8);
+        padding-left: var(--space-8);
+    }
+}
+
+@media (max-width: 640px) {
+    .section {
+        padding: var(--space-5) var(--space-3);
+    }
+}

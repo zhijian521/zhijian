@@ -1,0 +1,345 @@
+/* =====================================================================
+   MarkdownArticle 排版样式
+   ─────────────────────────────────────────────────────────────────────
+   使用 :global() 选择器覆盖 react-markdown 渲染出的原生 HTML 标签。
+   所有样式限定在 .body 容器内，不影响全局。
+   设计：文人书斋 · 水墨宣纸 · 温润雅致
+   ===================================================================== */
+
+.body {
+    max-width: 42rem;
+    margin: 0 auto;
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--foreground);
+}
+
+.bodyWide {
+    max-width: none;
+}
+
+/*== 标题 ==*/
+.body :global(h1) {
+    margin: var(--space-8) 0 var(--space-5);
+    padding-left: var(--space-5);
+    border-left: 4px solid var(--primary);
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+}
+
+.body :global(h2) {
+    margin: var(--space-8) 0 var(--space-5);
+    padding-left: var(--space-5);
+    border-left: 4px solid var(--primary);
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+}
+
+.body :global(h3) {
+    margin: var(--space-7) 0 var(--space-4);
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+}
+
+.body :global(h4) {
+    margin: var(--space-6) 0 var(--space-3);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+}
+
+.body :global(h5),
+.body :global(h6) {
+    margin: var(--space-5) 0 var(--space-2);
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--foreground);
+}
+
+/*== 段落 ==*/
+.body :global(p) {
+    margin: var(--space-4) 0;
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--foreground);
+}
+
+.body :global(p:first-child) {
+    margin-top: 0;
+}
+
+/*== 引用 ==*/
+.body :global(blockquote) {
+    margin: var(--space-5) 0;
+    padding: var(--space-4);
+    border-left: 2px solid var(--primary);
+    background: var(--muted);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-style: italic;
+    line-height: var(--leading-relaxed);
+    color: var(--muted-foreground);
+}
+
+.body :global(blockquote p) {
+    margin: 0;
+    font-size: inherit;
+    color: inherit;
+}
+
+/*== 列表 ==*/
+.body :global(ul),
+.body :global(ol) {
+    margin: var(--space-5) 0;
+    padding-left: var(--space-5);
+}
+
+.body :global(ul) {
+    list-style: none;
+}
+
+.body :global(ul > li) {
+    position: relative;
+    padding-left: var(--space-4);
+}
+
+.body :global(ul > li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 5px;
+    height: 5px;
+    background: var(--primary);
+}
+
+.body :global(ol) {
+    list-style: none;
+    counter-reset: md-counter;
+}
+
+.body :global(ol > li) {
+    position: relative;
+    padding-left: var(--space-5);
+    counter-increment: md-counter;
+}
+
+.body :global(ol > li)::before {
+    content: counter(md-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--primary);
+}
+
+.body :global(li) {
+    margin: var(--space-2) 0;
+    line-height: var(--leading-relaxed);
+}
+
+.body :global(li > ul),
+.body :global(li > ol) {
+    margin: var(--space-1) 0;
+}
+
+/*== 代码块 — 由 CodeBlock 组件渲染，此处仅覆盖行内 code 样式 ==*/
+.body :global(code) {
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--border);
+    background: var(--muted);
+    font-size: var(--text-sm);
+    font-family: 'Menlo', 'Consolas', 'Monaco', monospace;
+    color: var(--foreground);
+}
+
+/* 代码块内的 code 不需要行内样式覆盖 */
+.body :global(pre code) {
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: inherit;
+    color: inherit;
+}
+
+/*== 代码高亮 · 暗色适配 ==
+   亮色由 highlight.js/styles/github.css 提供（全局引入，仅亮色）。
+   暗色在 .body 作用域内覆盖 hljs token 配色，不引入新依赖、不影响亮色。
+   调色板参考 github-dark 并整体降饱和、向暖偏移，
+   与暗色墨底（--muted #1c1812）和朱砂/竹青/靛蓝语义色协调。
+   基础文字色与背景已由上方 pre code / CodeBlock 走主题变量，无需重复覆盖。 */
+@media (prefers-color-scheme: dark) {
+    /*-- 注释 / 公式 — 暖灰，弱于正文 --*/
+    .body :global(.hljs-comment),
+    .body :global(.hljs-quote),
+    .body :global(.hljs-code),
+    .body :global(.hljs-formula) {
+        color: #8f867a;
+    }
+
+    /*-- 关键字 / 类型 — 朱砂柔红，呼应主色 --*/
+    .body :global(.hljs-doctag),
+    .body :global(.hljs-keyword),
+    .body :global(.hljs-meta .hljs-keyword),
+    .body :global(.hljs-template-tag),
+    .body :global(.hljs-template-variable),
+    .body :global(.hljs-type),
+    .body :global(.hljs-variable.language_) {
+        color: #d98a7d;
+    }
+
+    /*-- 函数与类名 — 靛蓝柔，呼应 --info 暗色值 --*/
+    .body :global(.hljs-title),
+    .body :global(.hljs-title.class_),
+    .body :global(.hljs-title.class_.inherited__),
+    .body :global(.hljs-title.function_),
+    .body :global(.hljs-section) {
+        color: #8ea6c8;
+    }
+
+    /*-- 属性 / 数字 / 变量 / 选择器 — 赭石暖金 --*/
+    .body :global(.hljs-attr),
+    .body :global(.hljs-attribute),
+    .body :global(.hljs-literal),
+    .body :global(.hljs-meta),
+    .body :global(.hljs-number),
+    .body :global(.hljs-operator),
+    .body :global(.hljs-selector-attr),
+    .body :global(.hljs-selector-class),
+    .body :global(.hljs-selector-id),
+    .body :global(.hljs-variable) {
+        color: #c9a97a;
+    }
+
+    /*-- 字符串 / 正则 — 竹青柔，呼应 --success 暗色值 --*/
+    .body :global(.hljs-string),
+    .body :global(.hljs-regexp),
+    .body :global(.hljs-meta .hljs-string) {
+        color: #a3bd94;
+    }
+
+    /*-- 内置符号 / 标签名 — 琥珀与竹青 --*/
+    .body :global(.hljs-built_in),
+    .body :global(.hljs-symbol),
+    .body :global(.hljs-bullet) {
+        color: #c98f5f;
+    }
+
+    .body :global(.hljs-name),
+    .body :global(.hljs-selector-tag),
+    .body :global(.hljs-selector-pseudo) {
+        color: #92b28c;
+    }
+
+    /*-- 强调 / 替换文本 — 跟随正文色，避免 github.css 的深色沉底 --*/
+    .body :global(.hljs-subst),
+    .body :global(.hljs-emphasis),
+    .body :global(.hljs-strong) {
+        color: var(--foreground);
+    }
+
+    /*-- diff 增删行 — 用主题语义色的暗色版本，背景换低透明叠色 --*/
+    .body :global(.hljs-addition) {
+        color: #92b28c;
+        background-color: rgba(91, 163, 112, 0.12);
+    }
+
+    .body :global(.hljs-deletion) {
+        color: #d98a7d;
+        background-color: rgba(201, 72, 77, 0.12);
+    }
+}
+
+/*== 链接 ==*/
+.body :global(a) {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+    transition: opacity var(--transition);
+}
+
+.body :global(a:hover) {
+    opacity: var(--opacity-60);
+}
+
+/*== 图片 ==*/
+.body :global(img) {
+    display: block;
+    max-width: 100%;
+    margin: var(--space-6) 0;
+    border: 1px solid var(--border);
+}
+
+/*== 分隔线 ==*/
+.body :global(hr) {
+    margin: var(--space-8) 0;
+    border: none;
+    border-top: 1px solid var(--border);
+}
+
+/*== 表格 ==*/
+.body :global(table) {
+    width: 100%;
+    margin: var(--space-6) 0;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    font-size: var(--text-sm);
+    table-layout: fixed;
+}
+
+.body :global(th) {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    background: var(--muted);
+    font-weight: var(--weight-semibold);
+    text-align: left;
+    color: var(--foreground);
+    word-break: break-word;
+}
+
+.body :global(td) {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    word-break: break-word;
+}
+
+.body :global(tr:nth-child(even) td) {
+    background: var(--highlight);
+}
+
+/*== 任务列表（GFM） ==*/
+.body :global(input[type='checkbox']) {
+    margin-right: var(--space-2);
+    accent-color: var(--primary);
+}
+
+/*== 删除线（GFM） ==*/
+.body :global(del) {
+    color: var(--muted-foreground);
+}
+
+/*== 强调 ==*/
+.body :global(strong) {
+    font-weight: var(--weight-semibold);
+    color: var(--foreground);
+}
+
+.body :global(em) {
+    font-style: italic;
+}

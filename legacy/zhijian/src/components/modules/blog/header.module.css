@@ -1,0 +1,38 @@
+/*== Header 博客列表页头部 — 标题 + 筛选标签 + 移动端筛选按钮 ==*/
+
+/*-- 头部容器 --*/
+.header {
+    margin-bottom: var(--space-8);
+}
+
+/*-- 标题行 --*/
+.headerRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+
+/*-- 移动端筛选按钮 — md 起隐藏 --*/
+@media (min-width: 768px) {
+    .filterBtnMobile {
+        display: none;
+    }
+}
+
+/*-- 页面标题 --*/
+.title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    color: var(--foreground);
+}
+
+/*-- 筛选标签容器 --*/
+.activeFilters {
+    margin-top: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}

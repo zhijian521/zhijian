@@ -1,0 +1,51 @@
+/*== Breadcrumb 站点面包屑导航 ==*/
+
+/*-- 面包屑容器 --*/
+.breadcrumb {
+    margin-bottom: var(--space-4);
+    min-width: 0;
+}
+
+/*-- 面包屑列表 --*/
+.list {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    color: var(--muted-foreground);
+    flex-wrap: nowrap;
+    min-width: 0;
+}
+
+/*-- 面包屑项 --*/
+.item {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/*-- 面包屑链接 + 当前项通用截断 --*/
+.link {
+    color: var(--muted-foreground);
+    text-decoration: none;
+    transition: color var(--transition);
+    flex-shrink: 0;
+    padding: 0 var(--space-1);
+}
+
+.link:hover {
+    color: var(--primary);
+}
+
+/*-- 面包屑当前项 --*/
+.current {
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 var(--space-1);
+}

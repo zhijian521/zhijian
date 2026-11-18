@@ -1,0 +1,137 @@
+/*============================================================================
+  globals — 全局重置与基础样式
+
+  tokens.css（间距/字号）→ theme.css（颜色/字体）在此之后引入。
+  包含 HTML 重置、滚动条、背景蒙版、页面内容容器。
+============================================================================*/
+
+@import './tokens.css';
+@import './theme.css';
+
+/*== HTML 重置 ==*/
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+}
+
+body {
+    min-width: 320px;
+    color: var(--foreground);
+    background: var(--background);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    line-height: var(--leading-normal);
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+[role='button'] {
+    cursor: pointer;
+}
+
+[disabled] {
+    cursor: default;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+::selection {
+    background: var(--selection);
+}
+
+/*== 滚动条 ==*/
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background: var(--border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/*== 背景蒙版 — 叠加在背景图上，亮色白底渐变 / 暗色黑底渐变 ==*/
+.bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--overlay-gradient);
+}
+
+/*== 页面内容容器 ==*/
+.page-content {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-5);
+}
+
+.page-content > :first-child {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .page-content {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+}
+
+/*== 无障碍工具 ==*/
+
+/*-- 视觉隐藏（sr-only）：视觉不可见但屏幕阅读器可感知，
+     用于 aria-live 播报、跳过链接等无障碍辅助内容 --*/
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

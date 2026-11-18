@@ -1,0 +1,29 @@
+.heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.title {
+    margin: 0;
+    flex-shrink: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    line-height: var(--leading-normal);
+    font-weight: var(--weight-semibold);
+    color: var(--foreground);
+}
+
+.line {
+    height: 1px;
+    flex: 1;
+    background: var(--primary);
+    opacity: var(--opacity-30);
+}
+
+@media (max-width: 480px) {
+    .heading {
+        flex-wrap: wrap;
+    }
+}

@@ -1,0 +1,211 @@
+.root {
+    position: relative;
+}
+
+.triggerButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 2.5rem;
+    max-width: min(16rem, calc(100vw - 2rem));
+    padding: 0.5rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
+    background: color-mix(in srgb, var(--card) 48%, transparent);
+    backdrop-filter: blur(18px);
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.triggerButton:hover {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--card) 58%, var(--primary-subtle) 12%);
+}
+
+.triggerName {
+    max-width: 11rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.triggerIcon {
+    width: 0.9375rem;
+    height: 0.9375rem;
+    flex-shrink: 0;
+}
+
+.panel {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    width: min(24rem, calc(100vw - 3rem));
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 20;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 1rem 1.125rem;
+    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+    background: color-mix(in srgb, var(--card) 82%, transparent);
+    backdrop-filter: blur(22px);
+    box-shadow: var(--shadow-lg);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.cardTitle {
+    margin: 0;
+    color: var(--foreground);
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.cardBadge {
+    padding: 0.1875rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+    background: color-mix(in srgb, var(--primary-subtle) 70%, transparent);
+    color: var(--primary);
+    font-size: 0.6875rem;
+    line-height: 1.2;
+}
+
+.cardHint {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.profileRow {
+    display: grid;
+    grid-template-columns: 3.75rem 1fr;
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.profileLabel {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    line-height: 1.6;
+}
+
+.profileValue {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.logoutButton {
+    align-self: flex-start;
+    border: 1px solid color-mix(in srgb, var(--destructive) 42%, transparent);
+    color: var(--destructive);
+}
+
+.logoutButton:hover {
+    background: color-mix(in srgb, var(--destructive) 12%, transparent);
+    border-color: var(--destructive);
+    color: var(--destructive);
+}
+
+.authActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.authButtons {
+    display: flex;
+    gap: 0.625rem;
+}
+
+.syncList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.syncRow {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.625rem;
+    align-items: center;
+}
+
+.syncDot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+}
+
+.syncDotOk {
+    background: var(--primary);
+}
+
+.syncDotPending {
+    background: var(--muted-foreground);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.syncDotError {
+    background: var(--destructive);
+}
+
+.syncDotLocal {
+    background: color-mix(in srgb, var(--muted-foreground) 65%, transparent);
+}
+
+.syncName {
+    color: var(--foreground);
+    font-size: 0.8125rem;
+}
+
+.syncStatus {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
+@media (max-width: 767px) {
+    .panel {
+        width: min(22rem, calc(100vw - 2rem));
+    }
+
+    .triggerName {
+        max-width: 7rem;
+    }
+}

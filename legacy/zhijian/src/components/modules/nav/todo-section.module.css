@@ -1,0 +1,223 @@
+/*== 备忘录 — 四象限 ==*/
+
+.panel {
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    padding-top: var(--space-4);
+    flex: 1;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/*-- 矩阵：宽屏一行四列，窄屏横向滚动 --*/
+
+.matrix {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(15rem, 1fr));
+    gap: var(--space-3);
+    min-height: 0;
+    overflow-x: auto;
+}
+
+/*-- 单个象限 --*/
+
+.quadrant {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    border: 1px solid var(--border);
+    background: var(--card);
+    overflow: hidden;
+}
+
+.qHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.qDot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.qTitle {
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.qCount {
+    margin-left: auto;
+    padding: 0.0625rem 0.4375rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+}
+
+/*-- 象限内卡片列表 --*/
+
+.qList {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    scrollbar-width: thin;
+}
+
+.qList:empty::after {
+    content: '空';
+    display: block;
+    text-align: center;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    padding: 1.5rem 0;
+    opacity: 0.5;
+}
+
+/*-- 象限色：标题栏淡背景 + 圆点 --*/
+
+.q1 .qDot {
+    background: var(--destructive);
+}
+.q1 .qHeader {
+    background: color-mix(in srgb, var(--destructive) 6%, transparent);
+}
+
+.q2 .qDot {
+    background: #d99a6c;
+}
+.q2 .qHeader {
+    background: color-mix(in srgb, #d99a6c 7%, transparent);
+}
+
+.q3 .qDot {
+    background: var(--accent-foreground);
+}
+.q3 .qHeader {
+    background: color-mix(in srgb, var(--accent-foreground) 6%, transparent);
+}
+
+.q4 .qDot {
+    background: var(--muted-foreground);
+}
+.q4 .qHeader {
+    background: color-mix(in srgb, var(--muted-foreground) 4%, transparent);
+}
+
+/*-- 拖拽落点 --*/
+
+.quadrant.dragOver {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+/*-- 单张卡片：复选框 + 内容 + 删除 横向居中 --*/
+
+.card {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.card:hover {
+    border-color: var(--primary);
+}
+
+.cardDone {
+    opacity: 0.4;
+}
+
+.cardDragging {
+    opacity: 0.3;
+}
+
+.cardEditing {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+.cardCheckbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.cardDelete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.cardDelete:hover {
+    color: var(--destructive);
+}
+
+/*-- 只读展示：固定两行省略，占满剩余宽度 --*/
+
+.cardText {
+    flex: 1;
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    color: var(--foreground);
+    word-break: break-word;
+}
+
+.cardTextDone {
+    text-decoration: line-through;
+}
+
+/*-- 编辑态：展开可编辑，占满剩余宽度 --*/
+
+.editArea {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    outline: none;
+    box-sizing: border-box;
+    resize: none;
+    overflow: hidden;
+    word-break: break-word;
+}

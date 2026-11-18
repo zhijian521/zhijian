@@ -1,0 +1,35 @@
+/*== 导航页全屏分屏容器 ==*/
+
+.shell {
+    height: 100vh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    background-image: url('/images/bg-nav.webp');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.shell::-webkit-scrollbar {
+    display: none;
+}
+
+.shell :is(button, a):focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
+.sectionActions {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+    z-index: 12;
+}
+
+@media (max-width: 640px) {
+    .sectionActions {
+        top: var(--space-3);
+        right: var(--space-3);
+    }
+}

@@ -1,0 +1,71 @@
+/*== CodeBlock 代码块 — 容器 + 复制按钮 + 代码区 ==*/
+
+/*-- 代码块容器 --*/
+.codeBlock {
+    position: relative;
+    margin: var(--space-6) 0;
+    border: 1px solid var(--border);
+    background: var(--muted);
+}
+
+/*-- 右上角浮动复制按钮 --*/
+.copyBtn {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background: var(--background);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity var(--transition),
+        color var(--transition),
+        border-color var(--transition);
+}
+
+.codeBlock:hover .copyBtn {
+    opacity: 1;
+}
+
+.copyBtn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.copyBtn:focus-visible {
+    opacity: 1;
+    box-shadow: 0 0 0 3px var(--ring-subtle);
+    outline: none;
+}
+
+.copyIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.checkIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+    color: var(--primary);
+}
+
+/*-- 代码区 --*/
+.codeArea {
+    display: block;
+    padding: var(--space-4);
+    overflow-x: auto;
+    line-height: var(--leading-normal);
+    font-size: var(--text-sm);
+    font-family: 'SF Mono', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace;
+    background: transparent;
+    color: var(--foreground);
+    margin: 0;
+}

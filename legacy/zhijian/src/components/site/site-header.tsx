@@ -1,0 +1,154 @@
+/*============================================================================
+  site-header — 前台公共导航栏
+
+  logo + 桌面导航 + 移动端折叠菜单。
+  透明模式（首页/博客详情）：滚动前透明，滚动后毛玻璃；
+  常规模式（其余页面）：始终毛玻璃背景。
+============================================================================*/
+
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+/*== Hook 导入 ==*/
+import { useClickOutside } from '@/hooks/use-click-outside';
+
+/*== 组件导入 ==*/
+import { Show } from '@/components/ui/show';
+import { MenuIcon, XIcon } from '@/components/ui/icons';
+
+/*== 数据与配置 ==*/
+import { APP_ROUTES, PUBLIC_NAV_ITEMS, SITE_METADATA } from '@/lib/core/site';
+import { cn, isNavItemActive } from '@/lib/core/utils';
+
+/*== 样式导入 ==*/
+import styles from './site-header.module.css';
+
+/*== 类型定义 ==*/
+interface SiteHeaderProps {
+    transparent?: boolean;
+}
+
+/*== 前台公共导航栏：logo + 桌面导航 + 移动端菜单，透明/滚动毛玻璃双模式 ==*/
+export function SiteHeader({ transparent = false }: SiteHeaderProps) {
+    const pathname = usePathname();
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+    const mobileNavRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
+
+    /*-- 预计算导航项活跃状态 --*/
+    const navItems = useMemo(
+        () => PUBLIC_NAV_ITEMS.map((item) => ({ ...item, isActive: isNavItemActive(pathname, item.href, item.match) })),
+        [pathname]
+    );
+
+    /*-- 路由切换关闭菜单 --*/
+    useEffect(() => setIsMobileNavOpen(false), [pathname]);
+
+    /*-- 透明模式下滚动检测 --*/
+    useEffect(() => {
+        if (!transparent) return;
+        const onScroll = () => setIsScrolled(window.scrollY > 10);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, [transparent]);
+
+    /*-- 关闭移动菜单并归还焦点 --*/
+    const closeMenu = useCallback(() => {
+        setIsMobileNavOpen(false);
+        triggerRef.current?.focus();
+    }, []);
+
+    /*-- 移动菜单：点击外部 / Escape 关闭（触发按钮在面板之外，数组形态一并排除；
+         两种关闭来源统一走 closeMenu 归还焦点，与原实现行为一致） --*/
+    useClickOutside([mobileNavRef, triggerRef], closeMenu, { enabled: isMobileNavOpen });
+
+    const headerClass = transparent ? cn(styles.headerHome, isScrolled && styles.headerScrolled) : styles.headerInner;
+
+    return (
+        <header className={headerClass}>
+            <div className={styles.headerContainer}>
+                {/* 主站Logo */}
+                <Link className={styles.brand} href={APP_ROUTES.home}>
+                    <Image alt={SITE_METADATA.name} height={32} src="/images/logo.webp" width={32} />
+                    <span className={styles.brandText}>{SITE_METADATA.name}</span>
+                </Link>
+
+                <div className={styles.navArea}>
+                    {/* 桌面导航 */}
+                    <nav aria-label="站点主导航" className={styles.nav}>
+                        {navItems.map((item) => (
+                            <Link
+                                className={cn(
+                                    styles.navLink,
+                                    item.isActive ? styles.navLinkActive : styles.navLinkInactive
+                                )}
+                                href={item.href}
+                                key={item.label}
+                            >
+                                {item.label}
+                                {item.isActive ? <span aria-hidden className={styles.navUnderline} /> : null}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    {/* 移动端导航 */}
+                    <div className={styles.mobileNavWrapper}>
+                        <button
+                            aria-controls="public-mobile-nav"
+                            aria-expanded={isMobileNavOpen}
+                            aria-label={isMobileNavOpen ? '关闭导航菜单' : '打开导航菜单'}
+                            className={cn(styles.mobileMenu, isMobileNavOpen && styles.mobileMenuOpen)}
+                            onClick={() => setIsMobileNavOpen((v) => !v)}
+                            ref={triggerRef}
+                            type="button"
+                        >
+                            <MenuIcon className={styles.mobileMenuIcon} />
+                        </button>
+
+                        <Show when={isMobileNavOpen}>
+                            <div
+                                aria-label="移动端导航菜单"
+                                className={styles.mobilePanel}
+                                id="public-mobile-nav"
+                                ref={mobileNavRef}
+                                role="dialog"
+                            >
+                                <div className={styles.mobilePanelHeader}>
+                                    <span className={styles.mobilePanelTitle}>导航</span>
+                                    <button
+                                        aria-label="关闭导航菜单"
+                                        className={styles.mobileClose}
+                                        onClick={closeMenu}
+                                        type="button"
+                                    >
+                                        <XIcon className={styles.mobileCloseIcon} />
+                                    </button>
+                                </div>
+                                <nav aria-label="移动端站点导航" className={styles.mobileNav}>
+                                    {navItems.map((item) => (
+                                        <Link
+                                            className={cn(
+                                                styles.mobileNavLink,
+                                                item.isActive && styles.mobileNavLinkActive
+                                            )}
+                                            href={item.href}
+                                            key={item.label}
+                                        >
+                                            <span>{item.label}</span>
+                                        </Link>
+                                    ))}
+                                </nav>
+                            </div>
+                        </Show>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+}

@@ -1,0 +1,24 @@
+/*== FilterDialog 移动端筛选弹窗 — 分类 + 标签 ==*/
+
+/*-- 弹窗内容区 --*/
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/*-- 筛选区块 --*/
+.block {
+    display: flex;
+    flex-direction: column;
+}
+
+/*-- 区块标题 --*/
+.blockTitle {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    color: var(--foreground);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border);
+}

@@ -1,0 +1,97 @@
+/*== GhostButton 幽灵按钮 — 边框按钮+图标，hover 变暖 ==*/
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--comp-py-base) var(--comp-px-base);
+    font-size: var(--comp-text-base);
+    font-family: inherit;
+    line-height: var(--leading-normal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        color var(--transition),
+        border-color var(--transition),
+        background-color var(--transition);
+}
+
+/*== 尺寸变体（仅 non-default，default 已在 .button 基础样式中） ==*/
+.mini {
+    padding: var(--comp-py-mini) var(--comp-px-mini);
+    font-size: var(--comp-text-mini);
+}
+
+.mini .icon {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.medium {
+    padding: var(--comp-py-md) var(--comp-px-md);
+    font-size: var(--comp-text-md);
+}
+
+.small {
+    padding: var(--comp-py-sm) var(--comp-px-sm);
+    font-size: var(--comp-text-sm);
+}
+
+/*== large 变体：hero 等大标题场景，icon 同步放大 ==*/
+.large {
+    padding: var(--comp-py-large) var(--comp-px-large);
+    font-size: var(--comp-text-large);
+}
+
+.button:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--muted);
+}
+
+/*== primary 变体：主色边框 + hover 反色 ==*/
+.primary {
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: var(--weight-medium);
+}
+
+.primary:hover {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/*== 选中态：主色边框+文字 + muted 背景，hover 不变化 ==*/
+.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--muted);
+}
+
+.active:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--muted);
+}
+
+/*== 焦点轮廓 ==*/
+.button:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
+.icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+/*== 禁用态：降低透明度 + 禁止交互 ==*/
+.button:disabled {
+    opacity: var(--opacity-40);
+    cursor: not-allowed;
+    pointer-events: none;
+}

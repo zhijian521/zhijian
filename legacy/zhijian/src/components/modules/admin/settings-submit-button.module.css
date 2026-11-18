@@ -1,0 +1,20 @@
+/*============================================================================
+  settings-submit-button — 搜索引擎提交结果样式
+
+  控制提交反馈的间距、字号和成功或失败状态颜色。
+============================================================================*/
+
+.result {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.75;
+}
+
+.resultLine {
+    margin: 0;
+    color: var(--muted-foreground);
+}
+
+.resultSuccess {
+    color: var(--primary);
+}

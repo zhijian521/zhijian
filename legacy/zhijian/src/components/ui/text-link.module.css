@@ -1,0 +1,27 @@
+/*== TextLink 纯文字链接 — 朱砂红文字+箭头，hover 淡出 ==*/
+.link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--comp-text-base);
+    line-height: var(--leading-normal);
+    font-weight: var(--weight-medium);
+    color: var(--primary);
+    transition: opacity var(--transition);
+}
+
+.link:hover {
+    opacity: var(--opacity-60);
+}
+
+/*== 焦点轮廓 ==*/
+.link:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
+.icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+}
